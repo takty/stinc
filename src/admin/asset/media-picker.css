@@ -1,0 +1,26 @@
+/**
+ *
+ * Media Picker (CSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2017-07-14
+ *
+ */
+
+.st_media_picker {margin: 1em 0;}
+.st_media_picker_table {width: 100%; border-spacing: 0;}
+.st_media_picker_table td {padding: 4px 0;}
+.st_media_picker_table td:nth-child(2) {width: 100%;}
+.st_media_picker_table td:nth-child(2) div {display: flex; align-items: center; padding: 2px 0;}
+.st_media_picker_table td:nth-child(2) div span {display: inline-block; padding-right: 4px;}
+.st_media_picker_cap {min-width: 5rem; text-align: right;}
+.st_media_picker_table td:nth-child(2) div input[type=text] {width: 100%;}
+.st_media_picker_item_deleted td:nth-child(2) {opacity: 0.5; pointer-events: none;}
+.st_media_picker_delete_label {white-space: nowrap; color: #a00;}
+.st_media_picker_select {margin-left: 4px !important;}
+.st_media_picker_item_template {display: none;}
+.st_media_picker_ins_target td {text-align: right; padding-top: 10px;}
+.st_media_picker_title_handle {cursor: move;}
+.st_media_picker_item_placeholder {height: 64px;}
+.st_media_picker_table td:nth-child(2) div span.st_media_picker_name {padding-left: 6px; width: 100%;}
+.st_media_picker_name {word-break: break-all;}

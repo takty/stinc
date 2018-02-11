@@ -1,0 +1,148 @@
+/**
+ *
+ * Slideshow (CSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2017-03-02
+ *
+ */
+
+.st_slideshow_table {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.st_slideshow_item {
+	display: flex;
+	background-color: rgba(255, 255, 255, 0.75);
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.st_slideshow_item > div:nth-child(1) {
+	display: flex;
+	flex-direction: column;
+
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.st_slideshow_handle {
+	flex-grow: 1;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #dddddd;
+    cursor: move;
+}
+
+.st_slideshow_item > div:nth-child(2) {
+	flex-grow: 1;
+
+	display: flex;
+	flex-wrap: wrap;
+
+	padding-left: 4px;
+}
+
+.st_slideshow_info {
+	flex-grow: 1;
+
+	display: flex;
+	flex-direction: column;
+	padding-left: 8px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.st_slideshow_info > div {
+	display: flex;
+	align-items: center;
+}
+
+.st_slideshow_info input[type=text] {
+	width: 100%;
+}
+
+.st_slideshow_thumbnail {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 8px;
+	width: 100%;
+	max-width: 210px;
+}
+
+.st_slideshow_thumbnail > a {
+	display: block;
+	position: relative;
+
+	border-color: #ccc;
+	background-color: #f7f7f7;
+	box-shadow: 0 1px 0 #ccc;
+
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 3px;
+	white-space: nowrap;
+	box-sizing: border-box;
+}
+
+.st_slideshow_thumbnail > a:hover {
+	background-color: #fafafa;
+	border-color: #999;
+}
+
+.st_slideshow_thumbnail > a:active {
+	background-color: #eee;
+	border-color: #999;
+	box-shadow: inset 0 2px 5px -3px rgba(0,0,0,.5);
+	transform: translateY(1px);
+}
+
+.st_slideshow_thumbnail > a::before {
+	content: '';
+	display: block;
+	padding-top: 56.25%;
+}
+
+.st_slideshow_thumbnail > a > div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	pointer-events: none;
+
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.st_slideshow_item_deleted > div:nth-child(2) {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.st_slideshow_delete_label {
+	white-space: nowrap;
+}
+
+.st_slideshow_select {
+	margin-left: 4px !important;
+}
+
+.st_slideshow_item_template {
+	display: none;
+}
+
+.st_slideshow_add_row {
+	text-align: right;
+	padding-top: 10px;
+}
+
+.st_slideshow_item_placeholder {
+	height: 166px;
+}

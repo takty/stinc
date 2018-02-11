@@ -1,0 +1,155 @@
+/**
+ *
+ * Background Images (CSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2018-01-04
+ *
+ */
+
+.st-background-image-table {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+
+	margin-right: -10px;
+}
+
+.st-background-image-item {
+	display: flex;
+	background-color: rgba(255, 255, 255, 0.75);
+	padding-top: 4px;
+	padding-bottom: 4px;
+
+	min-width: 16rem;
+	margin-right: 10px;
+}
+
+.st-background-image-item > div:nth-child(1) {
+	display: flex;
+	flex-direction: column;
+
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.st-background-image-handle {
+	flex-grow: 1;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #ccc;
+    cursor: move;
+}
+
+.st-background-image-item > div:nth-child(2) {
+	flex-grow: 1;
+
+	display: flex;
+	flex-wrap: wrap;
+
+	padding-left: 4px;
+}
+
+.st-background-image-info {
+	flex-grow: 1;
+
+	display: flex;
+	flex-direction: column;
+	padding-left: 8px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+}
+
+.st-background-image-info > div {
+	display: flex;
+	align-items: center;
+}
+
+.st-background-image-info input[type=text] {
+	width: 100%;
+}
+
+.st-background-image-thumbnail {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 8px;
+	width: 100%;
+	max-width: 210px;
+}
+
+.st-background-image-thumbnail > a {
+	display: block;
+	position: relative;
+
+	border-color: #ccc;
+	background-color: #f7f7f7;
+	box-shadow: 0 1px 0 #ccc;
+
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 3px;
+	white-space: nowrap;
+	box-sizing: border-box;
+}
+
+.st-background-image-thumbnail > a:hover {
+	background-color: #fafafa;
+	border-color: #999;
+}
+
+.st-background-image-thumbnail > a:active {
+	background-color: #eee;
+	border-color: #999;
+	box-shadow: inset 0 2px 5px -3px rgba(0,0,0,.5);
+	transform: translateY(1px);
+}
+
+.st-background-image-thumbnail > a::before {
+	content: '';
+	display: block;
+	padding-top: 56.25%;
+}
+
+.st-background-image-thumbnail > a > div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+
+	pointer-events: none;
+
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.st-background-image-item-deleted > div:nth-child(2) {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+.st-background-image-delete-label {
+	white-space: nowrap;
+	color: #a00;
+}
+
+.st-background-image-select {
+	margin-left: 4px !important;
+}
+
+.st-background-image-item-template {
+	display: none;
+}
+
+.st-background-image-add-row {
+	text-align: right;
+	padding-top: 10px;
+}
+
+.st-background-image-item-placeholder {
+	min-width: 16rem;
+	height: 127px;
+}
