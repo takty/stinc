@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-09
+ * @version 2018-02-12
  *
  */
 
@@ -97,7 +97,7 @@ class Multihome {
 	}
 
 	public function is_front_page() {
-		return trailingslashit( $this->home_url() ) === trailingslashit( \st\get_current_url() );
+		return trailingslashit( $this->home_url() ) === trailingslashit( \st\get_current_uri() );
 	}
 
 	public function get_site_homes() {

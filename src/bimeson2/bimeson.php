@@ -252,8 +252,8 @@ class Bimeson {
 
 	public function enqueue_script( $url_to ) {
 		if ( ! is_admin() ) {
-			wp_enqueue_style(  'bimeson', $url_to . '/asset/bm-filter.css' );
-			wp_enqueue_script( 'bimeson', $url_to . '/asset/bm-filter.js' );
+			wp_enqueue_style(  'bimeson', $url_to . '/asset/bm-filter.min.css' );
+			wp_enqueue_script( 'bimeson', $url_to . '/asset/bm-filter.min.js' );
 		}
 	}
 

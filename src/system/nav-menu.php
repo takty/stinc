@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-25
+ * @version 2018-02-12
  *
  * require tag/url.php
  *
@@ -30,7 +30,7 @@ class NavMenu {
 	private $_id_to_attr;
 
 	public function __construct( $menu_name, $expanded_page_ids = false ) {
-		$this->_cur_url = trailingslashit( \st\get_current_url() );
+		$this->_cur_url = trailingslashit( \st\get_current_uri() );
 
 		$ml = null;
 		if ( class_exists( '\st\Multilang' ) ) {

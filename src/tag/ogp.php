@@ -6,7 +6,7 @@ namespace st;
  * Open Graph Protocol
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-21
+ * @version 2018-02-12
  *
  */
 
@@ -51,7 +51,7 @@ function get_the_ogp_url() {
 	if ( is_singular() ) {
 		$url = get_permalink();
 	} else {
-		$url = \st\get_current_url();
+		$url = \st\get_current_uri();
 	}
 	return $url;
 }

@@ -6,13 +6,22 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-14
+ * @version 2018-02-12
  *
  */
 
 
-function get_current_url() {
+function get_current_uri() {
 	return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+}
+
+function get_file_uri( $path ) {
+	$path = wp_normalize_path( $path );
+
+	$theme_path = wp_normalize_path( get_theme_file_path() );
+	$theme_uri = get_theme_file_uri();
+
+	return str_replace( $theme_path, $theme_uri, $path );
 }
 
 function get_first_slug( $url ) {

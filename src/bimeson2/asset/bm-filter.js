@@ -3,7 +3,7 @@
  * Publication List Filter (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-01
+ * @version 2018-02-12
  *
  */
 
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	update();
 
 	function update() {
-		keyToVals = getKeyToVals(keyToSwAndCbs);
+		var keyToVals = getKeyToVals(keyToSwAndCbs);
 		filterLists(allElms, keyToVals);
 		// countUpItems(allElms);
 		setUrlParams(keyToSwAndCbs);
