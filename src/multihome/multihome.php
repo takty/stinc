@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-12
+ * @version 2018-02-13
  *
  */
 
@@ -104,10 +104,10 @@ class Multihome {
 		return array_keys( $this->_home_to_slug );
 	}
 
-	public function home_url( $path = '' ) {
+	public function home_url( $path = '', $scheme = null, $site_lang = false ) {
 		$home = $this->get_site_home();
 		$slug = $this->_home_to_slug[ $home ];
-		return $this->_ml->home_url( "/$slug/" . ltrim( $path, '/' ) );
+		return $this->_ml->home_url( "/$slug/" . ltrim( $path, '/' ), $scheme, $site_lang );
 	}
 
 	public function get_site_slug( $home = false ) {
@@ -138,6 +138,10 @@ class Multihome {
 	}
 
 	public function _cb_insert_lang_to_url( $link ) {  // Private
+		$fs = \st\get_first_slug( $link );
+		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes() ) ) {
+			$link = str_replace( "$fs/", '', $link );
+		}
 		$lang = $this->get_site_home();
 		$home = $this->_ml->home_url();
 		$link = str_replace( $home, "$home/$lang", $link );
