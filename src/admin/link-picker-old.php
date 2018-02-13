@@ -6,7 +6,7 @@ namespace st\link_picker;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
+ * @version 2018-01-28
  *
  * require system\field.php
  *
@@ -39,10 +39,8 @@ function get_items( $key, $post_id = false ) {
 
 function enqueue_script_for_admin( $url_to ) {
 	if ( ! is_admin() ) return;
-	wp_enqueue_script( 'st-link-picker', $url_to . '/asset/link-picker.min.js', [ 'jquery-ui-sortable' ] );
-	wp_enqueue_style( 'st-link-picker', $url_to . '/asset/link-picker.min.css' );
-
-	wp_enqueue_script( 'picker-link', $url_to . '/asset/picker-link.min.js' );
+	wp_enqueue_script( 'st-link-picker', $url_to.'/asset/link-picker.js', [ 'jquery-ui-sortable' ] );
+	wp_enqueue_style( 'st-link-picker', $url_to.'/asset/link-picker.css' );
 }
 
 function add_admin_enqueue_scripts_action( $url_to ) {
@@ -99,9 +97,9 @@ function output_row( $title, $url, $post_id, $class, $is_internal_only = false )
 		</td>
 		<td>
 			<div><span class="<?php echo NS ?>_title_handle"><?php echo __( 'Title', 'default' ) ?>:</span>
-			<input type="text" class="<?php echo NS ?>_title link-title" value="<?php echo esc_attr( $title ) ?>" /></div>
+			<input type="text" class="<?php echo NS ?>_title" value="<?php echo esc_attr( $title ) ?>" /></div>
 			<div><span><a href="<?php echo esc_url( $url ) ?>" target="_blank">URL</a>:</span>
-			<input type="text" class="<?php echo NS ?>_url link-url" value="<?php echo esc_attr( $url ) ?>" <?php if ( $is_internal_only ) echo 'readonly' ?>/>
+			<input type="text" class="<?php echo NS ?>_url" value="<?php echo esc_attr( $url ) ?>" <?php if ( $is_internal_only ) echo 'readonly' ?>/>
 			<a href="javascript:void(0);" class="button <?php echo NS ?>_select"><?php echo __( 'Select', 'default' ) ?></a></div>
 			<input type="hidden" value="<?php echo esc_attr( $post_id ) ?>" />
 		</td>
