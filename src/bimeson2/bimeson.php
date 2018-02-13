@@ -250,8 +250,9 @@ class Bimeson {
 		return $this->_tax->get_sub_taxonomies();
 	}
 
-	public function enqueue_script( $url_to ) {
+	public function enqueue_script( $url_to = false ) {
 		if ( ! is_admin() ) {
+			if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
 			wp_enqueue_style(  'bimeson', $url_to . '/asset/bm-filter.min.css' );
 			wp_enqueue_script( 'bimeson', $url_to . '/asset/bm-filter.min.js' );
 		}
