@@ -97,7 +97,7 @@ foreach ( get_items( $key ) as $idx => $it ) {
 			<tr><td></td><td><a href="javascript:void(0);" class="<?php echo CLS_ADD ?> button"><?php echo __( 'Add Link', 'default' ) ?></a></td></tr>
 		</tbody>
 	</table>
-	<script>initializeLinkPicker('<?php echo $key ?>', <?php echo $is_internal_only ? 'true' : 'false' ?>, <?php echo $max_count ?>);</script>
+	<script>initializeLinkPicker('<?php echo $key ?>', <?php echo $is_internal_only ? 'true' : 'false' ?><?php echo $max_count !== false ? ", $max_count" : '' ?>);</script>
 <?php
 }
 
