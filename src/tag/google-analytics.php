@@ -25,7 +25,7 @@ function echo_no_analytics_warning() {
 document.addEventListener("DOMContentLoaded",function(){var e=document.createElement("div");
 e.innerText="The ID of Google Analytics Code is not assigned!",e.style.position="fixed",
 e.style.right="0",e.style.bottom="0",e.style.background="red",e.style.color="white",e.style.padding="4px",
-e.style.zIndex=9999,document.body.appendChild(e),console.log("The ID of Google Analytics Code is not assigned!")});
+e.style.zIndex=9999,document.body.appendChild(e),console.log("Google Analytics Code is not assigned!")});
 </script>
 <?php
 }
