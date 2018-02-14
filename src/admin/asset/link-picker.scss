@@ -1,0 +1,74 @@
+/**
+ *
+ * Link Picker (CSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2018-02-14
+ *
+ */
+
+
+.st-link-picker-table {
+	width: 100%;
+
+	td {
+		padding: 4px 0;
+	}
+
+	td:first-child {
+		white-space: nowrap;
+		color: #a00;
+
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+
+	td:last-child {
+		width: 100%;
+
+		div {
+			display: flex;
+			align-items: center;
+		}
+
+		div span {
+			display: inline-block;
+			min-width: 4rem;
+			text-align: right;
+			padding-right: 4px;
+		}
+
+		div input[type=text] {
+			width: 100%;
+		}
+	}
+
+	.st-link-picker-item-deleted td:last-child {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	tr:last-child td {
+		text-align: right;
+		padding-top: 10px;
+	}
+}
+
+.button.st-link-picker-select {
+	margin-left: 4px;
+	margin-bottom: 0;
+}
+
+.st-link-picker-item-template {
+	display: none;
+}
+
+.st-link-picker-handle {
+	cursor: move;
+}
+
+.st-link-picker-item-placeholder {
+	height: 64px;
+}

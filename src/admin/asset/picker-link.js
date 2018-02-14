@@ -19,6 +19,7 @@ function setLinkPicker(elm, cls, fn, opts = {isInternalOnly: false, parentGen: 1
 	if (cls === undefined || cls === false) cls = 'link';
 
 	elm.addEventListener('click', function (e) {
+		if (elm.getAttribute('disabled')) return;
 		e.preventDefault();
 		createLink(function (f) {
 			const parent = getParent(e.target, opts.parentGen);
@@ -33,8 +34,9 @@ function setLinkPicker(elm, cls, fn, opts = {isInternalOnly: false, parentGen: 1
 	}
 
 	function setItem(parent, cls, f) {
-		setValueToCls(parent, cls + '-url',   f.url);
-		setValueToCls(parent, cls + '-title', f.title);
+		setValueToCls(parent, cls + '-url',     f.url);
+		setValueToCls(parent, cls + '-title',   f.title);
+		setValueToCls(parent, cls + '-post-id', '');
 	}
 
 	function setValueToCls(parent, cls, value) {
@@ -42,6 +44,8 @@ function setLinkPicker(elm, cls, fn, opts = {isInternalOnly: false, parentGen: 1
 		for (let i = 0; i < elms.length; i += 1) {
 			if (elms[i] instanceof HTMLInputElement) {
 				elms[i].value = value;
+			} else if (elms[i].tagName === 'A') {
+				elms[i].setAttribute('href', value);
 			} else {
 				elms[i].innerText = value;
 			}

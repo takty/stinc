@@ -18,18 +18,18 @@ document.addEventListener('DOMContentLoaded', function () {
 function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
 	if (cls === undefined || cls === false) cls = 'media';
 
-	var postId = $('#post_ID').val();
-	var cm = null;
+	const postId = $('#post_ID').val();
+	let cm = null;
 	elm.addEventListener('click', function (e) {
 		e.preventDefault();
 		if (!cm) {
 			wp.media.view.AttachmentsBrowser = AttachmentsBrowserCustom;
-			cm = create_media(postId, e.target.innerText, false);
+			cm = createMedia(postId, e.target.innerText, false);
 			cm.on('select', function () {
-				var f = cm.state().get('selection').first();
-				var fileJson = f.toJSON();
-				var parent = get_parent(e.target, opts.parentGen);
-				set_item(parent, cls, fileJson);
+				const f = cm.state().get('selection').first();
+				const fileJson = f.toJSON();
+				const parent = getParent(e.target, opts.parentGen);
+				setItem(parent, cls, fileJson);
 				if (fn) fn(e.target, fileJson);
 			});
 			cm.on('close', function () {
@@ -39,21 +39,21 @@ function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
 		cm.open();
 	});
 
-	function get_parent(elm, gen) {
+	function getParent(elm, gen) {
 		while (0 < gen-- && elm.parentNode) elm = elm.parentNode;
 		return elm;
 	}
 
-	function set_item(parent, cls, f) {
-		set_value_to_cls(parent, cls + '-id',       f.id);
-		set_value_to_cls(parent, cls + '-url',      f.url);
-		set_value_to_cls(parent, cls + '-title',    f.title);
-		set_value_to_cls(parent, cls + '-filename', f.filename);
+	function setItem(parent, cls, f) {
+		setValueToCls(parent, cls + '-id',       f.id);
+		setValueToCls(parent, cls + '-url',      f.url);
+		setValueToCls(parent, cls + '-title',    f.title);
+		setValueToCls(parent, cls + '-filename', f.filename);
 	}
 
-	function set_value_to_cls(parent, cls, value) {
-		var elms = parent.getElementsByClassName(cls);
-		for (var i = 0; i < elms.length; i += 1) {
+	function setValueToCls(parent, cls, value) {
+		const elms = parent.getElementsByClassName(cls);
+		for (let i = 0; i < elms.length; i += 1) {
 			if (elms[i] instanceof HTMLInputElement) {
 				elms[i].value = value;
 			} else {
@@ -62,11 +62,11 @@ function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
 		}
 	}
 
-	function create_media(postId, title, multiple) {
+	function createMedia(postId, title, multiple) {
 		wp.media.model.settings.post.id = postId;
 		wp.media.view.settings.post.id  = postId;
 
- 		var media = wp.media({
+ 		const media = wp.media({
 			title   : title,
 			library : {type: ''},
 			frame   : 'select',
@@ -81,9 +81,9 @@ function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
 	 * Tha following enables our media picker selectable 'Uploaded to this post'.
 	 * https://cobbledco.de/adding-your-own-filter-to-the-media-uploader/
 	 */
-	var MediaLibraryUploadedFilter = wp.media.view.AttachmentFilters.extend({
+	const MediaLibraryUploadedFilter = wp.media.view.AttachmentFilters.extend({
 		createFilters: function() {
-			var filters = {};
+			const filters = {};
 			filters.all = {
 				text:  wp.media.view.l10n.allMediaItems,
 				props: {
@@ -121,8 +121,8 @@ function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
 		}
 	});
 
-	var AttachmentsBrowserOrig = wp.media.view.AttachmentsBrowser;
-	var AttachmentsBrowserCustom = AttachmentsBrowserOrig.extend({
+	const AttachmentsBrowserOrig = wp.media.view.AttachmentsBrowser;
+	const AttachmentsBrowserCustom = AttachmentsBrowserOrig.extend({
 		createToolbar: function() {
 			AttachmentsBrowserOrig.prototype.createToolbar.call( this );
 			this.toolbar.set(

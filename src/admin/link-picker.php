@@ -6,14 +6,29 @@ namespace st\link_picker;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
- *
- * require system\field.php
+ * @version 2018-02-14
  *
  */
 
 
-const NS = 'st_link_picker';
+require_once __DIR__ . '/../system/field.php';
+
+
+const NS = 'st-link-picker';
+
+const CLS_TABLE     = NS . '-table';
+
+const CLS_ITEM      = NS . '-item';
+const CLS_ITEM_TEMP = NS . '-item-template';
+const CLS_ADD       = NS . '-add';
+
+const CLS_HANDLE    = NS . '-handle';
+const CLS_SEL       = NS . '-select';
+
+const CLS_URL       = NS . '-url';
+const CLS_TITLE     = NS . '-title';
+const CLS_DEL       = NS . '-delete';
+const CLS_POST_ID   = NS . '-post-id';
 
 
 function get_items( $key, $post_id = false ) {
@@ -37,19 +52,13 @@ function get_items( $key, $post_id = false ) {
 
 // -----------------------------------------------------------------------------
 
-function enqueue_script_for_admin( $url_to ) {
-	if ( ! is_admin() ) return;
-	wp_enqueue_script( 'st-link-picker', $url_to . '/asset/link-picker.min.js', [ 'jquery-ui-sortable' ] );
-	wp_enqueue_style( 'st-link-picker', $url_to . '/asset/link-picker.min.css' );
-
-	wp_enqueue_script( 'picker-link', $url_to . '/asset/picker-link.min.js' );
-}
-
-function add_admin_enqueue_scripts_action( $url_to ) {
-	add_action( 'admin_enqueue_scripts', function ( $hook ) use ( $url_to ) {
-		if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) return;
-		enqueue_script_for_admin( $url_to );
-	} );
+function enqueue_script( $url_to = false ) {
+	if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
+	if ( is_admin() ) {
+		wp_enqueue_script( 'picker-link', $url_to . '/asset/picker-link.min.js' );
+		wp_enqueue_script( 'st-link-picker', $url_to . '/asset/link-picker.min.js', [ 'jquery-ui-sortable' ] );
+		wp_enqueue_style( 'st-link-picker', $url_to . '/asset/link-picker.min.css' );
+	}
 }
 
 function add_meta_box( $key, $label, $screen, $opts = [] ) {
@@ -58,88 +67,100 @@ function add_meta_box( $key, $label, $screen, $opts = [] ) {
 		function ( $post ) use ( $key, $opts ) {
 			wp_nonce_field( $key, $key . '_nonce' );
 			$is_internal_only = isset( $opts['is_internal_only'] ) ? $opts['is_internal_only'] : false;
-			output_html( $key, $is_internal_only );
+			$max_count        = isset( $opts['max_count'] )        ? $opts['max_count']        : false;
+			output_html( $key, $is_internal_only, $max_count );
 		},
 		$screen
 	);
 }
 
-function save_meta_box( $post_id, $key ) {
+function save_meta_box( $post_id, $key, $opts = [] ) {
 	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
 	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
 
-	save_post( $key, $post_id );
+	$is_internal_only = isset( $opts['is_internal_only'] ) ? $opts['is_internal_only'] : false;
+	save_post( $key, $post_id, $is_internal_only );
 }
 
-function output_html( $key, $is_internal_only ) {
+function output_html( $key, $is_internal_only, $max_count ) {
 ?>
 	<input type="hidden" id="<?php echo $key ?>" name="<?php echo $key ?>" value="" />
-	<table class="<?php echo NS ?>_table">
-		<tbody id="<?php echo $key ?>_tbody">
+	<table class="<?php echo CLS_TABLE ?>">
+		<tbody id="<?php echo $key ?>-item-set">
 <?php
-output_row( '', '', '', NS.'_item_template' );
-foreach ( get_items( $key ) as $it ) {
-	output_row( $it['title'], $it['url'], $it['post_id'], NS.'_item', $is_internal_only );
+output_row( '', '', '', CLS_ITEM_TEMP );
+foreach ( get_items( $key ) as $idx => $it ) {
+	output_row( $it['title'], $it['url'], $it['post_id'], CLS_ITEM, $is_internal_only );
+	if ( $max_count !== false && $idx + 1 === $max_count ) break;
 }
 ?>
-			<tr class="<?php echo NS ?>_add_row"><td></td><td><a href="javascript:void(0);" class="<?php echo NS ?>_add button"><?php echo __( 'Add Link', 'default' ) ?></a></td></tr>
+			<tr><td></td><td><a href="javascript:void(0);" class="<?php echo CLS_ADD ?> button"><?php echo __( 'Add Link', 'default' ) ?></a></td></tr>
 		</tbody>
 	</table>
-	<script>st_link_picker_init('<?php echo $key ?>', <?php echo $is_internal_only ? 'true' : 'false' ?>);</script>
-	<textarea id="<?php echo $key ?>_hidden_textarea" style="display: none;"></textarea>
-	<div id="<?php echo $key ?>_hidden_div" style="display: none;"></div>
+	<script>initializeLinkPicker('<?php echo $key ?>', <?php echo $is_internal_only ? 'true' : 'false' ?>, <?php echo $max_count ?>);</script>
 <?php
 }
 
-function output_row( $title, $url, $post_id, $class, $is_internal_only = false ) {
+function output_row( $title, $url, $post_id, $class, $read_only = false ) {
+	$_url     = esc_url( $url );
+	$_title   = esc_attr( $title );
+	$_post_id = esc_attr( $post_id );
 ?>
 	<tr class="<?php echo $class ?>">
 		<td>
-			<label class="widget-control-remove <?php echo NS ?>_delete_label"><input type="checkbox" class="<?php echo NS ?>_delete"></input><br /><?php echo __( 'Remove', 'default' ) ?></label>
+			<label class="widget-control-remove"><input type="checkbox" class="<?php echo CLS_DEL ?>"></input><br /><?php esc_html_e( 'Remove', 'default' ) ?></label>
 		</td>
 		<td>
-			<div><span class="<?php echo NS ?>_title_handle"><?php echo __( 'Title', 'default' ) ?>:</span>
-			<input type="text" class="<?php echo NS ?>_title link-title" value="<?php echo esc_attr( $title ) ?>" /></div>
-			<div><span><a href="<?php echo esc_url( $url ) ?>" target="_blank">URL</a>:</span>
-			<input type="text" class="<?php echo NS ?>_url link-url" value="<?php echo esc_attr( $url ) ?>" <?php if ( $is_internal_only ) echo 'readonly' ?>/>
-			<a href="javascript:void(0);" class="button <?php echo NS ?>_select"><?php echo __( 'Select', 'default' ) ?></a></div>
-			<input type="hidden" value="<?php echo esc_attr( $post_id ) ?>" />
+			<div>
+				<span class="<?php echo CLS_HANDLE ?>"><?php esc_html_e( 'Title', 'default' ) ?>:</span>
+				<input type="text" class="<?php echo CLS_TITLE ?> link-title" value="<?php echo $_title ?>" />
+			</div>
+			<div>
+				<span><a href="<?php echo $_url ?>" target="_blank" class="link-url">URL</a>:</span>
+				<input type="text" class="<?php echo CLS_URL ?> link-url" value="<?php echo $_url ?>" <?php if ( $read_only ) echo 'readonly' ?>/>
+				<a href="javascript:void(0);" class="button <?php echo CLS_SEL ?>"><?php esc_html_e( 'Select', 'default' ) ?></a>
+			</div>
+			<input type="hidden" class="<?php echo CLS_POST_ID ?> link-post-id" value="<?php echo $_post_id ?>" />
 		</td>
 	</tr>
 <?php
 }
 
-function save_post( $key, $post_id ) {
+function save_post( $key, $post_id, $is_internal_only ) {
 	$items = \st\field\get_multiple_post_meta_from_post( $key, [ 'title', 'url', 'post_id', 'delete' ] );
 	$items = array_filter( $items, function ( $it ) { return ! $it['delete'] && ! empty( $it['url'] ); } );
 	$items = array_values( $items );
 
-	foreach ( $items as &$it ) {
-		$pid = url_to_postid( $it['url'] );
-
-		if ( empty( $it['post_id'] ) ) {
-			if ( $pid === 0 ) {
-				$p = get_page_by_title( $it['title'] );
-				if ( $p !== null ) {
-					$it['url'] = get_permalink( $p->ID );
-					$it['post_id'] = $p->ID;
-				}
-			} else {
-				$it['post_id'] = $pid;
-			}
-		} else {
-			if ( $pid === 0 ) {
-				$url = get_permalink( intval( $it['post_id'] ) );
-				if ( $url === false ) {
-					$p = get_page_by_title( $it['title'] );
-					if ( $p !== null ) $it['url'] = get_permalink( $p->ID );
-				} else {
-					$it['url'] = $url;
-				}
-			} else if ( $pid !== intval( $it['post_id'] ) ) {
-				$it['post_id'] = $pid;
-			}
-		}
+	if ( $is_internal_only ) {
+		foreach ( $items as &$it ) ensure_internal_link( $it );
 	}
 	\st\field\update_multiple_post_meta( $post_id, $key, $items, [ 'title', 'url', 'post_id' ] );
+}
+
+function ensure_internal_link( &$it ) {
+	$pid = url_to_postid( $it['url'] );
+
+	if ( empty( $it['post_id'] ) ) {
+		if ( $pid === 0 ) {
+			$p = get_page_by_title( $it['title'] );
+			if ( $p !== null ) {
+				$it['url'] = get_permalink( $p->ID );
+				$it['post_id'] = $p->ID;
+			}
+		} else {
+			$it['post_id'] = $pid;
+		}
+	} else {
+		if ( $pid === 0 ) {
+			$url = get_permalink( intval( $it['post_id'] ) );
+			if ( $url === false ) {
+				$p = get_page_by_title( $it['title'] );
+				if ( $p !== null ) $it['url'] = get_permalink( $p->ID );
+			} else {
+				$it['url'] = $url;
+			}
+		} else if ( $pid !== intval( $it['post_id'] ) ) {
+			$it['post_id'] = $pid;
+		}
+	}
 }
