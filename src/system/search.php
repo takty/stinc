@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-05
+ * @version 2018-02-14
  *
  */
 
@@ -101,7 +101,7 @@ class Search {
 			} else {
 				$home_url = home_url( "/{$search_base}/" );
 			}
-			wp_redirect( $home_url . urlencode( get_query_var( 's' ) ) );
+			wp_redirect( $home_url . rawurlencode( get_query_var( 's' ) ) );
 			exit();
 		}
 	}
