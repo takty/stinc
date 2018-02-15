@@ -89,6 +89,18 @@ class IpRestriction {
 	public function _cb_pre_get_posts( $query ) {
 		if ( is_user_logged_in() || $this->is_allowed() ) return;
 
+		$pts = $query->get( 'post_type', false );
+		if ( $pts !== false ) {
+			$filter = false;
+			if ( ! is_array( $pts ) ) $pts = [ $pts ];
+			foreach ( $pts as $pt ) {
+				if ( in_array( $pt, $this->_post_types ) ) {
+					$filter = true;
+					break;
+				}
+			}
+			if ( ! $filter ) return;
+		}
 		$meta_query = $query->get( 'meta_query', false );
 		if ( $meta_query === false ) $meta_query = [];
 		$meta_query[] = [
