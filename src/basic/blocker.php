@@ -6,7 +6,7 @@ namespace st\basic;
  * Blocker - Disable Unused Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-03
+ * @version 2018-02-19
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/blocker.php' );
@@ -25,6 +25,7 @@ function disable_unused_functions( $args = [] ) {
 	disable_rest_api( $args['disable_rest_api_force'], $args['permitted_rest_route'] );
 	disable_xml_rpc();
 	disable_file_edit();
+	disable_embed();
 
 	disable_version_output();
 	disable_tag_output();
@@ -104,6 +105,17 @@ function disable_file_edit() {
 		define( 'DISALLOW_FILE_EDIT', true );
 	}
 }
+
+function disable_embed() {
+	add_filter( 'embed_oembed_discover', '__return_false' );
+	add_filter( 'embed_oembed_html', function ( $cached_html, $url, $attr, $post_id ) {
+		global $wp_embed;
+		return $wp_embed->maybe_make_link( $url );
+	}, 10, 4 );
+}
+
+
+// -----------------------------------------------------------------------------
 
 function disable_version_output() {
 	if ( ! function_exists( 'remove_wp_ver' ) ) {
