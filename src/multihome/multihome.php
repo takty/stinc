@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
+ * @version 2018-02-20
  *
  */
 
@@ -152,7 +152,7 @@ class Multihome {
 		$req = $this->_get_request();
 		extract( $req );  // $requested_path, $requested_file
 
-		$ps = explode( '/', trim( $requested_path, '/' ) );
+		$ps = explode( '/', $requested_path );
 		$langs = $this->_ml->get_site_langs();
 		$homes = $this->get_site_homes();
 
@@ -185,19 +185,19 @@ class Multihome {
 
 		$request_match = $requested_path;
 		foreach ( (array) $rewrite as $match => $query ) {
-			if ( preg_match( '/site_lang=\$matches\[([0-9]+)\]/', $query ) ) continue;  // tentative
+			// if ( preg_match( '/site_lang=\$matches\[([0-9]+)\]/', $query ) ) continue;  // tentative
 
 			if ( ! empty( $requested_file ) && strpos( $match, $requested_file ) === 0 && $requested_file != $requested_path ) {
 				$request_match = $requested_file . '/' . $requested_path;
 			}
 			if ( preg_match( "#^$match#", $request_match, $matches ) || preg_match( "#^$match#", urldecode( $request_match ), $matches ) ) {
 				if ( preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query ) ) {
-					return true;
+					return true;  // Request is a page!
 				}
-				return false;
+				break;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	private function _get_request() {
