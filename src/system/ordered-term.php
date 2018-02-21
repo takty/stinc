@@ -4,7 +4,7 @@
  * Ordered Term (Adding Order Field (Term-Meta) to Taxonomies)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-08
+ * @version 2018-02-21
  *
  */
 
@@ -28,6 +28,9 @@ class OrderedTerm {
 	private $_key_order       = self::DEFAULT_META_KEY;
 	private $_taxonomies      = [];
 	private $_is_filter_added = false;
+
+	private $_post_types_meta_key_added = [];
+	private $_is_post_type_hook_added   = false;
 
 	private function __construct() {
 	}
@@ -65,6 +68,21 @@ class OrderedTerm {
 
 	public function get_order( $term ) {
 		return intval( get_term_meta( $term->term_id, $this->_key_order, true ) );
+	}
+
+	public function add_order_post_meta_to_post( $post_type_s ) {
+		if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
+		foreach ( $post_type_s as $ps ) {
+			$this->_post_types_meta_key_added[] = $ps;
+		}
+		if ( ! $this->_is_post_type_hook_added ) {
+			add_action( 'save_post', [ $this, '_cb_save_post' ] );
+			$this->_is_post_type_hook_added = true;
+		}
+	}
+
+	public function get_order_post_meta_key( $taxonomy ) {
+		return "_$taxonomy{$this->_key_order}";
 	}
 
 	public function insert_terms( $slugs_to_labels, $taxonomy, $args ) {
@@ -140,9 +158,7 @@ class OrderedTerm {
 	public function _cb_manage_taxonomy_custom_column( $content, $column_name, $term_id ) {
 		if ( $column_name !== $this->_key_order ) return $content;
 
-		$term_id = absint( $term_id );
-		$idx = get_term_meta( $term_id, $this->_key_order, true );
-
+		$idx = get_term_meta( absint( $term_id ), $this->_key_order, true );
 		if ( $idx !== false || $idx !== '' ) {  // DO NOT USE 'empty'
 			$content .= esc_html( $idx );
 		}
@@ -156,7 +172,7 @@ class OrderedTerm {
 		$_name = esc_attr( $this->_key_order );
 ?>
 		<tr class="form-field">
-			<th><label for="<?php echo $_id ?>"><?php echo __( 'Order', 'default' ) ?></label></th>
+			<th><label for="<?php echo $_id ?>"><?php esc_html_e( 'Order', 'default' ) ?></label></th>
 			<td><input type="text" name="<?php echo $_name ?>" id="<?php echo $_id ?>" size="40" value="<?php echo $_val ?>" /></td>
 		</tr>
 <?php
@@ -165,6 +181,10 @@ class OrderedTerm {
 	public function _cb_edited_taxonomy( $term_id, $taxonomy ) {
 		if ( isset( $_POST[ $this->_key_order ] ) ) {
 			update_term_meta( $term_id, $this->_key_order, intval( $_POST[ $this->_key_order ] ) );
+
+			if ( $this->_is_post_type_hook_added ) {
+				$this->_update_post_meta( $term_id, $taxonomy );
+			}
 		}
 	}
 
@@ -209,7 +229,7 @@ class OrderedTerm {
 		<fieldset>
 			<div id="<?php echo $this->_key_order ?>-content" class="inline-edit-col">
 				<label>
-					<span class="title"><?php echo __( 'Order', 'default' ) ?></span>
+					<span class="title"><?php esc_html_e( 'Order', 'default' ) ?></span>
 					<span class="input-text-wrap"><input type="text" name="<?php echo $column_name ?>" class="ptitle" value=""></span>
 				</label>
 			</div>
@@ -252,6 +272,43 @@ class OrderedTerm {
 		return array_map( function ( $t ) { return $t[1]; }, $ts );
 	}
 
+
+	// Automatic Meta Field for Posts ------------------------------------------
+
+	public function _cb_save_post( $post_id ) {
+		$post_type = get_post_type( $post_id );
+		if ( ! in_array( $post_type, $this->_post_types_meta_key_added ) ) return;
+
+		foreach ( $this->_taxonomies as $tax ) {
+			$this->_update_order_post_meta( $post_id, $tax );
+		}
+	}
+
+	private function _update_post_meta( $term_id, $taxonomy ) {
+		$ps = get_posts( [
+			'post_type' => $this->_post_types_meta_key_added,
+			'tax_query' => [ [ 'taxonomy' => $taxonomy, 'terms' => $term_id, ] ],
+		] );
+		if ( empty( $ps ) ) return;
+
+		foreach ( $ps as $p ) {
+			$this->_update_order_post_meta( $p->ID, $taxonomy );
+		}
+	}
+
+	private function _update_order_post_meta( $post_id, $taxonomy ) {
+		$ts = wp_get_post_terms( $post_id, $taxonomy );
+		if ( is_wp_error( $ts ) || empty( $ts ) ) return;
+
+		$key = $this->get_order_post_meta_key( $taxonomy );
+		delete_post_meta( $post_id, $key );
+
+		foreach ( $ts as $t ) {
+			$order = $this->get_order( $t );
+			add_post_meta( $post_id, $key, $order );
+		}
+	}
+
 }
 
 
@@ -267,6 +324,14 @@ function make_terms_ordered( $taxonomies ) {
 
 function get_order( $term ) {
 	return \st\OrderedTerm::get_instance()->get_order( $term );
+}
+
+function add_order_post_meta_to_post( $post_type_s ) {
+	\st\OrderedTerm::get_instance()->add_order_post_meta_to_post( $post_type_s );
+}
+
+function get_order_post_meta_key( $taxonomy ) {
+	return \st\OrderedTerm::get_instance()->get_order_post_meta_key( $taxonomy );
 }
 
 function insert_terms( $slugs_to_labels, $taxonomy, $args ) {
