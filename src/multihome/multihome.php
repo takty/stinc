@@ -57,7 +57,6 @@ class Multihome {
 			$wp->add_query_var( self::ADMIN_QUERY_VAR );
 
 			add_action( 'admin_menu',     [ $this, '_cb_admin_menu' ] );
-			add_action( 'admin_bar_menu', [ $this, '_cb_admin_bar_menu' ] );
 			add_action( 'admin_init',     [ $this, '_cb_admin_init_add_site_names' ] );
 		} else {
 			add_filter( 'body_class',     [ $this, '_cb_body_class' ] );
@@ -74,6 +73,9 @@ class Multihome {
 			add_filter( 'day_link',               [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'search_link',            [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'feed_link',              [ $this, '_cb_insert_lang_to_url' ] );
+		}
+		if ( is_admin_bar_showing() ) {
+			add_action( 'admin_bar_menu', [ $this, '_cb_admin_bar_menu' ] );
 		}
 	}
 
