@@ -153,7 +153,7 @@ function _add_time_stamp_as_param( $src ) {
 
 	$removed_src = strtok( $src, '?' );
 	$path = wp_normalize_path( ABSPATH );
-	$resource_file = str_replace( rtrim( site_url(), '/' ) . '/', rtrim( $path, '/' ) . '/', $removed_src );
+	$resource_file = str_replace(  trailingslashit( site_url() ), trailingslashit( $path ), $removed_src );
 	$resource_file = realpath( $resource_file );
 	$src = add_query_arg( 'fver', date( 'Ymdhis', filemtime( $resource_file ) ), $src );
 	return $src;
