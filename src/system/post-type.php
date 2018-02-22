@@ -129,9 +129,9 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' 
 
 		if ( class_exists( '\st\Multilang' ) ) {
 			$ml = \st\Multilang::get_instance();
-			$blog_url = rtrim( $ml->home_url(), '/' );
+			$blog_url = untrailingslashit( $ml->home_url() );
 		} else {
-			$blog_url = rtrim( home_url(), '/' );
+			$blog_url = untrailingslashit( home_url() );
 		}
 		$blog_url = preg_replace( '/https?:\/\//', '', $blog_url );
 		$ret_link = str_replace( $blog_url, $blog_url . '/%link_dir%', $url );

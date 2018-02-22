@@ -77,7 +77,7 @@ class SlideShow {
 	}
 
 	public function enqueue_script( $url_to ) {
-		$url_to = rtrim( $url_to, '/' );
+		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
 			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'jquery-ui-sortable' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/slide-show.min.css' );
