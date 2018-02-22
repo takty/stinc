@@ -77,11 +77,12 @@ class SlideShow {
 	}
 
 	public function enqueue_script( $url_to ) {
+		$url_to = rtrim( $url_to, '/' );
 		if ( is_admin() ) {
 			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'jquery-ui-sortable' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/slide-show.min.css' );
 		} else {
-			wp_enqueue_script( self::NS, $url_to . '/../../../stomp/slide-show/slide-show.min.js', '', 1.0 );
+			wp_enqueue_script( self::NS, $url_to . '/../../stomp/slide-show/slide-show.min.js', '', 1.0 );
 		}
 	}
 
