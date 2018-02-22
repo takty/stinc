@@ -9,7 +9,7 @@
  */
 
 
-namespace st\singular_paging {
+namespace st\page_break {
 
 
 function initialize() {
