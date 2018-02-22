@@ -6,7 +6,10 @@ namespace st\editor_style;
  * Editor Styles (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
+ * @version 2018-02-22
+ *
+ * TinyMCE Advanced Setting:
+ * {"settings":{"toolbar_1":"formatselect,bold,italic,blockquote,bullist,numlist,alignleft,aligncenter,alignright,link,unlink","toolbar_2":"undo,redo,strikethrough,superscript,subscript,wp_page,table,styleselect","toolbar_3":"","toolbar_4":"","options":"menubar,advlist","plugins":"table,advlist"},"admin_settings":{"options":"no_autop","disabled_editors":""}}
  *
  */
 
