@@ -1,5 +1,6 @@
 var gulp       = require('gulp');
 var plumber    = require('gulp-plumber');
+var changed    = require('gulp-changed');
 var uglify     = require('gulp-uglify');
 var rename     = require('gulp-rename');
 var sourcemaps = require('gulp-sourcemaps');
@@ -47,12 +48,14 @@ gulp.task('css', function () {
 
 gulp.task('php', function() {
 	gulp.src('src/**/*.php')
+	.pipe(changed('dist'))
 	.pipe(plumber())
 	.pipe(gulp.dest('dist'));
 });
 
 gulp.task('img', function() {
 	gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], {base: 'src'})
+	.pipe(changed('dist'))
 	.pipe(plumber())
 	.pipe(gulp.dest('dist'));
 });
