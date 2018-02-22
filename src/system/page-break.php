@@ -14,7 +14,7 @@ namespace st\page_break {
 
 function initialize() {
 	remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
-	add_action( 'wp_head', '\st\singular_paging\adjacent_posts_rel_link_wp_head' );
+	add_action( 'wp_head', '\st\page_break\adjacent_posts_rel_link_wp_head' );
 }
 
 function adjacent_posts_rel_link_wp_head() {
