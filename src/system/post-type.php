@@ -6,7 +6,7 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-09
+ * @version 2018-02-22
  *
  */
 
@@ -21,19 +21,23 @@ function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date' ) {
 }
 
 function add_post_type_rewrite_rules( $post_type, $struct = '', $by_post_name = false ) {
-	global $wp_rewrite;
-
 	if ( empty( $struct ) ) $struct = $post_type;
-	$post_tag_id = "%{$post_type}_post_id%";
-	$single_id = "{$post_type}_single_id";
-	add_rewrite_tag( $post_tag_id, '([0-9]+)', "post_type=$post_type&p=" );
-	add_permastruct( $single_id, "/$struct/$post_tag_id", [ 'with_front' => false ] );
+
+	$tag_paging = '%paging%';
+	add_rewrite_tag( $tag_paging, '([0-9]+)', 'page=' );
 
 	if ( $by_post_name ) {
-		$post_tag_slug = "%{$post_type}_post_slug%";
-		$single_slug = "{$post_type}_single_slug";
-		add_rewrite_tag( $post_tag_slug, '(.?.+?)', "post_type=$post_type&name=" );
-		add_permastruct( $single_slug, "/$struct/$post_tag_slug", [ 'with_front' => false ] );
+		$tag_slug = "%{$post_type}_post_slug%";
+		$name_slug = "{$post_type}_single_slug";
+		add_rewrite_tag( $tag_slug, '(.?.+?)', "post_type=$post_type&name=" );
+		add_permastruct( $name_slug, "/$struct/$tag_slug", [ 'with_front' => false ] );
+		add_permastruct( "{$name_slug}_page", "/$struct/$tag_slug/$tag_paging", [ 'with_front' => false ] );
+	} else {
+		$tag_id = "%{$post_type}_post_id%";
+		$name_id = "{$post_type}_single_id";
+		add_rewrite_tag( $tag_id, '([0-9]+)', "post_type=$post_type&p=" );
+		add_permastruct( $name_id, "/$struct/$tag_id", [ 'with_front' => false ] );
+		add_permastruct( "{$name_id}_page", "/$struct/$tag_id/$tag_paging", [ 'with_front' => false ] );
 	}
 }
 
@@ -43,22 +47,20 @@ function add_post_type_link_filter( $post_type, $by_post_name = false ) {  // fo
 
 		$post = get_post( $id );
 		if ( is_wp_error( $post ) ) return $post;
+		if ( $post->post_type !== $post_type ) return $post_link;
 
-		if ( $post->post_type === $post_type ) {
-			if ( $by_post_name ) {
-				$post_tag_slug = "%{$post_type}_post_slug%";
-				$single_slug = "{$post_type}_single_slug";
-				$post_link = $wp_rewrite->get_extra_permastruct( $single_slug );
-				$post_link = str_replace( $post_tag_slug, $post->post_name, $post_link );
-			} else {
-				$post_tag_id = "%{$post_type}_post_id%";
-				$single_id = "{$post_type}_single_id";
-				$post_link = $wp_rewrite->get_extra_permastruct( $single_id );
-				$post_link = str_replace( $post_tag_id, $post->ID, $post_link );
-			}
-			return home_url( user_trailingslashit( $post_link ) );
+		if ( $by_post_name ) {
+			$tag_slug  = "%{$post_type}_post_slug%";
+			$name_slug = "{$post_type}_single_slug";
+			$ps        = $wp_rewrite->get_extra_permastruct( $name_slug );
+			$post_link = str_replace( $tag_slug, $post->post_name, $ps );
+		} else {
+			$tag_id    = "%{$post_type}_post_id%";
+			$name_id   = "{$post_type}_single_id";
+			$ps        = $wp_rewrite->get_extra_permastruct( $name_id );
+			$post_link = str_replace( $tag_id, $post->ID, $ps );
 		}
-		return $post_link;
+		return home_url( user_trailingslashit( $post_link ) );
 	}, 1, 2 );
 }
 
