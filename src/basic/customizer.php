@@ -149,9 +149,9 @@ function enable_to_add_time_stamp_to_src() {
 }
 
 function _add_time_stamp_as_param( $src ) {
-	if ( strpos( $src, site_url() ) === false ) return $src;
+	if ( strpos( $src, get_template_directory_uri() ) === false ) return $src;
 
-	$removed_src = preg_replace( '{\?.+$}i', '', $src );
+	$removed_src = strtok( $src, '?' );
 	$path = wp_normalize_path( ABSPATH );
 	$resource_file = str_replace( rtrim( site_url(), '/' ) . '/', rtrim( $path, '/' ) . '/', $removed_src );
 	$resource_file = realpath( $resource_file );
