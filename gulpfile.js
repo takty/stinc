@@ -9,7 +9,7 @@ var cleanCSS   = require('gulp-clean-css');
 var babel      = require('gulp-babel');
 
 gulp.task('js', function() {
-	gulp.src(['src/**/*.js', '!src/**/*.min.js'], {base: 'src'})
+	gulp.src(['src/**/*.js', '!src/**/*.min.js', '!src/_backup/**/*'], {base: 'src'})
 	.pipe(plumber())
 	.pipe(babel({presets: ['es2015']}))
 	.pipe(uglify())
@@ -22,7 +22,7 @@ gulp.task('js', function() {
 });
 
 gulp.task('sass', function () {
-	gulp.src('src/**/*.scss')
+	gulp.src(['src/**/*.scss', '!src/_backup/**/*'])
 	.pipe(plumber())
     .pipe(sourcemaps.init())
 	.pipe(sass())
@@ -33,7 +33,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('css', function () {
-	gulp.src(['src/**/*.css', '!src/**/*.min.css'], {base: 'src'})
+	gulp.src(['src/**/*.css', '!src/**/*.min.css', '!src/_backup/**/*'], {base: 'src'})
 	.pipe(plumber())
     .pipe(sourcemaps.init())
 	.pipe(cleanCSS())
@@ -47,14 +47,14 @@ gulp.task('css', function () {
 });
 
 gulp.task('php', function() {
-	gulp.src('src/**/*.php')
+	gulp.src(['src/**/*.php', '!src/_backup/**/*'])
 	.pipe(changed('dist'))
 	.pipe(plumber())
 	.pipe(gulp.dest('dist'));
 });
 
 gulp.task('img', function() {
-	gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], {base: 'src'})
+	gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg', '!src/_backup/**/*'], {base: 'src'})
 	.pipe(changed('dist'))
 	.pipe(plumber())
 	.pipe(gulp.dest('dist'));
