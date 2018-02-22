@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
+ * @version 2018-02-22
  *
  */
 
@@ -39,6 +39,7 @@ class SlideShow {
 	const CLS_DEL         = self::NS . '-delete';
 	const CLS_INFO        = self::NS . '-info';
 	const CLS_URL         = self::NS . '-url';
+	const CLS_URL_OPENER  = self::NS . '-url-opener';
 	const CLS_SEL_URL     = self::NS . '-select-url';
 	const CLS_SEL_IMG     = self::NS . '-select-img';
 	const CLS_SEL_IMG_SUB = self::NS . '-select-img-sub';
@@ -274,9 +275,9 @@ class SlideShow {
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
-					<div><?php _e( 'Caption', 'default' ) ?>:</div>
+					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
 					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo esc_attr( $caption ) ?>" /></div>
-					<div><a href="<?php echo esc_url( $url ) ?>" target="_blank">URL</a>:</div>
+					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
 					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo esc_attr( $url ) ?>" />
 					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php echo __( 'Select', 'default' ) ?></a></div>
 				</div>

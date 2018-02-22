@@ -3,7 +3,7 @@
  * Slide Show Admin (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-02
+ * @version 2018-02-22
  *
  */
 
@@ -20,6 +20,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	var CLS_ADD         = NS + '-add';
 	var CLS_DEL         = NS + '-delete';
 	var CLS_URL         = NS + '-url';
+	var CLS_URL_OPENER  = NS + '-url-opener';
 	var CLS_SEL_URL     = NS + '-select-url';
 	var CLS_SEL_IMG     = NS + '-select-img';
 	var CLS_SEL_IMG_SUB = NS + '-select-img-sub';
@@ -75,13 +76,14 @@ function st_slide_show_initialize_admin(key, is_dual) {
 
 	function reorder_item_ids() {
 		for (var i = 0; i < items.length; i += 1) {
-			var media     = items[i].getElementsByClassName(CLS_MEDIA)[0];
-			var caption   = items[i].getElementsByClassName(CLS_CAP)[0];
-			var url       = items[i].getElementsByClassName(CLS_URL)[0];
-			var del       = items[i].getElementsByClassName(CLS_DEL)[0];
-			var thumbnail = items[i].getElementsByClassName(CLS_TN_IMG)[0];
-			var sel_url   = items[i].getElementsByClassName(CLS_SEL_URL)[0];
-			var sel_img   = items[i].getElementsByClassName(CLS_SEL_IMG)[0];
+			var media      = items[i].getElementsByClassName(CLS_MEDIA)[0];
+			var caption    = items[i].getElementsByClassName(CLS_CAP)[0];
+			var url        = items[i].getElementsByClassName(CLS_URL)[0];
+			var url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
+			var del        = items[i].getElementsByClassName(CLS_DEL)[0];
+			var thumbnail  = items[i].getElementsByClassName(CLS_TN_IMG)[0];
+			var sel_url    = items[i].getElementsByClassName(CLS_SEL_URL)[0];
+			var sel_img    = items[i].getElementsByClassName(CLS_SEL_IMG)[0];
 
 			var idi = id + '_' + i;
 			items[i].id                 = idi;
@@ -91,8 +93,9 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			del.id       = del.name     = idi + '_delete';
 			thumbnail.id                = idi + '_thumbnail';
 
-			sel_url.setAttribute('data-id', i);
-			sel_img.setAttribute('data-id', i);
+			sel_url.setAttribute('data-idi', idi);
+			sel_img.setAttribute('data-idi', idi);
+			url_opener.setAttribute('data-idi', idi);
 
 			if (is_dual) {
 				var media_sub     = items[i].getElementsByClassName(CLS_MEDIA_SUB)[0];
@@ -102,7 +105,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 				media_sub.id     = media_sub.name = idi + '_media_sub';
 				thumbnail_sub.id                  = idi + '_thumbnail_sub';
 
-				sel_img_sub.setAttribute('data-id', i);
+				sel_img_sub.setAttribute('data-idi', idi);
 			}
 		}
 		count.value = items.length;
@@ -123,6 +126,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		var del = item.getElementsByClassName(CLS_DEL)[0];
 		var sel_url = item.getElementsByClassName(CLS_SEL_URL)[0];
 		var sel_img = item.getElementsByClassName(CLS_SEL_IMG)[0];
+		var url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
 
 		del.addEventListener('click', function (e) {
 			if (e.target.checked) {
@@ -133,7 +137,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		});
 		sel_url.addEventListener('click', function (e) {
 			e.preventDefault();
-			var idi = id + '_' + e.target.getAttribute('data-id');
+			var idi = e.target.getAttribute('data-idi');
 			open_link_picker(function (title, url) {
 				document.getElementById(idi + '_url').value = url;
 			});
@@ -141,7 +145,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		var p = null;
 		sel_img.addEventListener('click', function (e) {
 			e.preventDefault();
-			var idi = id + '_' + e.target.getAttribute('data-id');
+			var idi = e.target.getAttribute('data-idi');
 			if (!p) {
 				p = create_media(false);
 				p.on('select', function () {
@@ -153,12 +157,19 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			}
 			p.open();
 		});
+		url_opener.addEventListener('click', function (e) {
+			e.preventDefault();
+			var idi = e.target.getAttribute('data-idi');
+			var url_input = document.getElementById(idi + '_url');
+			var url = url_input.value;
+			if (url) window.open(url);
+		});
 		if (is_dual) {
 			var sel_img_sub = item.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
 			var p_sub = null;
 			sel_img_sub.addEventListener('click', function (e) {
 				e.preventDefault();
-				var idi = id + '_' + e.target.getAttribute('data-id');
+				var idi = e.target.getAttribute('data-idi');
 				if (!p_sub) {
 					p_sub = create_media(false);
 					p_sub.on('select', function () {
