@@ -6,7 +6,7 @@ namespace st\basic;
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-17
+ * @version 2018-02-22
  *
  */
 
@@ -95,7 +95,7 @@ function ensure_admin_side_bar_menu_area() {
 
 function enable_to_upload_svg() {
 	add_filter( 'ext2type', function ( $ext2types ) {
-		array_push( $ext2types, array( 'image' => array( 'svg', 'svgz' ) ) );
+		array_push( $ext2types, [ 'image' => [ 'svg', 'svgz' ] ] );
 		return $ext2types;
 	} );
 
@@ -141,6 +141,22 @@ function enable_default_image_sizes() {
 		}
 		return $ns;
 	} );
+}
+
+function enable_to_add_time_stamp_to_src() {
+	add_filter( 'style_loader_src', '\st\basic\_add_time_stamp_as_param' );
+	add_filter( 'script_loader_src', '\st\basic\_add_time_stamp_as_param' );
+}
+
+function _add_time_stamp_as_param( $src ) {
+	if ( strpos( $src, site_url() ) === false ) return $src;
+
+	$removed_src = preg_replace( '{\?.+$}i', '', $src );
+	$path = wp_normalize_path( ABSPATH );
+	$resource_file = str_replace( rtrim( site_url(), '/' ) . '/', rtrim( $path, '/' ) . '/', $removed_src );
+	$resource_file = realpath( $resource_file );
+	$src = add_query_arg( 'fver', date( 'Ymdhis', filemtime( $resource_file ) ), $src );
+	return $src;
 }
 
 
