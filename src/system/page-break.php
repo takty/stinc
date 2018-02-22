@@ -15,6 +15,10 @@ namespace st\page_break {
 function initialize() {
 	remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
 	add_action( 'wp_head', '\st\page_break\adjacent_posts_rel_link_wp_head' );
+	add_filter( 'content_pagination', function ( $pages ) {
+		foreach ( $pages as &$page ) $page = force_balance_tags( $page );
+		return $pages;
+	} );
 }
 
 function adjacent_posts_rel_link_wp_head() {
@@ -105,7 +109,7 @@ function get_the_page_break_navigation() {
 	$output = '<nav class="navigation page-break-navigation"><div class="nav-links">';
 	for ( $i = 1; $i <= $numpages; $i += 1 ) {
 		if ( $i !== $page ) {
-			$_url = esc_url( \st\singular_paging\get_page_break_url( $i, $post ) );
+			$_url = esc_url( \st\page_break\get_page_break_url( $i, $post ) );
 			$output .= "<a class=\"nav-page-break-link\" href=\"$_url\">$i</a>";
 		} else {
 			$output .= "<span class=\"nav-page-break-current\">$i</span>";
