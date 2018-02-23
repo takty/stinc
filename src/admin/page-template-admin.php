@@ -6,7 +6,7 @@ namespace st\page_template_admin;
  * Page Template Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-06
+ * @version 2018-02-23
  *
  */
 
@@ -56,7 +56,7 @@ function is_post_type( $post_type ) {
 
 function is_front_page( $post_id ) {
 	$pof = get_option( 'page_on_front' );
-	if ( 'page' == get_option( 'show_on_front') && $pof && $post_id === intval( $pof ) ) {
+	if ( 'page' === get_option( 'show_on_front') && $pof && $post_id === intval( $pof ) ) {
 		return true;
 	}
 	return false;

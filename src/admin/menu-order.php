@@ -6,7 +6,7 @@ namespace st\menu_order;
  * Menu Order (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-09-20
+ * @version 2018-02-23
  *
  */
 
@@ -19,7 +19,7 @@ function initialize() {
 }
 
 function _check_post_type_support_page_attr() {
-	$all_post_types = get_post_types( array('show_ui' => true ), false );
+	$all_post_types = get_post_types( [ 'show_ui' => true ], false );
 
 	if ( !isset( $_REQUEST['post_type'] ) ) {
 		$edit_post_type = 'post';
@@ -32,9 +32,9 @@ function _check_post_type_support_page_attr() {
 	if ( ! post_type_supports( $edit_post_type, 'page-attributes' ) ) return;
 
 	add_filter( 'manage_'.$edit_post_type.'_posts_columns', function ( $posts_columns ) {
-		$new_columns = array();
+		$new_columns = [];
 		foreach ( $posts_columns as $column_name => $column_display_name ) {
-			if ( $column_name == 'date' ) {
+			if ( $column_name === 'date' ) {
 				$new_columns['order'] = __( 'Order' );
 				add_action( 'manage_pages_custom_column', '\st\menu_order\_display_menu_order_column', 10, 2 );
 				add_action( 'manage_posts_custom_column', '\st\menu_order\_display_menu_order_column', 10, 2 );
@@ -60,7 +60,7 @@ function _check_post_type_support_page_attr() {
 }
 
 function _display_menu_order_column( $column_name, $post_id ) {
-	if ( $column_name == 'order' ) {
+	if ( $column_name === 'order' ) {
 		$post_id = (int) $post_id;
 		$post = get_post( $post_id );
 		echo $post->menu_order;

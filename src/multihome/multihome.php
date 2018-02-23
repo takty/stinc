@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-21
+ * @version 2018-02-23
  *
  */
 
@@ -226,7 +226,7 @@ class Multihome {
 		if ( ! empty( $pathinfo ) && ! preg_match( '|^.*' . $wp_rewrite->index . '$|', $pathinfo ) ) {
 			$requested_path = $pathinfo;
 		} else {
-			if ( $req_uri == $wp_rewrite->index ) $req_uri = '';
+			if ( $req_uri === $wp_rewrite->index ) $req_uri = '';
 			$requested_path = $req_uri;
 		}
 		$requested_file = $req_uri;
@@ -309,12 +309,12 @@ class Multihome {
 	public function get_bloginfo( $show, $filter = 'raw', $lang = false, $home = false ) {
 		if ( $show === 'name' ) {
 			$output = $this->get_site_name( $lang, $home );
-			if ( 'display' == $filter ) return apply_filters( 'bloginfo', $output, $show );
+			if ( 'display' === $filter ) return apply_filters( 'bloginfo', $output, $show );
 			return $output;
 		}
 		if ( $show === 'description' ) {
 			$output = $this->get_site_description( $lang, $home );
-			if ( 'display' == $filter ) return apply_filters( 'bloginfo', $output, $show );
+			if ( 'display' === $filter ) return apply_filters( 'bloginfo', $output, $show );
 			return $output;
 		}
 		return get_bloginfo( $show, $filter );

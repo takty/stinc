@@ -6,7 +6,7 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-22
+ * @version 2018-02-23
  *
  */
 
@@ -141,11 +141,11 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' 
 		$url = str_replace( '%link_dir%', $link_dir, $ret_link );
 		$url = remove_query_arg( 'post_type', $url );
 
-		if ('link' == $format) {
+		if ('link' === $format) {
 			$link_html = "\t<link rel='archives' title='" . esc_attr( $text ) . "' href='$url' />\n";
-		} elseif ('option' == $format) {
+		} elseif ('option' === $format) {
 			$link_html = "\t<option value='$url'>$before $text $after</option>\n";
-		} elseif ('html' == $format) {
+		} elseif ('html' === $format) {
 			$link_html = "\t<li>$before<a href='$url'>$text</a>$after</li>\n";
 		} else {  // custom
 			$link_html = "\t$before<a href='$url'>$text</a>$after\n";
@@ -288,7 +288,7 @@ function get_custom_archives( $meta_key, $args = '' ) {
 	}
 	$r['post_type'] = $post_type_object->name;
 
-	if ( '' == $r['type'] ) {
+	if ( '' === $r['type'] ) {
 		$r['type'] = 'monthly';
 	}
 
@@ -316,7 +316,7 @@ function get_custom_archives( $meta_key, $args = '' ) {
 
 	$limit = $r['limit'];
 
-	if ( 'monthly' == $r['type'] ) {
+	if ( 'monthly' === $r['type'] ) {
 		$query = "SELECT YEAR(meta_value) AS `year`, MONTH(meta_value) AS `month`, count(ID) as posts FROM $wpdb->posts $join $where GROUP BY YEAR(meta_value), MONTH(meta_value) ORDER BY meta_value $order $limit";
 		$key = md5( $query );
 		$key = "wp_get_archives:$key:$last_changed";
@@ -339,7 +339,7 @@ function get_custom_archives( $meta_key, $args = '' ) {
 				$output .= get_archives_link( $url, $text, $r['format'], $r['before'], $r['after'] );
 			}
 		}
-	} elseif ( 'yearly' == $r['type'] ) {
+	} elseif ( 'yearly' === $r['type'] ) {
 		$query = "SELECT YEAR(meta_value) AS `year`, count(ID) as posts FROM $wpdb->posts $join $where GROUP BY YEAR(meta_value) ORDER BY meta_value $order $limit";
 		$key = md5( $query );
 		$key = "wp_get_archives:$key:$last_changed";
