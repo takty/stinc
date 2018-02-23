@@ -6,7 +6,7 @@ namespace st;
  * Functions and Definitions for Bimeson
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-06
+ * @version 2018-02-23
  *
  */
 
@@ -146,7 +146,7 @@ class Bimeson {
 			if ( class_exists( '\st\Multilang' ) ) {
 				$ml = \st\Multilang::get_instance();
 				$al = $ml->get_site_lang();
-				if ( ! in_array( $al, $this->_additional_langs ) ) $al = '';
+				if ( ! in_array( $al, $this->_additional_langs, true ) ) $al = '';
 				$tq[] = $ml->get_tax_query();
 			}
 
@@ -262,7 +262,7 @@ class Bimeson {
 		$slug_to_terms = [];
 		$rss = $this->_tax->get_root_slugs();
 		foreach ( $rss as $rs ) {
-			if ( $slugs[0] === 'all' || in_array( $rs, $slugs ) ) {
+			if ( $slugs[0] === 'all' || in_array( $rs, $slugs, true ) ) {
 				$sub_tax = $this->_tax->term_to_taxonomy( $rs );
 				$terms = get_terms( $sub_tax, [ 'hide_empty' => 0 ] );
 				$slug_to_terms[ $rs ] = $terms;

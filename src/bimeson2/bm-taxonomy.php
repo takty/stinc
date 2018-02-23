@@ -6,7 +6,7 @@ namespace st;
  * Bimeson (Taxonomy)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-02
+ * @version 2018-02-23
  *
  */
 
@@ -125,7 +125,7 @@ class Bimeson_Taxonomy {
 			}
 	?>
 					<label>
-						<input type="checkbox" id="<?php echo $_id ?>" <?php if ( in_array( $t->slug, $qvals ) ) echo 'checked' ?> data-val="<?php echo $_val ?>"></input>
+						<input type="checkbox" id="<?php echo $_id ?>" <?php if ( in_array( $t->slug, $qvals, true ) ) echo 'checked' ?> data-val="<?php echo $_val ?>"></input>
 						<?php echo $_name ?>
 					</label>
 	<?php

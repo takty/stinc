@@ -4,7 +4,7 @@
  * Page Break
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-22
+ * @version 2018-02-23
  *
  */
 
@@ -74,7 +74,7 @@ function get_page_break_url( $i, $post ) {
 
 	$url = get_permalink( $post );
 	if ( $i === 1 ) {
-	} else if ( empty( get_option( 'permalink_structure' ) ) || ( $post && in_array( $post->post_status, [ 'draft', 'pending' ] ) ) ) {
+	} else if ( empty( get_option( 'permalink_structure' ) ) || ( $post && in_array( $post->post_status, [ 'draft', 'pending' ], true ) ) ) {
 		$url = add_query_arg( 'page', $i, $url );
 	} else if ( 'page' === get_option( 'show_on_front' ) && get_option( 'page_on_front' ) === $post->ID ) {
 		$url = trailingslashit( $url ) . user_trailingslashit( "$wp_rewrite->pagination_base/" . $i, 'single_paged' );

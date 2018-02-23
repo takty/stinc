@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-03
+ * @version 2018-02-23
  *
  */
 
@@ -22,12 +22,9 @@ class Multihome_Tag {
 	private $_taxonomies = [];
 	private $_suppress_get_terms_filter = false;
 
-	// public function __construct( $core, $home_to_names, $taxonomy_name, $taxonomy = self::DEFAULT_TAXONOMY ) {
 	public function __construct( $core, $taxonomy = self::DEFAULT_TAXONOMY ) {
 		$this->_core = $core;
 		$this->_taxonomy = $taxonomy;
-		// \st\taxonomy\register_without_post_type( $taxonomy, $taxonomy_name );
-		// \st\taxonomy\set_terms( $taxonomy, $home_to_names );
 
 		add_filter( 'get_next_post_join',      [ $this, '_cb_get_adjacent_post_join' ], 10, 5 );
 		add_filter( 'get_previous_post_join',  [ $this, '_cb_get_adjacent_post_join' ], 10, 5 );
@@ -72,7 +69,7 @@ class Multihome_Tag {
 	}
 
 	public function _cb_get_adjacent_post_join( $join, $in_same_term, $excluded_terms, $taxonomy, $post ) {  // Private
-		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types ) ) return $join;
+		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types, true ) ) return $join;
 
 		global $wpdb;
 		$join .= " LEFT JOIN $wpdb->term_relationships AS tr_mh ON (p.ID = tr_mh.object_id)";
@@ -81,7 +78,7 @@ class Multihome_Tag {
 	}
 
 	public function _cb_get_adjacent_post_where( $where, $in_same_term, $excluded_terms, $taxonomy, $post ) {  // Private
-		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types ) ) return $where;
+		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types, true ) ) return $where;
 
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND tt_mh.taxonomy = %s", $this->_taxonomy );
@@ -93,7 +90,7 @@ class Multihome_Tag {
 		if ( is_admin() || ! $query->is_main_query() ) return $join;
 
 		global $wpdb;
-		if ( in_array( $query->query_vars['post_type'], $this->_post_types ) ) {
+		if ( in_array( $query->query_vars['post_type'], $this->_post_types, true ) ) {
 			$join .= " LEFT JOIN $wpdb->term_relationships AS tr_mh ON ($wpdb->posts.ID = tr_mh.object_id)";
 			$join .= " LEFT JOIN $wpdb->term_taxonomy AS tt_mh ON (tr_mh.term_taxonomy_id = tt_mh.term_taxonomy_id)";
 		} else if ( is_search() ) {
@@ -107,7 +104,7 @@ class Multihome_Tag {
 		if ( is_admin() || ! $query->is_main_query() ) return $where;
 
 		global $wpdb;
-		if ( in_array( $query->query_vars['post_type'], $this->_post_types ) ) {
+		if ( in_array( $query->query_vars['post_type'], $this->_post_types, true ) ) {
 			$where .= $wpdb->prepare( " AND tt_mh.taxonomy = %s", $this->_taxonomy );
 			$where .= $wpdb->prepare( " AND tt_mh.term_id = %d", $this->_get_tag_id() );
 		} else if ( is_search() ) {
@@ -119,7 +116,7 @@ class Multihome_Tag {
 
 	public function _cb_getarchives_join( $join, $r ) {  // Private
 		if ( is_admin() || ! is_main_query() ) return $join;
-		if ( ! in_array( $r['post_type'], $this->_post_types ) ) return $join;
+		if ( ! in_array( $r['post_type'], $this->_post_types, true ) ) return $join;
 
 		global $wpdb;
 		$join .= " LEFT JOIN $wpdb->term_relationships AS tr_mh ON ($wpdb->posts.ID = tr_mh.object_id)";
@@ -129,7 +126,7 @@ class Multihome_Tag {
 
 	public function _cb_getarchives_where( $where, $r ) {  // Private
 		if ( is_admin() || ! is_main_query() ) return $where;
-		if ( ! in_array( $r['post_type'], $this->_post_types ) ) return $where;
+		if ( ! in_array( $r['post_type'], $this->_post_types, true ) ) return $where;
 
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND tt_mh.taxonomy = %s", $this->_taxonomy );
@@ -145,7 +142,7 @@ class Multihome_Tag {
 			$tid = $this->_get_tag_id();
 			$ret = [];
 			foreach ( $terms as $term ) {
-				if ( in_array( $term->taxonomy, $this->_taxonomies ) ) {
+				if ( in_array( $term->taxonomy, $this->_taxonomies, true ) ) {
 					$ps = get_posts( [
 						'post_type' => $this->_post_types,
 						'tax_query' => [

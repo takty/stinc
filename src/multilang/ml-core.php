@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-09
+ * @version 2018-02-23
  *
  */
 
@@ -43,7 +43,7 @@ class Multilang_Core {
 		global $wp_rewrite;
 		$embeddedNames = [ 'category', 'post_tag', 'post_format' ];
 		foreach ( $wp_rewrite->extra_permastructs as $permastructname => $struct ) {
-			if ( in_array( $permastructname, $embeddedNames ) === false ) {
+			if ( in_array( $permastructname, $embeddedNames, true ) === false ) {
 				add_filter( "{$permastructname}_rewrite_rules", [ $this, '_add_lang_rewrite_rules' ] );
 			}
 		}
@@ -178,7 +178,7 @@ class Multilang_Core {
 		if ( ! isset( $query_vars['pagename'] ) ) {
 			if ( isset( $query_vars[ $this->_query_var ] ) ) {
 				$lang = $query_vars[ $this->_query_var ];
-				if ( ! in_array( $lang, $this->_site_langs ) ) {
+				if ( ! in_array( $lang, $this->_site_langs, true ) ) {
 					$query_vars[ $this->_query_var ] = $this->_default_site_lang;
 				}
 			}
@@ -191,7 +191,7 @@ class Multilang_Core {
 		} else if (1 === preg_match( '/^([a-z]{2})\//', $pn, $matches ) ) {
 			$lang = $matches[1];
 		}
-		if ( in_array( $lang, $this->_site_langs ) ) $query_vars[ $this->_query_var ] = $lang;
+		if ( in_array( $lang, $this->_site_langs, true ) ) $query_vars[ $this->_query_var ] = $lang;
 		if ( ! isset( $query_vars[ $this->_query_var ] ) ) {
 			$pn = $this->_default_site_lang . '/' . $pn;
 			if ( get_page_by_path( $pn ) !== null ) $query_vars['pagename'] = $pn;
@@ -208,7 +208,7 @@ class Multilang_Core {
 		} else if (1 === preg_match( '/^([a-z]{2})\//', $pn, $matches ) ) {
 			$lang = $matches[1];
 		}
-		if ( in_array( $lang, $this->_site_langs ) ) return $url;
+		if ( in_array( $lang, $this->_site_langs, true ) ) return $url;
 		$url = str_replace( trailingslashit( $home ), trailingslashit( $home ) . $this->_default_site_lang . '/', $url );
 		return $url;
 	}

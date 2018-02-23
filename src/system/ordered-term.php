@@ -4,7 +4,7 @@
  * Ordered Term (Adding Order Field (Term-Meta) to Taxonomies)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-21
+ * @version 2018-02-23
  *
  */
 
@@ -91,7 +91,7 @@ class OrderedTerm {
 			'orders'       => false,
 			'meta'         => false,
 			'force_update' => false,
-			'_is_ordered'  => in_array( $taxonomy, $this->_taxonomies ),
+			'_is_ordered'  => in_array( $taxonomy, $this->_taxonomies, true ),
 		], $args );
 		$this->_set_terms( $taxonomy, $slugs_to_labels, $args, $args['parent'] );
 	}
@@ -190,7 +190,7 @@ class OrderedTerm {
 
 	public function _cb_admin_head() {
 		global $pagenow;
-		if ( $pagenow !== 'edit-tags.php' || ! isset( $_GET['taxonomy'] ) || ! in_array( $_GET['taxonomy'], $this->_taxonomies ) ) return;
+		if ( $pagenow !== 'edit-tags.php' || ! isset( $_GET['taxonomy'] ) || ! in_array( $_GET['taxonomy'], $this->_taxonomies, true ) ) return;
 		?><style>
 		#<?php echo $this->_key_order ?> {width: 4rem;}
 		.column-<?php echo $this->_key_order ?> {text-align: right;}
@@ -218,7 +218,7 @@ class OrderedTerm {
 	// Quick Edit Function -----------------------------------------------------
 
 	public function _cb_quick_edit_custom_box( $column_name, $screen, $name ) {
-		if ( ( $column_name !== $this->_key_order ) || ! in_array( $name, $this->_taxonomies ) ) return false;
+		if ( ( $column_name !== $this->_key_order ) || ! in_array( $name, $this->_taxonomies, true ) ) return false;
 
 		static $print_nonce = true;
 		if ( $print_nonce ) {
@@ -241,7 +241,7 @@ class OrderedTerm {
 	// Actually Sort Terms -----------------------------------------------------
 
 	public function _cb_terms_clauses( $clauses, $taxes = [], $args = [] ) {
-		if ( count( $taxes ) > 1 || ! in_array( $taxes[0], $this->_taxonomies ) ) return $clauses;
+		if ( count( $taxes ) > 1 || ! in_array( $taxes[0], $this->_taxonomies, true ) ) return $clauses;
 		global $wpdb;
 
 		$orderby = isset( $args['orderby'] ) ? $args['orderby'] : '';
@@ -257,7 +257,7 @@ class OrderedTerm {
 	}
 
 	public function _cb_get_the_terms( $terms, $post_id, $taxonomy ) {
-		if ( ! in_array( $taxonomy, $this->_taxonomies ) ) return $terms;
+		if ( ! in_array( $taxonomy, $this->_taxonomies, true ) ) return $terms;
 		$ts = [];
 		foreach ( $terms as $t ) {
 			$idx = intval( get_term_meta( $t->term_id, $this->_key_order, true ) );
@@ -277,7 +277,7 @@ class OrderedTerm {
 
 	public function _cb_save_post( $post_id ) {
 		$post_type = get_post_type( $post_id );
-		if ( ! in_array( $post_type, $this->_post_types_meta_key_added ) ) return;
+		if ( ! in_array( $post_type, $this->_post_types_meta_key_added, true ) ) return;
 
 		foreach ( $this->_taxonomies as $tax ) {
 			$this->_update_order_post_meta( $post_id, $tax );

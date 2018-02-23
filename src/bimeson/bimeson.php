@@ -6,7 +6,7 @@ namespace st;
  * Functions and Definitions for Bimeson
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-29
+ * @version 2018-02-23
  *
  */
 
@@ -208,7 +208,7 @@ class Bimeson {
 		$cs = [];
 		$tax = $this->_tax->get_taxonomy();
 		foreach ( $item as $key => $val ) {
-			if ( in_array( $key, self::$_embed_keys ) ) continue;
+			if ( in_array( $key, self::$_embed_keys, true ) ) continue;
 			foreach ( $val as $v ) $cs[] = "$tax-$v";
 		}
 		$cls = esc_attr( implode(' ', $cs) );

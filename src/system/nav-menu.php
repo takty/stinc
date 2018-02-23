@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-12
+ * @version 2018-02-23
  *
  * require tag/url.php
  *
@@ -101,9 +101,9 @@ class NavMenu {
 			$id = $mi->ID;
 			if ( empty( $this->_pid_to_menu[ $id ] ) ) continue;
 			$a = $this->_id_to_attr[ $id ];
-			if ( in_array( self::CLS_OPENED, $a ) ) return $id;
-			if ( in_array( self::CLS_CURRENT, $a ) ) return $id;
-			if ( in_array( self::CLS_ANCESTOR, $a ) ) return $id;
+			if ( in_array( self::CLS_OPENED, $a, true ) ) return $id;
+			if ( in_array( self::CLS_CURRENT, $a, true ) ) return $id;
+			if ( in_array( self::CLS_ANCESTOR, $a, true ) ) return $id;
 		}
 		return false;
 	}
@@ -142,7 +142,7 @@ class NavMenu {
 			echo "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label></li>";
 			return;
 		}
-		if ( $this->_expanded_page_ids === false || ! in_array( $obj_id, $this->_expanded_page_ids ) ) {
+		if ( $this->_expanded_page_ids === false || ! in_array( $obj_id, $this->_expanded_page_ids, true ) ) {
 			$href = esc_url( $mi->url );
 		} else {
 			$href = esc_url( "#post-$obj_id" );
@@ -211,7 +211,7 @@ class NavMenu {
 	private function _is_ancestor_page( $mi ) {
 		if ( ! $this->_is_page ) return false;
 		global $post;
-		if ( $post->ancestors && in_array( $mi->object_id, $post->ancestors ) ) {
+		if ( $post->ancestors && in_array( $mi->object_id, $post->ancestors, true ) ) {
 			return true;
 		}
 		return false;

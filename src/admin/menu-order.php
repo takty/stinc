@@ -23,7 +23,7 @@ function _check_post_type_support_page_attr() {
 
 	if ( !isset( $_REQUEST['post_type'] ) ) {
 		$edit_post_type = 'post';
-	} elseif ( in_array( $_REQUEST['post_type'], array_keys( $all_post_types ) ) ) {
+	} elseif ( in_array( $_REQUEST['post_type'], array_keys( $all_post_types ), true ) ) {
 		$edit_post_type = $_REQUEST['post_type'];
 	} else {
 		wp_die( __('Invalid post type') );

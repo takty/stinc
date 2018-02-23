@@ -4,7 +4,7 @@
  * IP Restriction (IPv4)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-15
+ * @version 2018-02-23
  *
  */
 
@@ -51,7 +51,7 @@ class IpRestriction {
 	public function add_post_type( $post_type_s ) {
 		if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
 		foreach ( $post_type_s as $ps ) {
-			if ( ! in_array( $ps, $this->_post_types ) ) {
+			if ( ! in_array( $ps, $this->_post_types, true ) ) {
 				$this->_post_types[] = $ps;
 			}
 		}
@@ -94,7 +94,7 @@ class IpRestriction {
 			$filter = false;
 			if ( ! is_array( $pts ) ) $pts = [ $pts ];
 			foreach ( $pts as $pt ) {
-				if ( in_array( $pt, $this->_post_types ) ) {
+				if ( in_array( $pt, $this->_post_types, true ) ) {
 					$filter = true;
 					break;
 				}
@@ -120,7 +120,7 @@ class IpRestriction {
 	}
 
 	public function _cb_post_submitbox_misc_actions( $post ) {
-		if ( ! in_array( $post->post_type, $this->_post_types ) ) return;
+		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) return;
 
 		wp_nonce_field( self::PMK_IP_RESTRICTION, self::PMK_IP_RESTRICTION . '_nonce' );
 		$is_restricted = get_post_meta( $post->ID, self::PMK_IP_RESTRICTION, true );
@@ -135,7 +135,7 @@ class IpRestriction {
 	}
 
 	public function _cb_save_post( $post_id, $post ) {
-		if ( ! in_array( $post->post_type, $this->_post_types ) ) return;
+		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) return;
 
 		if ( ! isset( $_POST[ self::PMK_IP_RESTRICTION . '_nonce' ] ) ) return;
 		if ( ! wp_verify_nonce( $_POST[ self::PMK_IP_RESTRICTION . '_nonce' ], self::PMK_IP_RESTRICTION ) ) return;

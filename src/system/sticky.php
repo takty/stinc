@@ -6,14 +6,14 @@ namespace st\sticky;
  * Sticky for Custom Post Types
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-04-12
+ * @version 2018-02-23
  *
  */
 
 
 function make_custom_post_type_sticky( $post_types, $key_prefix = '_' ) {
 	add_action( 'post_submitbox_misc_actions', function ( $post ) use ( $post_types, $key_prefix ) {
-		if ( ! in_array( $post->post_type, $post_types ) ) return;
+		if ( ! in_array( $post->post_type, $post_types, true ) ) return;
 		wp_nonce_field( "{$key_prefix}sticky", "{$key_prefix}sticky_nonce" );
 		$sticky = get_post_meta( get_the_ID(), "{$key_prefix}sticky", true );
 ?>

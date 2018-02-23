@@ -141,7 +141,7 @@ class Multihome {
 
 	public function _cb_insert_lang_to_url( $link ) {  // Private
 		$fs = \st\get_first_slug( $link );
-		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes() ) ) {
+		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes(), true ) ) {
 			$link = str_replace( "$fs/", '', $link );
 		}
 		$lang = $this->get_site_home();
@@ -159,9 +159,9 @@ class Multihome {
 		$homes = $this->get_site_homes();
 
 		$home_slug = '';
-		if ( 1 < count( $ps ) && in_array( $ps[0], $langs ) && in_array( $ps[1], $homes ) ) {
+		if ( 1 < count( $ps ) && in_array( $ps[0], $langs, true ) && in_array( $ps[1], $homes, true ) ) {
 			$home_slug = $ps[1];
-		} else if ( 0 < count( $ps ) && in_array( $ps[0], $homes ) ) {
+		} else if ( 0 < count( $ps ) && in_array( $ps[0], $homes, true ) ) {
 			$home_slug = $ps[0];
 		}
 		if ( ! empty( $home_slug ) ) {

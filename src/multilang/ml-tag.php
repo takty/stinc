@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-28
+ * @version 2018-02-23
  *
  */
 
@@ -64,7 +64,7 @@ class Multilang_Tag {
 	}
 
 	public function has_tag( $post_type ) {
-		return in_array( $post_type, $this->_post_types );
+		return in_array( $post_type, $this->_post_types, true );
 	}
 
 
@@ -77,7 +77,7 @@ class Multilang_Tag {
 	}
 
 	public function _cb_get_adjacent_post_where( $where, $in_same_term, $excluded_terms, $taxonomy, $post ) {  // Private
-		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types ) ) return $where;
+		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types, true ) ) return $where;
 
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND tt.taxonomy = %s", $taxonomy );
@@ -89,7 +89,7 @@ class Multilang_Tag {
 		if ( is_admin() || ! $query->is_main_query() ) return $join;
 
 		global $wpdb;
-		if ( in_array( $query->query_vars['post_type'], $this->_post_types ) ) {
+		if ( in_array( $query->query_vars['post_type'], $this->_post_types, true ) ) {
 			$join .= " LEFT JOIN $wpdb->term_relationships AS tr ON ($wpdb->posts.ID = tr.object_id)";
 			$join .= " LEFT JOIN $wpdb->term_taxonomy AS tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id)";
 		} else if ( is_search() ) {
@@ -103,7 +103,7 @@ class Multilang_Tag {
 		if ( is_admin() || ! $query->is_main_query() ) return $where;
 
 		global $wpdb;
-		if ( in_array( $query->query_vars['post_type'], $this->_post_types ) ) {
+		if ( in_array( $query->query_vars['post_type'], $this->_post_types, true ) ) {
 			$where .= $wpdb->prepare( " AND tt.taxonomy = %s", $this->_taxonomy );
 			$where .= $wpdb->prepare( " AND tt.term_id = %d", $this->_get_tag_id() );
 		} else if ( is_search() ) {
@@ -115,7 +115,7 @@ class Multilang_Tag {
 
 	public function _cb_getarchives_join( $join, $r ) {  // Private
 		if ( is_admin() || ! is_main_query() ) return $join;
-		if ( ! in_array( $r['post_type'], $this->_post_types ) ) return $join;
+		if ( ! in_array( $r['post_type'], $this->_post_types, true ) ) return $join;
 
 		global $wpdb;
 		$join .= " LEFT JOIN $wpdb->term_relationships AS tr ON ($wpdb->posts.ID = tr.object_id)";
@@ -125,7 +125,7 @@ class Multilang_Tag {
 
 	public function _cb_getarchives_where( $where, $r ) {  // Private
 		if ( is_admin() || ! is_main_query() ) return $where;
-		if ( ! in_array( $r['post_type'], $this->_post_types ) ) return $where;
+		if ( ! in_array( $r['post_type'], $this->_post_types, true ) ) return $where;
 
 		global $wpdb;
 		$where .= $wpdb->prepare( " AND tt.taxonomy = %s", $this->_taxonomy );
@@ -141,7 +141,7 @@ class Multilang_Tag {
 			$tid = $this->_get_tag_id();
 			$ret = [];
 			foreach ( $terms as $term ) {
-				if ( in_array( $term->taxonomy, $this->_taxonomies ) ) {
+				if ( in_array( $term->taxonomy, $this->_taxonomies, true ) ) {
 					$ps = get_posts( [
 						'post_type' => $this->_post_types,
 						'tax_query' => [

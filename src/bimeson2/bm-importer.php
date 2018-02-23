@@ -6,7 +6,7 @@ namespace st;
  * Bimeson Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-01
+ * @version 2018-02-23
  *
  */
 
@@ -195,13 +195,13 @@ class Bimeson_Importer extends \WP_Importer {
 				if ( ! isset( $roots_subs[ $key ] ) ) {
 					if ( ! isset( $new_tax_term[ $key ] ) ) $new_tax_term[ $key ] = [];
 					foreach ( $vals as $v ) {
-						if ( ! in_array( $v, $new_tax_term[ $key ] ) ) $new_tax_term[ $key ][] = $v;
+						if ( ! in_array( $v, $new_tax_term[ $key ], true ) ) $new_tax_term[ $key ][] = $v;
 					}
 				} else {
 					$slugs = $roots_subs[ $key ];
 					if ( ! isset( $new_term[ $key ] ) ) $new_term[ $key ] = [];
 					foreach ( $vals as $v ) {
-						if ( ! in_array( $v, $slugs ) && ! in_array( $v, $new_term[ $key ] ) ) $new_term[ $key ][] = $v;
+						if ( ! in_array( $v, $slugs, true ) && ! in_array( $v, $new_term[ $key ], true ) ) $new_term[ $key ][] = $v;
 					}
 				}
 			}
@@ -295,7 +295,7 @@ class Bimeson_Importer extends \WP_Importer {
 				$sub_tax = $this->_tax->term_to_taxonomy( $key );
 				$slugs = [];
 				foreach ( $vals as $v ) {
-					if ( in_array( $v, $roots_subs[ $key ] ) ) $slugs[] = $v;
+					if ( in_array( $v, $roots_subs[ $key ], true ) ) $slugs[] = $v;
 				}
 				if ( ! empty( $slugs ) ) wp_add_object_terms( $post_id, $slugs, $sub_tax );
 			}

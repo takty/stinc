@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-10-13
+ * @version 2018-02-23
  *
  */
 
@@ -113,7 +113,7 @@ class Multilang_Post {
 	}
 
 	private function _get_title( $title, $id, $post ) {
-		if ( ! in_array( $post->post_type, $this->_post_types ) ) return $title;
+		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) return $title;
 		$lang = $this->_core->get_site_lang();
 		if ( $lang === $this->_core->get_default_site_lang() ) return $title;
 
@@ -124,7 +124,7 @@ class Multilang_Post {
 
 	public function _cb_the_content( $content ) {  // Private
 		$post = get_post();
-		if ( ! in_array( $post->post_type, $this->_post_types ) ) return $content;
+		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) return $content;
 		$lang = $this->_core->get_site_lang();
 		if ( $lang === $this->_core->get_default_site_lang() ) return $content;
 

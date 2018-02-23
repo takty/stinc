@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
+ * @version 2018-02-23
  *
  */
 
@@ -317,7 +317,7 @@ function set_admin_columns_sortable( $post_type, $sortable_columns ) {
 	add_filter( 'request', function ( $vars ) use ( $sortable_columns ) {
 		if ( ! isset( $vars['orderby'] ) ) return $vars;
 		$key = $vars['orderby'];
-		if ( in_array( $key, $sortable_columns ) && ! taxonomy_exists( $key ) ) {
+		if ( in_array( $key, $sortable_columns, true ) && ! taxonomy_exists( $key ) ) {
 			$vars = array_merge( $vars, [ 'meta_key' => $key, 'orderby' => 'meta_value' ] );
 		}
 		return $vars;

@@ -6,7 +6,7 @@ namespace st\article;
  * Article Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-28
+ * @version 2018-02-23
  *
  */
 
@@ -33,7 +33,7 @@ function register_post_type( $post_type = 'article', $slug = false, $labels = [ 
 	$args = array_merge( $base_arg, $args );
 	\register_post_type( $post_type, $args );
 	\st\post_type\add_rewrite_rules( $post_type, $slug );
-	if ( in_array( 'sticky', $args['supports'] ) ) \st\sticky\make_custom_post_type_sticky( [ $post_type ] );
+	if ( in_array( 'sticky', $args['supports'], true ) ) \st\sticky\make_custom_post_type_sticky( [ $post_type ] );
 
 	if ( $add_category ) _add_category_taxonomy( $post_type, $slug );
 	if ( $add_tag )      _add_tag_taxonomy( $post_type, $slug );
