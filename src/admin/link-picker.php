@@ -55,7 +55,7 @@ function get_items( $key, $post_id = false ) {
 function enqueue_script( $url_to = false ) {
 	if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
 	if ( is_admin() ) {
-		wp_enqueue_script( 'picker-link', $url_to . '/asset/picker-link.min.js', [ 'wplink' ] );
+		wp_enqueue_script( 'picker-link', $url_to . '/asset/picker-link.min.js', [ 'jquery', 'wpdialogs', 'wplink' ] );
 		wp_enqueue_script( 'st-link-picker', $url_to . '/asset/link-picker.min.js', [ 'jquery-ui-sortable' ] );
 		wp_enqueue_style( 'st-link-picker', $url_to . '/asset/link-picker.min.css' );
 	}
