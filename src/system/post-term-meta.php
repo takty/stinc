@@ -34,19 +34,19 @@ class PostTermMeta {
 	}
 
 	public function add_post_term_meta( $post_id, $term_id, $meta_key, $meta_value, $unique = false ) {
-		return add_post_meta( $post_id, $this->_get_key( $term_id, $meta_key ), $meta_value, $unique );
+		return add_post_meta( $post_id, $this->get_key( $term_id, $meta_key ), $meta_value, $unique );
 	}
 
 	public function delete_post_term_meta( $post_id, $term_id, $meta_key, $meta_value = '' ) {
-		return delete_post_meta( $post_id, $this->_get_key( $term_id, $meta_key ), $meta_value );
+		return delete_post_meta( $post_id, $this->get_key( $term_id, $meta_key ), $meta_value );
 	}
 
 	public function get_post_term_meta( $post_id, $term_id, $meta_key, $single = false ) {
-		return get_post_meta( $post_id, $this->_get_key( $term_id, $meta_key ), $single );
+		return get_post_meta( $post_id, $this->get_key( $term_id, $meta_key ), $single );
 	}
 
 	public function update_post_term_meta( $post_id, $term_id, $meta_key, $meta_value, $prev_value = '' ) {
-		return update_post_meta( $post_id, $this->_get_key( $term_id, $meta_key ), $meta_value, $prev_value );
+		return update_post_meta( $post_id, $this->get_key( $term_id, $meta_key ), $meta_value, $prev_value );
 	}
 
 	public function _cb_wp_insert_post_data( $data, $postarr ) {
@@ -64,8 +64,8 @@ class PostTermMeta {
 		return $data;
 	}
 
-	private function _get_key( $id, $meta_key ) {
-		return "{$this->_pmk_base}_{$id}_{$meta_key}";
+	public function get_key( $term_id, $meta_key ) {
+		return "{$this->_pmk_base}_{$term_id}_{$meta_key}";
 	}
 
 	private function _get_related_keys( $post_id ) {
