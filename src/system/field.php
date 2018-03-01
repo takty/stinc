@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-01
  *
  */
 
@@ -25,6 +25,16 @@ function save_post_meta( $post_id, $key, $filter = null, $default = null ) {
 	} else {
 		update_post_meta( $post_id, $key, $val );
 	}
+}
+
+function add_post_meta_input( $post_id, $key, $label, $type = 'text' ) {
+	$val = get_post_meta( $post_id, $key, true );
+	output_input_row( $label, $key, $val, $type );
+}
+
+function add_post_meta_textarea( $post_id, $key, $label ) {
+	$val = get_post_meta( $post_id, $key, true );
+	output_textarea_row( $label, $key, $val );
 }
 
 function output_input_row( $label, $key, $val, $type = 'text' ) {
