@@ -6,7 +6,7 @@ namespace st\duration_picker;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-12-14
+ * @version 2018-03-01
  *
  */
 
@@ -29,8 +29,8 @@ function get_item( $key = '', $post_id = false ) {
 function enqueue_script_for_admin( $url_to ) {
 	if ( ! is_admin() ) return;
 	wp_enqueue_script( 'flatpickr',         $url_to . '/asset/flatpickr.min.js' );
-	wp_enqueue_script( 'flatpickr.l10n.ja', $url_to . '/asset/flatpickr.l10n.ja.js' );
-	wp_enqueue_style ( 'flatpickr.l10n.ja', $url_to . '/asset/flatpickr.min.css' );
+	wp_enqueue_style ( 'flatpickr',         $url_to . '/asset/flatpickr.min.css' );
+	wp_enqueue_script( 'flatpickr.l10n.ja', $url_to . '/asset/flatpickr.l10n.ja.min.js' );
 }
 
 function add_admin_enqueue_scripts_action( $url_to ) {
