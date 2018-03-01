@@ -33,6 +33,11 @@ class PostTermMeta {
 		$this->_pmk_base = $key;
 	}
 
+	public function get_key( $term_id, $meta_key ) {
+		if ( $meta_key[0] === '_' ) $meta_key = substr( $meta_key, 1 );
+		return "{$this->_pmk_base}_{$term_id}_{$meta_key}";
+	}
+
 	public function add_post_term_meta( $post_id, $term_id, $meta_key, $meta_value, $unique = false ) {
 		return add_post_meta( $post_id, $this->get_key( $term_id, $meta_key ), $meta_value, $unique );
 	}
@@ -62,10 +67,6 @@ class PostTermMeta {
 			}
 		}
 		return $data;
-	}
-
-	public function get_key( $term_id, $meta_key ) {
-		return "{$this->_pmk_base}_{$term_id}_{$meta_key}";
 	}
 
 	private function _get_related_keys( $post_id ) {
