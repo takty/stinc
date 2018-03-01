@@ -19,12 +19,11 @@ function save_post_meta( $post_id, $key, $filter = null, $default = null ) {
 	if ( empty( $val ) ) {
 		if ( $default === null ) {
 			delete_post_meta( $post_id, $key );
-		} else {
-			update_post_meta( $post_id, $key, $default );
+			return;
 		}
-	} else {
-		update_post_meta( $post_id, $key, $val );
+		$val = $default;
 	}
+	update_post_meta( $post_id, $key, $val );
 }
 
 function add_post_meta_input( $post_id, $key, $label, $type = 'text' ) {
@@ -41,10 +40,9 @@ function output_input_row( $label, $key, $val, $type = 'text' ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
 	<div style="margin-top:1rem;">
-		<div>
-			<legend><?php echo "$label" ?></legend>
-			<input type="<?php echo $type ?>" name="<?php echo $key ?>" id="<?php echo $key ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
-		</div>
+		<label><?php echo esc_html( $label ) ?>
+		<input <?php esc_key_e( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+		</label>
 	</div>
 <?php
 }
@@ -53,12 +51,16 @@ function output_textarea_row( $label, $key, $val ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
 	<div style="margin-top:1rem;">
-		<div>
-			<legend><?php echo "$label" ?></legend>
-			<textarea name="<?php echo $key ?>" id="<?php echo $key ?>" cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
-		</div>
+		<label><?php echo esc_html( $label ) ?>
+		<textarea <?php esc_key_e( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+		</label>
 	</div>
 <?php
+}
+
+function esc_key_e( $key ) {
+	$_key = esc_attr( $key );
+	echo "name=\"$_key\" id=\"$_key\"";
 }
 
 function normalize_date( $str ) {
@@ -85,20 +87,28 @@ function normalize_date( $str ) {
 function get_post_meta_postfix( $post_id, $key, $postfixes ) {
 	$vals = [];
 	foreach ( $postfixes as $pf ) {
-		$ni = "{$key}_$pf";
-		$vals[ $pf ] = get_post_meta( $post_id, $ni, true );
+		$vals[ $pf ] = get_post_meta( $post_id, "{$key}_$pf", true );
 	}
 	return $vals;
 }
 
 function save_post_meta_postfix( $post_id, $key, $postfixes, $filter = null ) {
 	foreach ( $postfixes as $pf ) {
-		$ni = "{$key}_$pf";
-		\st\field\save_post_meta( $post_id, $ni, $filter );
+		\st\field\save_post_meta( $post_id, "{$key}_$pf", $filter );
 	}
 }
 
-function output_input_row_postfix( $label, $key, $postfixes, $values ) {
+function add_post_meta_input_postfix( $post_id, $key, $postfixes, $label, $type = 'text' ) {
+	$vals = get_post_meta_postfix( $post_id, $key, $postfixes );
+	output_input_row_postfix( $label, $key, $postfixes, $vals, $type );
+}
+
+function add_post_meta_textarea_postfix( $post_id, $key, $postfixes, $label ) {
+	$vals = get_post_meta_postfix( $post_id, $key, $postfixes );
+	output_textarea_row_postfix( $label, $key, $postfixes, $val );
+}
+
+function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 'text' ) {
 ?>
 	<div style="margin-top:1rem;">
 <?php
@@ -107,8 +117,9 @@ function output_input_row_postfix( $label, $key, $postfixes, $values ) {
 		$ni = "{$key}_$pf";
 ?>
 		<div>
-			<legend><?php echo "$label [$pf]" ?></legend>
-			<input type="text" name="<?php echo $ni ?>" id="<?php echo $ni ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+			<label><?php echo esc_html( "$label [$pf]" ) ?>
+			<input <?php esc_key_e( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+			</label>
 		</div>
 <?php
 	}
@@ -126,8 +137,9 @@ function output_textarea_row_postfix( $label, $key, $postfixes, $values ) {
 		$ni = "{$key}_$pf";
 ?>
 		<div>
-			<legend><?php echo "$label [$pf]" ?></legend>
-			<textarea name="<?php echo $ni ?>" id="<?php echo $ni ?>" cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+			<label><?php echo esc_html( "$label [$pf]" ) ?>
+			<textarea <?php esc_key_e( $ni ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+			</label>
 		</div>
 <?php
 	}
