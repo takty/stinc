@@ -6,7 +6,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-05
+ * @version 2018-03-02
  *
  * require tag/text.php
  *
@@ -229,12 +229,12 @@ function the_sibling_page_list( $before = '<ul>', $after = '</ul>', $link_class 
 }
 
 function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = '</h3>', $list_before = '<ul>', $list_after = '</ul>', $is_fiscal_year = false ) {
-	$ps = get_posts( array(
+	$ps = get_posts( [
 		'posts_per_page' => -1,
 		'post_type' => $post_type,
 		'orderby' => 'date',
 		'order' => 'desc',
-	) );
+	] );
 	$year = -1;
 	if ( count( $ps ) === 0 ) return;
 	foreach ( $ps as $p ) {

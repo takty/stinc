@@ -6,7 +6,7 @@ namespace st;
  * Ajax
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-09-10
+ * @version 2018-03-02
  *
  */
 
@@ -27,13 +27,13 @@ class Ajax {
 		$this->response = $response;
 		$this->nonce    = ( $nonce === null ) ? $action : $nonce;
 
-		add_action( 'wp_ajax_' . $action, array( $this, 'do_ajax_action' ) );
+		add_action( 'wp_ajax_' . $action, [ $this, 'do_ajax_action' ] );
 		if ( $public ) {
-			add_action( 'wp_ajax_nopriv_' . $action, array( $this, 'do_ajax_action' ) );
+			add_action( 'wp_ajax_nopriv_' . $action, [ $this, 'do_ajax_action' ] );
 		}
 	}
 
-	public function get_url( $query = array() ) {
+	public function get_url( $query = [] ) {
 		$query['action'] = $this->action;
 		$query['nonce']  = wp_create_nonce( $this->nonce );
 

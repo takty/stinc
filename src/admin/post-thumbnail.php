@@ -6,7 +6,7 @@ namespace st\post_thumbnail;
  * Custom Post Thumbnail (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-09-11
+ * @version 2018-03-02
  *
  */
 
@@ -51,7 +51,7 @@ function get_item( $key, $post_id = false ) {
 	if ( $post_id === false ) $post_id = get_the_ID();
 	$post = get_post( $post_id );
 	$id = get_post_meta( $post->ID, $key . '_id', TRUE );
-	return array( 'id' => $id );
+	return [ 'id' => $id ];
 }
 
 function save_post( $key, $post_id ) {

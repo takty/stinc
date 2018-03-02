@@ -6,7 +6,7 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-02
  *
  */
 
@@ -176,17 +176,11 @@ function make_custom_date_sortable( $post_type, $slug, $meta_key ) {
 				}
 			}
 			$mq_key = 'meta_'.$meta_key;
-			$query->set( 'meta_query', array(
-				$mq_key => array(
-					'key'  => $meta_key,
-					'type' => 'date'
-				)
-			) );
+			$query->set( 'meta_query', [
+				$mq_key => [ 'key' => $meta_key, 'type' => 'date' ]
+			] );
 			$order = $query->get( 'order' );
-			$query->set( 'orderby', array(
-				$mq_key => $order,
-				'date'  => $order
-			) );
+			$query->set( 'orderby', [ $mq_key => $order, 'date' => $order ] );
 		}
 	} );
 	add_filter( 'posts_where', function ( $where, $query ) use ( $post_type, $slug ) {
@@ -272,13 +266,13 @@ function post_type_title( $prefix = '', $display = true ) {
 function get_custom_archives( $meta_key, $args = '' ) {
 	global $wpdb, $wp_locale;
 
-	$defaults = array(
+	$defaults = [
 		'type' => 'monthly', 'limit' => '',
 		'format' => 'html', 'before' => '',
 		'after' => '', 'show_post_count' => false,
 		'echo' => 1, 'order' => 'DESC',
 		'post_type' => 'post'
-	);
+	];
 
 	$r = wp_parse_args( $args, $defaults );
 

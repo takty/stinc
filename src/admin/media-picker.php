@@ -6,7 +6,7 @@ namespace st\media_picker;
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-13
+ * @version 2018-03-02
  *
  */
 
@@ -27,7 +27,7 @@ function get_items( $key, $post_id = false ) {
 
 function enqueue_script_for_admin( $url_to ) {
 	wp_enqueue_style(  'st-media-picker', $url_to . '/asset/media-picker.min.css' );
-	wp_enqueue_script( 'st-media-picker', $url_to . '/asset/media-picker.min.js', array( 'jquery-ui-sortable' ) );
+	wp_enqueue_script( 'st-media-picker', $url_to . '/asset/media-picker.min.js', [ 'jquery-ui-sortable' ] );
 }
 
 function add_admin_enqueue_scripts_action( $url_to ) {
