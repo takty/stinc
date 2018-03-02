@@ -144,7 +144,7 @@ function add_post_meta_input_postfix( $post_id, $key, $postfixes, $label, $type 
 
 function add_post_meta_textarea_postfix( $post_id, $key, $postfixes, $label ) {
 	$vals = get_post_meta_postfix( $post_id, $key, $postfixes );
-	output_textarea_row_postfix( $label, $key, $postfixes, $val );
+	output_textarea_row_postfix( $label, $key, $postfixes, $vals );
 }
 
 function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 'text' ) {
@@ -152,12 +152,12 @@ function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 't
 	<div style="margin-top:1rem;">
 <?php
 	foreach ( $postfixes as $pf ) {
-		$val = isset( $values[ $pf ] ) ? esc_attr( $values[ $pf ] ) : '';
+		$_val = isset( $values[ $pf ] ) ? esc_attr( $values[ $pf ] ) : '';
 		$ni = "{$key}_$pf";
 ?>
 		<div>
 			<label><?php echo esc_html( "$label [$pf]" ) ?>
-			<input <?php esc_key_e( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+			<input <?php esc_key_e( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $_val ?>" size="64" style="width:100%;">
 			</label>
 		</div>
 <?php
@@ -172,12 +172,12 @@ function output_textarea_row_postfix( $label, $key, $postfixes, $values ) {
 	<div style="margin-top:1rem;">
 <?php
 	foreach ( $postfixes as $pf ) {
-		$val = isset( $values[ $pf ] ) ? esc_textarea( $values[ $pf ] ) : '';
+		$_val = isset( $values[ $pf ] ) ? esc_textarea( $values[ $pf ] ) : '';
 		$ni = "{$key}_$pf";
 ?>
 		<div>
 			<label><?php echo esc_html( "$label [$pf]" ) ?>
-			<textarea <?php esc_key_e( $ni ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+			<textarea <?php esc_key_e( $ni ) ?> cols="64" rows="2" style="width:100%;"><?php echo $_val ?></textarea>
 			</label>
 		</div>
 <?php
