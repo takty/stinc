@@ -70,6 +70,7 @@ function output_term_select_row( $label, $key, $taxonomy_or_terms, $cur_val, $fi
 	} else {
 		$terms = get_terms( $taxonomy_or_terms );
 	}
+	if ( ! is_array( $terms ) ) $terms = [];
 ?>
 	<div style="margin-top:1rem;">
 		<label><?php echo esc_html( $label ) ?>

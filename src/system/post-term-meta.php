@@ -6,7 +6,7 @@ namespace st;
  * Post Term Meta
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-01
+ * @version 2018-03-02
  *
  */
 
@@ -71,6 +71,7 @@ class PostTermMeta {
 
 	private function _get_related_keys( $post_id ) {
 		$pms = get_post_meta( $post_id );
+		if ( empty( $pms ) ) return [];
 		$ret = [];
 		foreach ( $pms as $key => $val ) {
 			if ( strpos( $key, "{$this->_pmk_base}_" ) === 0 ) {
@@ -81,6 +82,7 @@ class PostTermMeta {
 	}
 
 	private function _get_term_ids( $postarr ) {
+		if ( ! isset( $postarr['tax_input'] ) ) return [];
 		$ret = [];
 		foreach ( $postarr['tax_input'] as $tax => $ids ) {
 			if ( count( $ids ) <= 1 ) continue;
