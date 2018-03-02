@@ -36,6 +36,12 @@ function add_post_meta_textarea( $post_id, $key, $label ) {
 	output_textarea_row( $label, $key, $val );
 }
 
+function add_post_meta_related_term_select( $post_id, $key, $label, $taxonomy, $field = 'slug' ) {
+	$val = get_post_meta( $post_id, $key, true );
+	$terms = get_the_terms( $post_id, $taxonomy );
+	output_term_select_row( $label, $key, $terms, $val, $field );
+}
+
 function output_input_row( $label, $key, $val, $type = 'text' ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
@@ -56,6 +62,38 @@ function output_textarea_row( $label, $key, $val ) {
 		</label>
 	</div>
 <?php
+}
+
+function output_term_select_row( $label, $key, $taxonomy_or_terms, $cur_val, $field = 'slug' ) {
+	if ( is_array( $taxonomy_or_terms ) ) {
+		$terms = $taxonomy_or_terms;
+	} else {
+		$terms = get_terms( $taxonomy_or_terms );
+	}
+?>
+	<div style="margin-top:1rem;">
+		<label><?php echo esc_html( $label ) ?>
+			<select style="width:100%;" name="<?php echo esc_attr( $key ) ?>">
+<?php
+	foreach ( $terms as $t ) {
+		$_name = esc_html( $t->name );
+		$field = get_term_field( $t, $field );
+		$_val = esc_attr( $field );
+		echo "<option value=\"{$_val}\"" . selected( $field, $cur_val, false ) . ">{$_name}</option>";
+	}
+?>
+			</select>
+		</label>
+	</div>
+<?php
+}
+
+function get_term_field( $term, $field ) {
+	if ( $field === 'id' ) return $term->term_id;
+	if ( $field === 'slug' ) return $term->slug;
+	if ( $field === 'name' ) return $term->name;
+	if ( $field === 'term_taxonomy_id' ) return $term->term_taxonomy_id;
+	return false;
 }
 
 function esc_key_e( $key ) {
