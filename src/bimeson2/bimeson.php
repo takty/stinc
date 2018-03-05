@@ -6,7 +6,7 @@ namespace st;
  * Functions and Definitions for Bimeson
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-05
  *
  */
 
@@ -63,7 +63,6 @@ class Bimeson {
 			'label'               => '業績',
 			'labels'              => [],
 			'public'              => true,
-			// 'exclude_from_search' => true,
 			'show_ui'             => true,
 			'menu_position'       => 5,
 			'menu_icon'           => 'dashicons-analytics',
@@ -129,10 +128,10 @@ class Bimeson {
 	private function _add_shortcodes() {
 		add_shortcode( 'publication', function ( $atts, $content = null ) {
 			$params = [
-				'date' => '',
-				'date_start' => '',
-				'date_end' => '',
-				'count' => '-1',
+				'date'        => '',
+				'date_start'  => '',
+				'date_end'    => '',
+				'count'       => '-1',
 				'show_filter' => ''
 			];
 			$rss = $this->_tax->get_root_slugs();
@@ -157,10 +156,11 @@ class Bimeson {
 				$slugs = explode( ',', $tmp );
 				$tq[] = [
 					'taxonomy' => $sub_tax,
-					'field' => 'slug',
-					'terms' => $slugs
+					'field'    => 'slug',
+					'terms'    => $slugs,
 				];
 			}
+
 			$mq = [];
 			if ( ! empty( $atts['date'] ) ) {
 				$nd = str_replace( ['-', '/'], '', trim( $atts['date'] ) );
