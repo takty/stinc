@@ -6,7 +6,7 @@ namespace st\basic;
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-22
+ * @version 2018-03-05
  *
  */
 
@@ -21,6 +21,23 @@ function remove_customize_menu() {
 	add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
 		$wp_admin_bar->remove_menu( 'customize' );
 	}, 300 );
+
+	add_action( 'admin_menu', function () {
+		global $submenu;
+		if ( isset( $submenu['themes.php'] ) ) {
+			$customize_menu_index = -1;
+			foreach ( $submenu['themes.php'] as $index => $menu_item ) {
+				foreach ( $menu_item as $data ) {
+					if ( strpos( $data, 'customize' ) === 0 ) {
+						$customize_menu_index = $index;
+						break;
+					}
+				}
+				if ( $customize_menu_index !== -1 ) break;
+			}
+			unset( $submenu['themes.php'][ $customize_menu_index ] );
+		}
+	} );
 }
 
 function remove_post_menu_when_empty() {
