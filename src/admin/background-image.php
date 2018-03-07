@@ -6,7 +6,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-06
+ * @version 2018-03-07
  *
  */
 
@@ -61,6 +61,7 @@ class BackgroundImage {
 	}
 
 	public function enqueue_script( $url_to ) {
+		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
 			wp_enqueue_script( self::NS, $url_to . '/asset/background-image.min.js', [ 'jquery-ui-sortable' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/background-image.min.css' );
