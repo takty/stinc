@@ -66,7 +66,7 @@ class BackgroundImage {
 			wp_enqueue_script( self::NS, $url_to . '/asset/background-image.min.js', [ 'jquery-ui-sortable' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/background-image.min.css' );
 		} else {
-			wp_enqueue_script( self::NS, $url_to . '/../../../stomp/background-image/background-image.min.js', '', 1.0 );
+			wp_enqueue_script( self::NS, $url_to . '/../../stomp/background-image/background-image.min.js', '', 1.0 );
 		}
 	}
 
