@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-06
+ * @version 2018-03-10
  *
  * require tag/url.php
  *
@@ -159,6 +159,7 @@ class NavMenu {
 		if ( ! $ls || ! isset( $ls[ $menu_name ] ) ) return [];
 
 		$menu = wp_get_nav_menu_object( $ls[ $menu_name ] );
+		if ( $menu === $menu ) return [];
 		$ret = wp_get_nav_menu_items( $menu->term_id );
 		if ( $ret === false ) return [];
 		return $ret;
