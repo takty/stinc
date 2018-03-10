@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-10
  *
  */
 
@@ -144,19 +144,20 @@ class Multilang_Core {
 			$wp->add_query_var( self::ADMIN_QUERY_VAR );
 		}
 		add_action( 'admin_menu', [$this, '_admin_menu_page_edit_menu'] );
-		add_filter( 'parse_query', function ( $query ) {
+		add_action( 'parse_query', function ( $query ) {
 			if ( isset( $_GET[ self::ADMIN_QUERY_VAR ] ) ) {
-				$root = intval( $_GET[ self::ADMIN_QUERY_VAR ] );
-
-				$ps = get_pages( [ 'child_of' => $root, 'post_status' => ['publish', 'draft', 'trash'] ] );
-				$ids = [ $root ];
-				foreach ( $ps as $p ) $ids[] = $p->ID;
-
-				$qv = &$query->query_vars;
 				global $pagenow;
+				$qv = $query->query_vars;
 				if ( $pagenow === 'edit.php' && ( ( isset( $qv['post_type'] ) && $qv['post_type'] === 'page' ) || ( isset( $_GET['post_type'] ) && $_GET['post_type'] ) ) ) {
+					$root = intval( $_GET[ self::ADMIN_QUERY_VAR ] );
+					$ids = array_reverse( get_post_ancestors( $root ) );  // Must contains the posts with (parent_id === 0) because of the algorithmn of WP_Posts_List_Table->_display_rows_hierarchical()
+					$ids[] = $root;
+
+					$ps = get_pages( [ 'child_of' => $root, 'sort_column' => 'menu_order', 'post_status' => 'publish,future,draft,pending,private' ] );
+					foreach ( $ps as $p ) $ids[] = $p->ID;
+
 					$query->set( 'post__in', $ids );
-					$query->set( 'orderby', 'parent menu_order' );
+					$query->set( 'orderby', 'post__in' );
 				}
 			}
 		} );
