@@ -159,7 +159,7 @@ class NavMenu {
 		if ( ! $ls || ! isset( $ls[ $menu_name ] ) ) return [];
 
 		$menu = wp_get_nav_menu_object( $ls[ $menu_name ] );
-		if ( $menu === $menu ) return [];
+		if ( $menu === false ) return [];
 		$ret = wp_get_nav_menu_items( $menu->term_id );
 		if ( $ret === false ) return [];
 		return $ret;
