@@ -6,12 +6,12 @@ namespace st;
  * Ajax
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-02
+ * @version 2018-03-16
  *
  */
 
 
-if (!class_exists('Ajax')) :
+if ( ! class_exists( 'Ajax' ) ) :
 
 class Ajax {
 

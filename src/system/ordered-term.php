@@ -4,7 +4,7 @@
  * Ordered Term (Adding Order Field (Term-Meta) to Taxonomies)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-16
  *
  */
 
@@ -66,8 +66,13 @@ class OrderedTerm {
 		}
 	}
 
-	public function get_order( $term ) {
-		return intval( get_term_meta( $term->term_id, $this->_key_order, true ) );
+	public function get_order( $term_or_term_id ) {
+		if ( is_numeric( $term_or_term_id ) ) {
+			$term_id = $term_or_term_id;
+		} else {
+			$term_id = $term_or_term_id->term_id;
+		}
+		return intval( get_term_meta( $term_id, $this->_key_order, true ) );
 	}
 
 	public function add_order_post_meta_to_post( $post_type_s ) {

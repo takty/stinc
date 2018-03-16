@@ -6,7 +6,7 @@ namespace st\link_picker;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-27
+ * @version 2018-03-16
  *
  */
 
@@ -82,7 +82,7 @@ function save_meta_box( $post_id, $key, $opts = [] ) {
 	save_post( $key, $post_id, $is_internal_only );
 }
 
-function output_html( $key, $is_internal_only, $max_count ) {
+function output_html( $key, $is_internal_only = false, $max_count = false ) {
 ?>
 	<input type="hidden" id="<?php echo $key ?>" name="<?php echo $key ?>" value="" />
 	<table class="<?php echo CLS_TABLE ?>">
