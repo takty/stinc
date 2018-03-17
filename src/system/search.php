@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-14
+ * @version 2018-03-17
  *
  */
 
@@ -74,7 +74,7 @@ class Search {
 		if ( is_admin() ) return;
 
 		if ( ! $this->_posts_clauses_filter_added ) {
-			$this->_stop_words = $this->get_search_stopwords();
+			$this->_stop_words = $this->_get_search_stopwords();
 			add_filter( 'posts_clauses', [ $this, '_cb_posts_clauses' ], 20, 1 );
 			$this->_posts_clauses_filter_added = true;
 		}
@@ -124,7 +124,7 @@ class Search {
 		$q_s    = get_query_var( 's' );
 		$q_sent = get_query_var( 'sentence' );
 
-		$terms = $this->parse_search( $q_s, $q_sent );
+		$terms = $this->_parse_search( $q_s, $q_sent );
 		$query = '';
 
 		foreach ( $this->_meta_keys as $key ) {
@@ -144,7 +144,7 @@ class Search {
 
 	// Private Functions -------------------------------------------------------
 
-	private function parse_search( $q_s, $q_sent ) {
+	private function _parse_search( $q_s, $q_sent ) {
 		global $wp_the_query;
 
 		$q_s = stripslashes( $q_s );
@@ -156,7 +156,7 @@ class Search {
 			$terms = [$q_s];
 		} else {
 			if ( preg_match_all( '/".*?("|$)|((?<=[\t ",+])|^)[^\t ",+]+/', $q_s, $matches ) ) {
-				$terms = $this->parse_search_terms( $matches[0] );
+				$terms = $this->_parse_search_terms( $matches[0] );
 				if ( empty( $terms ) || count( $terms ) > 9 ) $terms = [$q_s];
 			} else {
 				$terms = [$q_s];
@@ -165,7 +165,7 @@ class Search {
 		return $terms;
 	}
 
-	private function parse_search_terms( $terms ) {
+	private function _parse_search_terms( $terms ) {
 		$strtolower = function_exists( 'mb_strtolower' ) ? 'mb_strtolower' : 'strtolower';
 		$checked = [];
 
@@ -182,7 +182,7 @@ class Search {
 		return $checked;
 	}
 
-	private function get_search_stopwords() {
+	private function _get_search_stopwords() {
 		$stopwords = explode( ',', 'about,an,are,as,at,be,by,com,for,from,how,in,is,it,of,on,or,that,the,this,to,was,what,when,where,who,will,with,www' );
 		return $stopwords;
 	}
