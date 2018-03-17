@@ -35,6 +35,7 @@ class Multilang_Tag {
 		add_filter( 'get_previous_post_where', [ $this, '_cb_get_adjacent_post_where' ], 10, 5 );
 		add_action( 'posts_join',              [ $this, '_cb_posts_join' ],  10, 2 );
 		add_action( 'posts_where',             [ $this, '_cb_posts_where' ], 10, 2 );
+		add_action( 'posts_groupby',           [ $this, '_cb_posts_groupby' ], 10, 2 );
 		add_filter( 'getarchives_join',        [ $this, '_cb_getarchives_join' ],  10, 2 );
 		add_filter( 'getarchives_where',       [ $this, '_cb_getarchives_where' ], 10, 2 );
 		add_filter( 'get_terms',               [ $this, '_cb_get_terms' ], 10, 4 );
@@ -111,6 +112,18 @@ class Multilang_Tag {
 			$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps) OR tt.term_id = %d)", $this->_get_tag_id() );
 		}
 		return $where;
+	}
+
+	public function _cb_posts_groupby( $groupby, $query ) {  // Private
+		if ( is_admin() || ! $query->is_main_query() ) return $groupby;
+		if ( ! is_search() ) return $groupby;
+
+		global $wpdb;
+		$g = "{$wpdb->posts}.ID";
+
+		if ( preg_match( "/$g/", $groupby ) ) return $groupby;
+		if ( empty( trim( $groupby ) ) ) return $g;
+		return "$groupby, $g";
 	}
 
 	public function _cb_getarchives_join( $join, $r ) {  // Private
