@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-17
  *
  */
 
@@ -418,8 +418,9 @@ class Multihome {
 		return $this->_tag->get_tax_query();
 	}
 
-	public function has_tag() {
-		return $this->_tag !== null;
+	public function has_tag( $post_type = false ) {
+		if ( $this->_tag === null || $post_type === false ) return $this->_tag !== null;
+		return $this->_tag->has_tag( $post_type );
 	}
 
 }

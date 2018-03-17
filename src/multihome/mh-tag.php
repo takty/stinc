@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-03-17
  *
  */
 
@@ -57,6 +57,10 @@ class Multihome_Tag {
 	public function get_tax_query() {
 		$home = $this->_core->get_site_home();
 		return [ 'taxonomy' => $this->_taxonomy, 'field' => 'slug', 'terms' => $home ];
+	}
+
+	public function has_tag( $post_type ) {
+		return in_array( $post_type, $this->_post_types, true );
 	}
 
 

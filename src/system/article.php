@@ -42,6 +42,12 @@ function register_post_type( $post_type = 'article', $slug = false, $labels = [ 
 		$cs = [ 'cb', 'title' ];
 		if ( $add_category ) $cs[] = ['name' => "{$post_type}_category", 'width' => '10%'];
 		if ( $add_tag )      $cs[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
+		if ( class_exists( '\st\Multihome' ) ) {
+			$mh = \st\Multihome::get_instance();
+			if ( $mh->has_tag( $post_type ) ) {
+				$cs[] = [ 'name' => $mh->get_taxonomy(), 'width' => '10%' ];
+			}
+		}
 		if ( class_exists( '\st\Multilang' ) ) {
 			$ml = \st\Multilang::get_instance();
 			if ( $ml->has_tag( $post_type ) ) {
