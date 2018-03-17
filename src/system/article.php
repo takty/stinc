@@ -6,7 +6,7 @@ namespace st\article;
  * Article Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-16
+ * @version 2018-03-17
  *
  */
 
