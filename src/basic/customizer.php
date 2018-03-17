@@ -6,7 +6,7 @@ namespace st\basic;
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-05
+ * @version 2018-03-17
  *
  */
 
@@ -82,20 +82,44 @@ function remvoe_archive_title_text() {
 	} );
 }
 
-function remove_unused_heading( $first_level = 2 ) {
-	add_filter( 'tiny_mce_before_init', function ( $initArray ) use ( $first_level ) {
+function remove_unused_heading( $first_level = 2, $count = 3 ) {
+	$hs = array_map( function ( $l ) { return "Heading $l=h$l"; }, range( $first_level, $first_level + $count - 1 ) );
+
+	add_filter( 'tiny_mce_before_init', function ( $initArray ) use ( $hs ) {
 		// Original from tinymce.min.js "Paragraph=p;Heading 1=h1;Heading 2=h2;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6;Preformatted=pre"
-		switch ( $first_level ) {
-		case 4:
-			$initArray['block_formats'] = "Paragraph=p;Heading 4=h4;Heading 5=h5;Heading 6=h6;Preformatted=pre";
-			break;
-		case 3:
-			$initArray['block_formats'] = "Paragraph=p;Heading 3=h3;Heading 4=h4;Heading 5=h5;Preformatted=pre";
-			break;
-		default:
-			$initArray['block_formats'] = "Paragraph=p;Heading 2=h2;Heading 3=h3;Heading 4=h4;Preformatted=pre";
-		}
+		$initArray['block_formats'] = "Paragraph=p;" . implode( ';', $hs ) . ";Preformatted=pre";
 		return $initArray;
+	} );
+}
+
+function remove_taxonomy_metabox_adder_and_tabs( $taxonomies = false, $post_types = false ) {
+	add_action( 'admin_head', function () use ( $taxonomies, $post_types ) {
+		global $pagenow, $post_type;
+
+		if ( is_admin() && ( $pagenow === 'post-new.php' || $pagenow === 'post.php' ) ) {
+			if ( $post_types === false || in_array( $post_type, $post_types, true ) ) {
+				echo '<style type="text/css">';
+				if ( $taxonomies === false ) {
+					echo ".categorydiv div[id$='-adder'], .category-tabs{display:none;}";
+					echo ".categorydiv div.tabs-panel{border:none;padding:0;}";
+					echo ".categorychecklist{margin-top:4px;}";
+				} else {
+					foreach ( $taxonomies as $tax ) {
+						echo "#$tax-adder,#$tax-tabs{display:none;}";
+						echo "#$tax-all{border:none;padding:0;}";
+						echo "#{$tax}checklist{margin-top:4px;}";
+					}
+				}
+				echo '</style>';
+			}
+		}
+	} );
+}
+
+function remove_taxonomy_metabox_checked_ontop() {
+	add_filter('wp_terms_checklist_args', function ( $args ) {
+		$args['checked_ontop'] = false;
+		return $args;
 	} );
 }
 
