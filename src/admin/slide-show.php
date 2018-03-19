@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-22
+ * @version 2018-03-19
  *
  */
 
@@ -150,7 +150,10 @@ class SlideShow {
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 	<?php
-				foreach ( $ss as $s ) $this->_echo_slide_item( $s['url'], $s['caption'], $s['images'], isset( $s['images_sub'] ) ? $s['images_sub'] : false  );
+				foreach ( $ss as $s ) {
+					if ( ! isset( $s['images'] ) ) continue;
+					$this->_echo_slide_item( $s['url'], $s['caption'], $s['images'], isset( $s['images_sub'] ) ? $s['images_sub'] : false  );
+				}
 	?>
 				</ul>
 				<div class="<?php echo self::CLS_PREV ?>"></div>
