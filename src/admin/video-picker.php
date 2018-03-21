@@ -6,7 +6,7 @@ namespace st\video_picker;
  * Video Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-02
+ * @version 2018-03-21
  *
  */
 
@@ -14,8 +14,8 @@ namespace st\video_picker;
 const NS = 'st_video_picker';
 
 function enqueue_script_for_admin( $url_to ) {
-	wp_enqueue_script( 'st-video-picker', $url_to.'/asset/video-picker.js', [ 'jquery-ui-sortable' ] );
-	wp_enqueue_style( 'st-video-picker', $url_to.'/asset/video-picker.css' );
+	wp_enqueue_script( 'st-video-picker', $url_to.'/asset/video-picker.min.js', [ 'jquery-ui-sortable' ] );
+	wp_enqueue_style( 'st-video-picker', $url_to.'/asset/video-picker.min.css' );
 }
 
 function add_admin_enqueue_scripts_action( $url_to ) {
