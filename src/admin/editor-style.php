@@ -34,12 +34,14 @@ function initialize() {
 				[
 					'title'   => '囲み',
 					'block'   => 'div',
-					'classes' => 'frame'
+					'classes' => 'frame',
+					'wrapper' => true
 				],
 				[
 					'title'   => 'タブ・ページ',
 					'block'   => 'div',
-					'classes' => 'tab-page'
+					'classes' => 'tab-page',
+					'wrapper' => true
 				],
 				[
 					'title'   => 'フロート解除',
