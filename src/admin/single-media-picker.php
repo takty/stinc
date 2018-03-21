@@ -6,7 +6,7 @@ namespace st\single_media_picker;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-07-13
+ * @version 2018-03-21
  *
  */
 
@@ -29,8 +29,8 @@ function get_item( $key, $post_id = false ) {
 // -----------------------------------------------------------------------------
 
 function admin_enqueue_script( $url_to ) {
-	wp_enqueue_style(  'st-single-media-picker', $url_to . '/single-media-picker.css' );
-	wp_enqueue_script( 'st-single-media-picker', $url_to . '/single-media-picker.js' );
+	wp_enqueue_style(  'st-single-media-picker', $url_to . '/single-media-picker.min.css' );
+	wp_enqueue_script( 'st-single-media-picker', $url_to . '/single-media-picker.min.js' );
 }
 
 function add_meta_box( $key, $label, $screen, $context = 'side', $title_editable = true ) {

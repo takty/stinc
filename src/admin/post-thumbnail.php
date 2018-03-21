@@ -6,7 +6,7 @@ namespace st\post_thumbnail;
  * Custom Post Thumbnail (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-02
+ * @version 2018-03-21
  *
  */
 
@@ -15,8 +15,8 @@ const NS = 'st_post_thumbnail';
 
 function enqueue_script_for_admin( $url_to ) {
 	if ( ! is_admin() ) return;
-	wp_enqueue_script( 'st-post-thumbnail', $url_to.'/asset/post-thumbnail.js' );
-	wp_enqueue_style( 'st-post-thumbnail', $url_to.'/asset/post-thumbnail.css' );
+	wp_enqueue_script( 'st-post-thumbnail', $url_to.'/asset/post-thumbnail.min.js' );
+	wp_enqueue_style( 'st-post-thumbnail', $url_to.'/asset/post-thumbnail.min.css' );
 }
 
 function add_admin_enqueue_scripts_action( $url_to ) {
