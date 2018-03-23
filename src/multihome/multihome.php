@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-17
+ * @version 2018-03-23
  *
  */
 
@@ -164,15 +164,19 @@ class Multihome {
 		} else if ( 0 < count( $ps ) && in_array( $ps[0], $homes, true ) ) {
 			$home_slug = $ps[0];
 		}
+
 		if ( ! empty( $home_slug ) ) {
 			$this->_request_home = $home_slug;
-			if ( $this->_is_page_request( $requested_path, $requested_file ) ) {
-				// Here, $requested_path is trimed by '/' in _get_request().
-				$new_path = trim( str_replace( "/$home_slug/", '/', "/$requested_path/" ), '/' );
 
+			// Here, $requested_path is trimed by '/' in _get_request().
+			$new_path = trim( str_replace( "/$home_slug/", '/', "/$requested_path/" ), '/' );
+
+			if ( $this->_is_page_request( $requested_path, $requested_file ) ) {
 				if ( ! $this->_is_page_request( $new_path, $requested_file ) ) {
 					$_SERVER['REQUEST_URI'] = str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] );
 				}
+			} else {
+				$_SERVER['REQUEST_URI'] = str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] );
 			}
 		}
 		return $bool;
