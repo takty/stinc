@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-10
+ * @version 2018-03-23
  *
  * require tag/url.php
  *
@@ -30,16 +30,11 @@ class NavMenu {
 	private $_id_to_attr;
 
 	public function __construct( $menu_name, $expanded_page_ids = false ) {
-		$this->_cur_url = trailingslashit( strtok( \st\get_current_uri(), '?' ) );
+		$ml = class_exists( '\st\Multilang' ) ? \st\Multilang::get_instance() : null;
+		$mh = class_exists( '\st\Multihome' ) ? \st\Multihome::get_instance() : null;
 
-		$ml = null;
-		if ( class_exists( '\st\Multilang' ) ) {
-			$ml = \st\Multilang::get_instance();
-		}
-		$mh = null;
-		if ( class_exists( '\st\Multihome' ) ) {
-			$mh = \st\Multihome::get_instance();
-		}
+		$this->_cur_url = trailingslashit( strtok( \st\get_current_uri( true ), '?' ) );
+
 		$url = $mh ? $mh->home_url() : ( $ml ? $ml->home_url() : home_url() );
 		$this->_home_url = trailingslashit( $url );
 

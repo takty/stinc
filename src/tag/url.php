@@ -6,12 +6,15 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-12
+ * @version 2018-03-23
  *
  */
 
 
-function get_current_uri() {
+function get_current_uri( $raw = false ) {
+	if ( $raw && isset( $_SERVER['REQUEST_URI_ORIG'] ) ) {
+		return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI_ORIG'];
+	}
 	return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 }
 

@@ -173,9 +173,11 @@ class Multihome {
 
 			if ( $this->_is_page_request( $requested_path, $requested_file ) ) {
 				if ( ! $this->_is_page_request( $new_path, $requested_file ) ) {
+					$_SERVER['REQUEST_URI_ORIG'] = $_SERVER['REQUEST_URI'];
 					$_SERVER['REQUEST_URI'] = str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] );
 				}
 			} else {
+				$_SERVER['REQUEST_URI_ORIG'] = $_SERVER['REQUEST_URI'];
 				$_SERVER['REQUEST_URI'] = str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] );
 			}
 		}
