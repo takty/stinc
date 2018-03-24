@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-23
+ * @version 2018-03-24
  *
  */
 
@@ -67,6 +67,7 @@ class Multihome {
 			add_filter( 'post_link',              [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'post_type_link',         [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'post_type_archive_link', [ $this, '_cb_insert_lang_to_url' ] );
+			add_filter( 'paginate_links',         [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'term_link',              [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'year_link',              [ $this, '_cb_insert_lang_to_url' ] );
 			add_filter( 'month_link',             [ $this, '_cb_insert_lang_to_url' ] );
@@ -174,11 +175,11 @@ class Multihome {
 			if ( $this->_is_page_request( $requested_path, $requested_file ) ) {
 				if ( ! $this->_is_page_request( $new_path, $requested_file ) ) {
 					$_SERVER['REQUEST_URI_ORIG'] = $_SERVER['REQUEST_URI'];
-					$_SERVER['REQUEST_URI'] = str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] );
+					$_SERVER['REQUEST_URI'] = rtrim( str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] ), '/' );
 				}
 			} else {
 				$_SERVER['REQUEST_URI_ORIG'] = $_SERVER['REQUEST_URI'];
-				$_SERVER['REQUEST_URI'] = str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] );
+				$_SERVER['REQUEST_URI'] = rtrim( str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] ), '/' );
 			}
 		}
 		return $bool;
