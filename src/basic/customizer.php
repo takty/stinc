@@ -6,7 +6,7 @@ namespace st\basic;
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-17
+ * @version 2018-03-26
  *
  */
 
@@ -164,7 +164,7 @@ function enable_to_show_slug() {
 		}
 	}, 10, 2);
 	add_action( 'admin_head', function () {
-		echo '<style>.fixed .column-slug{width:10%;}</style>';
+		echo '<style>.fixed .column-slug{width:20%;}</style>';
 	} );
 }
 
