@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-02
+ * @version 2018-04-12
  *
  */
 
@@ -36,6 +36,11 @@ function add_post_meta_textarea( $post_id, $key, $label ) {
 	output_textarea_row( $label, $key, $val );
 }
 
+function add_post_meta_checkbox( $post_id, $key, $label ) {
+	$val = get_post_meta( $post_id, $key, true );
+	output_checkbox_row( $label, $key, $val === 'on' );
+}
+
 function add_post_meta_related_term_select( $post_id, $key, $label, $taxonomy, $field = 'slug' ) {
 	$val = get_post_meta( $post_id, $key, true );
 	$terms = get_the_terms( $post_id, $taxonomy );
@@ -46,8 +51,9 @@ function output_input_row( $label, $key, $val, $type = 'text' ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
 	<div style="margin-top:1rem;">
-		<label><?php echo esc_html( $label ) ?>
-		<input <?php esc_key_e( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+		<label>
+			<?php echo esc_html( $label ) ?>
+			<input <?php esc_key_e( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
 		</label>
 	</div>
 <?php
@@ -57,8 +63,20 @@ function output_textarea_row( $label, $key, $val ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
 	<div style="margin-top:1rem;">
-		<label><?php echo esc_html( $label ) ?>
-		<textarea <?php esc_key_e( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+		<label>
+			<?php echo esc_html( $label ) ?>
+			<textarea <?php esc_key_e( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+		</label>
+	</div>
+<?php
+}
+
+function output_checkbox_row( $label, $key, $chekced = false ) {
+?>
+	<div style="margin-top:1rem;">
+		<label>
+			<input <?php esc_key_e( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>>
+			<?php echo esc_html( $label ) ?>
 		</label>
 	</div>
 <?php
