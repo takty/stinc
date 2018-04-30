@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-10
+ * @version 2018-05-01
  *
  */
 
@@ -123,13 +123,18 @@ class Multilang_Core {
 		return is_page( $this->get_site_lang() );
 	}
 
-	public function get_site_lang_list( $site_langs_to_name, $before = '', $sep = '', $after = '', $additional_slug = '' ) {
+	public function get_site_lang_list( $site_langs_to_name, $before = '', $sep = '', $after = '', $additional_path = '' ) {
 		if ( empty( $site_langs_to_name ) ) return false;
 		$links = [];
 		$site_lang = $this->get_site_lang();
 		foreach ( $site_langs_to_name as $lang => $name ) {
-			$current = $lang === $site_lang;
-			$link = ( $lang === $this->_default_site_lang ) ? home_url( $additional_slug ) : home_url( $lang . '/' . $additional_slug );
+			$current = ( $lang === $site_lang );
+			if ( $lang === $this->_default_site_lang ) {
+				$link = home_url( $additional_path );
+			} else {
+				$path = empty( $additional_path ) ? $lang : ( $lang . '/' . ltrim( $additional_path, '/' ) );
+				$link = home_url( $path );
+			}
 			$links[] = '<a href="' . esc_url( $link ) . '" rel="tag"' . ($current ? ' class="current"' : '') . '>' . $name . '</a>';
 		}
 		return $before . join( $sep, $links ) . $after;
