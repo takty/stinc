@@ -79,8 +79,8 @@ class Multilang {
 		return $this->_core->is_front_page();
 	}
 
-	public function get_site_lang_list( $site_langs_to_name, $before = '', $sep = '', $after = '', $additional_slug = '' ) {
-		return $this->_core->get_site_lang_list( $site_langs_to_name, $before, $sep, $after, $additional_slug );
+	public function get_site_lang_list( $site_langs_to_name, $before = '', $sep = '', $after = '', $additional_path = '' ) {
+		return $this->_core->get_site_lang_list( $site_langs_to_name, $before, $sep, $after, $additional_path );
 	}
 
 	public function lang_home_url( $path = '', $scheme = null, $lang = false ) { return $this->_core->home_url( $path, $scheme, $lang ); }
