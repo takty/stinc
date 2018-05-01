@@ -6,16 +6,24 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-23
+ * @version 2018-05-01
  *
  */
 
 
 function get_current_uri( $raw = false ) {
+	$host = get_server_host();
 	if ( $raw && isset( $_SERVER['REQUEST_URI_ORIG'] ) ) {
-		return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI_ORIG'];
+		return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $host . $_SERVER['REQUEST_URI_ORIG'];
 	}
-	return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $host . $_SERVER['REQUEST_URI'];
+}
+
+function get_server_host() {
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {  // When reverse proxy exists
+		return $_SERVER['HTTP_X_FORWARDED_HOST'];
+	}
+	return $_SERVER['HTTP_HOST'];
 }
 
 function get_file_uri( $path ) {

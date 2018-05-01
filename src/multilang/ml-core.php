@@ -174,7 +174,8 @@ class Multilang_Core {
 	}
 
 	public function _template_redirect() {
-		$url = ( is_ssl() ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+		$host = \st\get_server_host();
+		$url = ( is_ssl() ? 'https' : 'http' ) . '://' . $host . $_SERVER['REQUEST_URI'];
 		$home = get_option( 'home' );
 		$cur_url = str_replace( $home . '/' . $this->_default_site_lang, $home, $url );
 		if ( $url !== $cur_url ) exit( wp_redirect( $cur_url ) );

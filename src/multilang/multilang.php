@@ -6,11 +6,12 @@ namespace st;
  * Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-28
+ * @version 2018-05-01
  *
  */
 
 
+require_once __DIR__ . '/../tag/url.php';
 require_once __DIR__ . '/ml-core.php';
 require_once __DIR__ . '/ml-post.php';
 require_once __DIR__ . '/ml-tag.php';

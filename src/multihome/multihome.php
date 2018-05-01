@@ -133,7 +133,8 @@ class Multihome {
 			$home = $wp_query->query_vars[ $this->_query_var ];
 		}
 		if ( empty( $home ) && ! empty( $this->_default_home ) ) {
-			$url = ( is_ssl() ? 'https' : 'http' ) . '://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+			$host = \st\get_server_host();
+			$url = ( is_ssl() ? 'https' : 'http' ) . '://' . $host . $_SERVER['REQUEST_URI'];
 			$home_url = $this->_ml->home_url();
 			$cur_url = str_replace( $home_url , $home_url . '/' . $this->_default_home, $url );
 			if ( $url !== $cur_url ) exit( wp_redirect( $cur_url ) );
