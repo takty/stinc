@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-04-12
+ * @version 2018-05-18
  *
  */
 
@@ -96,9 +96,9 @@ function output_term_select_row( $label, $key, $taxonomy_or_terms, $cur_val, $fi
 <?php
 	foreach ( $terms as $t ) {
 		$_name = esc_html( $t->name );
-		$field = get_term_field( $t, $field );
-		$_val = esc_attr( $field );
-		echo "<option value=\"{$_val}\"" . selected( $field, $cur_val, false ) . ">{$_name}</option>";
+		$val = get_term_field( $t, $field );
+		$_val = esc_attr( $val );
+		echo "<option value=\"{$_val}\"" . selected( $val, $cur_val, false ) . ">{$_name}</option>";
 	}
 ?>
 			</select>
