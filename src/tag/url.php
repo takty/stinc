@@ -6,7 +6,7 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-01
+ * @version 2018-05-18
  *
  */
 
@@ -14,9 +14,9 @@ namespace st;
 function get_current_uri( $raw = false ) {
 	$host = get_server_host();
 	if ( $raw && isset( $_SERVER['REQUEST_URI_ORIG'] ) ) {
-		return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $host . $_SERVER['REQUEST_URI_ORIG'];
+		return ( is_ssl() ? 'https://' : 'http://' ) . $host . $_SERVER['REQUEST_URI_ORIG'];
 	}
-	return ( empty( $_SERVER['HTTPS'] ) ? 'http://' : 'https://' ) . $host . $_SERVER['REQUEST_URI'];
+	return ( is_ssl() ? 'https://' : 'http://' ) . $host . $_SERVER['REQUEST_URI'];
 }
 
 function get_server_host() {

@@ -6,7 +6,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-01
+ * @version 2018-05-18
  *
  */
 
@@ -401,7 +401,7 @@ function add_archive_current_class() {
 		}
 		if ( is_year() && $regex && preg_match( $regex, $link_html, $m ) ) {
 			$host = \st\get_server_host();
-			$url = ( empty( $_SERVER[ 'HTTPS' ] ) ? 'http://' : 'https://' ) . $host . $_SERVER[ 'REQUEST_URI' ];
+			$url = ( is_ssl() ? 'https://' : 'http://' ) . $host . $_SERVER[ 'REQUEST_URI' ];
 			if ( strpos( $url, $m[1] ) === 0 ) {
 				$link_html = str_replace( $search, $replace, $link_html );
 			}
