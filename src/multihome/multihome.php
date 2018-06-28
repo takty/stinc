@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-01
+ * @version 2018-06-29
  *
  */
 
@@ -64,16 +64,16 @@ class Multihome {
 			add_filter( 'do_parse_request',       [ $this, '_cb_do_parse_request' ], 10, 3 );
 			add_filter( 'request',                [ $this, '_cb_request' ] );
 
-			add_filter( 'post_link',              [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'post_type_link',         [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'post_type_archive_link', [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'paginate_links',         [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'term_link',              [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'year_link',              [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'month_link',             [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'day_link',               [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'search_link',            [ $this, '_cb_insert_lang_to_url' ] );
-			add_filter( 'feed_link',              [ $this, '_cb_insert_lang_to_url' ] );
+			add_filter( 'post_link',              [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'post_type_link',         [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'post_type_archive_link', [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'paginate_links',         [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'term_link',              [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'year_link',              [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'month_link',             [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'day_link',               [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'search_link',            [ $this, '_cb_insert_home_to_url' ] );
+			add_filter( 'feed_link',              [ $this, '_cb_insert_home_to_url' ] );
 		}
 		if ( is_admin_bar_showing() ) {
 			add_action( 'admin_bar_menu', [ $this, '_cb_admin_bar_menu' ] );
@@ -141,7 +141,7 @@ class Multihome {
 		}
 	}
 
-	public function _cb_insert_lang_to_url( $link ) {  // Private
+	public function _cb_insert_home_to_url( $link ) {  // Private
 		$fs = \st\get_first_slug( $link );
 		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes(), true ) ) {
 			$link = str_replace( "$fs/", '', $link );
