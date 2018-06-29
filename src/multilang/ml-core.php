@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-01
+ * @version 2018-06-29
  *
  */
 
@@ -21,10 +21,16 @@ class Multilang_Core {
 	private $_site_langs;
 	private $_default_site_lang;
 
+	private $_tag;
+
 	public function __construct( $site_langs, $default_lang = false, $query_var = self::DEFAULT_QUERY_VAR ) {
 		$this->_site_langs        = $site_langs;
 		$this->_default_site_lang = ( $default_lang === false ) ? $site_langs[0] : $default_lang;
 		$this->_query_var         = $query_var;
+	}
+
+	public function set_tag( $tag ) {
+		$this->_tag = $tag;
 	}
 
 	public function initialize() {
@@ -60,8 +66,8 @@ class Multilang_Core {
 		add_filter( 'search_rewrite_rules',   [ $this, '_add_lang_rewrite_rules' ] );
 		add_filter( 'root_rewrite_rules',     [ $this, '_add_lang_rewrite_rules' ] );
 
-		add_filter( 'post_link',              [ $this, '_insert_lang_to_url' ] );
-		add_filter( 'post_type_link',         [ $this, '_insert_lang_to_url' ] );
+		add_filter( 'post_link',              [ $this, '_insert_lang_to_url' ], 10, 2 );
+		add_filter( 'post_type_link',         [ $this, '_insert_lang_to_url' ], 10, 2 );
 		add_filter( 'post_type_archive_link', [ $this, '_insert_lang_to_url' ] );
 		add_filter( 'term_link',              [ $this, '_insert_lang_to_url' ] );
 		add_filter( 'year_link',              [ $this, '_insert_lang_to_url' ] );
@@ -254,8 +260,18 @@ class Multilang_Core {
 		return $val;
 	}
 
-	public function _insert_lang_to_url( $link ) {
-		$lang = $this->get_site_lang();
+	public function _insert_lang_to_url( $link, $post = false ) {
+		if ( is_admin() && is_a( $post, 'WP_Post' ) ) {
+			if ( ! $this->_tag->has_tag( $post->post_type ) ) return $link;
+			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
+			if ( is_array( $ts ) ) {
+				$lang = $ts[0]->slug;
+			} else {
+				$lang = $this->_default_site_lang;
+			}
+		} else {
+			$lang = $this->get_site_lang();
+		}
 		if ( $lang !== $this->_default_site_lang ) {
 			$home = get_option( 'home' );
 			$link = str_replace( $home, $home . '/' . $lang, $link );

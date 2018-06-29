@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-01
+ * @version 2018-06-29
  *
  */
 
@@ -104,6 +104,7 @@ class Multilang {
 
 	public function initialize_tag( $lang_to_names, $taxonomy_name, $taxonomy = Multilang_Tag::DEFAULT_TAXONOMY ) {
 		$this->_tag = new Multilang_Tag( $this, $lang_to_names, $taxonomy_name, $taxonomy );
+		$this->_core->set_tag( $this->_tag );
 	}
 
 	public function add_tagged_post_type( $post_type_s ) {

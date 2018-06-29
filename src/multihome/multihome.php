@@ -58,8 +58,11 @@ class Multihome {
 
 			add_action( 'admin_menu',     [ $this, '_cb_admin_menu' ] );
 			add_action( 'admin_init',     [ $this, '_cb_admin_init_add_site_names' ] );
+
+			add_filter( 'post_link',      [ $this, '_cb_insert_home_to_url' ], 10, 2 );
+			add_filter( 'post_type_link', [ $this, '_cb_insert_home_to_url' ], 10, 2 );
 		} else {
-			add_filter( 'body_class',     [ $this, '_cb_body_class' ] );
+			add_filter( 'body_class', [ $this, '_cb_body_class' ] );
 
 			add_filter( 'do_parse_request',       [ $this, '_cb_do_parse_request' ], 10, 3 );
 			add_filter( 'request',                [ $this, '_cb_request' ] );
@@ -141,14 +144,32 @@ class Multihome {
 		}
 	}
 
-	public function _cb_insert_home_to_url( $link ) {  // Private
+	public function _cb_insert_home_to_url( $link, $post = false ) {  // Private
 		$fs = \st\get_first_slug( $link );
+		$lang = false;
 		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes(), true ) ) {
 			$link = str_replace( "$fs/", '', $link );
+		} else if ( in_array( $fs, $this->_ml->get_site_langs(), true ) ) {
+			$lang = $fs;
 		}
-		$lang = $this->get_site_home();
-		$home = $this->_ml->home_url();
-		$link = str_replace( $home, "$home/$lang", $link );
+		if ( is_admin() && is_a( $post, 'WP_Post' ) ) {
+			if ( ! $this->_tag->has_tag( $post->post_type ) ) return $link;
+			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
+			if ( is_array( $ts ) ) {
+				$sh = $this->_home_to_slug[ $ts[0]->slug ];
+			} else {
+				$sh = $this->_home_to_slug[ $this->_default_home ];
+			}
+		} else {
+			$sh = $this->get_site_home();
+		}
+		$home_url = $this->_ml->home_url();
+		// var_dump( $link );
+		if ( $lang ) {
+			$link = str_replace( "$home_url/$lang", "$home_url/$lang/$sh", $link );
+		} else {
+			$link = str_replace( $home_url, "$home_url/$sh", $link );
+		}
 		return $link;
 	}
 
