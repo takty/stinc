@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Taxonomy)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2018-07-02
  *
  */
 
@@ -114,12 +114,12 @@ class Multilang_Taxonomy {
 		return $before . join( $sep, $term_links ) . $after;
 	}
 
-	public function get_the_term_names( $post_id = 0, $taxonomy ) {
+	public function get_the_term_names( $post_id = 0, $taxonomy, $singular = false ) {
 		$ts = get_the_terms( $post_id, $taxonomy );
 		if ( ! is_array( $ts ) ) return [];
 
 		$tns = [];
-		foreach ( $ts as $t ) $tns[] = $this->get_term_name( $t );
+		foreach ( $ts as $t ) $tns[] = $this->get_term_name( $t, $singular );
 		return $tns;
 	}
 
