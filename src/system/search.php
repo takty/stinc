@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-17
+ * @version 2018-07-02
  *
  */
 
@@ -93,7 +93,7 @@ class Search {
 		if ( ! $wp_rewrite->using_permalinks() ) return;
 
 		$search_base = $wp_rewrite->search_base;
-		if ( is_search() && !is_admin() && ! empty( $_GET['s'] ) ) {
+		if ( is_search() && ! is_admin() && ! empty( $_GET['s'] ) ) {
 			if ( class_exists( '\st\Multihome' ) ) {
 				$home_url = \st\Multihome::get_instance()->home_url( "/{$search_base}/" );
 			} else if ( class_exists( '\st\Multilang' ) ) {
