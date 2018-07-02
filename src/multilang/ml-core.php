@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-06-29
+ * @version 2018-07-02
  *
  */
 
@@ -262,7 +262,7 @@ class Multilang_Core {
 
 	public function _insert_lang_to_url( $link, $post = false ) {
 		if ( is_admin() && is_a( $post, 'WP_Post' ) ) {
-			if ( ! $this->_tag->has_tag( $post->post_type ) ) return $link;
+			if ( ! $this->_tag || ! $this->_tag->has_tag( $post->post_type ) ) return $link;
 			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
 			if ( is_array( $ts ) ) {
 				$lang = $ts[0]->slug;
