@@ -6,7 +6,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-07-18
+ * @version 2018-07-19
  *
  */
 
@@ -74,13 +74,11 @@ function set_taxonomy_post_type_specific( $taxonomies, $post_type ) {
 
 function set_taxonomy_default_term( $post_types, $taxonomy, $default_term_slug ) {
 	foreach( $post_types as $post_type ) {
-		add_action( "publish_$post_type", function ( $post_id, $post ) use ( $post_types, $taxonomy, $default_term_slug ) {
+		add_action( "save_post_$post_type", function ( $post_id, $post ) use ( $post_types, $taxonomy, $default_term_slug ) {
 			$ts = wp_get_object_terms( $post_id, $taxonomy );
 			if ( is_wp_error( $ts ) || ! empty( $ts ) ) return;
 			wp_set_object_terms( $post_id, $default_term_slug, $taxonomy );
-			return $data;
 		}, 10, 2 );
-
 	}
 }
 
