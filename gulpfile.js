@@ -4,18 +4,8 @@ const gulp = require('gulp');
 const $ = require('gulp-load-plugins')({pattern: ['gulp-*']});
 
 
-// var gulp       = require('gulp');
-// var plumber    = require('gulp-plumber');
-// var changed    = require('gulp-changed');
-// var uglify     = require('gulp-uglify');
-// var rename     = require('gulp-rename');
-// var sourcemaps = require('gulp-sourcemaps');
-// var sass       = require('gulp-sass');
-// var cleanCss   = require('gulp-clean-css');
-// var babel      = require('gulp-babel');
-
 gulp.task('js-raw', () => {
-	return gulp.src(['src/**/*.js', '!src/**/*.min.js', '!src/_backup/**/*'], {base: 'src'})
+	return gulp.src(['src/**/*.js', '!src/**/*.min.js'], {base: 'src'})
 		.pipe($.plumber())
 		.pipe($.babel({presets: [['env', {targets: {ie: 11}}]]}))
 		.pipe($.rename({extname: '.min.js'}))
@@ -32,7 +22,7 @@ gulp.task('js-min', () => {
 gulp.task('js', gulp.parallel('js-raw', 'js-min'));
 
 gulp.task('sass', () => {
-	return gulp.src(['src/**/*.scss', '!src/_backup/**/*'])
+	return gulp.src(['src/**/*.scss'])
 		.pipe($.plumber())
 		.pipe($.sourcemaps.init())
 		.pipe($.sass({outputStyle: 'compressed'}))
@@ -43,7 +33,7 @@ gulp.task('sass', () => {
 });
 
 gulp.task('css-raw', () => {
-	return gulp.src(['src/**/*.css', '!src/**/*.min.css', '!src/_backup/**/*'], {base: 'src'})
+	return gulp.src(['src/**/*.css', '!src/**/*.min.css'], {base: 'src'})
 		.pipe($.plumber())
 		.pipe($.sourcemaps.init())
 		.pipe($.cleanCss())
@@ -61,14 +51,14 @@ gulp.task('css-min', () => {
 gulp.task('css', gulp.parallel('css-raw', 'css-min'));
 
 gulp.task('php', () => {
-	return gulp.src(['src/**/*.php', '!src/_backup/**/*'])
+	return gulp.src(['src/**/*.php'])
 		.pipe($.changed('dist'))
 		.pipe($.plumber())
 		.pipe(gulp.dest('dist'));
 });
 
 gulp.task('img', () => {
-	return gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg', '!src/_backup/**/*'], {base: 'src'})
+	return gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], {base: 'src'})
 		.pipe($.changed('dist'))
 		.pipe($.plumber())
 		.pipe(gulp.dest('dist'));
