@@ -2,25 +2,25 @@
  * Editor Commands for TinyMCE
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-12-15
+ * @version 2018-08-27
  *
  */
 
 
 (function() {
+	function insert(ed, str) {
+		ed.execCommand('mceInsertContent', false, { content: str, merge: true, paste: true });
+	}
 	tinymce.create('tinymce.plugins.columns', {
 		init : function (ed, url) {
 			ed.addCommand('column_2', function () {
-				var str = '<div class="column-2"><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div></div>&nbsp;';
-				ed.execCommand('mceInsertRawHTML', false, str);
+				insert(ed, '<div class="column-2"><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div></div>&nbsp;');
 			});
 			ed.addCommand('column_3', function () {
-				var str = '<div class="column-3"><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div></div>&nbsp;';
-				ed.execCommand('mceInsertRawHTML', false, str);
+				insert(ed, '<div class="column-3"><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div></div>&nbsp;');
 			});
 			ed.addCommand('column_4', function () {
-				var str = '<div class="column-4"><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div></div>&nbsp;';
-				ed.execCommand('mceInsertRawHTML', false, str);
+				insert(ed, '<div class="column-4"><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div><div><p>&nbsp;</p></div></div>&nbsp;');
 			});
 			ed.addButton('column_2', {
 				title: '2段組',
