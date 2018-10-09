@@ -6,12 +6,13 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-15
+ * @version 2018-10-09
  *
  */
 
 
 require_once __DIR__ . '/../admin/duration-picker.php';
+require_once __DIR__ . '/../admin/page-template-admin.php';
 
 
 function register_event_post_type( $labels, $calendar_locale, $args = [] ) {
@@ -31,9 +32,11 @@ function register_event_post_type( $labels, $calendar_locale, $args = [] ) {
 	\st\post_type\enable_custom_date_adjacent_post_link( 'event', '_date_bgn' );
 	_add_filter_for_replace_date();
 
-	add_action( 'admin_print_scripts', function () {
-		\st\duration_picker\enqueue_script_for_admin( get_template_directory_uri() . '/lib/stinc/admin' );
-	} );
+	if ( \st\page_template_admin\is_post_type( 'event' ) ) {
+		add_action( 'admin_print_scripts', function () {
+			\st\duration_picker\enqueue_script_for_admin( get_template_directory_uri() . '/lib/stinc/admin' );
+		} );
+	}
 	add_action( 'admin_menu', function () use ( $labels, $calendar_locale ) {
 		$opts = [
 			'calendar_locale' => $calendar_locale,
