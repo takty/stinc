@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Text)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-05
+ * @version 2018-10-22
  *
  */
 
@@ -74,6 +74,7 @@ class Multilang_Text {
 
 	public function format_date( $date ) {
 		$date = date_create_from_format( 'Y-m-d', $date );
+		if ( $date === false ) return '';
 		return date_format( $date, $this->get_date_format() );
 	}
 
