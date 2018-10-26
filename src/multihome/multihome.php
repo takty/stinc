@@ -6,7 +6,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-06-29
+ * @version 2018-10-26
  *
  */
 
@@ -152,19 +152,16 @@ class Multihome {
 		} else if ( in_array( $fs, $this->_ml->get_site_langs(), true ) ) {
 			$lang = $fs;
 		}
-		if ( is_admin() && is_a( $post, 'WP_Post' ) ) {
-			if ( ! $this->_tag->has_tag( $post->post_type ) ) return $link;
+		$sh = $this->get_site_home();
+		if ( is_admin() && is_a( $post, 'WP_Post' ) && $this->_tag->has_tag( $post->post_type ) ) {
 			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
 			if ( is_array( $ts ) ) {
 				$sh = $this->_home_to_slug[ $ts[0]->slug ];
 			} else {
 				$sh = $this->_home_to_slug[ $this->_default_home ];
 			}
-		} else {
-			$sh = $this->get_site_home();
 		}
 		$home_url = $this->_ml->home_url();
-		// var_dump( $link );
 		if ( $lang ) {
 			$link = str_replace( "$home_url/$lang", "$home_url/$lang/$sh", $link );
 		} else {
