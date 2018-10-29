@@ -6,11 +6,12 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-23
- *
- * require tag/url.php
+ * @version 2018-10-29
  *
  */
+
+
+require_once __DIR__ . '/../tag/url.php';
 
 
 class NavMenu {
@@ -49,6 +50,15 @@ class NavMenu {
 
 	public function set_expanded_page_ids( $ids ) {
 		$this->_expanded_page_ids = $ids;
+	}
+
+
+	// -------------------------------------------------------------------------
+
+	public function echo_main_sub_items( $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html' ) {
+		$this->echo_items( 0, $before, $after, $filter, function ( $pid ) use ( $before, $after, $filter ) {
+			$this->echo_items( $pid, $before, $after, $filter );
+		} );
 	}
 
 
@@ -116,25 +126,35 @@ class NavMenu {
 		return array_map( function ( $e ) { return $e->ID; }, $this->_pid_to_menu[ $pid ] );
 	}
 
-	public function echo_items( $pid, $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html' ) {
+	public function echo_items( $pid, $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $echo_sub = false ) {
 		if ( empty( $this->_pid_to_menu[ $pid ] ) ) return;
 		$mis = $this->_pid_to_menu[ $pid ];
 
 		echo $before;
 		foreach( $mis as $mi ) {
 			$cs = $this->_id_to_attr[ $mi->ID ];
-			$this->_echo_item( $mi, $cs, $filter );
+			$this->_echo_item( $mi, $cs, $filter, $echo_sub );
 		}
 		echo $after;
 	}
 
-	private function _echo_item( $mi, $cs, $filter = 'esc_html' ) {
+	private function _echo_item( $mi, $cs, $filter = 'esc_html', $echo_sub = false ) {
 		$li_attr = empty( $cs ) ? '' : (' class="' . implode( ' ', $cs ) . '"');
 		$obj_id  = intval( $mi->object_id );
 		$title   = $filter( $mi->title );
 
 		if ( $mi->url === '#' ) {
-			echo "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label></li>";
+			$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label>";
+			$after  = "</li>";
+
+			$id = $mi->ID;
+			if ( $echo_sub && ! empty( $this->_pid_to_menu[ $id ] ) ) {
+				echo $before;
+				$echo_sub( $id );
+				echo $after;
+			} else {
+				echo $before . $after;
+			}
 			return;
 		}
 		if ( $this->_expanded_page_ids === false || ! in_array( $obj_id, $this->_expanded_page_ids, true ) ) {
