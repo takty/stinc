@@ -16,10 +16,12 @@ require_once __DIR__ . '/../tag/url.php';
 
 class NavMenu {
 
-	const CLS_HOME     = 'home';
-	const CLS_OPENED   = 'opened';
-	const CLS_CURRENT  = 'current';
-	const CLS_ANCESTOR = 'ancestor';
+	const CLS_HOME        = 'home';
+	const CLS_OPENED      = 'opened';
+	const CLS_CURRENT     = 'current';
+	const CLS_ANCESTOR    = 'ancestor';
+	const CLS_MENU_PARENT = 'menu-parent';  // Same as CLS_OPENED
+	const CLS_PAGE_PARENT = 'page-parent';  // Same as CLS_ANCESTOR
 
 	private $_cur_url;
 	private $_home_url;
@@ -109,6 +111,8 @@ class NavMenu {
 			if ( in_array( self::CLS_OPENED, $a, true ) ) return $id;
 			if ( in_array( self::CLS_CURRENT, $a, true ) ) return $id;
 			if ( in_array( self::CLS_ANCESTOR, $a, true ) ) return $id;
+			if ( in_array( self::CLS_MENU_PARENT, $a, true ) ) return $id;
+			if ( in_array( self::CLS_PAGE_PARENT, $a, true ) ) return $id;
 		}
 		return false;
 	}
@@ -215,10 +219,16 @@ class NavMenu {
 			$url = trailingslashit( $mi->url );
 			$id = $mi->ID;
 			$cs = [];
-			if ( $url === $this->_home_url )             $cs[] = self::CLS_HOME;
-			if ( $url === $this->_cur_url )              $cs[] = self::CLS_CURRENT;
-			if ( isset( $p2cs[ $id ] ) && $p2cs[ $id ] ) $cs[] = self::CLS_OPENED;
-			if ( $this->_is_ancestor_page( $mi ) )       $cs[] = self::CLS_ANCESTOR;
+			if ( $url === $this->_home_url ) $cs[] = self::CLS_HOME;
+			if ( $url === $this->_cur_url )  $cs[] = self::CLS_CURRENT;
+			if ( isset( $p2cs[ $id ] ) && $p2cs[ $id ] ) {
+				$cs[] = self::CLS_OPENED;
+				$cs[] = self::CLS_MENU_PARENT;
+			}
+			if ( $this->_is_ancestor_page( $mi ) ) {
+				$cs[] = self::CLS_ANCESTOR;
+				$cs[] = self::CLS_PAGE_PARENT;
+			}
 			$ret[ $id ] = $cs;
 		}
 		return $ret;
