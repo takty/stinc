@@ -6,7 +6,7 @@ namespace st;
  * Open Graph Protocol
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-04-12
+ * @version 2018-10-29
  *
  */
 
@@ -56,13 +56,20 @@ function get_the_ogp_url() {
 	return $url;
 }
 
-function get_the_ogp_title() {
+function get_the_ogp_title( $append_site_name = false ) {
+	$site_name = get_the_ogp_site_name();
 	if ( _ogp_is_singlular() ) {
 		$title = implode( ' ', \st\separate_line( get_the_title() ) );
+		if ( $append_site_name ) {
+			$title .= ' - ' . $site_name;
+		}
 	} else if ( is_archive() ) {
 		$title = post_type_archive_title( '', false );
+		if ( $append_site_name ) {
+			$title .= ' - ' . $site_name;
+		}
 	} else {
-		$title = get_the_ogp_site_name();
+		$title = $site_name;
 	}
 	return $title;
 }
