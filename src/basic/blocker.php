@@ -16,11 +16,11 @@ namespace st\basic;
 
 
 function disable_unused_functions( $args = [] ) {
-	$args = array_merge( $args, [
+	$args = array_merge( [
 		'disable_rest_api'       => true,
 		'disable_rest_api_force' => false,
 		'permitted_rest_route'   => [ 'oembed', 'contact-form-7' ],
-	] );
+	], $args );
 	disable_author_page();
 	disable_generator_output();
 	if ( $args['disable_rest_api'] ) {
