@@ -6,7 +6,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-18
+ * @version 2018-11-07
  *
  */
 
@@ -22,7 +22,7 @@ function is_content_empty( $str = false ) {
 	return trim( str_replace( '&nbsp;', '', strip_tags( $str, '<img><hr><br>' ) ) ) === '';
 }
 
-function get_post_title() {
+function get_post_title( $short = 8, $long = 32 ) {
 	global $post;
 	if ( $post ) {
 		$title = get_the_title( $post->ID );
@@ -31,8 +31,8 @@ function get_post_title() {
 	}
 	$len = mb_strlen( $title );
 	$option = '';
-	if ( 32 <= $len ) $option = ' data-length="long"';
-	if ( $len <= 8 )  $option = ' data-length="short"';
+	if ( $long <= $len ) $option = ' data-length="long"';
+	if ( $len <= $short )  $option = ' data-length="short"';
 	$title = \st\separate_line( $title, 'segment_small' );
 	return compact( 'title', 'option' );
 }
