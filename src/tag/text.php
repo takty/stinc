@@ -6,7 +6,7 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-12-29
+ * @version 2018-11-08
  *
  */
 
@@ -112,9 +112,9 @@ function separate_text_and_make_spans( $text ) {
 
 function _get_ctype( $c ) {
 	$pats = [
-		'[「『（［｛〈《【〔]' => 'S',
-		'[」』）］｝〉》】〕、，。．？]' => 'E',
-		'[ぁ-ん]' => 'I',
+		'[「『（［｛〈《【〔〖〘〚]' => 'S',
+		'[」』）］｝〉》】〕〗〙〛、，。．？！を]' => 'E',
+		'[ぁ-んゝ]' => 'I',
 		'[ァ-ヴーｱ-ﾝﾞｰ]' => 'K',
 		'[一-龠々〆ヵヶ]' => 'H',
 	];
