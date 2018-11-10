@@ -225,14 +225,15 @@ class SlideShow {
 			$img   = esc_url( $sl['image'] );
 			$style = "background-image: url('{$img}');";
 			$event = "st_slide_show_page('{$this->_id}_$post_id', {$idx});"
-	?>
+?>
 			<li><a href="javascript:void(0)" onclick="<?php echo $event ?>" style="<?php echo $style ?>"></a></li>
-	<?php
+<?php
 		}
 	}
 
 
 	// -------------------------------------------------------------------------
+
 
 	public function add_meta_box( $label, $screen ) {
 		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen );
@@ -251,12 +252,16 @@ class SlideShow {
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
 <?php
-		$this->_output_row( '', '', self::CLS_ITEM_TEMP, '', '', '', '' );
+		if ( $this->_is_dual ) {
+			$this->_output_row( '', '', self::CLS_ITEM_TEMP, '', '', '', '' );
+		} else {
+			$this->_output_row( [], self::CLS_ITEM_TEMP );
+		}
 		foreach ( $this->_get_slides( $post->ID ) as $it ) {
 			if ( $this->_is_dual ) {
-				$this->_output_row( $it['caption'], $it['url'], self::CLS_ITEM, $it['image'], $it['media'], $it['image_sub'], $it['media_sub']  );
+				$this->_output_row_dual( $it['caption'], $it['url'], self::CLS_ITEM, $it['image'], $it['media'], $it['image_sub'], $it['media_sub']  );
 			} else {
-				$this->_output_row( $it['caption'], $it['url'], self::CLS_ITEM, $it['image'], $it['media'] );
+				$this->_output_row( $it, self::CLS_ITEM );
 			}
 		}
 ?>
@@ -269,7 +274,7 @@ class SlideShow {
 	<?php
 	}
 
-	private function _output_row( $caption, $url, $class, $image, $media, $image_sub = '', $media_sub = '' ) {
+	private function _output_row_dual( $caption, $url, $class, $image, $media, $image_sub = '', $media_sub = '' ) {
 		$media_style = empty( $image ) ? '' : ' style="background-image:url(' . esc_url( $image ) . ')"';
 		if ( $this->_is_dual ) {
 			$media_sub_style = empty( $image_sub ) ? '' : ' style="background-image:url(' . esc_url( $image_sub ) . ')"';
@@ -309,53 +314,85 @@ class SlideShow {
 	<?php
 	}
 
+	private function _output_row( $sl, $cls ) {
+		$_cap   = isset( $sl['caption'] ) ? esc_attr( $sl['caption'] ) : '';
+		$_url   = isset( $sl['url'] ) ? esc_attr( $sl['url'] ) : '';
+		$_img   = isset( $sl['image'] ) ? esc_url( $sl['image'] ) : '';
+		$_media = isset( $sl['media'] ) ? esc_attr( $sl['media'] ) : '';
+		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
+?>
+		<div class="<?php echo $cls ?>">
+			<div>
+				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php echo __( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+			</div>
+			<div>
+				<div class="<?php echo self::CLS_INFO ?>">
+					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
+					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
+					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php echo __( 'Select', 'default' ) ?></a></div>
+				</div>
+				<div class="<?php echo self::CLS_TN ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
+				</div>
+			</div>
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+		</div>
+<?php
+	}
+
 
 	// -------------------------------------------------------------------------
+
 
 	private function _save_slides( $post_id ) {
 		$keys = [ 'media', 'caption', 'url', 'delete' ];
 		if ( $this->_is_dual ) $keys[] = 'media_sub';
 
-		$ss = \st\field\get_multiple_post_meta_from_post( $this->_key, $keys );
-		$ss = array_filter( $ss, function ( $s ) { return ! $s['delete']; } );
-		$ss = array_values( $ss );
-		foreach ( $ss as &$s ) {
-			$pid = url_to_postid( $s['url'] );
-			if ( $pid !== 0 ) $s['url'] = $pid;
+		$sls = \st\field\get_multiple_post_meta_from_post( $this->_key, $keys );
+		$sls = array_filter( $sls, function ( $sl ) { return ! $sl['delete']; } );
+		$sls = array_values( $sls );
+
+		foreach ( $sls as &$sl ) {
+			$pid = url_to_postid( $sl['url'] );
+			if ( $pid !== 0 ) $sl['url'] = $pid;
 		}
 		$keys = [ 'media', 'caption', 'url' ];
 		if ( $this->_is_dual ) $keys[] = 'media_sub';
-		\st\field\update_multiple_post_meta( $post_id, $this->_key, $ss, $keys );
+		\st\field\update_multiple_post_meta( $post_id, $this->_key, $sls, $keys );
 	}
 
 	private function _get_slides( $post_id, $size = 'medium' ) {
 		$keys = [ 'media', 'caption', 'url' ];
 		if ( $this->_is_dual ) $keys[] = 'media_sub';
-		$ss = \st\field\get_multiple_post_meta( $post_id, $this->_key, $keys );
 
-		foreach ( $ss as &$s ) {
-			if ( isset( $s['url'] ) && is_numeric( $s['url'] ) ) {
-				$permalink = get_permalink( $s['url'] );
+		$sls = \st\field\get_multiple_post_meta( $post_id, $this->_key, $keys );
+
+		foreach ( $sls as &$sl ) {
+			if ( isset( $sl['url'] ) && is_numeric( $sl['url'] ) ) {
+				$permalink = get_permalink( $sl['url'] );
 				if ( $permalink !== false ) {
-					$s['post_id'] = $s['url'];
-					$s['url'] = $permalink;
+					$sl['post_id'] = $sl['url'];
+					$sl['url'] = $permalink;
 				}
 			}
-			$s['image'] = '';
-			if ( ! empty( $s['media'] ) ) {
-				$this->_get_images( $s, intval( $s['media'] ), $size, 'image', 'images' );
+			$sl['image'] = '';
+			if ( ! empty( $sl['media'] ) ) {
+				$this->_get_images( $sl, intval( $sl['media'] ), $size, 'image', 'images' );
 			}
 			if ( $this->_is_dual ) {
-				$s['image_sub'] = '';
-				if ( ! empty( $s['media_sub'] ) ) {
-					$this->_get_images( $s, intval( $s['media_sub'] ), $size, 'image_sub', 'images_sub' );
+				$sl['image_sub'] = '';
+				if ( ! empty( $sl['media_sub'] ) ) {
+					$this->_get_images( $sl, intval( $sl['media_sub'] ), $size, 'image_sub', 'images_sub' );
 				}
 			}
 		}
-		return $ss;
+		return $sls;
 	}
 
-	private function _get_images( &$s, $aid, $size, $key, $key_s ) {
+	private function _get_images( &$sl, $aid, $size, $key, $key_s ) {
 		if ( is_array( $size ) ) {
 			$imgs = [];
 			foreach ( $size as $sz ) {
@@ -363,14 +400,14 @@ class SlideShow {
 				if ( $img ) $imgs[] = $img[0];
 			}
 			if ( ! empty( $imgs ) ) {
-				$s[ $key_s ] = $imgs;
-				$s[ $key ]   = $imgs[ count( $imgs ) - 1 ];
+				$sl[ $key_s ] = $imgs;
+				$sl[ $key   ] = $imgs[ count( $imgs ) - 1 ];
 			}
 		} else {
 			$img = wp_get_attachment_image_src( $aid, $size );
 			if ( $img ) {
-				$s[ $key_s ] = [ $img[0] ];
-				$s[ $key ]   = $img[0];
+				$sl[ $key_s ] = [ $img[0] ];
+				$sl[ $key   ] = $img[0];
 			}
 		}
 	}
