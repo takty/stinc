@@ -355,22 +355,6 @@ class SlideShow {
 					$this->_get_images( $s, intval( $s['media_sub'] ), $size, 'image_sub', 'images_sub' );
 				}
 			}
-
-			// $aid = intval( $s['media'] );
-			// if ( is_array( $size ) ) {
-			// 	$imgs = [];
-			// 	foreach ( $size as $sz ) {
-			// 		$img = wp_get_attachment_image_src( $aid, $sz );
-			// 		if ( $img ) $imgs[] = $img[0];
-			// 	}
-			// 	if ( ! empty( $imgs ) ) {
-			// 		$s['images'] = $imgs;
-			// 		$s['image'] = $imgs[ count( $imgs ) - 1 ];
-			// 	}
-			// } else {
-			// 	$img = wp_get_attachment_image_src( $aid, $size );
-			// 	if ( $img ) $s['image'] = $img[0];
-			// }
 		}
 		return $ss;
 	}
