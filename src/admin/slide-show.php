@@ -217,25 +217,6 @@ class SlideShow {
 		return "<a href=\"$_url\">$div</a>";
 	}
 
-	public function echo_slides( $post_id = false, $size = 'medium' ) {
-		if ( $post_id === false ) $post_id = get_the_ID();
-		$sls = $this->_get_slides( $post_id, $size );
-
-		foreach ( $sls as $s ) {
-			$img = esc_url( $s['image'] );
-			$style = "background-image: url('{$img}');";
-	?>
-			<li>
-	<?php if ( ! empty( $s['url'] ) ) echo '<a href=' . esc_url( $s['url'] ) . '>'; ?>
-				<div style="<?php echo $style ?>">
-	<?php if ( ! empty( $s['caption'] ) ) echo esc_html( $s['caption'] ) ?>
-				</div>
-	<?php if ( ! empty( $s['url'] ) ) echo '</a>'; ?>
-			</li>
-	<?php
-		}
-	}
-
 	public function echo_slide_items( $post_id = false, $size = 'medium' ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
 		$sls = $this->_get_slides( $post_id, $size );
