@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-19
+ * @version 2018-11-10
  *
  */
 
@@ -62,8 +62,9 @@ class SlideShow {
 	private $_zoom_rate             = 1;
 	private $_duration_time         = 8; // [second]
 	private $_transition_time       = 1; // [second]
-	private $_is_background_visible = true;
 	private $_background_opacity    = 0.33;
+	private $_is_background_visible = true;
+	private $_is_side_slide_visible = false;
 	private $_is_picture_scroll     = false;
 	private $_is_dual               = false;
 
@@ -86,21 +87,6 @@ class SlideShow {
 		}
 	}
 
-	public function set_effect_type( $type ) {
-		$this->_effect_type = $type;
-		return $this;
-	}
-
-	public function set_caption_type( $type ) {
-		$this->_caption_type = $type;
-		return $this;
-	}
-
-	public function set_zoom_rate( $rate ) {
-		$this->_zoom_rate = $rate;
-		return $this;
-	}
-
 	public function set_duration_time( $sec ) {
 		$this->_duration_time = $sec;
 		return $this;
@@ -111,13 +97,28 @@ class SlideShow {
 		return $this;
 	}
 
-	public function set_background_visible( $visible ) {
-		$this->_is_background_visible = $visible;
+	public function set_zoom_rate( $rate ) {
+		$this->_zoom_rate = $rate;
+		return $this;
+	}
+
+	public function set_effect_type( $type ) {
+		$this->_effect_type = $type;
 		return $this;
 	}
 
 	public function set_background_opacity( $opacity ) {
 		$this->_background_opacity = $opacity;
+		return $this;
+	}
+
+	public function set_background_visible( $visible ) {
+		$this->_is_background_visible = $visible;
+		return $this;
+	}
+
+	public function set_side_slide_visible( $visible ) {
+		$this->_is_side_slide_visible = $visible;
 		return $this;
 	}
 
@@ -131,18 +132,24 @@ class SlideShow {
 		return $this;
 	}
 
+	public function set_caption_type( $type ) {
+		$this->_caption_type = $type;
+		return $this;
+	}
+
 	public function echo_slide_show( $post_id = false, $size = 'large', $class = '' ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
 		$ss = $this->_get_slides( $post_id, $size );
 		if ( empty( $ss ) ) return false;
 		$opts = [
-			'effect_type'           => $this->_effect_type,
-			'is_background_visible' => $this->_is_background_visible,
 			'duration_time'         => $this->_duration_time,
 			'transition_time'       => $this->_transition_time,
 			'zoom_rate'             => $this->_zoom_rate,
+			'effect_type'           => $this->_effect_type,
 			'background_opacity'    => $this->_background_opacity,
-			'picture_scroll'        => $this->_is_picture_scroll,
+			'is_background_visible' => $this->_is_background_visible,
+			'is_side_slide_visible' => $this->_is_side_slide_visible,
+			'is_picture_scroll'     => $this->_is_picture_scroll,
 		];
 		$opts_str = json_encode( $opts );
 	?>
