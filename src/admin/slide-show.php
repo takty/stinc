@@ -137,10 +137,7 @@ class SlideShow {
 		return $this;
 	}
 
-	public function echo_slide_show( $post_id = false, $size = 'large', $class = '' ) {
-		if ( $post_id === false ) $post_id = get_the_ID();
-		$ss = $this->_get_slides( $post_id, $size );
-		if ( empty( $ss ) ) return false;
+	private function _create_option_str() {
 		$opts = [
 			'duration_time'         => $this->_duration_time,
 			'transition_time'       => $this->_transition_time,
@@ -151,63 +148,80 @@ class SlideShow {
 			'is_side_slide_visible' => $this->_is_side_slide_visible,
 			'is_picture_scroll'     => $this->_is_picture_scroll,
 		];
-		$opts_str = json_encode( $opts );
-	?>
-		<section class="<?php echo self::NS . ( empty( $class ) ? '' : ( ' ' . $class ) ) ?>" id="<?php echo "{$this->_id}_$post_id" ?>">
+		return json_encode( $opts );
+	}
+
+	public function echo_slide_show( $post_id = false, $size = 'large', $class = '' ) {
+		if ( $post_id === false ) $post_id = get_the_ID();
+		$sls = $this->_get_slides( $post_id, $size );
+		if ( empty( $sls ) ) return false;
+
+		$dom_id   = "{$this->_id}-$post_id";
+		$dom_cls  = self::NS . ( empty( $class ) ? '' : ( ' ' . $class ) );
+		$opts_str = $this->_create_option_str();
+?>
+		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
-	<?php
-				foreach ( $ss as $s ) {
-					if ( ! isset( $s['images'] ) ) continue;
-					$this->_echo_slide_item( $s['url'], $s['caption'], $s['images'], isset( $s['images_sub'] ) ? $s['images_sub'] : false  );
+<?php
+				foreach ( $sls as $sl ) {
+					if ( isset( $sl['images'] ) ) $this->_echo_slide_item( $sl );
 				}
-	?>
+?>
 				</ul>
 				<div class="<?php echo self::CLS_PREV ?>"></div>
 				<div class="<?php echo self::CLS_NEXT ?>"></div>
 			</div>
 			<div class="<?php echo self::CLS_RIVETS ?>"></div>
-			<script>st_slide_show_initialize('<?php echo "{$this->_id}_$post_id" ?>', <?php echo $opts_str ?>);</script>
+			<script>st_slide_show_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
 		</section>
-	<?php
+<?php
 		return true;
 	}
 
-	private function _echo_slide_item( $url, $cap, $imgs, $imgs_sub ) {
-		$cap_div = '';
-		if ( ! empty( $cap ) ) {
-			$cap_sr = \st\separate_line( $cap, 'segment_raw' );
-			$cap_str = '<div><span>' . implode( '</span></div><div><span>', $cap_sr ) . '</span></div>';
-			$cap_div = '<div class="' . self::CLS_CAP . ' ' . $this->_caption_type . '">' . $cap_str . '</div>';
-		}
-		$eu_url = esc_url( $url );
-		$cont = ( ! empty( $url ) ) ? ( "<a href=\"$eu_url\">$cap_div</a>" ) : $cap_div;
+	private function _echo_slide_item( $sl ) {
+		$imgs   = $sl['images'];
+		$imgs_s = isset( $sl['images_sub'] ) ? $sl['images_sub'] : false;
 		$data = [];
-		if ( $this->_is_dual && $imgs_sub !== false ) {
-			if ( 2 <= count( $imgs_sub ) ) {
-				$data['img-sub-phone'] = esc_url( $imgs_sub[0] );
-				$data['img-sub']       = esc_url( $imgs_sub[1] );
-			} else {
-				$data['img-sub'] = esc_url( $imgs_sub[0] );
-			}
+
+		if ( $this->_is_dual && $imgs_s !== false ) {
+			self::_set_attrs( $data, 'img-sub', $imgs_s );
 		}
-		if ( 2 <= count( $imgs ) ) {
-			$data['img-phone'] = esc_url( $imgs[0] );
-			$data['img']       = esc_url( $imgs[1] );
-		} else {
-			$data['img'] = esc_url( $imgs[0] );
-		}
+		self::_set_attrs( $data, 'img', $imgs );
 		$attr = '';
 		foreach ( $data as $key => $val ) {
 			$attr .= " data-$key=\"$val\"";
 		}
+		$cont = $this->_create_slide_content( $sl['caption'], $sl['url'] );
 		echo "<li$attr>$cont</li>";
+	}
+
+	static private function _set_attrs( &$data, $key, $imgs ) {
+		if ( 2 <= count( $imgs ) ) {
+			$data["$key-phone"] = esc_url( $imgs[0] );
+			$data[ $key ]       = esc_url( $imgs[1] );
+		} else {
+			$data[ $key ] = esc_url( $imgs[0] );
+		}
+	}
+
+	private function _create_slide_content( $cap, $url ) {
+		$div = '';
+		if ( ! empty( $cap ) ) {
+			$ss  = \st\separate_line( $cap, 'segment_raw' );
+			$str = '<div><span>' . implode( '</span></div><div><span>', $ss ) . '</span></div>';
+			$div = '<div class="' . self::CLS_CAP . " {$this->_caption_type}\">$str</div>";
+		}
+		if ( empty( $url ) ) return $div;
+		$_url = esc_url( $url );
+		return "<a href=\"$_url\">$div</a>";
 	}
 
 	public function echo_slides( $post_id = false, $size = 'medium' ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
-		$ss = $this->_get_slides( $post_id, $size );
-		foreach ( $ss as $s ) {
+		$sls = $this->_get_slides( $post_id, $size );
+
+		foreach ( $sls as $s ) {
 			$img = esc_url( $s['image'] );
 			$style = "background-image: url('{$img}');";
 	?>
@@ -224,9 +238,10 @@ class SlideShow {
 
 	public function echo_slide_items( $post_id = false, $size = 'medium' ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
-		$ss = $this->_get_slides( $post_id, $size );
-		foreach ( $ss as $idx => $s ) {
-			$img = esc_url( $s['image'] );
+		$sls = $this->_get_slides( $post_id, $size );
+
+		foreach ( $sls as $idx => $sl ) {
+			$img   = esc_url( $sl['image'] );
 			$style = "background-image: url('{$img}');";
 			$event = "st_slide_show_page('{$this->_id}_$post_id', {$idx});"
 	?>
