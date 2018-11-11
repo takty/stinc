@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-10
+ * @version 2018-11-12
  *
  */
 
@@ -257,11 +257,11 @@ class SlideShow {
 		} else {
 			$this->_output_row( [], self::CLS_ITEM_TEMP );
 		}
-		foreach ( $this->_get_slides( $post->ID ) as $it ) {
+		foreach ( $this->_get_slides( $post->ID ) as $sl ) {
 			if ( $this->_is_dual ) {
-				$this->_output_row_dual( $it['caption'], $it['url'], self::CLS_ITEM, $it['image'], $it['media'], $it['image_sub'], $it['media_sub']  );
+				$this->_output_row_dual( $sl, self::CLS_ITEM );
 			} else {
-				$this->_output_row( $it, self::CLS_ITEM );
+				$this->_output_row( $sl, self::CLS_ITEM );
 			}
 		}
 ?>
@@ -271,16 +271,20 @@ class SlideShow {
 			<textarea id="<?php echo $this->_id_hta ?>" style="display: none;"></textarea>
 			<div id="<?php echo $this->_id_hd ?>" style="display: none;"></div>
 		</div>
-	<?php
+<?php
 	}
 
-	private function _output_row_dual( $caption, $url, $class, $image, $media, $image_sub = '', $media_sub = '' ) {
-		$media_style = empty( $image ) ? '' : ' style="background-image:url(' . esc_url( $image ) . ')"';
-		if ( $this->_is_dual ) {
-			$media_sub_style = empty( $image_sub ) ? '' : ' style="background-image:url(' . esc_url( $image_sub ) . ')"';
-		}
+	private function _output_row_dual( $sl, $cls ) {
+		$_cap     = isset( $sl['caption'] )   ? esc_attr( $sl['caption'] )   : '';
+		$_url     = isset( $sl['url'] )       ? esc_attr( $sl['url'] )       : '';
+		$_img     = isset( $sl['image'] )     ? esc_url( $sl['image'] )      : '';
+		$_img_s   = isset( $sl['image_sub'] ) ? esc_url( $sl['image_sub'] )  : '';
+		$_media   = isset( $sl['media'] )     ? esc_attr( $sl['media'] )     : '';
+		$_media_s = isset( $sl['media_sub'] ) ? esc_attr( $sl['media_sub'] ) : '';
+		$_style   = empty( $_img )    ? '' : " style=\"background-image:url($_img)\"";
+		$_style_s = empty( $_img_s )  ? '' : " style=\"background-image:url($_img_s)\"";
 	?>
-		<div class="<?php echo $class ?>">
+		<div class="<?php echo $cls ?>">
 			<div>
 				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></input><br /><?php echo __( 'Remove', 'default' ) ?></label>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
@@ -288,37 +292,31 @@ class SlideShow {
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
 					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
-					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo esc_attr( $caption ) ?>" /></div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
 					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
-					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo esc_attr( $url ) ?>" />
+					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
 					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php echo __( 'Select', 'default' ) ?></a></div>
 				</div>
-		<?php if ( $this->_is_dual ) : ?>
 				<div class="st-slide-show-thumbnail-wrap">
-		<?php endif; ?>
 					<div class="<?php echo self::CLS_TN ?>">
-						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $media_style ?>></div></a>
+						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
 					</div>
-		<?php if ( $this->_is_dual ) : ?>
 					<div class="<?php echo self::CLS_TN ?>">
-						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG_SUB ?>"><div class="<?php echo self::CLS_TN_IMG_SUB ?>"<?php echo $media_sub_style ?>></div></a>
+						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG_SUB ?>"><div class="<?php echo self::CLS_TN_IMG_SUB ?>"<?php echo $_style_s ?>></div></a>
 					</div>
 				</div>
-		<?php endif; ?>
 			</div>
-			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo esc_attr( $media ) ?>" />
-		<?php if ( $this->_is_dual ) : ?>
-			<input type="hidden" class="<?php echo self::CLS_MEDIA_SUB ?>" value="<?php echo esc_attr( $media_sub ) ?>" />
-		<?php endif; ?>
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+			<input type="hidden" class="<?php echo self::CLS_MEDIA_SUB ?>" value="<?php echo $_media_s ?>" />
 		</div>
 	<?php
 	}
 
 	private function _output_row( $sl, $cls ) {
 		$_cap   = isset( $sl['caption'] ) ? esc_attr( $sl['caption'] ) : '';
-		$_url   = isset( $sl['url'] ) ? esc_attr( $sl['url'] ) : '';
-		$_img   = isset( $sl['image'] ) ? esc_url( $sl['image'] ) : '';
-		$_media = isset( $sl['media'] ) ? esc_attr( $sl['media'] ) : '';
+		$_url   = isset( $sl['url'] )     ? esc_attr( $sl['url'] )     : '';
+		$_img   = isset( $sl['image'] )   ? esc_url( $sl['image'] )    : '';
+		$_media = isset( $sl['media'] )   ? esc_attr( $sl['media'] )   : '';
 		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
 ?>
 		<div class="<?php echo $cls ?>">
