@@ -6,45 +6,53 @@ namespace st\single_media_picker;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-21
+ * @version 2018-11-12
  *
  */
 
 
-const NS = 'st_single_media_picker';
+const NS = 'st-single-media-picker';
 
 
 function get_item( $key, $post_id = false ) {
 	if ( $post_id === false ) $post_id = get_the_ID();
 	$post = get_post( $post_id );
 
-	$id       = get_post_meta( $post->ID, $key . '_id',       TRUE );
-	$url      = get_post_meta( $post->ID, $key . '_url',      TRUE );
-	$title    = get_post_meta( $post->ID, $key . '_title',    TRUE );
-	$filename = get_post_meta( $post->ID, $key . '_filename', TRUE );
+	$id       = get_post_meta( $post->ID, $key . '_id',       true );
+	$url      = get_post_meta( $post->ID, $key . '_url',      true );
+	$title    = get_post_meta( $post->ID, $key . '_title',    true );
+	$filename = get_post_meta( $post->ID, $key . '_filename', true );
 	return compact('id', 'url', 'title', 'filename');
 }
 
 
 // -----------------------------------------------------------------------------
 
-function admin_enqueue_script( $url_to ) {
-	wp_enqueue_style(  'st-single-media-picker', $url_to . '/single-media-picker.min.css' );
-	wp_enqueue_script( 'st-single-media-picker', $url_to . '/single-media-picker.min.js' );
+
+function enqueue_script( $url_to ) {
+	$url_to = untrailingslashit( $url_to );
+	if ( is_admin() ) {
+		wp_enqueue_script( NS, $url_to . '/asset/single-media-picker.min.js' );
+		wp_enqueue_style(  NS, $url_to . '/asset/single-media-picker.min.css' );
+	}
 }
 
 function add_meta_box( $key, $label, $screen, $context = 'side', $title_editable = true ) {
 	\add_meta_box(
-		$key . '_mb', $label,
-		function ( $post ) use ( $key ) {
-			wp_nonce_field( $key, $key . '_nonce' );
-			output_html( $key, $title_editable );
-		},
+		"{$key}_mb", $label,
+		function ( $post ) use ( $key, $title_editable ) { _output_html( $key, $title_editable ); },
 		$screen, $context
 	);
 }
 
-function output_html( $key, $title_editable = true ) {
+function save_meta_box( $post_id, $key ) {
+	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
+	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
+	_save_item( $post_id, $key );
+}
+
+function _output_html( $key, $title_editable = true ) {
+	wp_nonce_field( $key, "{$key}_nonce" );
 	$item = get_item( $key );
 ?>
 	<div class="<?php echo NS ?>">
@@ -68,32 +76,37 @@ function output_html( $key, $title_editable = true ) {
 			<div class="<?php echo NS ?>_new_select_row">
 				<a href="javascript:void(0);" class="<?php echo NS ?>_select button"><?php _e( 'Add Media', 'default' ); ?></a>
 			</div>
-			<?php output_hidden_fields( $key, $item, ['id', 'url', 'filename'] ) ?>
+			<?php _output_hidden_fields( $key, $item, [ 'id', 'url', 'filename' ] ) ?>
 			<script>singleMediaPickerInit('<?php echo $key ?>', '<?php echo NS ?>');</script>
 		</div>
 	</div>
 <?php
 }
 
-function output_hidden_fields( $base_key, $item, $keys ) {
+function _output_hidden_fields( $base_key, $item, $keys ) {
 	foreach ( $keys as $key ) {
-		$val = $item[$key];
-		$k = $base_key . '_' . $key;
+		$_val = esc_attr( $item[$key] );
 ?>
-		<input type="hidden" id="<?php echo $k ?>" name="<?php echo $k ?>" value="<?php echo esc_attr( $val ) ?>" />
+		<input type="hidden" <?php \st\field\esc_key_e( "{$base_key}_$key" ) ?> value="<?php echo $_val ?>" />
 <?php
 	}
 }
 
-function save_meta_box( $post_id, $key ) {
-	if ( ! isset( $_POST[$key . '_nonce'] ) ) return;
-	if ( ! wp_verify_nonce( $_POST[$key . '_nonce'], $key ) ) return;
-	save_post( $post_id, $key );
-}
-
-function save_post( $post_id, $key ) {
+function _save_item( $post_id, $key ) {
 	update_post_meta( $post_id, $key . '_id',       $_POST[$key . '_id'] );
 	update_post_meta( $post_id, $key . '_url',      $_POST[$key . '_url'] );
 	update_post_meta( $post_id, $key . '_title',    $_POST[$key . '_title'] );
 	update_post_meta( $post_id, $key . '_filename', $_POST[$key . '_filename'] );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+/**
+ * @deprecated Deprecated. Use 'enqueue_script' instead.
+ */
+function admin_enqueue_script( $url_to ) {
+	wp_enqueue_style(  'st-single-media-picker', $url_to . '/single-media-picker.min.css' );
+	wp_enqueue_script( 'st-single-media-picker', $url_to . '/single-media-picker.min.js' );
 }
