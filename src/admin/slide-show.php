@@ -235,8 +235,8 @@ class SlideShow {
 	// -------------------------------------------------------------------------
 
 
-	public function add_meta_box( $label, $screen ) {
-		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen );
+	public function add_meta_box( $label, $screen, $context = 'advanced' ) {
+		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
 	}
 
 	public function save_meta_box( $post_id ) {
