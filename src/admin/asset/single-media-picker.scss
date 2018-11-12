@@ -7,6 +7,7 @@
  *
  */
 
+
 .st-single-media-picker {
 	margin: 1em 0;
 }
@@ -53,8 +54,10 @@
 }
 
 .st-single-media-picker-delete {
-	color: #a00;
 	white-space: nowrap;
+	color: #a00;
+	font-size: 11px;
+	line-height: 1;
 }
 
 .st-single-media-picker-name {

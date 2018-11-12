@@ -13,14 +13,15 @@ namespace st\single_media_picker;
 
 const NS = 'st-single-media-picker';
 
-const CLS_BODY    = NS . '-body';
-const CLS_ITEM    = NS . '-item';
-const CLS_ITEM_IR = NS . '-item-inside-row';
-const CLS_DEL     = NS . '-delete';
-const CLS_SEL_ROW = NS . '-select-row';
-const CLS_SEL     = NS . '-select';
-const CLS_TITLE   = NS . '-title';
-const CLS_NAME    = NS . '-name';
+const CLS_BODY         = NS . '-body';
+const CLS_ITEM         = NS . '-item';
+const CLS_ITEM_IR      = NS . '-item-inside-row';
+const CLS_DEL          = NS . '-delete';
+const CLS_SEL_ROW      = NS . '-select-row';
+const CLS_SEL          = NS . '-select';
+const CLS_TITLE        = NS . '-title';
+const CLS_NAME         = NS . '-name';
+const CLS_MEDIA_OPENER = NS . '-media-opener';
 
 
 function get_item( $key, $post_id = false ) {
@@ -81,19 +82,19 @@ function _output_html( $key, $title_editable = true ) {
 			</div>
 			<div>
 				<div class="<?php echo CLS_ITEM_IR ?>">
-					<span class="post-attributes-label"><?php _e( 'Title', 'default' ) ?>:</span>
-					<input <?php if ( ! $title_editable ) echo 'readonly="readonly"' ?> type="text" <?php \st\field\esc_key_e( "{$$key}_title" ) ?> value="<?php echo $_title ?>" />
+					<span><?php _e( 'Title', 'default' ) ?>:</span>
+					<input <?php if ( ! $title_editable ) echo 'readonly="readonly"' ?> type="text" <?php \st\field\esc_key_e( "{$key}_title" ) ?> value="<?php echo $_title ?>" />
 				</div>
 				<div class="<?php echo CLS_ITEM_IR ?>">
-					<span><a href="<?php echo $_url ?>" target="_blank"><?php _e( 'File name:', 'default' ) ?></a></span>
+					<span><a href="javascript:void(0);" class="<?php echo CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
 					<span class="<?php echo CLS_NAME ?>"><?php echo $_name ?></span>
 					<a href="javascript:void(0);" class="button <?php echo CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
 				</div>
 			</div>
 		</div>
 		<div class="<?php echo CLS_SEL_ROW ?>"><a href="javascript:void(0);" class="<?php echo CLS_SEL ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
-		<script>st_single_media_picker_initialize_admin('<?php echo $key ?>');</script>
 		<?php _output_hidden_fields( $key, $item, [ 'media', 'url', 'filename' ] ) ?>
+		<script>st_single_media_picker_initialize_admin('<?php echo $key ?>');</script>
 	</div>
 <?php
 }
