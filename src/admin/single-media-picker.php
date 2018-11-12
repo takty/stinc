@@ -13,16 +13,30 @@ namespace st\single_media_picker;
 
 const NS = 'st-single-media-picker';
 
+const CLS_BODY    = NS . '-body';
+const CLS_ITEM    = NS . '-item';
+const CLS_ITEM_IR = NS . '-item-inside-row';
+const CLS_DEL     = NS . '-delete';
+const CLS_SEL_ROW = NS . '-select-row';
+const CLS_SEL     = NS . '-select';
+const CLS_TITLE   = NS . '-title';
+const CLS_NAME    = NS . '-name';
+
 
 function get_item( $key, $post_id = false ) {
 	if ( $post_id === false ) $post_id = get_the_ID();
 	$post = get_post( $post_id );
 
-	$id       = get_post_meta( $post->ID, $key . '_id',       true );
-	$url      = get_post_meta( $post->ID, $key . '_url',      true );
-	$title    = get_post_meta( $post->ID, $key . '_title',    true );
-	$filename = get_post_meta( $post->ID, $key . '_filename', true );
-	return compact('id', 'url', 'title', 'filename');
+	$media    = get_post_meta( $post->ID, "{$key}_media",    true );
+	$url      = get_post_meta( $post->ID, "{$key}_url",      true );
+	$title    = get_post_meta( $post->ID, "{$key}_title",    true );
+	$filename = get_post_meta( $post->ID, "{$key}_filename", true );
+
+	// For compatibility
+	if ( empty( $media ) ) $media = get_post_meta( $post->ID, "{$key}_id", true );
+	$id = $media;
+
+	return compact( 'media', 'url', 'title', 'filename', 'id' );
 }
 
 
@@ -54,31 +68,32 @@ function save_meta_box( $post_id, $key ) {
 function _output_html( $key, $title_editable = true ) {
 	wp_nonce_field( $key, "{$key}_nonce" );
 	$item = get_item( $key );
+
+	$_url   = isset( $item['url'] )      ? esc_attr( $item['url'] )      : '';
+	$_name  = isset( $item['filename'] ) ? esc_html( $item['filename'] ) : '';
+	$_title = isset( $item['title'] )    ? esc_attr( $item['title'] )    : '';
 ?>
-	<div class="<?php echo NS ?>">
-		<div id="<?php echo $key ?>_item">
-			<div class="<?php echo NS ?>_item_row">
-				<div>
-					<a href="javascript:void(0);" class="<?php echo NS ?>_delete widget-control-remove"><?php _e( 'Remove', 'default' ); ?></a>
+	<div id="<?php echo $key ?>"></div>
+	<div class="<?php echo CLS_BODY ?>">
+		<div class="<?php echo CLS_ITEM ?>">
+			<div>
+				<a href="javascript:void(0);" class="<?php echo CLS_DEL ?> widget-control-remove"><?php _e( 'Remove', 'default' ); ?></a>
+			</div>
+			<div>
+				<div class="<?php echo CLS_ITEM_IR ?>">
+					<span class="post-attributes-label"><?php _e( 'Title', 'default' ) ?>:</span>
+					<input <?php if ( ! $title_editable ) echo 'readonly="readonly"' ?> type="text" <?php \st\field\esc_key_e( "{$$key}_title" ) ?> value="<?php echo $_title ?>" />
 				</div>
-				<div>
-					<div class="<?php echo NS ?>_row">
-						<span class="<?php echo NS ?>_title_handle post-attributes-label"><?php echo __( 'Title', 'default' ) ?>:</span>
-						<input <?php if (!$title_editable) echo 'readonly="readonly"' ?> type="text" id="<?php echo $key ?>_title" name="<?php echo $key ?>_title" value="<?php echo esc_attr( $item['title'] ) ?>" />
-					</div>
-					<div class="<?php echo NS ?>_row">
-						<span><a href="<?php echo esc_url( $item['url'] ) ?>" target="_blank"><?php echo __( 'File name:', 'default' ) ?></a></span>
-						<span class="<?php echo NS ?>_name"><?php echo esc_html( $item['filename'] ) ?></span>
-						<a href="javascript:void(0);" class="button <?php echo NS ?>_select"><?php echo __( 'Select', 'default' ) ?></a>
-					</div>
+				<div class="<?php echo CLS_ITEM_IR ?>">
+					<span><a href="<?php echo $_url ?>" target="_blank"><?php _e( 'File name:', 'default' ) ?></a></span>
+					<span class="<?php echo CLS_NAME ?>"><?php echo $_name ?></span>
+					<a href="javascript:void(0);" class="button <?php echo CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
 				</div>
 			</div>
-			<div class="<?php echo NS ?>_new_select_row">
-				<a href="javascript:void(0);" class="<?php echo NS ?>_select button"><?php _e( 'Add Media', 'default' ); ?></a>
-			</div>
-			<?php _output_hidden_fields( $key, $item, [ 'id', 'url', 'filename' ] ) ?>
-			<script>singleMediaPickerInit('<?php echo $key ?>', '<?php echo NS ?>');</script>
 		</div>
+		<div class="<?php echo CLS_SEL_ROW ?>"><a href="javascript:void(0);" class="<?php echo CLS_SEL ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
+		<script>st_single_media_picker_initialize_admin('<?php echo $key ?>');</script>
+		<?php _output_hidden_fields( $key, $item, [ 'media', 'url', 'filename' ] ) ?>
 	</div>
 <?php
 }
@@ -93,7 +108,7 @@ function _output_hidden_fields( $base_key, $item, $keys ) {
 }
 
 function _save_item( $post_id, $key ) {
-	update_post_meta( $post_id, $key . '_id',       $_POST[$key . '_id'] );
+	update_post_meta( $post_id, $key . '_media',    $_POST[$key . '_media'] );
 	update_post_meta( $post_id, $key . '_url',      $_POST[$key . '_url'] );
 	update_post_meta( $post_id, $key . '_title',    $_POST[$key . '_title'] );
 	update_post_meta( $post_id, $key . '_filename', $_POST[$key . '_filename'] );

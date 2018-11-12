@@ -3,72 +3,78 @@
  * Single Media Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-07-13
+ * @version 2018-11-12
  *
  */
 
 
-function singleMediaPickerInit(key, opt_ns) {
-	var ns = opt_ns || 'st_single_media_picker';
-	initItem(ns, key);
+function st_single_media_picker_initialize_admin(key) {
+	const NS = 'st-single-media-picker';
 
-	function initItem(ns, key) {
-		var itemElm = document.getElementById(key + '_item');
-		var nameElm = itemElm.getElementsByClassName(ns + '_name')[0];
-		var selBtns = itemElm.getElementsByClassName(ns + '_select');
-		var delBtn = itemElm.getElementsByClassName(ns + '_delete')[0];
+	const CLS_NAME     = NS + '-name';
+	const CLS_SEL      = NS + '-select';
+	const CLS_DEL      = NS + '-delete';
+	const CLS_ITEM = NS + '-item';
+	const CLS_SEL_ROW  = NS + '-select-row';
 
-		var itemRow = itemElm.getElementsByClassName(ns + '_item_row')[0];
-		var newSelRow = itemElm.getElementsByClassName(ns + '_new_select_row')[0];
+	const name_media    = key + '_media';
+	const name_url      = key + '_url';
+	const name_title    = key + '_title';
+	const name_filename = key + '_filename';
 
-		var cm = null;
-		for (var i = 0; i < selBtns.length; i += 1) {
-			var selBtn = selBtns[i];
-			selBtn.addEventListener('click', function (e) {
-				e.preventDefault();
-				if (!cm) {
-					cm = createMedia(selBtn.innerText, false);
-					cm.on('select', function () {
-						var m = cm.state().get('selection').first();
-						setItem(key, m.toJSON(), nameElm);
-						itemRow.style.display = '';
-						newSelRow.style.display = 'none';
-					});
-				}
-				cm.open();
+	const id = key;
+
+	const body   = document.querySelector('#' + id + ' + div');
+	const item   = body.getElementsByClassName(CLS_ITEM)[0];
+	const name   = body.getElementsByClassName(CLS_NAME)[0];
+	const selRow = body.getElementsByClassName(CLS_SEL_ROW)[0];
+	const sel    = body.getElementsByClassName(CLS_SEL)[0];
+	const del    = body.getElementsByClassName(CLS_DEL)[0];
+
+	let cm = null;
+	sel.addEventListener('click', (e) => {
+		e.preventDefault();
+		if (!cm) {
+			cm = create_media(false);
+			cm.on('select', () => {
+				const m = cm.state().get('selection').first();
+				set_item(m.toJSON());
+				item.style.display = '';
+				selRow.style.display = 'none';
 			});
 		}
-		delBtn.addEventListener('click', function (e) {
-			setItem(key, {id: '', url: '', title: '', filename: ''}, nameElm);
-			itemRow.style.display = 'none';
-			newSelRow.style.display = '';
-		});
+		cm.open();
+	});
+	del.addEventListener('click', () => {
+		set_item({ id: '', url: '', title: '', filename: '' });
+		item.style.display = 'none';
+		selRow.style.display = '';
+	});
 
-		if (document.getElementById(key + '_id').value === '') {
-			itemRow.style.display = 'none';
-			newSelRow.style.display = '';
-		} else {
-			itemRow.style.display = '';
-			newSelRow.style.display = 'none';
-		}
+	if (body.getElementById(name_media).value === '') {
+		item.style.display = 'none';
+		selRow.style.display = '';
+	} else {
+		item.style.display = '';
+		selRow.style.display = 'none';
 	}
 
-	function setItem(key, f, nameElm) {
-		setValueToId(key + '_id',       f.id);
-		setValueToId(key + '_url',      f.url);
-		setValueToId(key + '_title',    f.title);
-		setValueToId(key + '_filename', f.filename);
-		if (nameElm) nameElm.innerText = f.filename;
+	function set_item(f) {
+		set_val_to_id(name_media,    f.id);
+		set_val_to_id(name_url,      f.url);
+		set_val_to_id(name_title,    f.title);
+		set_val_to_id(name_filename, f.filename);
+		name.innerText = f.filename;
 	}
 
-	function setValueToId(id, value) {
-		var elm = document.getElementById(id);
+	function set_val_to_id(id, value) {
+		const elm = document.getElementById(id);
 		if (elm) elm.value = value;
 	}
 
-	function createMedia(title, multiple) {
+	function create_media(multiple) {
 		return wp.media({
-			title: title,
+			title: body.getElementsByClassName(CLS_SEL)[0].innerText,
 			library: {type: ''},
 			frame: 'select',
 			multiple: multiple,

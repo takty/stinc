@@ -1,0 +1,62 @@
+/**
+ *
+ * Single Media Picker (SCSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2018-11-12
+ *
+ */
+
+.st-single-media-picker {
+	margin: 1em 0;
+}
+
+.st-single-media-picker-item {
+	display: flex;
+
+	> div:nth-child(1) {
+		padding: 4px 2px;
+	}
+	div:nth-child(2) {
+		flex-grow: 1;
+	}
+}
+
+.st-single-media-picker-item-inside-row {
+	display: flex;
+	align-items: center;
+	padding: 2px 0;
+
+	&:nth-child(2) > *:nth-child(2) {
+		padding-left: 6px;
+	}
+	> span:nth-child(2) {
+		flex-grow: 1;
+	}
+	&:nth-child(1) > input {
+		width: 100%;
+	}
+	span:first-child {
+		display: inline-block;
+		padding-right: 4px;
+		min-width: 5rem;
+		text-align: right;
+	}
+}
+
+.st-single-media-picker-select-row {
+	text-align: right;
+}
+
+.st-single-media-picker-select {
+	margin-left: 4px !important;
+}
+
+.st-single-media-picker-delete {
+	color: #a00;
+	white-space: nowrap;
+}
+
+.st-single-media-picker-name {
+	word-break: break-all;
+}
