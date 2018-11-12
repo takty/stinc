@@ -52,7 +52,7 @@ function register_post_type(
 	if ( $add_tag )      _add_tag_taxonomy( $post_type, $slug );
 
 	_set_column_width( $post_type, $add_category, $add_tag );
-	add_filter( 'enter_title_here', '_cb_enter_title_here', 10, 2 );
+	add_filter( 'enter_title_here', '\st\article\_cb_enter_title_here', 10, 2 );
 }
 
 function _add_category_taxonomy( $post_type, $slug ) {
