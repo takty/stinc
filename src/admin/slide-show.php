@@ -122,8 +122,8 @@ class SlideShow {
 		return $this;
 	}
 
-	public function set_picture_scroll( $do ) {
-		$this->_is_picture_scroll = $do;
+	public function set_picture_scroll( $enabled ) {
+		$this->_is_picture_scroll = $enabled;
 		return $this;
 	}
 
@@ -411,3 +411,28 @@ class SlideShow {
 	}
 
 }
+
+
+// -----------------------------------------------------------------------------
+
+
+namespace st\slide_show;
+
+function initialize( $key ) { new \st\SlideShow( $key ); }
+
+function enqueue_script( $url_to ) { \st\SlideShow::get_instance()->enqueue_script( $url_to ); }
+function set_duration_time( $set_duration_time ) { return \st\SlideShow::get_instance()->set_duration_time( $set_duration_time ); }
+function set_transition_time( $sec ) { return \st\SlideShow::get_instance()->set_transition_time( $sec ); }
+function set_zoom_rate( $rate ) { return \st\SlideShow::get_instance()->set_zoom_rate( $rate ); }
+function set_effect_type( $type ) { return \st\SlideShow::get_instance()->set_effect_type( $type ); }
+function set_background_opacity( $opacity ) { return \st\SlideShow::get_instance()->set_background_opacity( $opacity ); }
+function set_background_visible( $visible ) { return \st\SlideShow::get_instance()->set_background_visible( $visible ); }
+function set_side_slide_visible( $visible ) { return \st\SlideShow::get_instance()->set_side_slide_visible( $visible ); }
+function set_picture_scroll( $enabled ) { return \st\SlideShow::get_instance()->set_picture_scroll( $enabled ); }
+function set_dual_enabled( $enabled ) { return \st\SlideShow::get_instance()->set_dual_enabled( $enabled ); }
+function set_caption_type( $type ) { return \st\SlideShow::get_instance()->set_caption_type( $type ); }
+function echo_slide_show( $post_id = false, $size = 'large', $class = '' ) { return \st\SlideShow::get_instance()->echo_slide_show( $post_id, $size, $class ); }
+function echo_slide_items( $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance()->echo_slide_items( $post_id, $size ); }
+
+function add_meta_box( $label, $screen ) { \st\SlideShow::get_instance()->add_meta_box( $label, $screen ); }
+function save_meta_box( $post_id ) { \st\SlideShow::get_instance()->save_meta_box( $post_id ); }
