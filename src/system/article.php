@@ -6,7 +6,7 @@ namespace st\article;
  * Article Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-17
+ * @version 2018-11-12
  *
  */
 
@@ -16,7 +16,15 @@ require_once __DIR__ . '/taxonomy.php';
 require_once __DIR__ . '/sticky.php';
 
 
-function register_post_type( $post_type = 'article', $slug = false, $labels = [ 'type_label' => 'Article' ], $args = [], $add_category = true, $add_tag = false ) {
+function register_post_type(
+	$post_type    = 'article',
+	$slug         = false,
+	$labels       = [ 'type_label' => 'Article' ],
+	$args         = [],
+	$add_category = true,
+	$add_tag      = false,
+	$by_post_name = false
+) {
 	if ( $slug === false ) $slug = $post_type;
 	$base_arg = [
 		'label'         => $labels['type_label'],
@@ -29,42 +37,22 @@ function register_post_type( $post_type = 'article', $slug = false, $labels = [ 
 		'has_archive'   => true,
 		'rewrite'       => false,
 	];
-	if ( ! empty( $labels['enter_title_here'] ) ) $base_arg['labels']['enter_title_here'] = $labels['enter_title_here'];
+	if ( ! empty( $labels['enter_title_here'] ) ) {
+		$base_arg['labels']['enter_title_here'] = $labels['enter_title_here'];
+	}
 	$args = array_merge( $base_arg, $args );
 	\register_post_type( $post_type, $args );
-	\st\post_type\add_rewrite_rules( $post_type, $slug );
-	if ( in_array( 'sticky', $args['supports'], true ) ) \st\sticky\make_custom_post_type_sticky( [ $post_type ] );
 
+	\st\post_type\add_rewrite_rules( $post_type, $slug, 'date', $by_post_name );
+
+	if ( in_array( 'sticky', $args['supports'], true ) ) {
+		\st\sticky\make_custom_post_type_sticky( [ $post_type ] );
+	}
 	if ( $add_category ) _add_category_taxonomy( $post_type, $slug );
 	if ( $add_tag )      _add_tag_taxonomy( $post_type, $slug );
 
-	add_action( 'wp_loaded', function () use ( $post_type, $add_category, $add_tag )  {
-		$cs = [ 'cb', 'title' ];
-		if ( $add_category ) $cs[] = ['name' => "{$post_type}_category", 'width' => '10%'];
-		if ( $add_tag )      $cs[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
-		if ( class_exists( '\st\Multihome' ) ) {
-			$mh = \st\Multihome::get_instance();
-			if ( $mh->has_tag( $post_type ) ) {
-				$cs[] = [ 'name' => $mh->get_taxonomy(), 'width' => '10%' ];
-			}
-		}
-		if ( class_exists( '\st\Multilang' ) ) {
-			$ml = \st\Multilang::get_instance();
-			if ( $ml->has_tag( $post_type ) ) {
-				$cs[] = [ 'name' => $ml->get_taxonomy(), 'width' => '10%' ];
-			}
-		}
-		$cs[] = 'date';
-		\st\field\set_admin_columns( $post_type, $cs );
-	} );
-
-	add_filter( 'enter_title_here', function ( $enter_title_here, $post ) {
-		$post_type = get_post_type_object( $post->post_type );
-		if ( isset( $post_type->labels->enter_title_here ) && $post_type->labels->enter_title_here && is_string( $post_type->labels->enter_title_here ) ) {
-			$enter_title_here = esc_html( $post_type->labels->enter_title_here );
-		}
-		return $enter_title_here;
-	}, 10, 2 );
+	_set_column_width( $post_type, $add_category, $add_tag );
+	add_filter( 'enter_title_here', '_cb_enter_title_here', 10, 2 );
 }
 
 function _add_category_taxonomy( $post_type, $slug ) {
@@ -91,6 +79,36 @@ function _add_tag_taxonomy( $post_type, $slug ) {
 		'show_admin_column' => true
 	] );
 	\st\taxonomy\set_taxonomy_post_type_specific( [ "{$post_type}_tag" ], $post_type );
+}
+
+function _set_column_width( $post_type, $add_category, $add_tag ) {
+	add_action( 'wp_loaded', function () use ( $post_type, $add_category, $add_tag )  {
+		$cs = [ 'cb', 'title' ];
+		if ( $add_category ) $cs[] = ['name' => "{$post_type}_category", 'width' => '10%'];
+		if ( $add_tag )      $cs[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
+		if ( class_exists( '\st\Multihome' ) ) {
+			$mh = \st\Multihome::get_instance();
+			if ( $mh->has_tag( $post_type ) ) {
+				$cs[] = [ 'name' => $mh->get_taxonomy(), 'width' => '10%' ];
+			}
+		}
+		if ( class_exists( '\st\Multilang' ) ) {
+			$ml = \st\Multilang::get_instance();
+			if ( $ml->has_tag( $post_type ) ) {
+				$cs[] = [ 'name' => $ml->get_taxonomy(), 'width' => '10%' ];
+			}
+		}
+		$cs[] = 'date';
+		\st\field\set_admin_columns( $post_type, $cs );
+	} );
+}
+
+function _cb_enter_title_here( $enter_title_here, $post ) {
+	$post_type = get_post_type_object( $post->post_type );
+	if ( isset( $post_type->labels->enter_title_here ) && $post_type->labels->enter_title_here && is_string( $post_type->labels->enter_title_here ) ) {
+		$enter_title_here = esc_html( $post_type->labels->enter_title_here );
+	}
+	return $enter_title_here;
 }
 
 function get_sticky_articles( $post_type = 'article', $ml_tag = true, $opts = [] ) {

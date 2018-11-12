@@ -6,14 +6,14 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-02
+ * @version 2018-11-12
  *
  */
 
 
-function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date' ) {
-	add_post_type_rewrite_rules( $post_type, $struct );
-	add_post_type_link_filter( $post_type );
+function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date', $by_post_name = false ) {
+	add_post_type_rewrite_rules( $post_type, $struct, $by_post_name );
+	add_post_type_link_filter( $post_type, $by_post_name );
 	add_archive_rewrite_rules( $post_type, $struct );
 	add_archive_link_filter( $post_type, $struct );
 	add_date_archive_rewrite_rules( $post_type, $struct, $date_slug );
