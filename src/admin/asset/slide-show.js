@@ -123,10 +123,10 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	}
 
 	function assign_event_listener(item) {
-		const del = item.getElementsByClassName(CLS_DEL)[0];
-		const sel_url = item.getElementsByClassName(CLS_SEL_URL)[0];
-		const sel_img = item.getElementsByClassName(CLS_SEL_IMG)[0];
-		const url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
+		const del        = item.getElementsByClassName(CLS_DEL)[0];
+		const sel_url    = item.getElementsByClassName(CLS_SEL_URL)[0];
+		const sel_img    = item.getElementsByClassName(CLS_SEL_IMG)[0];
+		const url_opener = item.getElementsByClassName(CLS_URL_OPENER)[0];
 
 		del.addEventListener('click', function (e) {
 			if (e.target.checked) {
