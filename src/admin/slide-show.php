@@ -265,7 +265,7 @@ class SlideShow {
 			}
 		}
 ?>
-				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php echo __( 'Add Media', 'default' ) ?></a></div>
+				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
 			<script>st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);</script>
 			<textarea id="<?php echo $this->_id_hta ?>" style="display: none;"></textarea>
@@ -286,7 +286,7 @@ class SlideShow {
 	?>
 		<div class="<?php echo $cls ?>">
 			<div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></input><br /><?php echo __( 'Remove', 'default' ) ?></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></input><br /><?php _e( 'Remove', 'default' ) ?></label>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
 			</div>
 			<div>
@@ -295,7 +295,7 @@ class SlideShow {
 					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
 					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
 					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
-					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php echo __( 'Select', 'default' ) ?></a></div>
+					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a></div>
 				</div>
 				<div class="st-slide-show-thumbnail-wrap">
 					<div class="<?php echo self::CLS_TN ?>">
@@ -322,7 +322,7 @@ class SlideShow {
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php echo __( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
@@ -330,7 +330,7 @@ class SlideShow {
 					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
 					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
 					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
-					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php echo __( 'Select', 'default' ) ?></a></div>
+					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a></div>
 				</div>
 				<div class="<?php echo self::CLS_TN ?>">
 					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
