@@ -3,45 +3,46 @@
  * Slide Show Admin (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-22
+ * @version 2018-11-12
  *
  */
 
 function st_slide_show_initialize_admin(key, is_dual) {
 	if (is_dual === undefined) is_dual = false;
 
-	var NS            = 'st-slide-show';
+	const NS            = 'st-slide-show';
 
-	var CLS_TABLE       = NS + '-table';
-	var CLS_ITEM        = NS + '-item';
-	var CLS_ITEM_TEMP   = NS + '-item-template';
-	var CLS_HANDLE      = NS + '-handle';
-	var CLS_ADD_ROW     = NS + '-add-row';
-	var CLS_ADD         = NS + '-add';
-	var CLS_DEL         = NS + '-delete';
-	var CLS_URL         = NS + '-url';
-	var CLS_URL_OPENER  = NS + '-url-opener';
-	var CLS_SEL_URL     = NS + '-select-url';
-	var CLS_SEL_IMG     = NS + '-select-img';
-	var CLS_SEL_IMG_SUB = NS + '-select-img-sub';
-	var CLS_TN_IMG      = NS + '-thumbnail-img';
-	var CLS_TN_IMG_SUB  = NS + '-thumbnail-img-sub';
-	var CLS_MEDIA       = NS + '-media';
-	var CLS_MEDIA_SUB   = NS + '-media-sub';
-	var CLS_CAP         = NS + '-caption';
-	var CLS_ITEM_DEL    = NS + '-item-deleted';
+	const CLS_TABLE       = NS + '-table';
+	const CLS_ITEM        = NS + '-item';
+	const CLS_ITEM_TEMP   = NS + '-item-template';
+	const CLS_HANDLE      = NS + '-handle';
+	const CLS_ADD_ROW     = NS + '-add-row';
+	const CLS_ADD         = NS + '-add';
+	const CLS_DEL         = NS + '-delete';
+	const CLS_URL         = NS + '-url';
+	const CLS_URL_OPENER  = NS + '-url-opener';
+	const CLS_SEL_URL     = NS + '-select-url';
+	const CLS_SEL_IMG     = NS + '-select-img';
+	const CLS_SEL_IMG_SUB = NS + '-select-img-sub';
+	const CLS_TN_IMG      = NS + '-thumbnail-img';
+	const CLS_TN_IMG_SUB  = NS + '-thumbnail-img-sub';
+	const CLS_MEDIA       = NS + '-media';
+	const CLS_MEDIA_SUB   = NS + '-media-sub';
+	const CLS_CAP         = NS + '-caption';
+	const CLS_ITEM_DEL    = NS + '-item-deleted';
 
-	var id     = key;
-	var id_hta = key + '-hidden-textarea';
-	var id_hd  = key + '-hidden-div';
+	const id     = key;
+	const id_hta = key + '-hidden-textarea';
+	const id_hd  = key + '-hidden-div';
 
-	var count  = document.getElementById(id);
-	var body   = document.querySelector('#' + id + ' + div');
+	const count  = document.getElementById(id);
+	const body   = document.querySelector('#' + id + ' + div');
 
-	var tbl    = body.getElementsByClassName(CLS_TABLE)[0];
-	var items  = tbl.getElementsByClassName(CLS_ITEM);
-	var temp   = tbl.getElementsByClassName(CLS_ITEM_TEMP)[0];
-	var addRow = tbl.getElementsByClassName(CLS_ADD_ROW)[0];
+	const tbl    = body.getElementsByClassName(CLS_TABLE)[0];
+	const items  = tbl.getElementsByClassName(CLS_ITEM);
+	const temp   = tbl.getElementsByClassName(CLS_ITEM_TEMP)[0];
+	const addRow = tbl.getElementsByClassName(CLS_ADD_ROW)[0];
+	const add    = tbl.getElementsByClassName(CLS_ADD)[0];
 
 	if (count.tagName !== 'INPUT') console.error('The key or id conflicts.');
 
@@ -57,16 +58,15 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	});
 
 	reorder_item_ids();
-	for (var i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
+	for (let i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
 
-	var gp = null;
-	var add = tbl.getElementsByClassName(CLS_ADD)[0];
+	let gp = null;
 	add.addEventListener('click', function (e) {
 		e.preventDefault();
 		if (!gp) {
 			gp = create_media(true);
 			gp.on('select', function () {
-				var ms = gp.state().get('selection');
+				const ms = gp.state().get('selection');
 				ms.each(function (m) {add_new_item(m.toJSON());});
 				reorder_item_ids();
 			});
@@ -75,17 +75,17 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	});
 
 	function reorder_item_ids() {
-		for (var i = 0; i < items.length; i += 1) {
-			var media      = items[i].getElementsByClassName(CLS_MEDIA)[0];
-			var caption    = items[i].getElementsByClassName(CLS_CAP)[0];
-			var url        = items[i].getElementsByClassName(CLS_URL)[0];
-			var url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
-			var del        = items[i].getElementsByClassName(CLS_DEL)[0];
-			var thumbnail  = items[i].getElementsByClassName(CLS_TN_IMG)[0];
-			var sel_url    = items[i].getElementsByClassName(CLS_SEL_URL)[0];
-			var sel_img    = items[i].getElementsByClassName(CLS_SEL_IMG)[0];
+		for (let i = 0; i < items.length; i += 1) {
+			const media      = items[i].getElementsByClassName(CLS_MEDIA)[0];
+			const caption    = items[i].getElementsByClassName(CLS_CAP)[0];
+			const url        = items[i].getElementsByClassName(CLS_URL)[0];
+			const url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
+			const del        = items[i].getElementsByClassName(CLS_DEL)[0];
+			const thumbnail  = items[i].getElementsByClassName(CLS_TN_IMG)[0];
+			const sel_url    = items[i].getElementsByClassName(CLS_SEL_URL)[0];
+			const sel_img    = items[i].getElementsByClassName(CLS_SEL_IMG)[0];
 
-			var idi = id + '_' + i;
+			const idi = id + '_' + i;
 			items[i].id                 = idi;
 			media.id     = media.name   = idi + '_media';
 			caption.id   = caption.name = idi + '_caption';
@@ -98,9 +98,9 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			url_opener.setAttribute('data-idi', idi);
 
 			if (is_dual) {
-				var media_sub     = items[i].getElementsByClassName(CLS_MEDIA_SUB)[0];
-				var thumbnail_sub = items[i].getElementsByClassName(CLS_TN_IMG_SUB)[0];
-				var sel_img_sub   = items[i].getElementsByClassName(CLS_SEL_IMG_SUB)[0];
+				const media_sub     = items[i].getElementsByClassName(CLS_MEDIA_SUB)[0];
+				const thumbnail_sub = items[i].getElementsByClassName(CLS_TN_IMG_SUB)[0];
+				const sel_img_sub   = items[i].getElementsByClassName(CLS_SEL_IMG_SUB)[0];
 
 				media_sub.id     = media_sub.name = idi + '_media_sub';
 				thumbnail_sub.id                  = idi + '_thumbnail_sub';
@@ -112,7 +112,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	}
 
 	function add_new_item(f) {
-		var item = temp.cloneNode(true);
+		const item = temp.cloneNode(true);
 		item.getElementsByClassName(CLS_CAP)[0].value = f.caption;
 		item.getElementsByClassName(CLS_MEDIA)[0].value = f.id;
 		item.getElementsByClassName(CLS_TN_IMG)[0].style.backgroundImage = "url('" + f.url + "')";
@@ -123,10 +123,10 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	}
 
 	function assign_event_listener(item) {
-		var del = item.getElementsByClassName(CLS_DEL)[0];
-		var sel_url = item.getElementsByClassName(CLS_SEL_URL)[0];
-		var sel_img = item.getElementsByClassName(CLS_SEL_IMG)[0];
-		var url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
+		const del = item.getElementsByClassName(CLS_DEL)[0];
+		const sel_url = item.getElementsByClassName(CLS_SEL_URL)[0];
+		const sel_img = item.getElementsByClassName(CLS_SEL_IMG)[0];
+		const url_opener = items[i].getElementsByClassName(CLS_URL_OPENER)[0];
 
 		del.addEventListener('click', function (e) {
 			if (e.target.checked) {
@@ -137,19 +137,19 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		});
 		sel_url.addEventListener('click', function (e) {
 			e.preventDefault();
-			var idi = e.target.getAttribute('data-idi');
+			const idi = e.target.getAttribute('data-idi');
 			open_link_picker(function (title, url) {
 				document.getElementById(idi + '_url').value = url;
 			});
 		});
-		var p = null;
+		let p = null;
 		sel_img.addEventListener('click', function (e) {
 			e.preventDefault();
-			var idi = e.target.getAttribute('data-idi');
+			const idi = e.target.getAttribute('data-idi');
 			if (!p) {
 				p = create_media(false);
 				p.on('select', function () {
-					var f = p.state().get('selection').first().toJSON();
+					const f = p.state().get('selection').first().toJSON();
 					document.getElementById(idi + '_caption').value = f.caption;
 					document.getElementById(idi + '_media').value = f.id;
 					document.getElementById(idi + '_thumbnail').style.backgroundImage = 'url(' + f.url + ')';
@@ -159,21 +159,21 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		});
 		url_opener.addEventListener('click', function (e) {
 			e.preventDefault();
-			var idi = e.target.getAttribute('data-idi');
-			var url_input = document.getElementById(idi + '_url');
-			var url = url_input.value;
+			const idi = e.target.getAttribute('data-idi');
+			const url_input = document.getElementById(idi + '_url');
+			const url = url_input.value;
 			if (url) window.open(url);
 		});
 		if (is_dual) {
-			var sel_img_sub = item.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
-			var p_sub = null;
+			const sel_img_sub = item.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
+			let p_sub = null;
 			sel_img_sub.addEventListener('click', function (e) {
 				e.preventDefault();
-				var idi = e.target.getAttribute('data-idi');
+				const idi = e.target.getAttribute('data-idi');
 				if (!p_sub) {
 					p_sub = create_media(false);
 					p_sub.on('select', function () {
-						var f = p_sub.state().get('selection').first().toJSON();
+						const f = p_sub.state().get('selection').first().toJSON();
 						document.getElementById(idi + '_media_sub').value = f.id;
 						document.getElementById(idi + '_thumbnail_sub').style.backgroundImage = 'url(' + f.url + ')';
 					});
@@ -193,13 +193,13 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	}
 
 	function open_link_picker(callback) {
-		var ta = document.getElementById(id_hta);
-		var d = document.getElementById(id_hd);
-		var to = null;
-		var toFn = function () {
+		const ta = document.getElementById(id_hta);
+		const d = document.getElementById(id_hd);
+		let to = null;
+		const toFn = function () {
 			if (ta.value !== '') {
 				d.innerHTML = ta.value;
-				var a = d.getElementsByTagName('a')[0];
+				const a = d.getElementsByTagName('a')[0];
 				callback(a.innerText, a.href);
 				to = null;
 				jQuery('#wp-link').find('.query-results').off('river-select', onSelectFn);
@@ -207,7 +207,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			}
 			to = setTimeout(toFn, 100);
 		}
-		var onSelectFn = function (e, li) {
+		const onSelectFn = function (e, li) {
 			jQuery('#wp-link-text').val(li.hasClass('no-title') ? '' : li.children('.item-title').text());
 		};
 		ta.value = '';
