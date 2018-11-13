@@ -3,7 +3,7 @@
  * Single Media Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-12
+ * @version 2018-11-13
  *
  */
 
@@ -11,12 +11,16 @@
 function st_single_media_picker_initialize_admin(key) {
 	const NS = 'st-single-media-picker';
 
-	const CLS_NAME         = NS + '-name';
-	const CLS_SEL_ROW      = NS + '-select-row';
+	const CLS_FILENAME     = NS + '-filename';
 	const CLS_SEL          = NS + '-select';
+	const CLS_ADD_ROW      = NS + '-add-row';
+	const CLS_ADD          = NS + '-add';
 	const CLS_DEL          = NS + '-delete';
 	const CLS_ITEM         = NS + '-item';
 	const CLS_MEDIA_OPENER = NS + '-media-opener';
+
+	const STR_SEL = document.getElementsByClassName(CLS_SEL)[0].innerText;
+	const STR_ADD = document.getElementsByClassName(CLS_ADD)[0].innerText;
 
 	const name_media    = key + '_media';
 	const name_url      = key + '_url';
@@ -27,31 +31,25 @@ function st_single_media_picker_initialize_admin(key) {
 
 	const body         = document.querySelector('#' + id + ' + div');
 	const item         = body.getElementsByClassName(CLS_ITEM)[0];
-	const name         = body.getElementsByClassName(CLS_NAME)[0];
-	const selRow       = body.getElementsByClassName(CLS_SEL_ROW)[0];
-	const sels         = body.getElementsByClassName(CLS_SEL);
+	const filename     = body.getElementsByClassName(CLS_FILENAME)[0];
+	const sel          = body.getElementsByClassName(CLS_SEL)[0];
+	const addRow       = body.getElementsByClassName(CLS_ADD_ROW)[0];
+	const add          = body.getElementsByClassName(CLS_ADD)[0];
 	const del          = body.getElementsByClassName(CLS_DEL)[0];
 	const media_opener = body.getElementsByClassName(CLS_MEDIA_OPENER)[0];
 
-	let cm = null;
-	function on_click_sel(e) {
-		e.preventDefault();
-		if (!cm) {
-			cm = create_media(false);
-			cm.on('select', () => {
-				const m = cm.state().get('selection').first();
-				set_item(m.toJSON());
-				item.style.display = '';
-				selRow.style.display = 'none';
-			});
-		}
-		cm.open();
+	function clicked(target, m) {
+		set_item(m);
+		item.style.display = '';
+		addRow.style.display = 'none';
 	}
-	for(let i = 0; i < sels.length; i += 1) sels[i].addEventListener('click', on_click_sel);
+	setMediaPicker(sel, false, clicked, { multiple: false, title: STR_SEL });
+	setMediaPicker(add, false, clicked, { multiple: false, title: STR_ADD });
+
 	del.addEventListener('click', () => {
 		set_item({ id: '', url: '', title: '', filename: '' });
 		item.style.display = 'none';
-		selRow.style.display = '';
+		addRow.style.display = '';
 	});
 	media_opener.addEventListener('click', (e) => {
 		e.preventDefault();
@@ -62,10 +60,10 @@ function st_single_media_picker_initialize_admin(key) {
 
 	if (document.getElementById(name_media).value) {
 		item.style.display = '';
-		selRow.style.display = 'none';
+		addRow.style.display = 'none';
 	} else {
 		item.style.display = 'none';
-		selRow.style.display = '';
+		addRow.style.display = '';
 	}
 
 	function set_item(f) {
@@ -73,7 +71,7 @@ function st_single_media_picker_initialize_admin(key) {
 		set_val_to_id(name_url,      f.url);
 		set_val_to_id(name_title,    f.title);
 		set_val_to_id(name_filename, f.filename);
-		name.innerText = f.filename;
+		filename.innerText = f.filename;
 	}
 
 	function set_val_to_id(id, value) {
@@ -81,12 +79,4 @@ function st_single_media_picker_initialize_admin(key) {
 		if (elm) elm.value = value;
 	}
 
-	function create_media(multiple) {
-		return wp.media({
-			title: body.getElementsByClassName(CLS_SEL)[0].innerText,
-			library: {type: ''},
-			frame: 'select',
-			multiple: multiple,
-		});
-	}
 }

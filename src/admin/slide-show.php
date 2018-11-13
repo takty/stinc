@@ -38,7 +38,6 @@ class SlideShow {
 	const CLS_DEL_LAB     = self::NS . '-delete-label';
 	const CLS_DEL         = self::NS . '-delete';
 	const CLS_INFO        = self::NS . '-info';
-	const CLS_URL         = self::NS . '-url';
 	const CLS_URL_OPENER  = self::NS . '-url-opener';
 	const CLS_SEL_URL     = self::NS . '-select-url';
 	const CLS_SEL_IMG     = self::NS . '-select-img';
@@ -46,13 +45,17 @@ class SlideShow {
 	const CLS_TN          = self::NS . '-thumbnail';
 	const CLS_TN_IMG      = self::NS . '-thumbnail-img';
 	const CLS_TN_IMG_SUB  = self::NS . '-thumbnail-img-sub';
+
 	const CLS_MEDIA       = self::NS . '-media';
 	const CLS_MEDIA_SUB   = self::NS . '-media-sub';
+	const CLS_URL         = self::NS . '-url';
 
 	static private $_instance = [];
 
 	static public function get_instance( $key = false ) {
-		return ( $key === false ) ? reset( self::$_instance ) : self::$_instance[ $key ];
+		if ( $key === false ) return reset( self::$_instance );
+		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
+		return new SlideShow( $key );
 	}
 
 	static public function enqueue_script( $url_to ) {
@@ -69,8 +72,6 @@ class SlideShow {
 
 	private $_key;
 	private $_id;
-	private $_id_hta;
-	private $_id_hd;
 
 	private $_effect_type           = 'slide'; // 'scroll' or 'fade'
 	private $_caption_type          = 'subtitle'; // 'line' or 'circle'
@@ -84,10 +85,8 @@ class SlideShow {
 	private $_is_dual               = false;
 
 	public function __construct( $key ) {
-		$this->_key    = $key;
-		$this->_id     = $key;
-		$this->_id_hta = $key . '-hidden-textarea';
-		$this->_id_hd  = $key . '-hidden-div';
+		$this->_key = $key;
+		$this->_id  = $key;
 		self::$_instance[ $key ] = $this;
 	}
 
@@ -251,31 +250,28 @@ class SlideShow {
 
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
+		$sls = $this->_get_slides( $post->ID );
 ?>
 		<input type="hidden" id="<?php echo $this->_id ?>" name="<?php echo $this->_id ?>" value="" />
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
 <?php
-		if ( $this->_is_dual ) {
-			$this->_output_row( '', '', self::CLS_ITEM_TEMP, '', '', '', '' );
-		} else {
-			$this->_output_row( [], self::CLS_ITEM_TEMP );
-		}
-		foreach ( $this->_get_slides( $post->ID ) as $sl ) {
-			if ( $this->_is_dual ) {
-				$this->_output_row_dual( $sl, self::CLS_ITEM );
-			} else {
-				$this->_output_row( $sl, self::CLS_ITEM );
-			}
-		}
+		$this->_output_row( [], self::CLS_ITEM_TEMP );
+		foreach ( $sls as $sl ) $this->_output_row( $sl, self::CLS_ITEM );
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
-			<textarea id="<?php echo $this->_id_hta ?>" style="display: none;"></textarea>
-			<div id="<?php echo $this->_id_hd ?>" style="display: none;"></div>
 			<script>document.addEventListener('DOMContentLoaded', function () { st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>); });</script>
 		</div>
 <?php
+	}
+
+	private function _output_row( $sl, $cls ) {
+		if ( $this->_is_dual ) {
+			$this->_output_row_dual( $sl, $cls );
+		} else {
+			$this->_output_row_single( $sl, $cls );
+		}
 	}
 
 	private function _output_row_dual( $sl, $cls ) {
@@ -290,8 +286,8 @@ class SlideShow {
 	?>
 		<div class="<?php echo $cls ?>">
 			<div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></input><br /><?php _e( 'Remove', 'default' ) ?></label>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
@@ -316,7 +312,7 @@ class SlideShow {
 	<?php
 	}
 
-	private function _output_row( $sl, $cls ) {
+	private function _output_row_single( $sl, $cls ) {
 		$_cap   = isset( $sl['caption'] ) ? esc_attr( $sl['caption'] ) : '';
 		$_url   = isset( $sl['url'] )     ? esc_attr( $sl['url'] )     : '';
 		$_img   = isset( $sl['image'] )   ? esc_url( $sl['image'] )    : '';

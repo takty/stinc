@@ -1,107 +1,188 @@
 <?php
-namespace st\media_picker;
+namespace st;
 
 /**
  *
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-02
+ * @version 2018-11-13
  *
  */
 
 
-const NS = 'st_media_picker';
+require_once __DIR__ . '/../system/field.php';
 
 
-function get_items( $key, $post_id = false ) {
-	if ( $post_id === false ) $post_id = get_the_ID();
-	$post = get_post( $post_id );
+class MediaPicker {
 
-	$items = \st\field\get_multiple_post_meta( $post->ID, $key, ['id', 'url', 'title', 'filename'] );
-	return $items;
+	const NS = 'st-media-picker';
+
+	// Admin
+	const CLS_BODY         = self::NS . '-body';
+	const CLS_TABLE        = self::NS . '-table';
+	const CLS_ITEM         = self::NS . '-item';
+	const CLS_ITEM_TEMP    = self::NS . '-item-template';
+	const CLS_ITEM_IR      = self::NS . '-item-inside-row';
+	const CLS_HANDLE       = self::NS . '-handle';
+	const CLS_ADD_ROW      = self::NS . '-add-row';
+	const CLS_ADD          = self::NS . '-add';
+	const CLS_DEL_LAB      = self::NS . '-delete-label';
+	const CLS_DEL          = self::NS . '-delete';
+	const CLS_SEL          = self::NS . '-select';
+	const CLS_MEDIA_OPENER = self::NS . '-media-opener';
+
+	const CLS_MEDIA        = self::NS . '-media';
+	const CLS_URL          = self::NS . '-url';
+	const CLS_TITLE        = self::NS . '-title';
+	const CLS_FILENAME     = self::NS . '-filename';
+	const CLS_H_FILENAME   = self::NS . '-h-filename';
+
+	static private $_instance = [];
+
+	static public function get_instance( $key = false ) {
+		if ( $key === false ) return reset( self::$_instance );
+		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
+		return new MediaPicker( $key );
+	}
+
+	static public function enqueue_script( $url_to ) {
+		$url_to = untrailingslashit( $url_to );
+		if ( is_admin() ) {
+			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
+			wp_enqueue_script( self::NS, $url_to . '/asset/media-picker.min.js', [ 'picker-media', 'jquery-ui-sortable' ] );
+			wp_enqueue_style(  self::NS, $url_to . '/asset/media-picker.min.css' );
+		}
+	}
+
+	private $_key;
+	private $_id;
+
+	private $_is_title_editable = true;
+
+	public function __construct( $key ) {
+		$this->_key = $key;
+		$this->_id  = $key;
+		self::$_instance[ $key ] = $this;
+	}
+
+	public function get_items( $post_id = false ) {
+		if ( $post_id === false ) $post_id = get_the_ID();
+
+		$keys = [ 'media', 'url', 'title', 'filename', 'id' ];
+		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, $keys );
+
+		// For compatibility
+		foreach ( $its as $idx => &$it ) {
+			if ( empty( $it['media'] ) ) {
+				$it['media'] = $it['id'];
+				if ( ! empty( $it['media'] ) ) update_post_meta( $post_id, "{$this->_key}_{$idx}_media", $it['media'] );
+			}
+			$it['id'] = $it['media'];
+		}
+		return $its;
+	}
+
+	public function set_title_editable( $flag ) {
+		$this->_is_title_editable = $flag;
+		return $this;
+	}
+
+
+	// -----------------------------------------------------------------------------
+
+
+	public function add_meta_box( $label, $screen, $context = 'advanced' ) {
+		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
+	}
+
+	public function save_meta_box( $post_id ) {
+		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
+		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
+		$this->_save_items( $post_id );
+	}
+
+	public function _cb_output_html( $post ) {  // Private
+		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
+		$its = $this->get_items( $post->ID );
+?>
+		<input type="hidden" id="<?php echo $this->_id ?>" name="<?php echo $this->_id ?>" value="" />
+		<div class="<?php echo self::CLS_BODY ?>">
+			<div class="<?php echo self::CLS_TABLE ?>">
+<?php
+		$this->_output_row( [], self::CLS_ITEM_TEMP );
+		foreach ( $its as $it ) $this->_output_row( $it, self::CLS_ITEM );
+?>
+				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
+			</div>
+			<script>document.addEventListener('DOMContentLoaded', function () { st_media_picker_initialize_admin('<?php echo $this->_id ?>'); });</script>
+		</div>
+<?php
+	}
+
+	public function _output_row( $it, $cls ) {
+		$_url       = isset( $it['url'] )      ? esc_attr( $it['url'] )      : '';
+		$_media     = isset( $it['media'] )    ? esc_attr( $it['media'] )    : '';
+		$_title     = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_filename  = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
+		$h_filename = isset( $it['filename'] ) ? esc_html( $it['filename'] ) : '';
+
+		$ro = $this->_is_title_editable ? '' : 'readonly="readonly"';
+?>
+		<div class="<?php echo $cls ?>">
+			<div>
+				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+			</div>
+			<div>
+				<div class="<?php echo self::CLS_ITEM_IR ?>">
+					<span><?php _e( 'Title', 'default' ) ?>:</span>
+					<input <?php echo $ro ?> type="text" class="<?php echo self::CLS_TITLE ?>" value="<?php echo $_title ?>" />
+				</div>
+				<div class="<?php echo self::CLS_ITEM_IR ?>">
+					<span><a href="javascript:void(0);" class="<?php echo self::CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
+					<span class="<?php echo self::CLS_H_FILENAME ?>"><?php echo $h_filename ?></span>
+					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+				</div>
+			</div>
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+			<input type="hidden" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+			<input type="hidden" class="<?php echo self::CLS_FILENAME ?>" value="<?php echo $_filename ?>" />
+		</div>
+<?php
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
+	private function _save_items( $post_id ) {
+		$keys = ['media', 'url', 'title', 'filename', 'delete'];
+
+		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $keys );
+		$its = array_filter( $its, function ( $it ) { return ! $it['delete'] && ! empty( $it['url'] ); } );
+		$its = array_values( $its );
+
+		$keys = [ 'media', 'url', 'title', 'filename' ];
+		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $keys );
+	}
+
 }
 
 
 // -----------------------------------------------------------------------------
 
-function enqueue_script_for_admin( $url_to ) {
-	wp_enqueue_style(  'st-media-picker', $url_to . '/asset/media-picker.min.css' );
-	wp_enqueue_script( 'st-media-picker', $url_to . '/asset/media-picker.min.js', [ 'jquery-ui-sortable' ] );
-}
 
-function add_admin_enqueue_scripts_action( $url_to ) {
-	add_action( 'admin_enqueue_scripts', function ( $hook ) use ( $url_to ) {
-		if ( 'post.php' !== $hook && 'post-new.php' !== $hook ) return;
-		enqueue_script_for_admin( $url_to );
-	} );
-}
+namespace st\media_picker;
 
-function add_meta_box( $key, $label, $screen, $context = 'side', $title_editable = true ) {
-	\add_meta_box(
-		$key . '_mb', $label,
-		function ( $post ) use ( $key ) {
-			wp_nonce_field( $key, $key . '_nonce' );
-			output_html( $key, $title_editable );
-		},
-		$screen, $context
-	);
-}
+function initialize( $key ) { return new \st\MediaPicker( $key ); }
+function enqueue_script( $url_to ) { \st\MediaPicker::enqueue_script( $url_to ); }
 
-function output_html( $key, $title_editable = true ) {
-?>
-	<div class="<?php echo NS ?>">
-		<input type="hidden" id="<?php echo $key ?>" name="<?php echo $key ?>" value="" />
-		<table class="<?php echo NS ?>_table">
-			<tbody id="<?php echo $key ?>_item_set">
-<?php
-output_row( ['id' => '', 'url' => '', 'title' => '', 'filename' => ''], NS . '_item_template', $title_editable );
-foreach ( get_items( $key ) as $it ) {
-	output_row( $it, NS . '_item', $title_editable );
-}
-?>
-				<tr class="<?php echo NS ?>_ins_target"><td></td><td><a href="javascript:void(0);" class="<?php echo NS ?>_add button"><?php _e( 'Add Media', 'default' ); ?></a></td></tr>
-			</tbody>
-		</table>
-		<script>mediaPickerInit('<?php echo $key ?>', '<?php echo NS ?>');</script>
-	</div>
-<?php
-}
+function get_items( $key, $post_id = false ) { \st\MediaPicker::get_instance( $key )->get_items( $post_id ); }
+function set_title_editable( $key, $flag ) { \st\MediaPicker::get_instance( $key )->set_title_editable( $flag ); }
 
-function output_row( $item, $class, $title_editable ) {
-?>
-	<tr class="<?php echo $class ?>">
-		<td>
-			<label class="widget-control-remove <?php echo NS ?>_delete_label"><input type="checkbox" class="<?php echo NS ?>_delete"></input><br /><?php _e( 'Remove', 'default' ); ?></label>
-		</td>
-		<td>
-			<div>
-				<span class="<?php echo NS ?>_cap <?php echo NS ?>_title_handle post-attributes-label"><?php echo __( 'Title', 'default' ) ?>:</span>
-				<input <?php if (!$title_editable) echo 'readonly="readonly"' ?> type="text" class="<?php echo NS ?>_title" value="<?php echo esc_attr( $item['title'] ) ?>" />
-			</div>
-			<div>
-				<span class="<?php echo NS ?>_cap"><a href="<?php echo esc_url( $item['url'] ) ?>" target="_blank"><?php echo __( 'File name:', 'default' ) ?></a></span>
-				<span class="<?php echo NS ?>_name"><?php echo esc_html( $item['filename'] ) ?></span>
-				<a href="javascript:void(0);" class="button <?php echo NS ?>_select"><?php echo __( 'Select', 'default' ) ?></a>
-			</div>
-			<input type="hidden" class="<?php echo NS ?>_id" value="<?php echo esc_attr( $item['id'] ) ?>" />
-			<input type="hidden" class="<?php echo NS ?>_url" value="<?php echo esc_attr( $item['url'] ) ?>" />
-			<input type="hidden" class="<?php echo NS ?>_filename" value="<?php echo esc_attr( $item['filename'] ) ?>" />
-		</td>
-	</tr>
-<?php
+function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
+	if ( isset( $opts['title_editable'] ) ) set_title_editable( $key, $opts['title_editable'] );
+	\st\MediaPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
 }
-
-function save_meta_box( $post_id, $key ) {
-	if ( ! isset( $_POST[$key . '_nonce'] ) ) return;
-	if ( ! wp_verify_nonce( $_POST[$key . '_nonce'], $key ) ) return;
-	save_post( $post_id, $key );
-}
-
-function save_post( $post_id, $key ) {
-	$items = \st\field\get_multiple_post_meta_from_post( $key, ['id', 'url', 'title', 'filename', 'delete'] );
-	$items = array_values( array_filter( $items, function ( $it ) {
-		return ! $it['delete'] && ! empty( $it['url'] );
-	} ) );
-	\st\field\update_multiple_post_meta( $post_id, $key, $items, ['id', 'url', 'title', 'filename'] );
-}
+function save_meta_box( $post_id, $key ) { \st\MediaPicker::get_instance( $key )->save_meta_box( $post_id ); }

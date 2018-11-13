@@ -23,22 +23,27 @@ class SingleMediaPicker {
 	const CLS_ITEM         = self::NS . '-item';
 	const CLS_ITEM_IR      = self::NS . '-item-inside-row';
 	const CLS_DEL          = self::NS . '-delete';
-	const CLS_SEL_ROW      = self::NS . '-select-row';
 	const CLS_SEL          = self::NS . '-select';
-	const CLS_TITLE        = self::NS . '-title';
-	const CLS_NAME         = self::NS . '-name';
+	const CLS_ADD_ROW      = self::NS . '-add-row';
+	const CLS_ADD          = self::NS . '-add';
 	const CLS_MEDIA_OPENER = self::NS . '-media-opener';
+
+	const CLS_TITLE        = self::NS . '-title';
+	const CLS_FILENAME     = self::NS . '-filename';
 
 	static private $_instance = [];
 
 	static public function get_instance( $key = false ) {
-		return ( $key === false ) ? reset( self::$_instance ) : self::$_instance[ $key ];
+		if ( $key === false ) return reset( self::$_instance );
+		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
+		return new SingleMediaPicker( $key );
 	}
 
 	static public function enqueue_script( $url_to ) {
 		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
-			wp_enqueue_script( self::NS, $url_to . '/asset/single-media-picker.min.js' );
+			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
+			wp_enqueue_script( self::NS, $url_to . '/asset/single-media-picker.min.js', [ 'picker-media' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/single-media-picker.min.css' );
 		}
 	}
@@ -93,11 +98,11 @@ class SingleMediaPicker {
 
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
-		$it = get_item( $post->ID );
+		$it = $this->get_item( $post->ID );
 
-		$_url   = isset( $it['url'] )      ? esc_attr( $it['url'] )      : '';
-		$_name  = isset( $it['filename'] ) ? esc_html( $it['filename'] ) : '';
-		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_url       = isset( $it['url'] )      ? esc_attr( $it['url'] )      : '';
+		$_title     = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$h_filename = isset( $it['filename'] ) ? esc_html( $it['filename'] ) : '';
 
 		$id_title = "{$this->_key}_title";
 		$ro = $this->_is_title_editable ? '' : 'readonly="readonly"';
@@ -115,14 +120,14 @@ class SingleMediaPicker {
 					</div>
 					<div class="<?php echo self::CLS_ITEM_IR ?>">
 						<span><a href="javascript:void(0);" class="<?php echo self::CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
-						<span class="<?php echo self::CLS_NAME ?>"><?php echo $_name ?></span>
+						<span class="<?php echo self::CLS_FILENAME ?>"><?php echo $h_filename ?></span>
 						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
 					</div>
 				</div>
 			</div>
-			<div class="<?php echo self::CLS_SEL_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_SEL ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
+			<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
 			<?php $this->_output_hidden_fields( $it, [ 'media', 'url', 'filename' ] ) ?>
-			<script>st_single_media_picker_initialize_admin('<?php echo $this->_id ?>');</script>
+			<script>document.addEventListener('DOMContentLoaded', function () { st_single_media_picker_initialize_admin('<?php echo $this->_id ?>'); });</script>
 		</div>
 	<?php
 	}
@@ -135,6 +140,10 @@ class SingleMediaPicker {
 	<?php
 		}
 	}
+
+
+	// -------------------------------------------------------------------------
+
 
 	private function _save_item( $post_id ) {
 		update_post_meta( $post_id, "{$this->_key}_media",    $_POST["{$this->_key}_media"] );
@@ -158,17 +167,7 @@ function get_item( $key, $post_id = false ) { \st\SingleMediaPicker::get_instanc
 function set_title_editable( $key, $flag ) { \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag ); }
 
 function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
-	set_title_editable( $key, isset( $opts['title_editable'] ) ? $opts['title_editable'] : true );
+	if ( isset( $opts['title_editable'] ) ) set_title_editable( $key, $opts['title_editable'] );
 	\st\SingleMediaPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
 }
 function save_meta_box( $post_id, $key ) { \st\SingleMediaPicker::get_instance( $key )->save_meta_box( $post_id ); }
-
-
-// -----------------------------------------------------------------------------
-
-
-/** @deprecated Deprecated. Use 'enqueue_script' instead. */
-function admin_enqueue_script( $url_to ) {
-	wp_enqueue_style(  'st-single-media-picker', $url_to . '/single-media-picker.min.css' );
-	wp_enqueue_script( 'st-single-media-picker', $url_to . '/single-media-picker.min.js' );
-}
