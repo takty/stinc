@@ -15,8 +15,10 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
-function setLinkPicker(elm, cls = false, fn = null, opts = { isInternalOnly: false, parentGen: 1 }) {
+function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 	if (cls === false) cls = 'link';
+	opts = Object.assign({ isInternalOnly: false, parentGen: 1 }, opts );
+
 	elm.addEventListener('click', function (e) {
 		if (elm.getAttribute('disabled')) return;
 		e.preventDefault();

@@ -59,7 +59,8 @@ class SlideShow {
 		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
 			wp_enqueue_script( 'picker-link', $url_to . '/asset/lib/picker-link.min.js', [ 'wplink', 'jquery-ui-autocomplete' ] );
-			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'jquery-ui-sortable' ] );
+			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
+			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'picker-media', 'jquery-ui-sortable' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/slide-show.min.css' );
 		} else {
 			wp_enqueue_script( self::NS, $url_to . '/../../stomp/slide-show/slide-show.min.js', '', 1.0 );
@@ -272,7 +273,7 @@ class SlideShow {
 			</div>
 			<textarea id="<?php echo $this->_id_hta ?>" style="display: none;"></textarea>
 			<div id="<?php echo $this->_id_hd ?>" style="display: none;"></div>
-			<script>st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);</script>
+			<script>document.addEventListener('DOMContentLoaded', function () { st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>); });</script>
 		</div>
 <?php
 	}

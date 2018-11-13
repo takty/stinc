@@ -3,7 +3,7 @@
  * Media Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-14
+ * @version 2018-11-13
  *
  */
 
@@ -15,22 +15,30 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
-function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
-	if (cls === undefined || cls === false) cls = 'media';
+function setMediaPicker(elm, cls = false, fn = null, opts = {}) {
+	if (cls === false) cls = 'media';
+	opts = Object.assign({ multiple: false, type: '', parentGen: 1, title: false }, opts);
 
-	const postId = $('#post_ID').val();
+	const postId = document.getElementById('post_ID').value;
 	let cm = null;
 	elm.addEventListener('click', function (e) {
 		e.preventDefault();
 		if (!cm) {
 			wp.media.view.AttachmentsBrowser = AttachmentsBrowserCustom;
-			cm = createMedia(postId, e.target.innerText, false);
+			cm = createMedia(postId, opts.title === false ? e.target.innerText : opts.title, opts.multiple, opts.type);
 			cm.on('select', function () {
-				const f = cm.state().get('selection').first();
-				const fileJson = f.toJSON();
 				const parent = getParent(e.target, opts.parentGen);
-				setItem(parent, cls, fileJson);
-				if (fn) fn(e.target, fileJson);
+				if (opts.multiple) {
+					const fs = cm.state().get('selection');
+					const fileJsons = fs.map((f) => f.toJSON());
+					setItem(parent, cls, fileJsons[0]);
+					if (fn) fn(e.target, fileJsons);
+				} else {
+					const f = cm.state().get('selection').first();
+					const fileJson = f.toJSON();
+					setItem(parent, cls, fileJson);
+					if (fn) fn(e.target, fileJson);
+				}
 			});
 			cm.on('close', function () {
 				wp.media.view.AttachmentsBrowser = AttachmentsBrowserOrig;
@@ -62,13 +70,13 @@ function setMediaPicker(elm, cls, fn, opts = {parentGen: 1}) {
 		}
 	}
 
-	function createMedia(postId, title, multiple) {
+	function createMedia(postId, title, multiple, type) {
 		wp.media.model.settings.post.id = postId;
 		wp.media.view.settings.post.id  = postId;
 
  		const media = wp.media({
 			title   : title,
-			library : {type: ''},
+			library : {type: type},
 			frame   : 'select',
 			multiple: multiple,
 		});

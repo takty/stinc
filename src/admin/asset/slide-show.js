@@ -3,7 +3,7 @@
  * Slide Show Admin (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-12
+ * @version 2018-11-13
  *
  */
 
@@ -31,10 +31,10 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	const CLS_CAP         = NS + '-caption';
 	const CLS_ITEM_DEL    = NS + '-item-deleted';
 
-	const id     = key;
-	const id_hta = key + '-hidden-textarea';
-	const id_hd  = key + '-hidden-div';
+	const STR_ADD = document.getElementsByClassName(CLS_ADD)[0].innerText;
+	const STR_SEL = document.getElementsByClassName(CLS_SEL_URL)[0].innerText;
 
+	const id     = key;
 	const count  = document.getElementById(id);
 	const body   = document.querySelector('#' + id + ' + div');
 
@@ -60,19 +60,10 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	reorder_item_ids();
 	for (let i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
 
-	let gp = null;
-	add.addEventListener('click', function (e) {
-		e.preventDefault();
-		if (!gp) {
-			gp = create_media(true);
-			gp.on('select', function () {
-				const ms = gp.state().get('selection');
-				ms.each(function (m) {add_new_item(m.toJSON());});
-				reorder_item_ids();
-			});
-		}
-		gp.open();
-	});
+	setMediaPicker(add, false, function (target, ms) {
+		ms.forEach((m) => { add_new_item(m); });
+		reorder_item_ids();
+	}, { multiple: true, type: 'image', title: STR_ADD });
 
 	function reorder_item_ids() {
 		for (let i = 0; i < items.length; i += 1) {
@@ -139,28 +130,6 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			const idi = target.getAttribute('data-idi');
 			document.getElementById(idi + '_url').value = f.url;
 		});
-		// sel_url.addEventListener('click', function (e) {
-		// 	e.preventDefault();
-		// 	const idi = e.target.getAttribute('data-idi');
-		// 	open_link_picker(function (title, url) {
-		// 		document.getElementById(idi + '_url').value = url;
-		// 	});
-		// });
-		let p = null;
-		sel_img.addEventListener('click', function (e) {
-			e.preventDefault();
-			const idi = e.target.getAttribute('data-idi');
-			if (!p) {
-				p = create_media(false);
-				p.on('select', function () {
-					const f = p.state().get('selection').first().toJSON();
-					document.getElementById(idi + '_caption').value = f.caption;
-					document.getElementById(idi + '_media').value = f.id;
-					document.getElementById(idi + '_thumbnail').style.backgroundImage = 'url(' + f.url + ')';
-				});
-			}
-			p.open();
-		});
 		url_opener.addEventListener('click', function (e) {
 			e.preventDefault();
 			const idi = e.target.getAttribute('data-idi');
@@ -168,56 +137,22 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			const url = url_input.value;
 			if (url) window.open(url);
 		});
+
+		setMediaPicker(sel_img, false, function (target, f) {
+			const idi = target.getAttribute('data-idi');
+			document.getElementById(idi + '_caption').value = f.caption;
+			document.getElementById(idi + '_media').value = f.id;
+			document.getElementById(idi + '_thumbnail').style.backgroundImage = 'url(' + f.url + ')';
+		}, { multiple: false, type: 'image', title: STR_SEL });
+
 		if (is_dual) {
 			const sel_img_sub = item.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
-			let p_sub = null;
-			sel_img_sub.addEventListener('click', function (e) {
-				e.preventDefault();
-				const idi = e.target.getAttribute('data-idi');
-				if (!p_sub) {
-					p_sub = create_media(false);
-					p_sub.on('select', function () {
-						const f = p_sub.state().get('selection').first().toJSON();
-						document.getElementById(idi + '_media_sub').value = f.id;
-						document.getElementById(idi + '_thumbnail_sub').style.backgroundImage = 'url(' + f.url + ')';
-					});
-				}
-				p_sub.open();
-			});
+			setMediaPicker(sel_img_sub, false, function (target, f) {
+				const idi = target.getAttribute('data-idi');
+				document.getElementById(idi + '_media_sub').value = f.id;
+				document.getElementById(idi + '_thumbnail_sub').style.backgroundImage = 'url(' + f.url + ')';
+			}, { multiple: false, type: 'image', title: STR_SEL });
 		}
 	}
-
-	function create_media(multiple) {
-		return wp.media({
-			title: document.getElementsByClassName(CLS_ADD)[0].innerText,
-			library: {type: 'image'},
-			frame: 'select',
-			multiple: multiple,
-		});
-	}
-
-	// function open_link_picker(callback) {
-	// 	const ta = document.getElementById(id_hta);
-	// 	const d = document.getElementById(id_hd);
-	// 	let to = null;
-	// 	const toFn = function () {
-	// 		if (ta.value !== '') {
-	// 			d.innerHTML = ta.value;
-	// 			const a = d.getElementsByTagName('a')[0];
-	// 			callback(a.innerText, a.href);
-	// 			to = null;
-	// 			jQuery('#wp-link').find('.query-results').off('river-select', onSelectFn);
-	// 			return;
-	// 		}
-	// 		to = setTimeout(toFn, 100);
-	// 	}
-	// 	const onSelectFn = function (e, li) {
-	// 		jQuery('#wp-link-text').val(li.hasClass('no-title') ? '' : li.children('.item-title').text());
-	// 	};
-	// 	ta.value = '';
-	// 	to = setTimeout(toFn, 100);
-	// 	wpLink.open(id_hta);
-	// 	jQuery('#wp-link').find('.query-results').on('river-select', onSelectFn);
-	// }
 
 }
