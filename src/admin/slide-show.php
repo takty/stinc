@@ -420,7 +420,7 @@ class SlideShow {
 
 namespace st\slide_show;
 
-function initialize( $key ) { new \st\SlideShow( $key ); }
+function initialize( $key ) { return new \st\SlideShow( $key ); }
 function enqueue_script( $url_to ) { \st\SlideShow::enqueue_script( $url_to ); }
 
 function set_duration_time( $key, $set_duration_time ) { return \st\SlideShow::get_instance( $key )->set_duration_time( $set_duration_time ); }
