@@ -1,127 +1,173 @@
 <?php
-namespace st\single_media_picker;
+namespace st;
 
 /**
  *
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-12
+ * @version 2018-11-13
  *
  */
 
 
-const NS = 'st-single-media-picker';
-
-const CLS_BODY         = NS . '-body';
-const CLS_ITEM         = NS . '-item';
-const CLS_ITEM_IR      = NS . '-item-inside-row';
-const CLS_DEL          = NS . '-delete';
-const CLS_SEL_ROW      = NS . '-select-row';
-const CLS_SEL          = NS . '-select';
-const CLS_TITLE        = NS . '-title';
-const CLS_NAME         = NS . '-name';
-const CLS_MEDIA_OPENER = NS . '-media-opener';
+require_once __DIR__ . '/../system/field.php';
 
 
-function get_item( $key, $post_id = false ) {
-	if ( $post_id === false ) $post_id = get_the_ID();
-	$post = get_post( $post_id );
+class SingleMediaPicker {
 
-	$media    = get_post_meta( $post->ID, "{$key}_media",    true );
-	$url      = get_post_meta( $post->ID, "{$key}_url",      true );
-	$title    = get_post_meta( $post->ID, "{$key}_title",    true );
-	$filename = get_post_meta( $post->ID, "{$key}_filename", true );
+	const NS = 'st-single-media-picker';
 
-	// For compatibility
-	if ( empty( $media ) ) $media = get_post_meta( $post->ID, "{$key}_id", true );
-	$id = $media;
+	// Admin
+	const CLS_BODY         = self::NS . '-body';
+	const CLS_ITEM         = self::NS . '-item';
+	const CLS_ITEM_IR      = self::NS . '-item-inside-row';
+	const CLS_DEL          = self::NS . '-delete';
+	const CLS_SEL_ROW      = self::NS . '-select-row';
+	const CLS_SEL          = self::NS . '-select';
+	const CLS_TITLE        = self::NS . '-title';
+	const CLS_NAME         = self::NS . '-name';
+	const CLS_MEDIA_OPENER = self::NS . '-media-opener';
 
-	return compact( 'media', 'url', 'title', 'filename', 'id' );
-}
+	static private $_instance = [];
 
-
-// -----------------------------------------------------------------------------
-
-
-function enqueue_script( $url_to ) {
-	$url_to = untrailingslashit( $url_to );
-	if ( is_admin() ) {
-		wp_enqueue_script( NS, $url_to . '/asset/single-media-picker.min.js' );
-		wp_enqueue_style(  NS, $url_to . '/asset/single-media-picker.min.css' );
+	static public function get_instance( $key = false ) {
+		return ( $key === false ) ? reset( self::$_instance ) : self::$_instance[ $key ];
 	}
-}
 
-function add_meta_box( $key, $label, $screen, $context = 'side', $title_editable = true ) {
-	\add_meta_box(
-		"{$key}_mb", $label,
-		function ( $post ) use ( $key, $title_editable ) { _output_html( $key, $title_editable ); },
-		$screen, $context
-	);
-}
+	static public function enqueue_script( $url_to ) {
+		$url_to = untrailingslashit( $url_to );
+		if ( is_admin() ) {
+			wp_enqueue_script( self::NS, $url_to . '/asset/single-media-picker.min.js' );
+			wp_enqueue_style(  self::NS, $url_to . '/asset/single-media-picker.min.css' );
+		}
+	}
 
-function save_meta_box( $post_id, $key ) {
-	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
-	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
-	_save_item( $post_id, $key );
-}
+	private $_key;
+	private $_id;
 
-function _output_html( $key, $title_editable = true ) {
-	wp_nonce_field( $key, "{$key}_nonce" );
-	$item = get_item( $key );
+	private $_is_title_editable = true;
 
-	$_url   = isset( $item['url'] )      ? esc_attr( $item['url'] )      : '';
-	$_name  = isset( $item['filename'] ) ? esc_html( $item['filename'] ) : '';
-	$_title = isset( $item['title'] )    ? esc_attr( $item['title'] )    : '';
-?>
-	<div id="<?php echo $key ?>"></div>
-	<div class="<?php echo CLS_BODY ?>">
-		<div class="<?php echo CLS_ITEM ?>">
-			<div>
-				<a href="javascript:void(0);" class="<?php echo CLS_DEL ?> widget-control-remove"><?php _e( 'Remove', 'default' ); ?></a>
-			</div>
-			<div>
-				<div class="<?php echo CLS_ITEM_IR ?>">
-					<span><?php _e( 'Title', 'default' ) ?>:</span>
-					<input <?php if ( ! $title_editable ) echo 'readonly="readonly"' ?> type="text" <?php \st\field\esc_key_e( "{$key}_title" ) ?> value="<?php echo $_title ?>" />
+	public function __construct( $key ) {
+		$this->_key = $key;
+		$this->_id  = $key;
+		self::$_instance[ $key ] = $this;
+	}
+
+	public function get_item( $post_id = false ) {
+		if ( $post_id === false ) $post_id = get_the_ID();
+
+		$media    = get_post_meta( $post_id, "{$this->_key}_media",    true );
+		$url      = get_post_meta( $post_id, "{$this->_key}_url",      true );
+		$title    = get_post_meta( $post_id, "{$this->_key}_title",    true );
+		$filename = get_post_meta( $post_id, "{$this->_key}_filename", true );
+
+		// For compatibility
+		if ( empty( $media ) ) {
+			$media = get_post_meta( $post_id, "{$this->_key}_id", true );
+			if ( ! empty( $media ) ) update_post_meta( $post_id, "{$this->_key}_media", $media );
+		}
+		$id = $media;
+
+		return compact( 'media', 'url', 'title', 'filename', 'id' );
+	}
+
+	public function set_title_editable( $flag ) {
+		$this->_is_title_editable = $flag;
+		return $this;
+	}
+
+
+	// -----------------------------------------------------------------------------
+
+
+	public function add_meta_box( $label, $screen, $context = 'side' ) {
+		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
+	}
+
+	public function save_meta_box( $post_id ) {
+		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
+		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
+		$this->_save_item( $post_id );
+	}
+
+	public function _cb_output_html( $post ) {  // Private
+		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
+		$it = get_item( $post->ID );
+
+		$_url   = isset( $it['url'] )      ? esc_attr( $it['url'] )      : '';
+		$_name  = isset( $it['filename'] ) ? esc_html( $it['filename'] ) : '';
+		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+
+		$id_title = "{$this->_key}_title";
+		$ro = $this->_is_title_editable ? '' : 'readonly="readonly"';
+	?>
+		<div id="<?php echo $this->_id ?>"></div>
+		<div class="<?php echo self::CLS_BODY ?>">
+			<div class="<?php echo self::CLS_ITEM ?>">
+				<div>
+					<a href="javascript:void(0);" class="<?php echo self::CLS_DEL ?> widget-control-remove"><?php _e( 'Remove', 'default' ); ?></a>
 				</div>
-				<div class="<?php echo CLS_ITEM_IR ?>">
-					<span><a href="javascript:void(0);" class="<?php echo CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
-					<span class="<?php echo CLS_NAME ?>"><?php echo $_name ?></span>
-					<a href="javascript:void(0);" class="button <?php echo CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+				<div>
+					<div class="<?php echo self::CLS_ITEM_IR ?>">
+						<span><?php _e( 'Title', 'default' ) ?>:</span>
+						<input <?php echo $ro ?> type="text" <?php \st\field\esc_key_e( $id_title ) ?> value="<?php echo $_title ?>" />
+					</div>
+					<div class="<?php echo self::CLS_ITEM_IR ?>">
+						<span><a href="javascript:void(0);" class="<?php echo self::CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
+						<span class="<?php echo self::CLS_NAME ?>"><?php echo $_name ?></span>
+						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+					</div>
 				</div>
 			</div>
+			<div class="<?php echo self::CLS_SEL_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_SEL ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
+			<?php $this->_output_hidden_fields( $it, [ 'media', 'url', 'filename' ] ) ?>
+			<script>st_single_media_picker_initialize_admin('<?php echo $this->_id ?>');</script>
 		</div>
-		<div class="<?php echo CLS_SEL_ROW ?>"><a href="javascript:void(0);" class="<?php echo CLS_SEL ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
-		<?php _output_hidden_fields( $key, $item, [ 'media', 'url', 'filename' ] ) ?>
-		<script>st_single_media_picker_initialize_admin('<?php echo $key ?>');</script>
-	</div>
-<?php
-}
-
-function _output_hidden_fields( $base_key, $item, $keys ) {
-	foreach ( $keys as $key ) {
-		$_val = esc_attr( $item[$key] );
-?>
-		<input type="hidden" <?php \st\field\esc_key_e( "{$base_key}_$key" ) ?> value="<?php echo $_val ?>" />
-<?php
+	<?php
 	}
-}
 
-function _save_item( $post_id, $key ) {
-	update_post_meta( $post_id, $key . '_media',    $_POST[$key . '_media'] );
-	update_post_meta( $post_id, $key . '_url',      $_POST[$key . '_url'] );
-	update_post_meta( $post_id, $key . '_title',    $_POST[$key . '_title'] );
-	update_post_meta( $post_id, $key . '_filename', $_POST[$key . '_filename'] );
+	private function _output_hidden_fields( $it, $keys ) {
+		foreach ( $keys as $key ) {
+			$_val = esc_attr( $it[ $key ] );
+	?>
+			<input type="hidden" <?php \st\field\esc_key_e( "{$this->_key}_$key" ) ?> value="<?php echo $_val ?>" />
+	<?php
+		}
+	}
+
+	private function _save_item( $post_id ) {
+		update_post_meta( $post_id, "{$this->_key}_media",    $_POST["{$this->_key}_media"] );
+		update_post_meta( $post_id, "{$this->_key}_url",      $_POST["{$this->_key}_url"] );
+		update_post_meta( $post_id, "{$this->_key}_title",    $_POST["{$this->_key}_title"] );
+		update_post_meta( $post_id, "{$this->_key}_filename", $_POST["{$this->_key}_filename"] );
+	}
+
 }
 
 
 // -----------------------------------------------------------------------------
 
 
-/**
- * @deprecated Deprecated. Use 'enqueue_script' instead.
- */
+namespace st\single_media_picker;
+
+function initialize( $key ) { new \st\SingleMediaPicker( $key ); }
+function enqueue_script( $url_to ) { \st\SingleMediaPicker::enqueue_script( $url_to ); }
+
+function get_item( $key, $post_id = false ) { \st\SingleMediaPicker::get_instance( $key )->get_item( $post_id ); }
+function set_title_editable( $key, $flag ) { \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag ); }
+
+function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
+	set_title_editable( $key, isset( $opts['title_editable'] ) ? $opts['title_editable'] : true );
+	\st\SingleMediaPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
+}
+function save_meta_box( $post_id, $key ) { \st\SingleMediaPicker::get_instance( $key )->save_meta_box( $post_id ); }
+
+
+// -----------------------------------------------------------------------------
+
+
+/** @deprecated Deprecated. Use 'enqueue_script' instead. */
 function admin_enqueue_script( $url_to ) {
 	wp_enqueue_style(  'st-single-media-picker', $url_to . '/single-media-picker.min.css' );
 	wp_enqueue_script( 'st-single-media-picker', $url_to . '/single-media-picker.min.js' );

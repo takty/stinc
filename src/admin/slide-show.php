@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-12
+ * @version 2018-11-13
  *
  */
 
@@ -49,8 +49,21 @@ class SlideShow {
 	const CLS_MEDIA       = self::NS . '-media';
 	const CLS_MEDIA_SUB   = self::NS . '-media-sub';
 
-	static private $_instance = null;
-	static public function get_instance() { return self::$_instance; }
+	static private $_instance = [];
+
+	static public function get_instance( $key = false ) {
+		return ( $key === false ) ? reset( self::$_instance ) : self::$_instance[ $key ];
+	}
+
+	static public function enqueue_script( $url_to ) {
+		$url_to = untrailingslashit( $url_to );
+		if ( is_admin() ) {
+			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'jquery-ui-sortable' ] );
+			wp_enqueue_style(  self::NS, $url_to . '/asset/slide-show.min.css' );
+		} else {
+			wp_enqueue_script( self::NS, $url_to . '/../../stomp/slide-show/slide-show.min.js', '', 1.0 );
+		}
+	}
 
 	private $_key;
 	private $_id;
@@ -69,22 +82,11 @@ class SlideShow {
 	private $_is_dual               = false;
 
 	public function __construct( $key ) {
-		$this->_key      = $key;
-		$this->_id       = $key;
-		$this->_id_hta   = $key . '-hidden-textarea';
-		$this->_id_hd    = $key . '-hidden-div';
-
-		if ( self::$_instance === null ) self::$_instance = $this;
-	}
-
-	public function enqueue_script( $url_to ) {
-		$url_to = untrailingslashit( $url_to );
-		if ( is_admin() ) {
-			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'jquery-ui-sortable' ] );
-			wp_enqueue_style(  self::NS, $url_to . '/asset/slide-show.min.css' );
-		} else {
-			wp_enqueue_script( self::NS, $url_to . '/../../stomp/slide-show/slide-show.min.js', '', 1.0 );
-		}
+		$this->_key    = $key;
+		$this->_id     = $key;
+		$this->_id_hta = $key . '-hidden-textarea';
+		$this->_id_hd  = $key . '-hidden-div';
+		self::$_instance[ $key ] = $this;
 	}
 
 	public function set_duration_time( $sec ) {
@@ -240,8 +242,8 @@ class SlideShow {
 	}
 
 	public function save_meta_box( $post_id ) {
-		if ( ! isset( $_POST[ "{$this->_key}_nonce" ] ) ) return;
-		if ( ! wp_verify_nonce( $_POST[ "{$this->_key}_nonce" ], $this->_key ) ) return;
+		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
+		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
 		$this->_save_slides( $post_id );
 	}
 
@@ -267,9 +269,9 @@ class SlideShow {
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
-			<script>st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);</script>
 			<textarea id="<?php echo $this->_id_hta ?>" style="display: none;"></textarea>
 			<div id="<?php echo $this->_id_hd ?>" style="display: none;"></div>
+			<script>st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);</script>
 		</div>
 <?php
 	}
@@ -419,20 +421,20 @@ class SlideShow {
 namespace st\slide_show;
 
 function initialize( $key ) { new \st\SlideShow( $key ); }
+function enqueue_script( $url_to ) { \st\SlideShow::enqueue_script( $url_to ); }
 
-function enqueue_script( $url_to ) { \st\SlideShow::get_instance()->enqueue_script( $url_to ); }
-function set_duration_time( $set_duration_time ) { return \st\SlideShow::get_instance()->set_duration_time( $set_duration_time ); }
-function set_transition_time( $sec ) { return \st\SlideShow::get_instance()->set_transition_time( $sec ); }
-function set_zoom_rate( $rate ) { return \st\SlideShow::get_instance()->set_zoom_rate( $rate ); }
-function set_effect_type( $type ) { return \st\SlideShow::get_instance()->set_effect_type( $type ); }
-function set_background_opacity( $opacity ) { return \st\SlideShow::get_instance()->set_background_opacity( $opacity ); }
-function set_background_visible( $visible ) { return \st\SlideShow::get_instance()->set_background_visible( $visible ); }
-function set_side_slide_visible( $visible ) { return \st\SlideShow::get_instance()->set_side_slide_visible( $visible ); }
-function set_picture_scroll( $enabled ) { return \st\SlideShow::get_instance()->set_picture_scroll( $enabled ); }
-function set_dual_enabled( $enabled ) { return \st\SlideShow::get_instance()->set_dual_enabled( $enabled ); }
-function set_caption_type( $type ) { return \st\SlideShow::get_instance()->set_caption_type( $type ); }
-function echo_slide_show( $post_id = false, $size = 'large', $class = '' ) { return \st\SlideShow::get_instance()->echo_slide_show( $post_id, $size, $class ); }
-function echo_slide_items( $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance()->echo_slide_items( $post_id, $size ); }
+function set_duration_time( $key, $set_duration_time ) { return \st\SlideShow::get_instance( $key )->set_duration_time( $set_duration_time ); }
+function set_transition_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
+function set_zoom_rate( $key, $rate ) { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
+function set_effect_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }
+function set_background_opacity( $key, $opacity ) { return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity ); }
+function set_background_visible( $key, $visible ) { return \st\SlideShow::get_instance( $key )->set_background_visible( $visible ); }
+function set_side_slide_visible( $key, $visible ) { return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible ); }
+function set_picture_scroll( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll( $enabled ); }
+function set_dual_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
+function set_caption_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
+function echo_slide_show( $key, $post_id = false, $size = 'large', $class = '' ) { return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $class ); }
+function echo_slide_items( $key, $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance( $key )->echo_slide_items( $post_id, $size ); }
 
-function add_meta_box( $label, $screen ) { \st\SlideShow::get_instance()->add_meta_box( $label, $screen ); }
-function save_meta_box( $post_id ) { \st\SlideShow::get_instance()->save_meta_box( $post_id ); }
+function add_meta_box( $key, $label, $screen, $context = 'side' ) { \st\SlideShow::get_instance( $key )->add_meta_box( $label, $screen, $context ); }
+function save_meta_box( $post_id, $key ) { \st\SlideShow::get_instance( $key )->save_meta_box( $post_id ); }
