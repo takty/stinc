@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-14
+ * @version 2018-11-13
  *
  */
 
@@ -15,9 +15,8 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
-function setLinkPicker(elm, cls, fn, opts = {isInternalOnly: false, parentGen: 1}) {
-	if (cls === undefined || cls === false) cls = 'link';
-
+function setLinkPicker(elm, cls = false, fn = null, opts = { isInternalOnly: false, parentGen: 1 }) {
+	if (cls === false) cls = 'link';
 	elm.addEventListener('click', function (e) {
 		if (elm.getAttribute('disabled')) return;
 		e.preventDefault();

@@ -135,13 +135,17 @@ function st_slide_show_initialize_admin(key, is_dual) {
 				item.classList.remove(CLS_ITEM_DEL);
 			}
 		});
-		sel_url.addEventListener('click', function (e) {
-			e.preventDefault();
-			const idi = e.target.getAttribute('data-idi');
-			open_link_picker(function (title, url) {
-				document.getElementById(idi + '_url').value = url;
-			});
+		setLinkPicker(sel_url, false, function (target, f) {
+			const idi = target.getAttribute('data-idi');
+			document.getElementById(idi + '_url').value = f.url;
 		});
+		// sel_url.addEventListener('click', function (e) {
+		// 	e.preventDefault();
+		// 	const idi = e.target.getAttribute('data-idi');
+		// 	open_link_picker(function (title, url) {
+		// 		document.getElementById(idi + '_url').value = url;
+		// 	});
+		// });
 		let p = null;
 		sel_img.addEventListener('click', function (e) {
 			e.preventDefault();
@@ -192,28 +196,28 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		});
 	}
 
-	function open_link_picker(callback) {
-		const ta = document.getElementById(id_hta);
-		const d = document.getElementById(id_hd);
-		let to = null;
-		const toFn = function () {
-			if (ta.value !== '') {
-				d.innerHTML = ta.value;
-				const a = d.getElementsByTagName('a')[0];
-				callback(a.innerText, a.href);
-				to = null;
-				jQuery('#wp-link').find('.query-results').off('river-select', onSelectFn);
-				return;
-			}
-			to = setTimeout(toFn, 100);
-		}
-		const onSelectFn = function (e, li) {
-			jQuery('#wp-link-text').val(li.hasClass('no-title') ? '' : li.children('.item-title').text());
-		};
-		ta.value = '';
-		to = setTimeout(toFn, 100);
-		wpLink.open(id_hta);
-		jQuery('#wp-link').find('.query-results').on('river-select', onSelectFn);
-	}
+	// function open_link_picker(callback) {
+	// 	const ta = document.getElementById(id_hta);
+	// 	const d = document.getElementById(id_hd);
+	// 	let to = null;
+	// 	const toFn = function () {
+	// 		if (ta.value !== '') {
+	// 			d.innerHTML = ta.value;
+	// 			const a = d.getElementsByTagName('a')[0];
+	// 			callback(a.innerText, a.href);
+	// 			to = null;
+	// 			jQuery('#wp-link').find('.query-results').off('river-select', onSelectFn);
+	// 			return;
+	// 		}
+	// 		to = setTimeout(toFn, 100);
+	// 	}
+	// 	const onSelectFn = function (e, li) {
+	// 		jQuery('#wp-link-text').val(li.hasClass('no-title') ? '' : li.children('.item-title').text());
+	// 	};
+	// 	ta.value = '';
+	// 	to = setTimeout(toFn, 100);
+	// 	wpLink.open(id_hta);
+	// 	jQuery('#wp-link').find('.query-results').on('river-select', onSelectFn);
+	// }
 
 }

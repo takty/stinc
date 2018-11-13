@@ -58,6 +58,7 @@ class SlideShow {
 	static public function enqueue_script( $url_to ) {
 		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
+			wp_enqueue_script( 'picker-link', $url_to . '/asset/lib/picker-link.min.js', [ 'wplink', 'jquery-ui-autocomplete' ] );
 			wp_enqueue_script( self::NS, $url_to . '/asset/slide-show.min.js', [ 'jquery-ui-sortable' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/slide-show.min.css' );
 		} else {
