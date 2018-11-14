@@ -3,15 +3,13 @@
  * Slide Show Admin (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2018-11-14
  *
  */
 
 
-function st_slide_show_initialize_admin(key, is_dual) {
-	if (is_dual === undefined) is_dual = false;
-
-	const NS            = 'st-slide-show';
+function st_slide_show_initialize_admin(key, is_dual = false) {
+	const NS = 'st-slide-show';
 
 	const CLS_TABLE       = NS + '-table';
 	const CLS_ITEM        = NS + '-item';
@@ -51,22 +49,26 @@ function st_slide_show_initialize_admin(key, is_dual) {
 
 	jQuery(tbl).sortable();
 	jQuery(tbl).sortable('option', {
-		axis: 'y',
+		axis       : 'y',
 		containment: 'parent',
-		cursor: 'move',
-		handle: '.' + CLS_HANDLE,
-		items: '> .' + CLS_ITEM,
+		cursor     : 'move',
+		handle     : '.' + CLS_HANDLE,
+		items      : '> .' + CLS_ITEM,
 		placeholder: CLS_ITEM_PH,
-		update: reorder_item_ids,
+		update     : reorder_item_ids,
 	});
 
 	reorder_item_ids();
 	for (let i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
 
-	setMediaPicker(add, false, function (target, ms) {
+	setMediaPicker(add, false, (target, ms) => {
 		ms.forEach((m) => { add_new_item(m); });
 		reorder_item_ids();
 	}, { multiple: true, type: 'image', title: STR_ADD });
+
+
+	// -------------------------------------------------------------------------
+
 
 	function reorder_item_ids() {
 		for (let i = 0; i < items.length; i += 1) set_item_id(i, items[i]);
@@ -74,69 +76,60 @@ function st_slide_show_initialize_admin(key, is_dual) {
 	}
 
 	function set_item_id(i, it) {
-		const media     = it.getElementsByClassName(CLS_MEDIA)[0];
-		const caption   = it.getElementsByClassName(CLS_CAP)[0];
-		const url       = it.getElementsByClassName(CLS_URL)[0];
-		const opener    = it.getElementsByClassName(CLS_URL_OPENER)[0];
-		const del       = it.getElementsByClassName(CLS_DEL)[0];
-		const thumbnail = it.getElementsByClassName(CLS_TN_IMG)[0];
-		const sel_url   = it.getElementsByClassName(CLS_SEL_URL)[0];
-		const sel_img   = it.getElementsByClassName(CLS_SEL_IMG)[0];
-
 		const idi = id + '_' + i;
-		it.id                       = idi;
-		media.id     = media.name   = idi + '_media';
-		caption.id   = caption.name = idi + '_caption';
-		url.id       = url.name     = idi + '_url';
-		del.id       = del.name     = idi + '_delete';
-		thumbnail.id                = idi + '_thumbnail';
-
-		sel_url.setAttribute('data-idi', idi);
-		sel_img.setAttribute('data-idi', idi);
-		opener.setAttribute('data-idi', idi);
+		it.id = idi;
+		set_id_name_by_class(it, CLS_MEDIA,  idi + '_media');
+		set_id_name_by_class(it, CLS_URL,    idi + '_url');
+		set_id_name_by_class(it, CLS_DEL,    idi + '_delete');
+		set_id_name_by_class(it, CLS_CAP,    idi + '_caption');
+		set_id_name_by_class(it, CLS_TN_IMG, idi + '_thumbnail', true);
+		set_idi(it, [CLS_SEL_URL, CLS_SEL_IMG, CLS_URL_OPENER], idi);
 
 		if (is_dual) {
-			const media_sub     = it.getElementsByClassName(CLS_MEDIA_SUB)[0];
-			const thumbnail_sub = it.getElementsByClassName(CLS_TN_IMG_SUB)[0];
-			const sel_img_sub   = it.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
-
-			media_sub.id     = media_sub.name = idi + '_media_sub';
-			thumbnail_sub.id                  = idi + '_thumbnail_sub';
-
-			sel_img_sub.setAttribute('data-idi', idi);
+			set_id_name_by_class(it, CLS_MEDIA_SUB,  idi + '_media_sub');
+			set_id_name_by_class(it, CLS_TN_IMG_SUB, idi + '_thumbnail_sub', true);
+			set_idi(it, [CLS_SEL_IMG_SUB], idi);
 		}
 	}
 
-	function add_new_item(f) {
-		const item = temp.cloneNode(true);
-
-		item.getElementsByClassName(CLS_CAP)[0].value   = f.caption;
-		item.getElementsByClassName(CLS_MEDIA)[0].value = f.id;
-		item.getElementsByClassName(CLS_TN_IMG)[0].style.backgroundImage = "url('" + f.url + "')";
-
-		item.classList.remove(CLS_ITEM_TEMP);
-		item.classList.add(CLS_ITEM);
-		tbl.insertBefore(item, addRow);
-		assign_event_listener(item);
+	function set_id_name_by_class(parent, cls, id_name, only_id = false) {
+		const elm = parent.getElementsByClassName(cls)[0];
+		elm.id = id_name;
+		if (!only_id) elm.name = id_name;
 	}
 
-	function assign_event_listener(item) {
-		const del     = item.getElementsByClassName(CLS_DEL)[0];
-		const sel_url = item.getElementsByClassName(CLS_SEL_URL)[0];
-		const sel_img = item.getElementsByClassName(CLS_SEL_IMG)[0];
-		const opener  = item.getElementsByClassName(CLS_URL_OPENER)[0];
+	function set_idi(parent, clss, idi) {
+		clss.forEach((cls) => {
+			const elm = parent.getElementsByClassName(cls)[0];
+			elm.setAttribute('data-idi', idi);
+		});
+	}
+
+	function add_new_item(f) {
+		const it = temp.cloneNode(true);
+
+		it.getElementsByClassName(CLS_CAP)[0].value   = f.caption;
+		it.getElementsByClassName(CLS_MEDIA)[0].value = f.id;
+		it.getElementsByClassName(CLS_TN_IMG)[0].style.backgroundImage = "url('" + f.url + "')";
+
+		it.classList.remove(CLS_ITEM_TEMP);
+		it.classList.add(CLS_ITEM);
+		tbl.insertBefore(it, addRow);
+		assign_event_listener(it);
+	}
+
+	function assign_event_listener(it) {
+		const del     = it.getElementsByClassName(CLS_DEL)[0];
+		const sel_url = it.getElementsByClassName(CLS_SEL_URL)[0];
+		const sel_img = it.getElementsByClassName(CLS_SEL_IMG)[0];
+		const opener  = it.getElementsByClassName(CLS_URL_OPENER)[0];
 
 		del.addEventListener('click', function (e) {
 			if (e.target.checked) {
-				item.classList.add(CLS_ITEM_DEL);
+				it.classList.add(CLS_ITEM_DEL);
 			} else {
-				item.classList.remove(CLS_ITEM_DEL);
+				it.classList.remove(CLS_ITEM_DEL);
 			}
-		});
-
-		setLinkPicker(sel_url, false, function (target, f) {
-			const idi = target.getAttribute('data-idi');
-			document.getElementById(idi + '_url').value = f.url;
 		});
 		opener.addEventListener('click', function (e) {
 			e.preventDefault();
@@ -144,7 +137,10 @@ function st_slide_show_initialize_admin(key, is_dual) {
 			const url = document.getElementById(idi + '_url').value;
 			if (url) window.open(url);
 		});
-
+		setLinkPicker(sel_url, false, function (target, f) {
+			const idi = target.getAttribute('data-idi');
+			document.getElementById(idi + '_url').value = f.url;
+		});
 		setMediaPicker(sel_img, false, function (target, f) {
 			const idi = target.getAttribute('data-idi');
 			document.getElementById(idi + '_caption').value = f.caption;
@@ -153,7 +149,7 @@ function st_slide_show_initialize_admin(key, is_dual) {
 		}, { multiple: false, type: 'image', title: STR_SEL });
 
 		if (is_dual) {
-			const sel_img_sub = item.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
+			const sel_img_sub = it.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
 			setMediaPicker(sel_img_sub, false, function (target, f) {
 				const idi = target.getAttribute('data-idi');
 				document.getElementById(idi + '_media_sub').value = f.id;

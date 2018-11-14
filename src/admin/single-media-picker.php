@@ -6,7 +6,7 @@ namespace st;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2018-11-14
  *
  */
 
@@ -59,6 +59,11 @@ class SingleMediaPicker {
 		self::$_instance[ $key ] = $this;
 	}
 
+	public function set_title_editable( $flag ) {
+		$this->_is_title_editable = $flag;
+		return $this;
+	}
+
 	public function get_item( $post_id = false ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
 
@@ -67,7 +72,7 @@ class SingleMediaPicker {
 		$title    = get_post_meta( $post_id, "{$this->_key}_title",    true );
 		$filename = get_post_meta( $post_id, "{$this->_key}_filename", true );
 
-		// For compatibility
+		// For Backward Compatibility
 		if ( empty( $media ) ) {
 			$media = get_post_meta( $post_id, "{$this->_key}_id", true );
 			if ( ! empty( $media ) ) update_post_meta( $post_id, "{$this->_key}_media", $media );
@@ -75,11 +80,6 @@ class SingleMediaPicker {
 		$id = $media;
 
 		return compact( 'media', 'url', 'title', 'filename', 'id' );
-	}
-
-	public function set_title_editable( $flag ) {
-		$this->_is_title_editable = $flag;
-		return $this;
 	}
 
 
@@ -95,6 +95,10 @@ class SingleMediaPicker {
 		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
 		$this->_save_item( $post_id );
 	}
+
+
+	// -----------------------------------------------------------------------------
+
 
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
@@ -127,7 +131,9 @@ class SingleMediaPicker {
 			</div>
 			<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
 			<?php $this->_output_hidden_fields( $it, [ 'media', 'url', 'filename' ] ) ?>
-			<script>document.addEventListener('DOMContentLoaded', function () { st_single_media_picker_initialize_admin('<?php echo $this->_id ?>'); });</script>
+			<script>document.addEventListener('DOMContentLoaded', function () {
+				st_single_media_picker_initialize_admin('<?php echo $this->_id ?>');
+			});</script>
 		</div>
 	<?php
 	}

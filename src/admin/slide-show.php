@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2018-11-14
  *
  */
 
@@ -248,6 +248,10 @@ class SlideShow {
 		$this->_save_slides( $post_id );
 	}
 
+
+	// -----------------------------------------------------------------------------
+
+
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$sls = $this->_get_slides( $post->ID );
@@ -261,7 +265,9 @@ class SlideShow {
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
-			<script>document.addEventListener('DOMContentLoaded', function () { st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>); });</script>
+			<script>document.addEventListener('DOMContentLoaded', function () {
+				st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);
+			});</script>
 		</div>
 <?php
 	}
@@ -272,6 +278,37 @@ class SlideShow {
 		} else {
 			$this->_output_row_single( $sl, $cls );
 		}
+	}
+
+	private function _output_row_single( $sl, $cls ) {
+		$_cap   = isset( $sl['caption'] ) ? esc_attr( $sl['caption'] ) : '';
+		$_url   = isset( $sl['url'] )     ? esc_attr( $sl['url'] )     : '';
+		$_img   = isset( $sl['image'] )   ? esc_url( $sl['image'] )    : '';
+		$_media = isset( $sl['media'] )   ? esc_attr( $sl['media'] )   : '';
+		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
+?>
+		<div class="<?php echo $cls ?>">
+			<div>
+				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+			</div>
+			<div>
+				<div class="<?php echo self::CLS_INFO ?>">
+					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
+					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
+					<div>
+						<input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a>
+					</div>
+				</div>
+				<div class="<?php echo self::CLS_TN ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
+				</div>
+			</div>
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+		</div>
+<?php
 	}
 
 	private function _output_row_dual( $sl, $cls ) {
@@ -312,44 +349,15 @@ class SlideShow {
 	<?php
 	}
 
-	private function _output_row_single( $sl, $cls ) {
-		$_cap   = isset( $sl['caption'] ) ? esc_attr( $sl['caption'] ) : '';
-		$_url   = isset( $sl['url'] )     ? esc_attr( $sl['url'] )     : '';
-		$_img   = isset( $sl['image'] )   ? esc_url( $sl['image'] )    : '';
-		$_media = isset( $sl['media'] )   ? esc_attr( $sl['media'] )   : '';
-		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
-?>
-		<div class="<?php echo $cls ?>">
-			<div>
-				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
-			</div>
-			<div>
-				<div class="<?php echo self::CLS_INFO ?>">
-					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
-					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
-					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
-					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
-					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a></div>
-				</div>
-				<div class="<?php echo self::CLS_TN ?>">
-					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
-				</div>
-			</div>
-			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
-		</div>
-<?php
-	}
-
 
 	// -------------------------------------------------------------------------
 
 
 	private function _save_slides( $post_id ) {
-		$keys = [ 'media', 'caption', 'url', 'delete' ];
-		if ( $this->_is_dual ) $keys[] = 'media_sub';
+		$skeys = [ 'media', 'caption', 'url', 'delete' ];
+		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 
-		$sls = \st\field\get_multiple_post_meta_from_post( $this->_key, $keys );
+		$sls = \st\field\get_multiple_post_meta_from_post( $this->_key, $skeys );
 		$sls = array_filter( $sls, function ( $sl ) { return ! $sl['delete']; } );
 		$sls = array_values( $sls );
 
@@ -357,16 +365,16 @@ class SlideShow {
 			$pid = url_to_postid( $sl['url'] );
 			if ( $pid !== 0 ) $sl['url'] = $pid;
 		}
-		$keys = [ 'media', 'caption', 'url' ];
-		if ( $this->_is_dual ) $keys[] = 'media_sub';
-		\st\field\update_multiple_post_meta( $post_id, $this->_key, $sls, $keys );
+		$skeys = [ 'media', 'caption', 'url' ];
+		if ( $this->_is_dual ) $skeys[] = 'media_sub';
+		\st\field\update_multiple_post_meta( $post_id, $this->_key, $sls, $skeys );
 	}
 
 	private function _get_slides( $post_id, $size = 'medium' ) {
-		$keys = [ 'media', 'caption', 'url' ];
-		if ( $this->_is_dual ) $keys[] = 'media_sub';
+		$skeys = [ 'media', 'caption', 'url' ];
+		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 
-		$sls = \st\field\get_multiple_post_meta( $post_id, $this->_key, $keys );
+		$sls = \st\field\get_multiple_post_meta( $post_id, $this->_key, $skeys );
 
 		foreach ( $sls as &$sl ) {
 			if ( isset( $sl['url'] ) && is_numeric( $sl['url'] ) ) {

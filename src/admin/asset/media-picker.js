@@ -3,7 +3,7 @@
  * Media Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2018-11-14
  *
  */
 
@@ -46,22 +46,26 @@ function st_media_picker_initialize_admin(key) {
 
 	jQuery(tbl).sortable();
 	jQuery(tbl).sortable('option', {
-		axis: 'y',
+		axis       : 'y',
 		containment: 'parent',
-		cursor: 'move',
-		handle: '.' + CLS_HANDLE,
-		items: '> .' + CLS_ITEM,
+		cursor     : 'move',
+		handle     : '.' + CLS_HANDLE,
+		items      : '> .' + CLS_ITEM,
 		placeholder: CLS_ITEM_PH,
-		update: reorder_item_ids,
+		update     : reorder_item_ids,
 	});
 
 	reorder_item_ids();
 	for (var i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
 
-	setMediaPicker(add, false, function (target, ms) {
+	setMediaPicker(add, false, (target, ms) => {
 		ms.forEach((m) => { add_new_item(m); });
 		reorder_item_ids();
 	}, { multiple: true, title: STR_ADD });
+
+
+	// -------------------------------------------------------------------------
+
 
 	function reorder_item_ids() {
 		for (let i = 0; i < items.length; i += 1) set_item_id(i, items[i]);
@@ -69,63 +73,63 @@ function st_media_picker_initialize_admin(key) {
 	}
 
 	function set_item_id(i, it) {
-		const media    = it.getElementsByClassName(CLS_MEDIA)[0];
-		const url      = it.getElementsByClassName(CLS_URL)[0];
-		const title    = it.getElementsByClassName(CLS_TITLE)[0];
-		const filename = it.getElementsByClassName(CLS_FILENAME)[0];
-		const h_filename = it.getElementsByClassName(CLS_H_FILENAME)[0];
-		const opener   = it.getElementsByClassName(CLS_MEDIA_OPENER)[0];
-		const del      = it.getElementsByClassName(CLS_DEL)[0];
-		const sel      = it.getElementsByClassName(CLS_SEL)[0];
-
 		const idi = id + '_' + i;
-		it.id                       = idi;
-		media.id    = media.name    = idi + '_media';
-		title.id    = title.name    = idi + '_title';
-		filename.id = filename.name = idi + '_filename';
-		url.id      = url.name      = idi + '_url';
-		del.id      = del.name      = idi + '_delete';
-		h_filename.id               = idi + '_h_filename';
+		it.id = idi;
+		set_id_name_by_class(it, CLS_MEDIA,      idi + '_media');
+		set_id_name_by_class(it, CLS_URL,        idi + '_url');
+		set_id_name_by_class(it, CLS_TITLE,      idi + '_title');
+		set_id_name_by_class(it, CLS_FILENAME,   idi + '_filename');
+		set_id_name_by_class(it, CLS_DEL,        idi + '_delete');
+		set_id_name_by_class(it, CLS_H_FILENAME, idi + '_h_filename', true);
+		set_idi(it, [CLS_SEL, CLS_MEDIA_OPENER], idi);
+	}
 
-		sel.setAttribute('data-idi', idi);
-		opener.setAttribute('data-idi', idi);
+	function set_id_name_by_class(parent, cls, id_name, only_id = false) {
+		const elm = parent.getElementsByClassName(cls)[0];
+		elm.id = id_name;
+		if (!only_id) elm.name = id_name;
+	}
+
+	function set_idi(parent, clss, idi) {
+		clss.forEach((cls) => {
+			const elm = parent.getElementsByClassName(cls)[0];
+			elm.setAttribute('data-idi', idi);
+		});
 	}
 
 	function add_new_item(f) {
-		const item = temp.cloneNode(true);
+		const it = temp.cloneNode(true);
 
-		item.getElementsByClassName(CLS_MEDIA)[0].value    = f.id;
-		item.getElementsByClassName(CLS_URL)[0].value      = f.url;
-		item.getElementsByClassName(CLS_TITLE)[0].value    = f.title;
-		item.getElementsByClassName(CLS_FILENAME)[0].value = f.filename;
-		item.getElementsByClassName(CLS_H_FILENAME)[0].innerText = f.filename;
+		it.getElementsByClassName(CLS_MEDIA)[0].value          = f.id;
+		it.getElementsByClassName(CLS_URL)[0].value            = f.url;
+		it.getElementsByClassName(CLS_TITLE)[0].value          = f.title;
+		it.getElementsByClassName(CLS_FILENAME)[0].value       = f.filename;
+		it.getElementsByClassName(CLS_H_FILENAME)[0].innerText = f.filename;
 
-		item.classList.remove(CLS_ITEM_TEMP);
-		item.classList.add(CLS_ITEM);
-		tbl.insertBefore(item, addRow);
-		assign_event_listener(item);
+		it.classList.remove(CLS_ITEM_TEMP);
+		it.classList.add(CLS_ITEM);
+		tbl.insertBefore(it, addRow);
+		assign_event_listener(it);
 	}
 
-	function assign_event_listener(item) {
-		const del    = item.getElementsByClassName(CLS_DEL)[0];
-		const sel    = item.getElementsByClassName(CLS_SEL)[0];
-		const opener = item.getElementsByClassName(CLS_MEDIA_OPENER)[0];
+	function assign_event_listener(it) {
+		const del    = it.getElementsByClassName(CLS_DEL)[0];
+		const sel    = it.getElementsByClassName(CLS_SEL)[0];
+		const opener = it.getElementsByClassName(CLS_MEDIA_OPENER)[0];
 
 		del.addEventListener('click', function (e) {
 			if (e.target.checked) {
-				item.classList.add(CLS_ITEM_DEL);
+				it.classList.add(CLS_ITEM_DEL);
 			} else {
-				item.classList.remove(CLS_ITEM_DEL);
+				it.classList.remove(CLS_ITEM_DEL);
 			}
 		});
-
 		opener.addEventListener('click', function (e) {
 			e.preventDefault();
 			const idi = e.target.getAttribute('data-idi');
 			const url = document.getElementById(idi + '_url').value;
 			if (url) window.open(url);
 		});
-
 		setMediaPicker(sel, false, function (target, f) {
 			const idi = target.getAttribute('data-idi');
 			document.getElementById(idi + '_media').value          = f.id;

@@ -6,7 +6,7 @@ namespace st;
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2018-11-14
  *
  */
 
@@ -66,13 +66,18 @@ class MediaPicker {
 		self::$_instance[ $key ] = $this;
 	}
 
+	public function set_title_editable( $flag ) {
+		$this->_is_title_editable = $flag;
+		return $this;
+	}
+
 	public function get_items( $post_id = false ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
 
-		$keys = [ 'media', 'url', 'title', 'filename', 'id' ];
-		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, $keys );
+		$skeys = [ 'media', 'url', 'title', 'filename', 'id' ];
+		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, $skeys );
 
-		// For compatibility
+		// For Backward Compatibility
 		foreach ( $its as $idx => &$it ) {
 			if ( empty( $it['media'] ) ) {
 				$it['media'] = $it['id'];
@@ -81,11 +86,6 @@ class MediaPicker {
 			$it['id'] = $it['media'];
 		}
 		return $its;
-	}
-
-	public function set_title_editable( $flag ) {
-		$this->_is_title_editable = $flag;
-		return $this;
 	}
 
 
@@ -102,6 +102,10 @@ class MediaPicker {
 		$this->_save_items( $post_id );
 	}
 
+
+	// -----------------------------------------------------------------------------
+
+
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$its = $this->get_items( $post->ID );
@@ -115,7 +119,9 @@ class MediaPicker {
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
-			<script>document.addEventListener('DOMContentLoaded', function () { st_media_picker_initialize_admin('<?php echo $this->_id ?>'); });</script>
+			<script>document.addEventListener('DOMContentLoaded', function () {
+				st_media_picker_initialize_admin('<?php echo $this->_id ?>');
+			});</script>
 		</div>
 <?php
 	}
@@ -157,14 +163,14 @@ class MediaPicker {
 
 
 	private function _save_items( $post_id ) {
-		$keys = ['media', 'url', 'title', 'filename', 'delete'];
+		$skeys = [ 'media', 'url', 'title', 'filename', 'delete' ];
 
-		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $keys );
+		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $skeys );
 		$its = array_filter( $its, function ( $it ) { return ! $it['delete'] && ! empty( $it['url'] ); } );
 		$its = array_values( $its );
 
-		$keys = [ 'media', 'url', 'title', 'filename' ];
-		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $keys );
+		$skeys = [ 'media', 'url', 'title', 'filename' ];
+		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $skeys );
 	}
 
 }
