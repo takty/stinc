@@ -6,7 +6,7 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-18
+ * @version 2018-11-15
  *
  */
 
@@ -29,7 +29,11 @@ function get_server_host() {
 function get_file_uri( $path ) {
 	$path = wp_normalize_path( $path );
 
-	$theme_path = wp_normalize_path( get_theme_file_path() );
+	if ( defined( 'THEME_PATH' ) ) {
+		$theme_path = wp_normalize_path( THEME_PATH );
+	} else {
+		$theme_path = wp_normalize_path( get_theme_file_path() );
+	}
 	$theme_uri = get_theme_file_uri();
 
 	return str_replace( $theme_path, $theme_uri, $path );
