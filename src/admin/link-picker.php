@@ -19,18 +19,18 @@ class LinkPicker {
 
 	const NS = 'st-link-picker';
 
-	const CLS_TABLE     = NS . '-table';
-	const CLS_ADD       = NS . '-add';
+	const CLS_TABLE     = self::NS . '-table';
+	const CLS_ADD       = self::NS . '-add';
 
-	const CLS_ITEM      = NS . '-item';
-	const CLS_ITEM_TEMP = NS . '-item-template';
-	const CLS_HANDLE    = NS . '-handle';
-	const CLS_SEL       = NS . '-select';
+	const CLS_ITEM      = self::NS . '-item';
+	const CLS_ITEM_TEMP = self::NS . '-item-template';
+	const CLS_HANDLE    = self::NS . '-handle';
+	const CLS_SEL       = self::NS . '-select';
 
-	const CLS_URL       = NS . '-url';
-	const CLS_TITLE     = NS . '-title';
-	const CLS_DEL       = NS . '-delete';
-	const CLS_POST_ID   = NS . '-post-id';
+	const CLS_URL       = self::NS . '-url';
+	const CLS_TITLE     = self::NS . '-title';
+	const CLS_DEL       = self::NS . '-delete';
+	const CLS_POST_ID   = self::NS . '-post-id';
 
 	static private $_instance = [];
 
@@ -109,7 +109,7 @@ class LinkPicker {
 	// -------------------------------------------------------------------------
 
 
-	public function _cb_output_html( $key, $is_internal_only = false, $max_count = false ) {  // Private
+	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$its = $this->get_items( $post->ID );
 		if ( $this->_max_count ) $its = array_slice( $its, 0, min( $this->_max_count, count( $its ) ) );
@@ -164,7 +164,7 @@ class LinkPicker {
 	// -------------------------------------------------------------------------
 
 
-	private function _save_items( $post_id, $is_internal_only ) {
+	private function _save_items( $post_id ) {
 		$skeys = [ 'title', 'url', 'post_id', 'delete' ];
 
 		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $skeys );
@@ -178,7 +178,7 @@ class LinkPicker {
 		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $skeys );
 	}
 
-	function _ensure_internal_link( &$it ) {
+	private function _ensure_internal_link( &$it ) {
 		$pid = url_to_postid( $it['url'] );
 
 		if ( empty( $it['post_id'] ) ) {
@@ -220,7 +220,7 @@ function get_items( $key, $post_id = false ) { return \st\LinkPicker::get_instan
 function set_internal_only( $key, $enabled ) { return \st\LinkPicker::get_instance( $key )->set_internal_only( $enabled ); }
 function set_max_count( $key, $count ) { return \st\LinkPicker::get_instance( $key )->set_max_count( $count ); }
 
-function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
+function add_meta_box( $key, $label, $screen, $context = 'advanced', $opts = [] ) {
 	if ( isset( $opts['is_internal_only'] ) ) set_internal_only( $key, $opts['is_internal_only'] );
 	if ( isset( $opts['max_count'] ) ) set_max_count( $key, $opts['max_count'] );
 	\st\LinkPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
