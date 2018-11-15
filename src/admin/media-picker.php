@@ -183,7 +183,7 @@ class MediaPicker {
 namespace st\media_picker;
 
 function initialize( $key ) { return new \st\MediaPicker( $key ); }
-function enqueue_script( $url_to ) { \st\MediaPicker::enqueue_script( $url_to ); }
+function enqueue_script( $url_to = false ) { \st\MediaPicker::enqueue_script( $url_to ); }
 
 function get_items( $key, $post_id = false ) { return \st\MediaPicker::get_instance( $key )->get_items( $post_id ); }
 function set_title_editable( $key, $flag ) { return \st\MediaPicker::get_instance( $key )->set_title_editable( $flag ); }
