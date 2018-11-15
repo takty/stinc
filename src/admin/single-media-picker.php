@@ -39,7 +39,8 @@ class SingleMediaPicker {
 		return new SingleMediaPicker( $key );
 	}
 
-	static public function enqueue_script( $url_to ) {
+	static public function enqueue_script( $url_to = false ) {
+		if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
 		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
 			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );

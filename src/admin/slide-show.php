@@ -58,7 +58,8 @@ class SlideShow {
 		return new SlideShow( $key );
 	}
 
-	static public function enqueue_script( $url_to ) {
+	static public function enqueue_script( $url_to = false ) {
+		if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
 		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
 			wp_enqueue_script( 'picker-link', $url_to . '/asset/lib/picker-link.min.js', [ 'wplink', 'jquery-ui-autocomplete' ] );
