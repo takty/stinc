@@ -6,7 +6,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-07
+ * @version 2018-11-15
  *
  */
 
@@ -190,7 +190,11 @@ function get_pages_by_ids( $ids ) {
 	foreach ( $ps as $p ) {
 		$id2p[ $p->ID ] = $p;
 	}
-	return array_map( function ( $e ) use ( $id2p ) { return $id2p[ $e ]; }, $ids );
+	$ret = [];
+	foreach ( $ids as $id ) {
+		if ( isset( $id2p[ $id ] ) ) $ret[] = $id2p[ $id ];
+	}
+	return $ret;
 }
 
 
