@@ -52,7 +52,7 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 	});
 
 	reorder_item_ids();
-	for (var i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
+	for (let i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
 	if (max_count !== false && max_count <= items.length) addBtn.setAttribute('disabled', 'true');
 
 	setLinkPicker(add, false, (target, l) => {
@@ -111,14 +111,14 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 		const sel    = it.getElementsByClassName(CLS_SEL)[0];
 		const opener = it.getElementsByClassName(CLS_URL_OPENER)[0];
 
-		del.addEventListener('click', function (e) {
+		del.addEventListener('click', (e) => {
 			if (e.target.checked) {
 				it.classList.add(CLS_ITEM_DEL);
 			} else {
 				it.classList.remove(CLS_ITEM_DEL);
 			}
 		});
-		opener.addEventListener('click', function (e) {
+		opener.addEventListener('click', (e) => {
 			e.preventDefault();
 			const idi = e.target.getAttribute('data-idi');
 			const url = document.getElementById(idi + '_url').value;

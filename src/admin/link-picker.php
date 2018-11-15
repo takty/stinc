@@ -19,18 +19,23 @@ class LinkPicker {
 
 	const NS = 'st-link-picker';
 
-	const CLS_TABLE     = self::NS . '-table';
-	const CLS_ADD       = self::NS . '-add';
+	const CLS_BODY       = self::NS . '-body';
+	const CLS_TABLE      = self::NS . '-table';
+	const CLS_ADD_ROW    = self::NS . '-add-row';
+	const CLS_ADD        = self::NS . '-add';
 
-	const CLS_ITEM      = self::NS . '-item';
-	const CLS_ITEM_TEMP = self::NS . '-item-template';
-	const CLS_HANDLE    = self::NS . '-handle';
-	const CLS_SEL       = self::NS . '-select';
+	const CLS_ITEM       = self::NS . '-item';
+	const CLS_ITEM_TEMP  = self::NS . '-item-template';
+	const CLS_ITEM_IR    = self::NS . '-item-inside-row';
+	const CLS_HANDLE     = self::NS . '-handle';
+	const CLS_SEL        = self::NS . '-select';
+	const CLS_DEL_LAB    = self::NS . '-delete-label';
+	const CLS_URL_OPENER = self::NS . '-url-opener';
 
-	const CLS_URL       = self::NS . '-url';
-	const CLS_TITLE     = self::NS . '-title';
-	const CLS_DEL       = self::NS . '-delete';
-	const CLS_POST_ID   = self::NS . '-post-id';
+	const CLS_URL        = self::NS . '-url';
+	const CLS_TITLE      = self::NS . '-title';
+	const CLS_DEL        = self::NS . '-delete';
+	const CLS_POST_ID    = self::NS . '-post-id';
 
 	static private $_instance = [];
 
@@ -116,19 +121,22 @@ class LinkPicker {
 ?>
 		<input type="hidden" id="<?php echo $this->_id ?>" name="<?php echo $this->_id ?>" value="" />
 		<div class="<?php echo self::CLS_BODY ?>">
-			<div class="<?php echo CLS_TABLE ?>">
+			<div class="<?php echo self::CLS_TABLE ?>">
 <?php
 		$this->_output_row( [], self::CLS_ITEM_TEMP );
 		foreach ( $its as $it ) $this->_output_row( $it, self::CLS_ITEM );
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Link', 'default' ) ?></a></div>
 			</div>
-			<script>document.addEventListener('DOMContentLoaded', function () {
+			<script>window.addEventListener('load', function () {
 				st_link_picker_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_internal_only ? 'true' : 'false' ?>, <?php echo $this->_max_count ? $this->_max_count : 'false' ?>);
 			});</script>
 		</div>
 <?php
 	}
+
+	const CLS_ITEM_CTRL = self::NS . '-item-ctrl';
+	const CLS_ITEM_CONT = self::NS . '-item-cont';
 
 	private function _output_row( $it, $cls ) {
 		$_url     = isset( $it['url'] )     ? esc_attr( $it['url'] )     : '';
@@ -138,16 +146,16 @@ class LinkPicker {
 		$ro = $this->_is_internal_only ? 'readonly="readonly"' : '';
 ?>
 		<div class="<?php echo $cls ?>">
-			<div>
+			<div class="<?php echo self::CLS_ITEM_CTRL ?>">
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
 				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
 			</div>
-			<div>
-				<div>
-					<span><?php _e( 'Title', 'default' ) ?>:</span>
+			<div class="<?php echo self::CLS_ITEM_CONT ?>">
+				<div class="<?php echo self::CLS_ITEM_IR ?>">
+					<span class=""><?php _e( 'Title', 'default' ) ?>:</span>
 					<input type="text" class="<?php echo self::CLS_TITLE ?> link-title" value="<?php echo $_title ?>" />
 				</div>
-				<div>
+				<div class="<?php echo self::CLS_ITEM_IR ?>">
 					<span><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</span>
 					<span>
 						<input type="text" class="<?php echo self::CLS_URL ?> link-url" value="<?php echo $_url ?>" <?php echo $ro ?>/>
