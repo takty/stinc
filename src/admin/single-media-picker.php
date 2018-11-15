@@ -6,7 +6,7 @@ namespace st;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-14
+ * @version 2018-11-15
  *
  */
 
