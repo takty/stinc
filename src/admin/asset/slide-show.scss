@@ -95,6 +95,12 @@
 	}
 }
 
+.st-slide-show-thumbnail-wrap {
+	display: flex;
+	width: 100%;
+	max-width: calc(320px + 16px);
+}
+
 .st-slide-show-thumbnail {
 	margin-top: 2px;
 	padding-left: 8px;

@@ -169,8 +169,8 @@ namespace st\single_media_picker;
 function initialize( $key ) { return new \st\SingleMediaPicker( $key ); }
 function enqueue_script( $url_to ) { \st\SingleMediaPicker::enqueue_script( $url_to ); }
 
-function get_item( $key, $post_id = false ) { \st\SingleMediaPicker::get_instance( $key )->get_item( $post_id ); }
-function set_title_editable( $key, $flag ) { \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag ); }
+function get_item( $key, $post_id = false ) { return \st\SingleMediaPicker::get_instance( $key )->get_item( $post_id ); }
+function set_title_editable( $key, $flag ) { return \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag ); }
 
 function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
 	if ( isset( $opts['title_editable'] ) ) set_title_editable( $key, $opts['title_editable'] );
