@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-14
+ * @version 2018-11-15
  *
  */
 
@@ -266,7 +266,7 @@ class SlideShow {
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
-			<script>document.addEventListener('DOMContentLoaded', function () {
+			<script>window.addEventListener('load', function () {
 				st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);
 			});</script>
 		</div>

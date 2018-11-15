@@ -132,7 +132,7 @@ class SingleMediaPicker {
 			</div>
 			<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
 			<?php $this->_output_hidden_fields( $it, [ 'media', 'url', 'filename' ] ) ?>
-			<script>document.addEventListener('DOMContentLoaded', function () {
+			<script>window.addEventListener('load', function () {
 				st_single_media_picker_initialize_admin('<?php echo $this->_id ?>');
 			});</script>
 		</div>

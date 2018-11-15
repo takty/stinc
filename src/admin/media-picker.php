@@ -120,7 +120,7 @@ class MediaPicker {
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
 			</div>
-			<script>document.addEventListener('DOMContentLoaded', function () {
+			<script>window.addEventListener('load', function () {
 				st_media_picker_initialize_admin('<?php echo $this->_id ?>');
 			});</script>
 		</div>
