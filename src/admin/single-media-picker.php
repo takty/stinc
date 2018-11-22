@@ -6,12 +6,13 @@ namespace st;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-15
+ * @version 2018-11-22
  *
  */
 
 
 require_once __DIR__ . '/../system/field.php';
+require_once __DIR__ . '/../tag/url.php';
 
 
 class SingleMediaPicker {
