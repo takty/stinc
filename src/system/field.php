@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-18
+ * @version 2018-11-24
  *
  */
 
@@ -354,7 +354,7 @@ function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 				$styles[] = ".column-$tax{$c['name']} {width: {$c['width']} !important;}";
 			}
 			// Column Value Functions
-			if ( isset( $c['value'] ) && function_exists( $c['value'] ) ) {
+			if ( isset( $c['value'] ) && is_callable( $c['value'] ) ) {
 				$val_fns[ $c['name'] ] = $c['value'];
 			}
 		} else {
@@ -378,7 +378,7 @@ function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 	add_action( "manage_{$post_type}_posts_custom_column", function ( $column_name, $post_id ) use ( $val_fns ) {
 		if ( isset( $val_fns[ $column_name ] ) ) {
 			$fn = $val_fns[ $column_name ];
-			echo $fn( get_post_meta( $post_id, $column_name, true ) );
+			echo call_user_func( $fn, get_post_meta( $post_id, $column_name, true ) );
 		}
 	}, 10, 2 );
 
