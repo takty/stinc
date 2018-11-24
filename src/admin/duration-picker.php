@@ -6,7 +6,7 @@ namespace st;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-22
+ * @version 2018-11-24
  *
  */
 
@@ -55,8 +55,8 @@ class DurationPicker {
 	private $_key;
 	private $_id;
 
-	private $_label_bgn  = 'Begin';
-	private $_label_end  = 'End';
+	private $_label_bgn = 'Begin';
+	private $_label_end = 'End';
 
 	public function __construct( $key ) {
 		$this->_key = $key;
