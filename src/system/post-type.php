@@ -6,7 +6,7 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-12
+ * @version 2018-11-24
  *
  */
 
@@ -175,10 +175,13 @@ function make_custom_date_sortable( $post_type, $slug, $meta_key ) {
 					$query->set( 'day', null );
 				}
 			}
-			$mq_key = 'meta_'.$meta_key;
-			$query->set( 'meta_query', [
-				$mq_key => [ 'key' => $meta_key, 'type' => 'date' ]
-			] );
+			$mq_key = "meta_$meta_key";
+
+			$mq = $query->get( 'meta_query' );
+			if ( ! is_array( $mq ) ) $mq = [];
+			$mq[ $mq_key ] = [ 'key' => $meta_key, 'type' => 'date' ];
+			$query->set( 'meta_query', $mq );
+
 			$order = $query->get( 'order' );
 			$query->set( 'orderby', [ $mq_key => $order, 'date' => $order ] );
 		}
