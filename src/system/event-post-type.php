@@ -6,7 +6,7 @@ namespace st;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-24
+ * @version 2018-11-26
  *
  */
 
@@ -18,8 +18,8 @@ require_once __DIR__ . '/post-type.php';
 
 class EventPostType {
 
-	const KEY_BGN = '_date_bgn';
-	const KEY_END = '_date_end';
+	const KEY_BGN   = '_date_bgn';
+	const KEY_END   = '_date_end';
 	const SLUG_DATE = 'date';
 
 	static private $_instance   = [];
@@ -243,9 +243,9 @@ function register_event_post_type( $labels, $calendar_locale, $args = [] ) {
 }
 
 function set_admin_columns( $all_columns, $sortable_columns ) {
-	EventPostType::get_instance()->set_admin_columns( $all_columns, $sortable_columns );
+	\st\EventPostType::get_instance()->set_admin_columns( $all_columns, $sortable_columns );
 }
 
 function get_event_date_tags( $post_id, $raw = false, $format = "<span>%year%</span><span>%month%</span><span>%day%</span>" ) {
-	return EventPostType::get_instance()->get_event_date_tags( $post_id, $raw, $format );
+	return \st\EventPostType::get_instance()->get_event_date_tags( $post_id, $raw, $format );
 }
