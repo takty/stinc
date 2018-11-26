@@ -431,7 +431,7 @@ namespace st\slide_show;
 function initialize( $key ) { return new \st\SlideShow( $key ); }
 function enqueue_script( $url_to = false ) { \st\SlideShow::enqueue_script( $url_to ); }
 
-function set_duration_time( $key, $set_duration_time ) { return \st\SlideShow::get_instance( $key )->set_duration_time( $set_duration_time ); }
+function set_duration_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_duration_time( $sec ); }
 function set_transition_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
 function set_zoom_rate( $key, $rate ) { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
 function set_effect_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }

@@ -78,16 +78,6 @@ class BackgroundImage {
 		return $this;
 	}
 
-	public function set_caption_type( $type ) {
-		$this->_caption_type = $type;
-		return $this;
-	}
-
-	public function set_zoom_rate( $rate ) {
-		$this->_zoom_rate = $rate;
-		return $this;
-	}
-
 	public function set_duration_time( $sec ) {
 		$this->_duration_time = $sec;
 		return $this;
@@ -98,18 +88,23 @@ class BackgroundImage {
 		return $this;
 	}
 
-	public function set_random_timing( $do ) {
-		$this->_is_random_timing = $do;
+	public function set_zoom_rate( $rate ) {
+		$this->_zoom_rate = $rate;
+		return $this;
+	}
+
+	public function set_random_timing_enabled( $enabled ) {
+		$this->_is_random_timing = $enabled;
 		return $this;
 	}
 
 	private function _create_option_str() {
 		$opts = [
-			'effect_type'     => $this->_effect_type,
-			'duration_time'   => $this->_duration_time,
-			'transition_time' => $this->_transition_time,
-			'zoom_rate'       => $this->_zoom_rate,
-			'random_timing'   => $this->_is_random_timing
+			'duration_time'    => $this->_duration_time,
+			'transition_time'  => $this->_transition_time,
+			'zoom_rate'        => $this->_zoom_rate,
+			'effect_type'      => $this->_effect_type,
+			'is_random_timing' => $this->_is_random_timing
 		];
 		return json_encode( $opts );
 	}
@@ -260,4 +255,15 @@ class BackgroundImage {
 
 namespace st\echo_background_image;
 
+function initialize( $key ) { return new \st\BackgroundImage( $key ); }
+function enqueue_script( $url_to = false ) { \st\BackgroundImage::enqueue_script( $url_to ); }
 
+function set_effect_type( $key, $type ) { return \st\BackgroundImage::get_instance( $key )->set_effect_type( $type ); }
+function set_duration_time( $key, $sec ) { return \st\BackgroundImage::get_instance( $key )->set_duration_time( $sec ); }
+function set_transition_time( $key, $sec ) { return \st\BackgroundImage::get_instance( $key )->set_transition_time( $sec ); }
+function set_zoom_rate( $key, $rate ) { return \st\BackgroundImage::get_instance( $key )->set_zoom_rate( $rate ); }
+function set_random_timing_enabled( $key, $enabled ) { return \st\BackgroundImage::get_instance( $key )->set_random_timing_enabled( $enabled ); }
+function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\BackgroundImage::get_instance( $key )->echo_background_image( $post_id, $size, $cls ); }
+
+function add_meta_box( $key, $label, $screen, $context = 'side' ) { \st\BackgroundImage::get_instance( $key )->add_meta_box( $label, $screen, $context ); }
+function save_meta_box( $post_id, $key ) { \st\BackgroundImage::get_instance( $key )->save_meta_box( $post_id ); }
