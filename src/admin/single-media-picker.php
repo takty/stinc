@@ -41,9 +41,9 @@ class SingleMediaPicker {
 	}
 
 	static public function enqueue_script( $url_to = false ) {
-		if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
-		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
+			if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
+			$url_to = untrailingslashit( $url_to );
 			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
 			wp_enqueue_script( self::NS, $url_to . '/asset/single-media-picker.min.js', [ 'picker-media' ] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/single-media-picker.min.css' );
@@ -85,7 +85,7 @@ class SingleMediaPicker {
 	}
 
 
-	// -----------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 
 	public function add_meta_box( $label, $screen, $context = 'side' ) {
@@ -99,7 +99,7 @@ class SingleMediaPicker {
 	}
 
 
-	// -----------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 
 	public function _cb_output_html( $post ) {  // Private

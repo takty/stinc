@@ -1,0 +1,30 @@
+/**
+ *
+ * Custom Post Thumbnail (CSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2018-11-26
+ *
+ */
+
+
+.st-post-thumbnail-img {
+	padding-bottom: 66.66%;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center center;
+}
+
+.st-post-thumbnail-select {
+	margin-left: 4px !important;
+}
+
+.st-post-thumbnail-row {
+	display: flex;
+	margin-top: 1em;
+}
+
+.st-post-thumbnail-delete {
+	margin-right: auto;
+	color: #a00;
+}

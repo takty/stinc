@@ -33,9 +33,9 @@ class DurationPicker {
 	}
 
 	static public function enqueue_script( $url_to = false ) {
-		if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
-		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
+			if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
+			$url_to = untrailingslashit( $url_to );
 			wp_enqueue_script( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.js' );
 			wp_enqueue_style ( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.css' );
 			wp_enqueue_script( 'flatpickr.l10n.ja', $url_to . '/asset/lib/flatpickr.l10n.ja.min.js' );
@@ -80,7 +80,7 @@ class DurationPicker {
 	}
 
 
-	// -----------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 
 	public function add_meta_box( $label, $screen, $context = 'side' ) {
@@ -94,7 +94,7 @@ class DurationPicker {
 	}
 
 
-	// -----------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 
 	public function _cb_output_html( $post ) {  // Private
@@ -143,8 +143,7 @@ class DurationPicker {
 	}
 
 
-
-	// -----------------------------------------------------------------------------
+	// -------------------------------------------------------------------------
 
 
 	private function _save_item( $post_id ) {
