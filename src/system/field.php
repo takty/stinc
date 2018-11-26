@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-24
+ * @version 2018-11-26
  *
  */
 
@@ -53,7 +53,7 @@ function output_input_row( $label, $key, $val, $type = 'text' ) {
 	<div style="margin-top:1rem;">
 		<label>
 			<?php echo esc_html( $label ) ?>
-			<input <?php esc_key_e( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+			<input <?php name_id( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
 		</label>
 	</div>
 <?php
@@ -65,7 +65,7 @@ function output_textarea_row( $label, $key, $val ) {
 	<div style="margin-top:1rem;">
 		<label>
 			<?php echo esc_html( $label ) ?>
-			<textarea <?php esc_key_e( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+			<textarea <?php name_id( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
 		</label>
 	</div>
 <?php
@@ -75,7 +75,7 @@ function output_checkbox_row( $label, $key, $chekced = false ) {
 ?>
 	<div style="margin-top:1rem;">
 		<label>
-			<input <?php esc_key_e( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>>
+			<input <?php name_id( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>>
 			<?php echo esc_html( $label ) ?>
 		</label>
 	</div>
@@ -115,7 +115,7 @@ function get_term_field( $term, $field ) {
 	return false;
 }
 
-function esc_key_e( $key ) {
+function name_id( $key ) {
 	$_key = esc_attr( $key );
 	echo "name=\"$_key\" id=\"$_key\"";
 }
@@ -175,7 +175,7 @@ function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 't
 ?>
 		<div>
 			<label><?php echo esc_html( "$label [$pf]" ) ?>
-			<input <?php esc_key_e( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $_val ?>" size="64" style="width:100%;">
+			<input <?php name_id( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $_val ?>" size="64" style="width:100%;">
 			</label>
 		</div>
 <?php
@@ -195,7 +195,7 @@ function output_textarea_row_postfix( $label, $key, $postfixes, $values ) {
 ?>
 		<div>
 			<label><?php echo esc_html( "$label [$pf]" ) ?>
-			<textarea <?php esc_key_e( $ni ) ?> cols="64" rows="2" style="width:100%;"><?php echo $_val ?></textarea>
+			<textarea <?php name_id( $ni ) ?> cols="64" rows="2" style="width:100%;"><?php echo $_val ?></textarea>
 			</label>
 		</div>
 <?php
