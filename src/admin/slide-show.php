@@ -156,22 +156,22 @@ class SlideShow {
 		return json_encode( $opts );
 	}
 
-	public function echo_slide_show( $post_id = false, $size = 'large', $class = '' ) {
+	public function echo_slide_show( $post_id = false, $size = 'large', $cls = '' ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
 		$its = $this->_get_items( $post_id, $size );
 		if ( empty( $its ) ) return false;
 
 		$dom_id   = "{$this->_id}-$post_id";
-		$dom_cls  = self::NS . ( empty( $class ) ? '' : ( ' ' . $class ) );
+		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
-				foreach ( $its as $it ) {
-					if ( isset( $it['images'] ) ) $this->_echo_slide_item( $it );
-				}
+		foreach ( $its as $it ) {
+			if ( isset( $it['images'] ) ) $this->_echo_slide_item( $it );
+		}
 ?>
 				</ul>
 				<div class="<?php echo self::CLS_PREV ?>"></div>
@@ -441,7 +441,7 @@ function set_side_slide_visible( $key, $visible ) { return \st\SlideShow::get_in
 function set_picture_scroll( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll( $enabled ); }
 function set_dual_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
 function set_caption_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
-function echo_slide_show( $key, $post_id = false, $size = 'large', $class = '' ) { return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $class ); }
+function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $cls ); }
 function echo_slide_items( $key, $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance( $key )->echo_slide_items( $post_id, $size ); }
 
 function add_meta_box( $key, $label, $screen, $context = 'side' ) { \st\SlideShow::get_instance( $key )->add_meta_box( $label, $screen, $context ); }
