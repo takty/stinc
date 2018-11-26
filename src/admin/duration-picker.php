@@ -6,7 +6,7 @@ namespace st;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-24
+ * @version 2018-11-26
  *
  */
 
@@ -119,14 +119,14 @@ class DurationPicker {
 				<tr>
 					<td><?php echo $_label_bgn; ?>: </td>
 					<td class="flatpickr input-group" id="<?php echo $id_row_bgn ?>">
-						<input type="text" <?php \st\field\esc_key_e( $id_bgn ) ?> size="12" value="<?php echo $_bgn; ?>" data-input />
+						<input type="text" <?php \st\field\name_id( $id_bgn ) ?> size="12" value="<?php echo $_bgn; ?>" data-input />
 						<a class="button" title="clear" data-clear>X</a>
 					</td>
 				</tr>
 				<tr>
 					<td><?php echo $_label_end; ?>: </td>
 					<td class="flatpickr input-group" id="<?php echo $id_row_end ?>">
-						<input type="text" <?php \st\field\esc_key_e( $id_end ) ?> size="12" value="<?php echo $_end; ?>" data-input />
+						<input type="text" <?php \st\field\name_id( $id_end ) ?> size="12" value="<?php echo $_end; ?>" data-input />
 						<a class="button" title="clear" data-clear>X</a>
 					</td>
 				</tr>

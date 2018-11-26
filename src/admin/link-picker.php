@@ -6,7 +6,7 @@ namespace st;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-15
+ * @version 2018-11-26
  *
  */
 
@@ -119,7 +119,7 @@ class LinkPicker {
 		$its = $this->get_items( $post->ID );
 		if ( $this->_max_count ) $its = array_slice( $its, 0, min( $this->_max_count, count( $its ) ) );
 ?>
-		<input type="hidden" id="<?php echo $this->_id ?>" name="<?php echo $this->_id ?>" value="" />
+		<input type="hidden" <?php \st\field\name_id( $this->_id ) ?> value="" />
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
 <?php

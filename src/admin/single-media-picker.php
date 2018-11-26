@@ -6,7 +6,7 @@ namespace st;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-22
+ * @version 2018-11-26
  *
  */
 
@@ -122,7 +122,7 @@ class SingleMediaPicker {
 				<div>
 					<div class="<?php echo self::CLS_ITEM_IR ?>">
 						<span><?php _e( 'Title', 'default' ) ?>:</span>
-						<input <?php echo $ro ?> type="text" <?php \st\field\esc_key_e( $id_title ) ?> value="<?php echo $_title ?>" />
+						<input <?php echo $ro ?> type="text" <?php \st\field\name_id( $id_title ) ?> value="<?php echo $_title ?>" />
 					</div>
 					<div class="<?php echo self::CLS_ITEM_IR ?>">
 						<span><a href="javascript:void(0);" class="<?php echo self::CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
@@ -144,7 +144,7 @@ class SingleMediaPicker {
 		foreach ( $keys as $key ) {
 			$_val = esc_attr( $it[ $key ] );
 	?>
-			<input type="hidden" <?php \st\field\esc_key_e( "{$this->_key}_$key" ) ?> value="<?php echo $_val ?>" />
+			<input type="hidden" <?php \st\field\name_id( "{$this->_key}_$key" ) ?> value="<?php echo $_val ?>" />
 	<?php
 		}
 	}
