@@ -6,7 +6,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2018-11-27
  *
  */
 
@@ -142,7 +142,7 @@ class BackgroundImage {
 			$_img1 = esc_url( $imgs[1] );
 			echo "<li data-img=\"$_img1\" data-img-phone=\"$_img0\"></li>";
 		} else {
-			$_img = esc_url( $img );
+			$_img = esc_url( $imgs[0] );
 			echo "<li data-img=\"$_img\"></li>";
 		}
 	}
