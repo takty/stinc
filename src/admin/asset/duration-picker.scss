@@ -3,7 +3,7 @@
  * Duration Picker (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-22
+ * @version 2018-12-04
  *
  */
 
@@ -16,6 +16,8 @@
 	display: inline-flex !important;
 	justify-content: center !important;
 	flex-direction: row-reverse !important;
+	align-items: center;
+	padding-top: 0;
 }
 
 .st-duration-picker-table {
