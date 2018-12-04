@@ -57,6 +57,7 @@ class NavMenu {
 
 	// -------------------------------------------------------------------------
 
+
 	public function echo_main_sub_items( $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $depth = 2 ) {
 		$fn = function ( $pid ) use ( $before, $after, $filter, &$depth, &$fn ) {
 			$depth -= 1;
@@ -68,6 +69,7 @@ class NavMenu {
 
 
 	// -------------------------------------------------------------------------
+
 
 	public function has_main_items() {
 		return $this->has_items( 0 );
@@ -123,6 +125,7 @@ class NavMenu {
 
 	// -------------------------------------------------------------------------
 
+
 	public function has_items( $pid ) {
 		if ( empty( $this->_pid_to_menu[ $pid ] ) ) return false;
 		return true;
@@ -174,6 +177,7 @@ class NavMenu {
 
 
 	// -------------------------------------------------------------------------
+
 
 	private function _get_all_items( $menu_name ) {
 		$ls = get_nav_menu_locations();
