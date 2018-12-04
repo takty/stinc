@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2018-12-04
  *
  */
 
@@ -29,27 +29,34 @@ class SlideShow {
 	const CLS_CAP    = self::NS . '-caption';
 
 	// Admin
-	const CLS_BODY        = self::NS . '-body';
-	const CLS_TABLE       = self::NS . '-table';
-	const CLS_ITEM        = self::NS . '-item';
-	const CLS_ITEM_TEMP   = self::NS . '-item-template';
-	const CLS_HANDLE      = self::NS . '-handle';
-	const CLS_ADD_ROW     = self::NS . '-add-row';
-	const CLS_ADD         = self::NS . '-add';
-	const CLS_DEL_LAB     = self::NS . '-delete-label';
-	const CLS_DEL         = self::NS . '-delete';
-	const CLS_INFO        = self::NS . '-info';
-	const CLS_URL_OPENER  = self::NS . '-url-opener';
-	const CLS_SEL_URL     = self::NS . '-select-url';
-	const CLS_SEL_IMG     = self::NS . '-select-img';
-	const CLS_SEL_IMG_SUB = self::NS . '-select-img-sub';
-	const CLS_TN          = self::NS . '-thumbnail';
-	const CLS_TN_IMG      = self::NS . '-thumbnail-img';
-	const CLS_TN_IMG_SUB  = self::NS . '-thumbnail-img-sub';
+	const CLS_BODY            = self::NS . '-body';
+	const CLS_TABLE           = self::NS . '-table';
+	const CLS_ITEM            = self::NS . '-item';
+	const CLS_ITEM_TEMP_IMG   = self::NS . '-item-template-img';
+	const CLS_ITEM_TEMP_VIDEO = self::NS . '-item-template-video';
+	const CLS_HANDLE          = self::NS . '-handle';
+	const CLS_ADD_ROW         = self::NS . '-add-row';
+	const CLS_ADD_IMG         = self::NS . '-add-img';
+	const CLS_ADD_VIDEO       = self::NS . '-add-video';
+	const CLS_DEL_LAB         = self::NS . '-delete-label';
+	const CLS_DEL             = self::NS . '-delete';
+	const CLS_INFO            = self::NS . '-info';
+	const CLS_URL_OPENER      = self::NS . '-url-opener';
+	const CLS_SEL_URL         = self::NS . '-select-url';
+	const CLS_SEL_IMG         = self::NS . '-select-img';
+	const CLS_SEL_IMG_SUB     = self::NS . '-select-img-sub';
+	const CLS_SEL_VIDEO       = self::NS . '-select-video';
+	const CLS_TN              = self::NS . '-thumbnail';
+	const CLS_TN_IMG          = self::NS . '-thumbnail-img';
+	const CLS_TN_IMG_SUB      = self::NS . '-thumbnail-img-sub';
 
-	const CLS_MEDIA       = self::NS . '-media';
-	const CLS_MEDIA_SUB   = self::NS . '-media-sub';
-	const CLS_URL         = self::NS . '-url';
+	const CLS_MEDIA           = self::NS . '-media';
+	const CLS_MEDIA_SUB       = self::NS . '-media-sub';
+	const CLS_TYPE            = self::NS . '-type';
+	const CLS_URL             = self::NS . '-url';
+
+	const TYPE_IMAGE = 'image';
+	const TYPE_VIDEO = 'video';
 
 	static private $_instance = [];
 
@@ -85,6 +92,7 @@ class SlideShow {
 	private $_is_side_slide_visible = false;
 	private $_is_picture_scroll     = false;
 	private $_is_dual               = false;
+	private $_is_video_enablde      = false;
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -137,6 +145,11 @@ class SlideShow {
 		return $this;
 	}
 
+	public function set_video_enabled( $enabled ) {
+		$this->_is_video_enablde = $enabled;
+		return $this;
+	}
+
 	public function set_caption_type( $type ) {
 		$this->_caption_type = $type;
 		return $this;
@@ -170,7 +183,8 @@ class SlideShow {
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( isset( $it['images'] ) ) $this->_echo_slide_item( $it );
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it );
 		}
 ?>
 				</ul>
@@ -184,7 +198,7 @@ class SlideShow {
 		return true;
 	}
 
-	private function _echo_slide_item( $it ) {
+	private function _echo_slide_item_img( $it ) {
 		$imgs   = $it['images'];
 		$imgs_s = isset( $it['images_sub'] ) ? $it['images_sub'] : false;
 		$data = [];
@@ -197,6 +211,12 @@ class SlideShow {
 		foreach ( $data as $key => $val ) {
 			$attr .= " data-$key=\"$val\"";
 		}
+		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
+		echo "<li$attr>$cont</li>";
+	}
+
+	private function _echo_slide_item_video( $it ) {
+		$attr = " data-video=\"{$it['video']}\"";
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
 		echo "<li$attr>$cont</li>";
 	}
@@ -227,12 +247,19 @@ class SlideShow {
 		$its = $this->_get_items( $post_id, $size );
 
 		foreach ( $its as $idx => $it ) {
-			$img   = esc_url( $it['image'] );
-			$style = "background-image: url('{$img}');";
-			$event = "st_slide_show_page('{$this->_id}_$post_id', {$idx});"
+			$event = "st_slide_show_page('{$this->_id}_$post_id', {$idx});";
+			if ( $it['type'] === self::TYPE_IMAGE ) {
+				$_img   = esc_url( $it['image'] );
+				$_style = "background-image: url('{$_img}');";
 ?>
-			<li><a href="javascript:void(0)" onclick="<?php echo $event ?>" style="<?php echo $style ?>"></a></li>
+				<li><a href="javascript:void(0)" onclick="<?php echo $event ?>" style="<?php echo $_style ?>"></a></li>
 <?php
+			} else if ( $it['type'] === self::TYPE_VIDEO ) {
+				$_video = esc_url( $it['video'] );
+?>
+				<li><a href="javascript:void(0)" onclick="<?php echo $event ?>"><video><source src="<?php echo $_video ?>" /></video></a></li>
+<?php
+			}
 		}
 	}
 
@@ -262,10 +289,23 @@ class SlideShow {
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
 <?php
-		$this->_output_row( [], self::CLS_ITEM_TEMP );
-		foreach ( $its as $it ) $this->_output_row( $it, self::CLS_ITEM );
+		$this->_output_row_image( [], self::CLS_ITEM_TEMP_IMG );
+		$this->_output_row_video( [], self::CLS_ITEM_TEMP_VIDEO );
+		foreach ( $its as $it ) {
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_output_row_image( $it, self::CLS_ITEM );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_output_row_video( $it, self::CLS_ITEM );
+		}
 ?>
-				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
+				<div class="<?php echo self::CLS_ADD_ROW ?>">
+<?php
+		if ( $this->_is_video_enablde ) {
+?>
+					<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_VIDEO ?> button"><?php _e( 'Add Video', 'default' ) ?></a>
+<?php
+		}
+?>
+					<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_IMG ?> button"><?php _e( 'Add Media', 'default' ) ?></a>
+				</div>
 			</div>
 			<script>window.addEventListener('load', function () {
 				st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);
@@ -274,7 +314,7 @@ class SlideShow {
 <?php
 	}
 
-	private function _output_row( $it, $cls ) {
+	private function _output_row_image( $it, $cls ) {
 		if ( $this->_is_dual ) {
 			$this->_output_row_dual( $it, $cls );
 		} else {
@@ -309,6 +349,7 @@ class SlideShow {
 				</div>
 			</div>
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image" />
 		</div>
 <?php
 	}
@@ -347,8 +388,42 @@ class SlideShow {
 			</div>
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
 			<input type="hidden" class="<?php echo self::CLS_MEDIA_SUB ?>" value="<?php echo $_media_s ?>" />
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image" />
 		</div>
 	<?php
+	}
+
+	private function _output_row_video( $it, $cls ) {
+		$_cap   = isset( $it['caption'] ) ? esc_attr( $it['caption'] ) : '';
+		$_url   = isset( $it['url'] )     ? esc_attr( $it['url'] )     : '';
+		$_media = isset( $it['media'] )   ? esc_attr( $it['media'] )   : '';
+		$_video = isset( $it['video'] )   ? esc_url( $it['video'] )    : '';
+?>
+		<div class="<?php echo $cls ?>">
+			<div>
+				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+			</div>
+			<div>
+				<div class="<?php echo self::CLS_INFO ?>">
+					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
+					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
+					<div>
+						<input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a>
+					</div>
+				</div>
+				<div class="<?php echo self::CLS_TN ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>">
+						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>" />
+					</a>
+				</div>
+			</div>
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="video" />
+		</div>
+<?php
 	}
 
 
@@ -356,7 +431,7 @@ class SlideShow {
 
 
 	private function _save_items( $post_id ) {
-		$skeys = [ 'media', 'caption', 'url', 'delete' ];
+		$skeys = [ 'media', 'caption', 'url', 'type', 'delete' ];
 		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 
 		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $skeys );
@@ -367,13 +442,13 @@ class SlideShow {
 			$pid = url_to_postid( $it['url'] );
 			if ( $pid !== 0 ) $it['url'] = $pid;
 		}
-		$skeys = [ 'media', 'caption', 'url' ];
+		$skeys = [ 'media', 'caption', 'url', 'type' ];
 		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $skeys );
 	}
 
 	private function _get_items( $post_id, $size = 'medium' ) {
-		$skeys = [ 'media', 'caption', 'url' ];
+		$skeys = [ 'media', 'caption', 'url', 'type' ];
 		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 
 		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, $skeys );
@@ -386,15 +461,20 @@ class SlideShow {
 					$it['url'] = $permalink;
 				}
 			}
+			if ( empty( $it['type'] ) ) $it['type'] = self::TYPE_IMAGE;
 			$it['image'] = '';
-			if ( ! empty( $it['media'] ) ) {
-				$this->_get_images( $it, intval( $it['media'] ), $size, 'image', 'images' );
-			}
-			if ( $this->_is_dual ) {
-				$it['image_sub'] = '';
-				if ( ! empty( $it['media_sub'] ) ) {
-					$this->_get_images( $it, intval( $it['media_sub'] ), $size, 'image_sub', 'images_sub' );
+			if ( $it['type'] === self::TYPE_IMAGE ) {
+				if ( ! empty( $it['media'] ) ) {
+					$this->_get_images( $it, intval( $it['media'] ), $size, 'image', 'images' );
 				}
+				if ( $this->_is_dual ) {
+					$it['image_sub'] = '';
+					if ( ! empty( $it['media_sub'] ) ) {
+						$this->_get_images( $it, intval( $it['media_sub'] ), $size, 'image_sub', 'images_sub' );
+					}
+				}
+			} else if ( $it['type'] === self::TYPE_VIDEO ) {
+				$it['video'] = wp_get_attachment_url( $it['media'] );
 			}
 		}
 		return $its;

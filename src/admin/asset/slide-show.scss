@@ -3,7 +3,7 @@
  * Slide Show Admin (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-15
+ * @version 2018-12-04
  *
  */
 
@@ -64,7 +64,8 @@
 	}
 }
 
-.st-slide-show-item-template {
+.st-slide-show-item-template-img,
+.st-slide-show-item-template-video {
 	display: none;
 }
 
@@ -138,6 +139,11 @@
 			padding-top: 56.25%;  // 16:9
 		}
 
+		> video {
+			position: absolute;
+			top: 50%;
+			transform: translate(0, -50%);
+		}
 		> div {
 			position: absolute;
 			top: 0;
