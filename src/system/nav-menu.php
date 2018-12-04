@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-10-29
+ * @version 2018-12-04
  *
  */
 
@@ -57,10 +57,13 @@ class NavMenu {
 
 	// -------------------------------------------------------------------------
 
-	public function echo_main_sub_items( $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html' ) {
-		$this->echo_items( 0, $before, $after, $filter, function ( $pid ) use ( $before, $after, $filter ) {
-			$this->echo_items( $pid, $before, $after, $filter );
-		} );
+	public function echo_main_sub_items( $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $depth = 2 ) {
+		$fn = function ( $pid ) use ( $before, $after, $filter, &$depth, &$fn ) {
+			$depth -= 1;
+			$next = ( $depth === 0 ) ? false : $fn;
+			$this->echo_items( $pid, $before, $after, $filter, $next );
+		};
+		$fn(0);
 	}
 
 
@@ -146,28 +149,27 @@ class NavMenu {
 		$li_attr = empty( $cs ) ? '' : (' class="' . implode( ' ', $cs ) . '"');
 		$obj_id  = intval( $mi->object_id );
 		$title   = $filter( $mi->title );
+		$after  = '</li>';
 
 		if ( $mi->url === '#' ) {
 			$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label>";
-			$after  = "</li>";
-
-			$id = $mi->ID;
-			if ( $echo_sub && ! empty( $this->_pid_to_menu[ $id ] ) ) {
-				echo $before;
-				$echo_sub( $id );
-				echo $after;
-			} else {
-				echo $before . $after;
-			}
-			return;
-		}
-		if ( $this->_expanded_page_ids === false || ! in_array( $obj_id, $this->_expanded_page_ids, true ) ) {
-			$href = esc_url( $mi->url );
 		} else {
-			$href = esc_url( "#post-$obj_id" );
+			if ( $this->_expanded_page_ids === false || ! in_array( $obj_id, $this->_expanded_page_ids, true ) ) {
+				$href = esc_url( $mi->url );
+			} else {
+				$href = esc_url( "#post-$obj_id" );
+			}
+			$target = esc_attr( $mi->target );
+			$before = "<li$li_attr><a href=\"$href\" target=\"$target\">$title</a>";
 		}
-		$target = esc_attr( $mi->target );
-		echo "<li$li_attr><a href=\"$href\" target=\"$target\">$title</a></li>";
+		$id = $mi->ID;
+		if ( $echo_sub && ! empty( $this->_pid_to_menu[ $id ] ) ) {
+			echo $before;
+			$echo_sub( $id );
+			echo $after;
+		} else {
+			echo $before . $after;
+		}
 	}
 
 
