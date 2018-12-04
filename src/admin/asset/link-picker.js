@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-14
+ * @version 2018-12-04
  *
  */
 
@@ -120,7 +120,7 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 		});
 		opener.addEventListener('click', (e) => {
 			e.preventDefault();
-			const idi = e.target.getAttribute('data-idi');
+			const idi = opener.dataset.idi;
 			const url = document.getElementById(idi + '_url').value;
 			if (url) window.open(url);
 		});

@@ -3,7 +3,7 @@
  * Media Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-14
+ * @version 2018-12-04
  *
  */
 
@@ -126,12 +126,12 @@ function st_media_picker_initialize_admin(key) {
 		});
 		opener.addEventListener('click', function (e) {
 			e.preventDefault();
-			const idi = e.target.getAttribute('data-idi');
+			const idi = opener.dataset.idi;
 			const url = document.getElementById(idi + '_url').value;
 			if (url) window.open(url);
 		});
 		setMediaPicker(sel, false, function (target, f) {
-			const idi = target.getAttribute('data-idi');
+			const idi = sel.dataset.idi;
 			document.getElementById(idi + '_media').value          = f.id;
 			document.getElementById(idi + '_url').value            = f.url;
 			document.getElementById(idi + '_title').value          = f.title;
