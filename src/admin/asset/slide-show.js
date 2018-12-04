@@ -49,7 +49,8 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 	const tempVideo = tbl.getElementsByClassName(CLS_ITEM_TEMP_VIDEO)[0];
 	const addRow   = tbl.getElementsByClassName(CLS_ADD_ROW)[0];
 	const addImg   = tbl.getElementsByClassName(CLS_ADD_IMG)[0];
-	const addVideo = tbl.getElementsByClassName(CLS_ADD_VIDEO)[0];
+	const addVideos = tbl.getElementsByClassName(CLS_ADD_VIDEO);
+	const addVideo = addVideos.length ? addVideos[0] : null;
 
 	if (count.tagName !== 'INPUT') console.error('The key or id conflicts.');
 
@@ -71,10 +72,12 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 		ms.forEach((m) => { add_new_item_image(m); });
 		reorder_item_ids();
 	}, { multiple: true, type: 'image', title: STR_ADD });
-	setMediaPicker(addVideo, false, (target, ms) => {
-		ms.forEach((m) => { add_new_item_video(m); });
-		reorder_item_ids();
-	}, { multiple: true, type: 'video', title: STR_ADD });
+	if (addVideo) {
+		setMediaPicker(addVideo, false, (target, ms) => {
+			ms.forEach((m) => { add_new_item_video(m); });
+			reorder_item_ids();
+		}, { multiple: true, type: 'video', title: STR_ADD });
+	}
 
 
 	// -------------------------------------------------------------------------
