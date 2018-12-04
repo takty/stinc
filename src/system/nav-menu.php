@@ -59,12 +59,20 @@ class NavMenu {
 
 
 	public function echo_main_sub_items( $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $depth = 2 ) {
+		$this->echo_main_sub_items_of( 0, $before, $after, $filter, $depth );
+	}
+
+	public function echo_main_sub_items_of( $pid, $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $depth = 2 ) {
 		$fn = function ( $pid ) use ( $before, $after, $filter, &$depth, &$fn ) {
-			$depth -= 1;
-			$next = ( $depth === 0 ) ? false : $fn;
-			$this->echo_items( $pid, $before, $after, $filter, $next );
+			if ( $depth === false ) {
+				$next = $fn;
+			} else {
+				$depth -= 1;
+				$next = ( $depth === 0 ) ? false : $fn;
+			}
+			if ( $this->echo_items( $pid, $before, $after, $filter, $next ) === false ) return;
 		};
-		$fn(0);
+		$fn( $pid );
 	}
 
 
@@ -137,7 +145,7 @@ class NavMenu {
 	}
 
 	public function echo_items( $pid, $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $echo_sub = false ) {
-		if ( empty( $this->_pid_to_menu[ $pid ] ) ) return;
+		if ( empty( $this->_pid_to_menu[ $pid ] ) ) return false;
 		$mis = $this->_pid_to_menu[ $pid ];
 
 		echo $before;
@@ -146,6 +154,7 @@ class NavMenu {
 			$this->_echo_item( $mi, $cs, $filter, $echo_sub );
 		}
 		echo $after;
+		return true;
 	}
 
 	private function _echo_item( $mi, $cs, $filter = 'esc_html', $echo_sub = false ) {
