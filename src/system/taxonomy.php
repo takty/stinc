@@ -225,7 +225,7 @@ function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_li
 
 	global $wp_query;
 	$term = $wp_query->queried_object;
-	if ( ! ( $term instanceof WP_Term ) || ! ( is_object( $term ) && property_exists( $term, 'term_id' ) ) ) {
+	if ( ! ( $term instanceof WP_Term ) && ! ( is_object( $term ) && property_exists( $term, 'term_id' ) ) ) {
 		$term = null;
 	}
 
