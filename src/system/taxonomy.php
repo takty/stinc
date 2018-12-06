@@ -6,7 +6,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-07-19
+ * @version 2018-12-06
  *
  */
 
@@ -225,10 +225,13 @@ function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_li
 
 	global $wp_query;
 	$term = $wp_query->queried_object;
+	if ( ! ( $term instanceof WP_Term ) || ! ( is_object( $term ) && property_exists( $term, 'term_id' ) ) ) {
+		$term = null;
+	}
 
 	$links = [];
 	foreach ( $ts as $t ) {
-		$current = ( $term && $term instanceof WP_Term && $term->term_id === $t->term_id ) ? 'current ' : '';
+		$current = ( $term && $term->term_id === $t->term_id ) ? 'current ' : '';
 		if ( $add_link ) {
 			$link = get_term_link( $t, $taxonomy );
 			if ( is_wp_error( $link ) ) return $link;
