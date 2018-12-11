@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-04
+ * @version 2018-12-11
  *
  */
 
@@ -63,16 +63,15 @@ class NavMenu {
 	}
 
 	public function echo_main_sub_items_of( $pid, $before = '<ul class="menu">', $after = '</ul>', $filter = 'esc_html', $depth = 2 ) {
-		$fn = function ( $pid ) use ( $before, $after, $filter, &$depth, &$fn ) {
-			if ( $depth === false ) {
-				$next = $fn;
-			} else {
-				$depth -= 1;
-				$next = ( $depth === 0 ) ? false : $fn;
-			}
-			if ( $this->echo_items( $pid, $before, $after, $filter, $next ) === false ) return;
-		};
-		$fn( $pid );
+		$this->_menu_before = $before;
+		$this->_menu_after  = $after;
+		$this->_menu_filter = $filter;
+		$this->_echo_items_recursive( $pid, $depth );
+	}
+
+	private function _echo_items_recursive( $pid, $depth ) {
+		if ( $depth === 0 ) return;
+		$this->echo_items( $pid, $this->_menu_before, $this->_menu_after, $this->_menu_filter, function ( $pid ) use ( $depth ) { $this->_echo_items_recursive( $pid, $depth - 1 ); } );
 	}
 
 
@@ -151,13 +150,20 @@ class NavMenu {
 		echo $before;
 		foreach( $mis as $mi ) {
 			$cs = $this->_id_to_attr[ $mi->ID ];
-			$this->_echo_item( $mi, $cs, $filter, $echo_sub );
+			$item = $this->_get_item( $mi, $cs, $filter );
+			if ( $echo_sub && ! empty( $this->_pid_to_menu[ $mi->ID ] ) ) {
+				echo $item['before'];
+				$echo_sub( $mi->ID );
+				echo $item['after'];
+			} else {
+				echo $item['before'] . $item['after'];
+			}
 		}
 		echo $after;
 		return true;
 	}
 
-	private function _echo_item( $mi, $cs, $filter = 'esc_html', $echo_sub = false ) {
+	private function _get_item( $mi, $cs, $filter = 'esc_html' ) {
 		$li_attr = empty( $cs ) ? '' : (' class="' . implode( ' ', $cs ) . '"');
 		$obj_id  = intval( $mi->object_id );
 		$title   = $filter( $mi->title );
@@ -174,14 +180,7 @@ class NavMenu {
 			$target = esc_attr( $mi->target );
 			$before = "<li$li_attr><a href=\"$href\" target=\"$target\">$title</a>";
 		}
-		$id = $mi->ID;
-		if ( $echo_sub && ! empty( $this->_pid_to_menu[ $id ] ) ) {
-			echo $before;
-			$echo_sub( $id );
-			echo $after;
-		} else {
-			echo $before . $after;
-		}
+		return compact( 'before', 'after' );
 	}
 
 
