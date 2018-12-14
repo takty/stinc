@@ -171,7 +171,7 @@ class NavMenu {
 	private function _get_item( $mi, $cs, $filter = 'esc_html' ) {
 		$li_attr = empty( $cs ) ? '' : (' class="' . implode( ' ', $cs ) . '"');
 		$obj_id  = intval( $mi->object_id );
-		$title   = $filter( $mi->title );
+		$title   = $filter( $mi->title, $mi );
 		$after  = '</li>';
 
 		if ( $mi->url === '#' ) {
