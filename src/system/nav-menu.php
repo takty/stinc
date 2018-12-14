@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-11
+ * @version 2018-12-14
  *
  */
 
@@ -120,10 +120,15 @@ class NavMenu {
 			$id = $mi->ID;
 			if ( empty( $this->_pid_to_menu[ $id ] ) ) continue;
 			$a = $this->_id_to_attr[ $id ];
-			if ( in_array( self::CLS_OPENED, $a, true ) ) return $id;
 			if ( in_array( self::CLS_CURRENT, $a, true ) ) return $id;
-			if ( in_array( self::CLS_ANCESTOR, $a, true ) ) return $id;
+		}
+		foreach ( $mis as $mi ) {
+			$id = $mi->ID;
+			if ( empty( $this->_pid_to_menu[ $id ] ) ) continue;
+			$a = $this->_id_to_attr[ $id ];
+			if ( in_array( self::CLS_OPENED, $a, true ) ) return $id;
 			if ( in_array( self::CLS_MENU_PARENT, $a, true ) ) return $id;
+			if ( in_array( self::CLS_ANCESTOR, $a, true ) ) return $id;
 			if ( in_array( self::CLS_PAGE_PARENT, $a, true ) ) return $id;
 		}
 		return false;
