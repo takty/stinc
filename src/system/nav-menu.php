@@ -134,6 +134,25 @@ class NavMenu {
 		return false;
 	}
 
+	public function get_menu_id_with_page_hierarchy( $pid = 0 ) {
+		if ( empty( $this->_pid_to_menu[ $pid ] ) ) return false;
+		$mis = $this->_pid_to_menu[ $pid ];
+
+		if ( ! $this->_is_page ) return false;
+		global $post;
+		$as = $post->ancestors;
+		if ( ! $as ) return false;
+		array_unshift( $as, $post->ID );
+
+		$ids = [];
+		foreach ( $mis as $mi ) $ids[ (int) $mi->object_id ] = $mi->ID;
+
+		foreach ( $as as $a ) {
+			if ( isset( $ids[ $a ] ) ) return $ids[ $a ];
+		}
+		return false;
+	}
+
 
 	// -------------------------------------------------------------------------
 
@@ -172,7 +191,7 @@ class NavMenu {
 		$li_attr = empty( $cs ) ? '' : (' class="' . implode( ' ', $cs ) . '"');
 		$obj_id  = intval( $mi->object_id );
 		$title   = $filter( $mi->title, $mi );
-		$after  = '</li>';
+		$after   = '</li>';
 
 		if ( $mi->url === '#' ) {
 			$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label>";
