@@ -6,7 +6,7 @@ namespace st;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2018-12-14
  *
  */
 
@@ -94,6 +94,20 @@ class LinkPicker {
 			}
 		}
 		return $its;
+	}
+
+	public function get_posts( $post_id = false, $skip_other_than_post = true ) {
+		$its = $this->get_items( $post_id );
+		$ps = [];
+		foreach ( $its as $it ) {
+			$p = null;
+			if ( isset( $it['post_id'] ) && is_numeric( $it['post_id'] ) ) {
+				$p = get_post( $it['post_id'] );
+			}
+			if ( $p === null && $skip_other_than_post ) continue;
+			$ps[] = $p;
+		}
+		return $ps;
 	}
 
 
@@ -225,6 +239,7 @@ function initialize( $key ) { return new \st\LinkPicker( $key ); }
 function enqueue_script( $url_to = false ) { \st\LinkPicker::enqueue_script( $url_to ); }
 
 function get_items( $key, $post_id = false ) { return \st\LinkPicker::get_instance( $key )->get_items( $post_id ); }
+function get_posts( $key, $post_id = false, $skip_other_than_post = true ) { return \st\LinkPicker::get_instance( $key )->get_posts( $post_id, $skip_other_than_post ); }
 function set_internal_only( $key, $enabled ) { return \st\LinkPicker::get_instance( $key )->set_internal_only( $enabled ); }
 function set_max_count( $key, $count ) { return \st\LinkPicker::get_instance( $key )->set_max_count( $count ); }
 
