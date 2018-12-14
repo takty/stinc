@@ -202,7 +202,12 @@ class NavMenu {
 				$href = esc_url( "#post-$obj_id" );
 			}
 			$target = esc_attr( $mi->target );
-			$before = "<li$li_attr><a href=\"$href\" target=\"$target\">$title</a>";
+			$cont = esc_html( trim( $mi->post_content ) );
+			if ( empty( $cont ) ) {
+				$before = "<li$li_attr><a href=\"$href\" target=\"$target\">$title</a>";
+			} else {
+				$before = "<li$li_attr><a href=\"$href\" target=\"$target\">$title<div class=\"description\">$cont</div></a>";
+			}
 		}
 		return compact( 'before', 'after' );
 	}
