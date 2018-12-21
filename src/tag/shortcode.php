@@ -30,7 +30,7 @@ add_action( 'init', function () {
 		global $post;
 		$pid = $post->post_parent;
 		$e_href = esc_attr( get_permalink( $pid ) );
-		$e_title = esc_html( get_the_title( $pid ) )
+		$e_title = esc_html( get_the_title( $pid ) );
 		ob_start();
 ?>
 		<nav class="navigation sibling-page-navigation">
