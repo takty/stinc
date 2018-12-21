@@ -6,7 +6,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-14
+ * @version 2018-12-21
  *
  */
 
@@ -14,14 +14,16 @@ namespace st\shortcode;
 add_action( 'init', function () {
 
 	add_shortcode( 'child-page-nav', function () {
-	?>
+		ob_start();
+?>
 		<div>
 			<ul class="child-page-nav">
 				<li class="current"><span><?php the_title() ?></span></li>
 				<?php \st\the_child_page_list( '', '', 'child-page-nav-link' ); ?>
 			</ul>
 		</div>
-	<?php
+<?php
+		return ob_get_clean();
 	} );
 
 	add_shortcode( 'sibling-page-nav', function () {
@@ -29,7 +31,8 @@ add_action( 'init', function () {
 		$pid = $post->post_parent;
 		$e_href = esc_attr( get_permalink( $pid ) );
 		$e_title = esc_html( get_the_title( $pid ) )
-	?>
+		ob_start();
+?>
 		<nav class="navigation sibling-page-navigation">
 			<div class="nav-links">
 				<ul class="sibling-page-nav">
@@ -38,11 +41,14 @@ add_action( 'init', function () {
 				</ul>
 			</div>
 		</nav>
-	<?php
+<?php
+		return ob_get_clean();
 	} );
 
 	add_shortcode( 'child-page-list', function () {
+		ob_start();
 		\st\the_child_page_list( '<ul class="list-item-page">', '</ul>', 'item-page' );
+		return ob_get_clean();
 	} );
 
 	add_shortcode( 'latest-post-list', function ( $atts ) {
@@ -72,9 +78,11 @@ add_action( 'init', function () {
 		] );
 		if ( count( $ps ) === 0 ) return;
 
+		ob_start();
 		echo '<ul class="list-item-post">';
 		\st\the_loop_posts( 'template-parts/item', 'post', $ps );
 		echo '</ul>';
+		return ob_get_clean();
 	} );
 
 } );
