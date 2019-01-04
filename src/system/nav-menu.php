@@ -21,6 +21,7 @@ class NavMenu {
 	const CLS_CURRENT       = 'current';
 	const CLS_ANCESTOR      = 'ancestor';
 	const CLS_MENU_PARENT   = 'menu-parent';  // Same as CLS_OPENED
+	const CLS_MENU_ANCESTOR = 'menu-ancestor';
 	const CLS_PAGE_PARENT   = 'page-parent';
 	const CLS_PAGE_ANCESTOR = 'page-ancestor';  // Same as CLS_ANCESTOR
 
@@ -48,7 +49,8 @@ class NavMenu {
 		$mis = $this->_get_all_items( $menu_name );
 		$this->_pid_to_menu = $this->_get_menus( $mis );
 		$this->_pid_to_children_state = $this->_get_children_state( $this->_pid_to_menu );
-		$this->_id_to_attr = $this->_get_attributes( $mis, $this->_pid_to_children_state );
+		$this->_ancestor_ids = $this->_get_menu_ancestors( $mis );
+		$this->_id_to_attr = $this->_get_attributes( $mis );
 	}
 
 	public function set_expanded_page_ids( $ids ) {
@@ -257,17 +259,45 @@ class NavMenu {
 		return false;
 	}
 
-	private function _get_attributes( $mis, $p2cs ) {
-		$ret = [];
-		foreach( $mis as $mi ) {
+
+	// -------------------------------------------------------------------------
+
+
+	private function _get_menu_ancestors( $mis ) {
+		$id2pid = [];
+		$curs = [];
+		foreach ( $mis as $mi ) {
 			$url = trailingslashit( $mi->url );
-			$id = $mi->ID;
+			if ( $url === $this->_cur_url ) $curs[] = $mi->ID;
+			$id2pid[ $mi->ID ] = (int) $mi->menu_item_parent;
+		}
+		$ret = [];
+		foreach ( $curs as $cur ) {
+			$id = $id2pid[ $cur ];
+			while ( $id !== 0 ) {
+				$ret[] = $id;
+				if ( ! isset( $id2pid[ $id ] ) ) break;
+				$id = $id2pid[ $id ];
+			}
+		}
+		return $ret;
+	}
+
+	private function _get_attributes( $mis ) {
+		$ret = [];
+		foreach ( $mis as $mi ) {
 			$cs = [];
+
+			$url = trailingslashit( $mi->url );
 			if ( $url === $this->_home_url ) $cs[] = self::CLS_HOME;
 			if ( $url === $this->_cur_url )  $cs[] = self::CLS_CURRENT;
-			if ( isset( $p2cs[ $id ] ) && $p2cs[ $id ] ) {
+
+			if ( $this->_is_menu_parent( $mi ) ) {
 				$cs[] = self::CLS_OPENED;
 				$cs[] = self::CLS_MENU_PARENT;
+			}
+			if ( $this->_is_menu_ancestor( $mi ) ) {
+				$cs[] = self::CLS_MENU_ANCESTOR;
 			}
 			if ( $this->_is_page_parent( $mi ) ) {
 				$cs[] = self::CLS_PAGE_PARENT;
@@ -276,9 +306,18 @@ class NavMenu {
 				$cs[] = self::CLS_ANCESTOR;
 				$cs[] = self::CLS_PAGE_ANCESTOR;
 			}
-			$ret[ $id ] = $cs;
+			$ret[ $mi->ID ] = $cs;
 		}
 		return $ret;
+	}
+
+	private function _is_menu_parent( $mi ) {
+		$id = $mi->ID;
+		return ( isset( $this->_pid_to_children_state[ $id ] ) && $this->_pid_to_children_state[ $id ] );
+	}
+
+	private function _is_menu_ancestor( $mi ) {
+		return ( in_array( $mi->ID, $this->_ancestor_ids, true ) );
 	}
 
 	private function _is_page_parent( $mi ) {
