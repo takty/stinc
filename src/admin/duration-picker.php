@@ -73,6 +73,7 @@ class DurationPicker {
 
 	public function set_autofill_enabled( $enabled ) {
 		$this->_is_autofill_enabled = $enabled;
+		return $this;
 	}
 
 	public function get_item( $post_id = false ) {
