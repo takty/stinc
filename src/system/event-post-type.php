@@ -6,7 +6,7 @@ namespace st;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2019-01-04
  *
  */
 
@@ -72,6 +72,7 @@ class EventPostType {
 	private $_label_year = '';
 	private $_label_bgn = 'Begin';
 	private $_label_end = 'End';
+	private $_is_autofill_enabled = false;
 
 	private $_order_key = self::KEY_BGN;
 	private $_date_replaced = false;
@@ -106,6 +107,10 @@ class EventPostType {
 		if ( $bgn ) $this->_label_bgn = $bgn;
 		if ( $end ) $this->_label_end = $end;
 		return $this;
+	}
+
+	public function set_autofill_enabled( $enabled ) {
+		$this->_is_autofill_enabled = $enabled;
 	}
 
 	public function set_order_key( $type ) {
@@ -163,6 +168,7 @@ class EventPostType {
 		\st\DurationPicker::set_calendar_locale( $this->_locale );
 		\st\DurationPicker::set_year_label( $this->_label_year );
 		$this->_duration_picker->set_duration_labels( $this->_label_bgn, $this->_label_end );
+		$this->_duration_picker->set_autofill_enabled( $this->_is_autofill_enabled );
 		$this->_duration_picker->add_meta_box( $this->_label_meta_box, $this->_post_type, 'side' );
 	}
 

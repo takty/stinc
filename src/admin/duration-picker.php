@@ -6,7 +6,7 @@ namespace st;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2019-01-04
  *
  */
 
@@ -57,6 +57,7 @@ class DurationPicker {
 
 	private $_label_bgn = 'Begin';
 	private $_label_end = 'End';
+	private $_is_autofill_enabled = false;
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -68,6 +69,10 @@ class DurationPicker {
 		if ( $bgn ) $this->_label_bgn = $bgn;
 		if ( $end ) $this->_label_end = $end;
 		return $this;
+	}
+
+	public function set_autofill_enabled( $enabled ) {
+		$this->_is_autofill_enabled = $enabled;
 	}
 
 	public function get_item( $post_id = false ) {
@@ -157,6 +162,13 @@ class DurationPicker {
 			$date_bgn_val = (int) str_replace( '-', '', $date_bgn );
 			$date_end_val = (int) str_replace( '-', '', $date_end );
 			if ( $date_end_val < $date_bgn_val ) list( $date_bgn, $date_end ) = [ $date_end, $date_bgn ];
+		}
+		if ( $this->_is_autofill_enabled ) {
+			if ( $date_bgn && ! $date_end ) {
+				$date_end = $date_bgn;
+			} else if ( ! $date_bgn && $date_end ) {
+				$date_bgn = $date_end;
+			}
 		}
 
 		if ( $date_bgn ) update_post_meta( $post_id, $key_bgn, $date_bgn );
