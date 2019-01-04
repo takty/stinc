@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-14
+ * @version 2019-01-04
  *
  */
 
@@ -16,12 +16,13 @@ require_once __DIR__ . '/../tag/url.php';
 
 class NavMenu {
 
-	const CLS_HOME        = 'home';
-	const CLS_OPENED      = 'opened';
-	const CLS_CURRENT     = 'current';
-	const CLS_ANCESTOR    = 'ancestor';
-	const CLS_MENU_PARENT = 'menu-parent';  // Same as CLS_OPENED
-	const CLS_PAGE_PARENT = 'page-parent';  // Same as CLS_ANCESTOR
+	const CLS_HOME          = 'home';
+	const CLS_OPENED        = 'opened';
+	const CLS_CURRENT       = 'current';
+	const CLS_ANCESTOR      = 'ancestor';
+	const CLS_MENU_PARENT   = 'menu-parent';  // Same as CLS_OPENED
+	const CLS_PAGE_PARENT   = 'page-parent';
+	const CLS_PAGE_ANCESTOR = 'page-ancestor';  // Same as CLS_ANCESTOR
 
 	private $_cur_url;
 	private $_home_url;
@@ -268,22 +269,28 @@ class NavMenu {
 				$cs[] = self::CLS_OPENED;
 				$cs[] = self::CLS_MENU_PARENT;
 			}
-			if ( $this->_is_ancestor_page( $mi ) ) {
-				$cs[] = self::CLS_ANCESTOR;
+			if ( $this->_is_page_parent( $mi ) ) {
 				$cs[] = self::CLS_PAGE_PARENT;
+			}
+			if ( $this->_is_page_ancestor( $mi ) ) {
+				$cs[] = self::CLS_ANCESTOR;
+				$cs[] = self::CLS_PAGE_ANCESTOR;
 			}
 			$ret[ $id ] = $cs;
 		}
 		return $ret;
 	}
 
-	private function _is_ancestor_page( $mi ) {
+	private function _is_page_parent( $mi ) {
 		if ( ! $this->_is_page ) return false;
 		global $post;
-		if ( $post->ancestors && in_array( (int) $mi->object_id, $post->ancestors, true ) ) {
-			return true;
-		}
-		return false;
+		return ( $post->post_parent === (int) $mi->object_id );
+	}
+
+	private function _is_page_ancestor( $mi ) {
+		if ( ! $this->_is_page ) return false;
+		global $post;
+		return ( $post->ancestors && in_array( (int) $mi->object_id, $post->ancestors, true ) );
 	}
 
 }
