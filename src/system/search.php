@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-07-02
+ * @version 2019-01-16
  *
  */
 
@@ -22,13 +22,16 @@ class Search {
 
 	// -------------------------------------------------------------------------
 
-	private $_meta_keys = [];
+
+	private $_meta_keys  = [];
+	private $_post_types = [];
 	private $_stop_words;
 
 	private $_search_rewrite_rules_func = null;
 	private $_request_func = null;
 	private $_posts_clauses_filter_added = false;
 	private $_template_redirect_func = null;
+	private $_pre_get_posts_func = null;
 
 	private function __construct() {}
 
@@ -85,8 +88,23 @@ class Search {
 		}
 	}
 
+	public function add_post_type( $str_or_array ) {
+		if ( is_admin() ) return;
+
+		if ( ! $this->_pre_get_posts_func ) {
+			$this->_pre_get_posts_func = [ $this, '_cb_pre_get_posts' ];
+			add_filter( 'pre_get_posts', $this->_pre_get_posts_func );
+		}
+		if ( is_array( $str_or_array ) ) {
+			$this->_post_types += $str_or_array;
+		} else {
+			$this->_post_types[] = $str_or_array;
+		}
+	}
+
 
 	// Callback Functions ------------------------------------------------------
+
 
 	public function _cb_template_redirect() {  // for Pretty Permalink of Search Query
 		global $wp_rewrite;
@@ -141,8 +159,16 @@ class Search {
 		return $pieces;
 	}
 
+	public function _cb_pre_get_posts( $query ) {
+		if ( $query->is_search ) {
+			$query->set( 'post_type', $this->_post_types );
+		}
+		return $query;
+	}
+
 
 	// Private Functions -------------------------------------------------------
+
 
 	private function _parse_search( $q_s, $q_sent ) {
 		global $wp_the_query;
