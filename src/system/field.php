@@ -334,14 +334,14 @@ function update_multiple_post_meta( $post_id, $base_key, $metas, $keys = null ) 
 
 function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 	$DEFAULT_COLUMNS = [
-		'cb' => '<input type="checkbox" />',
-		'title' => _x( 'Title', 'column name', 'default' ),
+		'cb'     => '<input type="checkbox" />',
+		'title'  => _x( 'Title', 'column name', 'default' ),
 		'author' => __( 'Author', 'default' ),
-		'date' => __( 'Date', 'default' ),
-		'order' => __( 'Order', 'default' ),
+		'date'   => __( 'Date', 'default' ),
+		'order'  => __( 'Order', 'default' ),
 	];
 	$columns = [];
-	$styles = [];
+	$styles  = [];
 	$val_fns = [];
 
 	foreach ( $all_columns as $c ) {
@@ -390,18 +390,32 @@ function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 }
 
 function set_admin_columns_sortable( $post_type, $sortable_columns ) {
-	add_filter( "manage_edit-{$post_type}_sortable_columns", function ( $cols ) use ( $sortable_columns ) {
-		foreach ( $sortable_columns as $c ) {
-			$tax = taxonomy_exists( $c ) ? 'taxonomy-' : '';
-			$cols[ $tax . $c ] = $c;
+	$names = [];
+	$types = [];
+	foreach ( $sortable_columns as $c ) {
+		if ( is_array( $c ) ) {
+			$names[] = $c['name'];
+			if ( isset( $c['type'] ) ) $types[ $c['name'] ] = $c['type'];
+		} else {
+			$names[] = $c;
+		}
+	}
+	add_filter( "manage_edit-{$post_type}_sortable_columns", function ( $cols ) use ( $names ) {
+		foreach ( $names as $name ) {
+			$tax = taxonomy_exists( $name ) ? 'taxonomy-' : '';
+			$cols[ $tax . $name ] = $name;
 		}
 		return $cols;
 	} );
-	add_filter( 'request', function ( $vars ) use ( $sortable_columns ) {
+	add_filter( 'request', function ( $vars ) use ( $names, $types ) {
 		if ( ! isset( $vars['orderby'] ) ) return $vars;
 		$key = $vars['orderby'];
-		if ( in_array( $key, $sortable_columns, true ) && ! taxonomy_exists( $key ) ) {
-			$vars = array_merge( $vars, [ 'meta_key' => $key, 'orderby' => 'meta_value' ] );
+		if ( in_array( $key, $names, true ) && ! taxonomy_exists( $key ) ) {
+			$orderby = [ 'meta_key' => $key, 'orderby' => 'meta_value' ];
+			if ( isset( $types[ $key ] ) ) {
+				$orderby['meta_type'] = $types[ $key ];
+			}
+			$vars = array_merge( $vars, $orderby );
 		}
 		return $vars;
 	} );
