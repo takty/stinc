@@ -6,7 +6,7 @@ namespace st\sticky;
  * Sticky for Custom Post Types
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2019-01-15
  *
  */
 
@@ -35,7 +35,7 @@ function make_custom_post_type_sticky( $post_types, $key_prefix = '_' ) {
 }
 
 function get_sticky_posts( $args ) {
-	if ( ! isset( $args[ 'meta_query' ] ) ) $args[ 'meta_query' ] = [];
-	$args[ 'meta_query' ][] = ['key' => '_sticky', 'value' => '1'];
+	if ( ! isset( $args['meta_query'] ) ) $args['meta_query'] = [];
+	$args['meta_query'][] = ['key' => '_sticky', 'value' => '1'];
 	return get_posts( $args );
 }

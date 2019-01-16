@@ -6,7 +6,7 @@ namespace st\article;
  * Article Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-12
+ * @version 2019-01-15
  *
  */
 
@@ -112,20 +112,19 @@ function _cb_enter_title_here( $enter_title_here, $post ) {
 }
 
 function get_sticky_articles( $post_type = 'article', $ml_tag = true, $opts = [] ) {
-	$args =  [
+	$args = [
 		'post_type' => $post_type,
-		'posts_per_page' => 1,
-		'meta_query' => [ [ 'key' => '_sticky', 'value' => '1' ] ]
+		'posts_per_page' => -1,
 	];
+	$args = array_merge( $args, $opts );
 	if ( $ml_tag && class_exists( '\st\Multilang' ) ) {
 		$ml = \st\Multilang::get_instance();
 		if ( $ml->has_tag() ) {
-			$args['tax_query'] = [ $ml->get_tax_query() ];
+			if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
+			$args['tax_query'][] = $ml->get_tax_query();
 		}
 	}
-	$args = array_merge_recursive( $args, $opts );
-	$ps = get_posts( $args );
-	return count( $ps ) > 0 ? $ps[0] : null;
+	return st\sticky\get_sticky_posts( $args );
 }
 
 function get_latest_articles( $post_type, $post_per_page = 6, $ml_tag = true, $opts = [] ) {
@@ -133,13 +132,13 @@ function get_latest_articles( $post_type, $post_per_page = 6, $ml_tag = true, $o
 		'post_type' => $post_type,
 		'posts_per_page' => $post_per_page,
 	];
+	$args = array_merge( $args, $opts );
 	if ( $ml_tag && class_exists( '\st\Multilang' ) ) {
 		$ml = \st\Multilang::get_instance();
 		if ( $ml->has_tag() ) {
-			$args['tax_query'] = [ $ml->get_tax_query() ];
+			if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
+			$args['tax_query'][] = $ml->get_tax_query();
 		}
 	}
-	$args = array_merge_recursive( $args, $opts );
-	$ps = get_posts( $args );
-	return $ps;
+	return get_posts( $args );
 }
