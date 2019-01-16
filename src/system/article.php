@@ -124,7 +124,7 @@ function get_sticky_articles( $post_type = 'article', $ml_tag = true, $opts = []
 			$args['tax_query'][] = $ml->get_tax_query();
 		}
 	}
-	return st\sticky\get_sticky_posts( $args );
+	return \st\sticky\get_sticky_posts( $args );
 }
 
 function get_latest_articles( $post_type, $post_per_page = 6, $ml_tag = true, $opts = [] ) {
