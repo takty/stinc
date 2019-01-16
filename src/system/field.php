@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2019-01-16
  *
  */
 
@@ -141,6 +141,7 @@ function normalize_date( $str ) {
 
 // Key with Postfix ------------------------------------------------------------
 
+
 function get_post_meta_postfix( $post_id, $key, $postfixes ) {
 	$vals = [];
 	foreach ( $postfixes as $pf ) {
@@ -208,6 +209,7 @@ function output_textarea_row_postfix( $label, $key, $postfixes, $values ) {
 
 // Custom Meta Box -------------------------------------------------------------
 
+
 function add_rich_editor_meta_box( $key, $label, $screen, $settings = [] ) {
 	add_meta_box(
 		$key . '_mb', $label,
@@ -262,6 +264,7 @@ function save_title_content_meta_box( $post_id, $key, $sub_key_title, $sub_key_c
 
 
 // Multiple Post Meta ----------------------------------------------------------
+
 
 function get_multiple_post_meta( $post_id, $base_key, $keys ) {
 	$ret = [];
@@ -327,6 +330,7 @@ function update_multiple_post_meta( $post_id, $base_key, $metas, $keys = null ) 
 
 
 // Admin Columns ---------------------------------------------------------------
+
 
 function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 	$DEFAULT_COLUMNS = [
