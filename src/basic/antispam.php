@@ -6,11 +6,11 @@ namespace st\basic;
  * Anti-Spam - Disable Comment and Trackback Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-09-10
+ * @version 2019-01-16
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/antispam.php' );
- *  add_action( 'after_setup_theme', 'st\basic\disable_spam' );
+ *  add_action( 'after_setup_theme', '\st\basic\disable_spam' );
  *
  */
 

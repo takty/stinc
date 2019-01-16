@@ -6,11 +6,11 @@ namespace st\basic;
  * No Emoji
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2017-09-10
+ * @version 2019-01-16
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/no-emoji.php' );
- *  add_action( 'after_setup_theme', 'st\basic\disable_emoji' );
+ *  add_action( 'after_setup_theme', '\st\basic\disable_emoji' );
  *
  */
 

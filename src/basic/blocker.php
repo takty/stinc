@@ -6,11 +6,11 @@ namespace st\basic;
  * Blocker - Disable Unused Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-10-30
+ * @version 2019-01-16
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/blocker.php' );
- *  add_action( 'after_setup_theme', 'st\basic\disable_unused_functions' );
+ *  add_action( 'after_setup_theme', '\st\basic\disable_unused_functions' );
  *
  */
 
