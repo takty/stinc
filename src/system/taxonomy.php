@@ -6,7 +6,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-06
+ * @version 2019-01-17
  *
  */
 
@@ -58,6 +58,7 @@ function set_terms( $taxonomy, $slugs_to_labels, $parent_id = 0, $force_rename =
 
 
 // -----------------------------------------------------------------------------
+
 
 function set_taxonomy_post_type_specific( $taxonomies, $post_type ) {
 	add_action( 'pre_get_posts', function ( $query ) use ( $taxonomies, $post_type ) {
@@ -140,6 +141,7 @@ function set_taxonomy_exclusive( $taxonomy_s ) {
 
 // Count Posts with Terms ------------------------------------------------------
 
+
 function count_term_from_posts( $posts, $taxonomy, $term_slug ) {
 	$post_sets = [];
 	foreach ( $posts as $p ) {
@@ -174,6 +176,7 @@ function _count_term( $taxonomy, $term, &$post_sets ) {
 
 // Limit Archive Links by Terms ------------------------------------------------
 
+
 function limit_archive_links_by_terms( $post_type ) {
 	add_filter( 'getarchives_join', function ( $join, $r ) use ( $post_type ) {
 		if ( $r['post_type'] !== $post_type ) return $join;
@@ -194,6 +197,7 @@ function limit_archive_links_by_terms( $post_type ) {
 
 
 // Utilities -------------------------------------------------------------------
+
 
 function get_term_root( $term, $root_id ) {
 	$cur = $term->term_id;
@@ -279,4 +283,38 @@ function get_terms( $id, $taxonomy, $before = '', $sep = '', $after = '' ) {
 
 	$names = array_map( function ( $t ) { return $t->name; }, $terms );
 	return $before . implode( $sep, $names ) . $after;
+}
+
+
+// Term Content (Rich Editor) --------------------------------------------------
+
+
+function add_term_content( $taxonomy, $key, $label_postfix = '', $priority = 10 ) {
+	add_action( "{$taxonomy}_edit_form_fields", function ( $term ) use ( $key, $label_postfix ) {
+		$cont = get_term_meta( $term->term_id, $key, true );
+?>
+		<tr class="form-field">
+			<th scope="row" valign="top"><label for="<?php echo $key ?>"><?php _e('Content'); ?><?php echo $label_postfix; ?></label></th>
+			<td><?php wp_editor( $cont, $key, ['textarea_rows' => '8'] ); ?></td>
+		</tr>
+<?php
+	}, $priority );
+	add_action( "edited_$taxonomy", function ( $term_id ) use ( $key ) {
+		if ( isset( $_POST[ $key ] ) ) {
+			$val = $_POST[ $key ];
+			if ( empty( $val ) ) return delete_term_meta( $term_id, $key );
+			return update_term_meta( $term_id, $key, wp_kses_post( $val ) );
+		}
+	} );
+}
+
+function remove_term_description( $taxonomy ) {
+	add_action('admin_head', function () use ( $taxonomy ) {
+		global $current_screen;
+		if ( $current_screen->id === "edit-$taxonomy" ) {
+?>
+			<script>jQuery(function($) {$('.term-description-wrap').remove();});</script>
+<?php
+		}
+	}, 99 );
 }
