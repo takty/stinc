@@ -289,7 +289,7 @@ function get_terms( $id, $taxonomy, $before = '', $sep = '', $after = '' ) {
 // Term Content (Rich Editor) --------------------------------------------------
 
 
-function add_term_content( $taxonomy, $key, $label_postfix = '', $priority = 10 ) {
+function add_term_content_field( $taxonomy, $key, $label_postfix = '', $priority = 10 ) {
 	add_action( "{$taxonomy}_edit_form_fields", function ( $term ) use ( $key, $label_postfix ) {
 		$cont = get_term_meta( $term->term_id, $key, true );
 ?>
@@ -306,6 +306,24 @@ function add_term_content( $taxonomy, $key, $label_postfix = '', $priority = 10 
 			return update_term_meta( $term_id, $key, wp_kses_post( $val ) );
 		}
 	} );
+}
+
+function get_term_content( $term, $key ) {
+	$c = get_term_meta( $term->term_id, $key, true );
+	if ( empty( $c ) ) return '';
+
+	// Apply the filters for 'the_content'
+	$c = do_blocks( $c );
+	$c = wptexturize( $c );
+	$c = wpautop( $c );
+	$c = shortcode_unautop( $c );
+	$c = prepend_attachment( $c );
+	$c = wp_make_content_images_responsive( $c );
+	$c = capital_P_dangit( $c );
+	$c = do_shortcode( $c );
+	$c = convert_smilies( $c );
+
+	return str_replace( ']]>', ']]&gt;', $c );
 }
 
 function remove_term_description( $taxonomy ) {
