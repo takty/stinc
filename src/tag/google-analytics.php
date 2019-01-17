@@ -6,7 +6,7 @@ namespace st;
  * Google Analytics
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-14
+ * @version 2019-01-17
  *
  */
 
@@ -23,9 +23,9 @@ function echo_no_analytics_warning() {
 ?>
 <script>
 document.addEventListener("DOMContentLoaded",function(){var e=document.createElement("div");
-e.innerText="The ID of Google Analytics Code is not assigned!",e.style.position="fixed",
+e.innerText="Google Analytics ID is not assigned!",e.style.position="fixed",
 e.style.right="0",e.style.bottom="0",e.style.background="red",e.style.color="white",e.style.padding="4px",
-e.style.zIndex=9999,document.body.appendChild(e),console.log("Google Analytics Code is not assigned!")});
+e.style.zIndex=9999,document.body.appendChild(e),console.log("Google Analytics ID is not assigned!")});
 </script>
 <?php
 }
