@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-04
+ * @version 2019-01-21
  *
  */
 
@@ -53,7 +53,7 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 
 	reorder_item_ids();
 	for (let i = 0; i < items.length; i += 1) assign_event_listener(items[i]);
-	if (max_count !== false && max_count <= items.length) addBtn.setAttribute('disabled', 'true');
+	if (max_count !== false && max_count <= items.length) add.setAttribute('disabled', 'true');
 
 	setLinkPicker(add, false, (target, l) => {
 		add_new_item(l);
