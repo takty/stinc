@@ -6,7 +6,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-21
+ * @version 2019-01-22
  *
  */
 
@@ -335,4 +335,12 @@ function remove_term_description( $taxonomy ) {
 <?php
 		}
 	}, 99 );
+	add_filter( "manage_edit-{$taxonomy}_columns", function ( $columns ) {
+		unset( $columns[ 'description' ] );
+		return $columns;
+	});
+	add_filter( "manage_edit-{$taxonomy}_sortable_columns", function ( $sortable ) {
+		unset( $sortable[ 'description' ] );
+		return $sortable;
+	});
 }
