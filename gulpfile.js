@@ -1,14 +1,14 @@
 'use strict';
 
 const gulp = require('gulp');
-const $ = require('gulp-load-plugins')({pattern: ['gulp-*']});
+const $ = require('gulp-load-plugins')({ pattern: ['gulp-*'] });
 
 
 gulp.task('js-raw', () => {
-	return gulp.src(['src/**/*.js', '!src/**/*.min.js'], {base: 'src'})
+	return gulp.src(['src/**/*.js', '!src/**/*.min.js'], { base: 'src' })
 		.pipe($.plumber())
-		.pipe($.babel({presets: [['env', {targets: {ie: 11}}]]}))
-		.pipe($.rename({extname: '.min.js'}))
+		.pipe($.babel({ presets: [['@babel/env', { targets: { ie: 11 } }]] }))
+		.pipe($.rename({ extname: '.min.js' }))
 		.pipe($.uglify())
 		.pipe(gulp.dest('dist'));
 });
@@ -25,19 +25,19 @@ gulp.task('sass', () => {
 	return gulp.src(['src/**/*.scss'])
 		.pipe($.plumber())
 		.pipe($.sourcemaps.init())
-		.pipe($.sass({outputStyle: 'compressed'}))
-		.pipe($.autoprefixer({browsers: ['ie >= 11'], remove: false}))
-		.pipe($.rename({extname: '.min.css'}))
+		.pipe($.sass({ outputStyle: 'compressed' }))
+		.pipe($.autoprefixer({ browsers: ['ie >= 11'], remove: false }))
+		.pipe($.rename({ extname: '.min.css' }))
 		.pipe($.sourcemaps.write('.'))
 		.pipe(gulp.dest('dist'));
 });
 
 gulp.task('css-raw', () => {
-	return gulp.src(['src/**/*.css', '!src/**/*.min.css'], {base: 'src'})
+	return gulp.src(['src/**/*.css', '!src/**/*.min.css'], { base: 'src' })
 		.pipe($.plumber())
 		.pipe($.sourcemaps.init())
 		.pipe($.cleanCss())
-		.pipe($.rename({extname: '.min.css'}))
+		.pipe($.rename({ extname: '.min.css' }))
 		.pipe($.sourcemaps.write('.'))
 		.pipe(gulp.dest('dist'));
 });
@@ -58,7 +58,7 @@ gulp.task('php', () => {
 });
 
 gulp.task('img', () => {
-	return gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], {base: 'src'})
+	return gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], { base: 'src' })
 		.pipe($.changed('dist'))
 		.pipe($.plumber())
 		.pipe(gulp.dest('dist'));
