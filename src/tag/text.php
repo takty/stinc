@@ -6,9 +6,26 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-08
+ * @version 2019-01-24
  *
  */
+
+
+function remove_separator_in_title_and_description() {
+	add_filter( 'bloginfo', function ( $output, $show ) {
+		if ( $show === 'description' || $show === 'name' || $show === '' ) {
+			return implode( ' ', \st\separate_line( $output ) );
+		}
+		return $output;
+	}, 10, 2 );
+	add_filter( 'document_title_parts', function ( $title ) {
+		$title['title'] = implode( ' ', \st\separate_line( $title['title'] ) );
+		return $title;
+	} );
+}
+
+
+// -----------------------------------------------------------------------------
 
 
 function separate_line( $str, $filter = 'raw' ) {
@@ -76,6 +93,7 @@ function separate_small( $str ) {
 
 
 // -----------------------------------------------------------------------------
+
 
 function separate_text_and_make_spans( $text ) {
 	$pair = ['S*' => 1, '*E' => 1, 'II' => 1, 'KK' => 1, 'HH' => 1, 'HI' => 1];
