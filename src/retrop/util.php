@@ -23,9 +23,11 @@ const FS_TYPE_TITLE   = 'post_title';
 const FS_TYPE_CONTENT = 'post_content';
 const FS_TYPE_META    = 'post_meta';
 const FS_TYPE_TERM    = 'term';
+const FS_TYPE_ACF_PM  = 'acf_pm';
 
 const FS_FILTER_CONTENT   = 'post_content';
 const FS_FILTER_NORM_DATE = 'norm_date';
+const FS_FILTER_ADD_BR    = 'add_br';
 
 
 function make_digest( $text ) {

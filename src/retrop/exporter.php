@@ -51,7 +51,7 @@ class Retrop_Exporter {
 	}
 
 	public function _cb_output_page() {
-		wp_enqueue_script( 'retrop-saver', get_template_directory_uri() . '/retrop/saver.js' );
+		wp_enqueue_script( 'retrop-saver', get_template_directory_uri() . '/retrop/saver.min.js' );
 		wp_enqueue_script( 'xlsx', get_template_directory_uri() . '/retrop/xlsx.full.min.js' );
 
 		$this->_header();
@@ -148,6 +148,9 @@ class Retrop_Exporter {
 			case \st\retrop\FS_TYPE_META:
 				$key = $s[\st\retrop\FS_KEY];
 				$val = get_post_meta( $p->ID, $key, true );
+				if ( isset( $s[\st\retrop\FS_FILTER] ) && $s[\st\retrop\FS_FILTER] === \st\retrop\FS_FILTER_ADD_BR ) {
+					$val = str_replace( ["\r\n", "\r", "\n"], '<br />', $val );
+				}
 				break;
 			case \st\retrop\FS_TYPE_TERM:
 				$tax = $s[\st\retrop\FS_TAXONOMY];
@@ -158,6 +161,15 @@ class Retrop_Exporter {
 						$slugs[] = $t->slug;
 					}
 					$val = implode( ', ', $slugs );
+				}
+				break;
+			case \st\retrop\FS_TYPE_ACF_PM:
+				if ( function_exists( 'get_field' ) ) {
+					$key = $s[\st\retrop\FS_KEY];
+					$val = get_field( $key, $p->ID );
+					if ( isset( $s[\st\retrop\FS_FILTER] ) && $s[\st\retrop\FS_FILTER] === \st\retrop\FS_FILTER_ADD_BR ) {
+						$val = str_replace( ["\r\n", "\r", "\n"], '<br />', $val );
+					}
 				}
 				break;
 			}
