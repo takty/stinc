@@ -70,8 +70,8 @@ class Retrop_Importer extends \WP_Importer {
 	}
 
 	public function dispatch() {
-		wp_enqueue_script( 'retrop-loader', get_template_directory_uri() . '/retrop/loader.min.js' );
-		wp_enqueue_script( 'xlsx', get_template_directory_uri() . '/retrop/xlsx.full.min.js' );
+		wp_enqueue_script( 'retrop-loader', get_template_directory_uri() . '/lib/stinc/retrop/loader.min.js' );
+		wp_enqueue_script( 'xlsx', get_template_directory_uri() . '/lib/stinc/retrop/xlsx.full.min.js' );
 
 		$this->_header();
 

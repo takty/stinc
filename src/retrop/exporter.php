@@ -51,8 +51,8 @@ class Retrop_Exporter {
 	}
 
 	public function _cb_output_page() {
-		wp_enqueue_script( 'retrop-saver', get_template_directory_uri() . '/retrop/saver.min.js' );
-		wp_enqueue_script( 'xlsx', get_template_directory_uri() . '/retrop/xlsx.full.min.js' );
+		wp_enqueue_script( 'retrop-saver', get_template_directory_uri() . '/lib/stinc/retrop/saver.min.js' );
+		wp_enqueue_script( 'xlsx', get_template_directory_uri() . '/lib/stinc/retrop/xlsx.full.min.js' );
 
 		$this->_header();
 
