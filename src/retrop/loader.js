@@ -3,7 +3,7 @@
  * Retrop: XLSX Loader (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-24
+ * @version 2019-01-25
  *
  */
 
@@ -103,7 +103,7 @@ RETROP['loadFiles'] = (function () {
 				if (key === false) continue;
 				if (!structs[key]) continue;
 				var type = structs[key].type;
-				// if (key === KEY_BODY || key.indexOf(KEY_BODY + '_') === 0) {
+
 				if (type === 'post_content' || (type === 'post_meta' && structs[key].filter === 'post_content')) {
 					if (cell && cell.h && cell.h.length > 0) {
 						var text = cell.h.replace(/<\/?span("[^"]*"|'[^']*'|[^'">])*>/g, '');  // remove automatically inserted 'span' tag.
@@ -112,17 +112,15 @@ RETROP['loadFiles'] = (function () {
 						item[key] = text;
 						count += 1;
 					}
-				// } else if (key[0] === '_') {
 				} else if (type === 'post_title' || type === 'post_meta') {
 					if (cell && cell.w && cell.w.length > 0) {
 						item[key] = cell.w;
 						count += 1;
 					}
-				// } else {
 				} else if (type === 'term') {
 					if (cell && cell.w && cell.w.length > 0) {
 						var vals = cell.w.split(/\s*,\s*/);
-						item[key] = vals.map(function (x) {return normalizeKey(x, false);});
+						item[key] = vals.map((x) => { return normalizeKey(x, false); });
 						count += 1;
 					}
 				}
@@ -132,16 +130,15 @@ RETROP['loadFiles'] = (function () {
 	}
 
 	function normalizeKey(str, isKey) {
-		str = str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, function (s) {return String.fromCharCode(s.charCodeAt(0) - 0xFEE0);});
+		str = str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, (s) => { return String.fromCharCode(s.charCodeAt(0) - 0xFEE0); });
 		str = str.replace(/[_＿]/g, '_');
 		str = str.replace(/[\-‐―ー]/g, '-');
 		str = str.replace(/[^A-Za-z0-9\-\_]/g, '');
 		str = str.toLowerCase();
 		str = str.trim();
-		if (0 < str.length) {
-			if (!isKey && (str[0] === '_' || str[0] === '-')) str = str.replace(/^[_\-]+/, '');
-			if (str[0] !== '_') str = str.replace('_', '-');
-			if (str[0] === '_') str = str.replace('-', '_');
+		if (0 < str.length && !isKey) {
+			if (str[0] === '_' || str[0] === '-') str = str.replace(/^[_\-]+/, '');
+			str = str.replace('_', '-');
 		}
 		return str;
 	}
