@@ -6,7 +6,7 @@ namespace st;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-24
+ * @version 2019-01-25
  *
  */
 
@@ -295,6 +295,7 @@ class Retrop_Importer extends \WP_Importer {
 				$title = $item[ $col ];
 			} else if ( $s[ \st\retrop\FS_TYPE ] === \st\retrop\FS_TYPE_CONTENT ) {
 				$content = $item[ $col ];
+				$content = str_replace( '\\n', PHP_EOL, $content );
 			}
 		}
 		return compact( 'title', 'content' );
@@ -337,6 +338,8 @@ class Retrop_Importer extends \WP_Importer {
 	private function update_post_meta( $post_id, $val, $s ) {
 		$val = trim( $val );
 		if ( empty( $val ) ) return;
+		$val = str_replace( '\\n', PHP_EOL, $val );
+
 		$key = isset( $s[ \st\retrop\FS_KEY ] ) ? $s[ \st\retrop\FS_KEY ] : false;
 		if ( $key === false ) return;
 
