@@ -112,7 +112,7 @@ RETROP['loadFiles'] = (function () {
 						item[key] = text;
 						count += 1;
 					}
-				} else if (type === 'post_title' || type === 'post_meta') {
+				} else if (type === 'post_title' || type === 'post_meta' || type === 'thumbnail_url') {
 					if (cell && cell.w && cell.w.length > 0) {
 						item[key] = cell.w;
 						count += 1;

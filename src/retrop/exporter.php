@@ -6,7 +6,7 @@ namespace st;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-24
+ * @version 2019-01-25
  *
  */
 
@@ -21,19 +21,22 @@ class Retrop_Exporter {
 
 	private $_post_type;
 	private $_structs;
+	private $_url_to;
+
 	private $_labels;
 
 	private function __construct( $args ) {
-		$this->_post_type = $args[ 'post_type' ];
-		$this->_structs = $args[ 'structs' ];
+		$this->_post_type = $args['post_type'];
+		$this->_structs   = $args['structs'];
+		$this->_url_to    = $args['url_to'];
+
 		$this->_labels = [
-			'name'              => 'Retrop Exporter',
-			'description'       => 'Export data to a Excel (.xlsx) file.',
+			'name'        => 'Retrop Exporter',
+			'description' => 'Export data to a Excel (.xlsx) file.',
 		];
 		if ( isset( $args[ 'labels' ] ) ) $this->_labels = array_merge( $this->_labels, $args['labels'] );
 
 		add_action( 'admin_menu', [ $this, '_cb_admin_menu' ] );
-
 	}
 
 	public function _cb_admin_menu() {
@@ -51,8 +54,8 @@ class Retrop_Exporter {
 	}
 
 	public function _cb_output_page() {
-		wp_enqueue_script( 'retrop-saver', get_template_directory_uri() . '/lib/stinc/retrop/saver.min.js' );
-		wp_enqueue_script( 'xlsx', get_template_directory_uri() . '/lib/stinc/retrop/xlsx.full.min.js' );
+		wp_enqueue_script( 'retrop-saver', $this->_url_to . '/saver.min.js' );
+		wp_enqueue_script( 'xlsx', $this->_url_to . '/xlsx.full.min.js' );
 
 		$this->_header();
 
@@ -149,7 +152,7 @@ class Retrop_Exporter {
 				$key = $s[\st\retrop\FS_KEY];
 				$val = get_post_meta( $p->ID, $key, true );
 				if ( isset( $s[\st\retrop\FS_FILTER] ) && $s[\st\retrop\FS_FILTER] === \st\retrop\FS_FILTER_ADD_BR ) {
-					$val = str_replace( ["\r\n", "\r", "\n"], '<br />', $val );
+					$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 				}
 				break;
 			case \st\retrop\FS_TYPE_TERM:
@@ -163,17 +166,23 @@ class Retrop_Exporter {
 					$val = implode( ', ', $slugs );
 				}
 				break;
+			case \st\retrop\FS_TYPE_THUMBNAIL_URL:
+				if ( ! has_post_thumbnail( $p->ID ) ) break;
+				$id = get_post_thumbnail_id( $p->ID );
+				$ais = wp_get_attachment_image_src( $id, 'full' );
+				if ( $ais !== false ) $val = $ais[0];
+				break;
 			case \st\retrop\FS_TYPE_ACF_PM:
 				if ( function_exists( 'get_field' ) ) {
 					$key = $s[\st\retrop\FS_KEY];
 					$val = get_field( $key, $p->ID );
 					if ( isset( $s[\st\retrop\FS_FILTER] ) && $s[\st\retrop\FS_FILTER] === \st\retrop\FS_FILTER_ADD_BR ) {
-						$val = str_replace( ["\r\n", "\r", "\n"], '<br />', $val );
+						$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 					}
 				}
 				break;
 			}
-			$val = mb_ereg_replace( '\n\r', '', $val );
+			$val = str_replace( ["\r\n", "\r", "\n"], '\\n', $val );
 			$ret[] = $val;
 		}
 		return $ret;
