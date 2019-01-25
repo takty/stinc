@@ -306,17 +306,18 @@ class Retrop_Importer extends \WP_Importer {
 			if ( ! isset( $s[ \st\retrop\FS_TYPE ] ) || $s[ \st\retrop\FS_TYPE ] !== \st\retrop\FS_TYPE_TERM ) continue;
 			if ( ! isset( $s[ \st\retrop\FS_TAXONOMY ] ) ) continue;
 			if ( ! isset( $item[ $col ] ) ) continue;
+			$tax = isset( $s[ \st\retrop\FS_TAXONOMY ] ) ? $s[ \st\retrop\FS_TAXONOMY ] : false;
+			if ( $tax === false ) return;
+
 			$vals = $item[ $col ];
 			if ( ! is_array( $vals ) ) $vals = [ $vals ];
 
-			$this->add_term( $post_id, $vals, $s );
+			$this->add_term( $post_id, $vals, $tax );
 		}
 		return true;
 	}
 
-	private function add_term( $post_id, $vals, $s ) {
-		$tax = isset( $s[ \st\retrop\FS_TAXONOMY ] ) ? $s[ \st\retrop\FS_TAXONOMY ] : false;
-		if ( $tax === false ) return;
+	private function add_term( $post_id, $vals, $tax ) {
 		$ts = get_terms( $tax, [ 'hide_empty' => false, 'fields' => 'id=>slug' ] );
 		if ( is_wp_error( $ts ) ) return;
 		$ts = array_values( $ts );
