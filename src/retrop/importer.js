@@ -3,9 +3,41 @@
  * Retrop: XLSX Loader (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-25
+ * @version 2019-01-27
  *
  */
+
+
+document.addEventListener('DOMContentLoaded', () => {
+	const lf = document.getElementById('retrop-load-files');
+	if (lf) {
+		const jsonStructs = document.getElementById('retrop-structs').value;
+		const url = document.getElementById('retrop-url').value;
+		RETROP.loadFiles(jsonStructs, [url], '#retrop-items', (successAll) => {
+			if (successAll) document.form.submit.disabled = false;
+			else document.getElementById('error').style.display = 'block';
+		});
+	}
+	const ar = document.getElementById('ajax-request-url');
+	if (ar) {
+		const btn = document.getElementsByName('submit-ajax')[0];
+		btn.addEventListener('click', () => {
+			btn.classList.add('disabled');
+			RETROP.ajaxSendItems(ar.value, '#retrop-item', (msg) => {
+				document.getElementById('response-msgs').innerHTML += msg.msg;
+			}, (success) => {
+				if (success) {
+					document.getElementById('success').style.display = 'block';
+				} else {
+					document.getElementById('error').style.display = 'block';
+				}
+			});
+		});
+	}
+});
+
+
+// -----------------------------------------------------------------------------
 
 
 var RETROP = RETROP ? RETROP : {};
@@ -144,4 +176,66 @@ RETROP['loadFiles'] = (function () {
 	}
 
 	return loadFiles;
+})();
+
+
+// -----------------------------------------------------------------------------
+
+
+RETROP['ajaxSendItems'] = (function () {
+
+	let _resSelector;
+	let _onReceiveOne;
+	let _onFinished;
+	let _ajaxUrl;
+
+	function ajaxSendItems(url, resSelector, onReceiveOne, onFinished) {
+		_ajaxUrl      = url;
+		_resSelector  = resSelector;
+		_onReceiveOne = onReceiveOne;
+		_onFinished   = onFinished;
+		console.log('ajaxSendItems: ' + _ajaxUrl);
+		request(0);
+	}
+
+	function request(idx) {
+		const di = document.querySelector(_resSelector + '-' + idx);
+		if (!di) {
+			notifyFinished();
+			_onFinished(true);
+			return;
+		}
+		const data = di.value;
+		const req = new XMLHttpRequest();
+
+		req.onreadystatechange = () => {
+			if (req.readyState === 4) {
+				if ((200 <= req.status && req.status < 300)) {
+					onReceived(idx, JSON.parse(req.response));
+				} else {
+					console.log('Ajax Error!');
+					_onFinished(false);
+				}
+			}
+		};
+		req.open('POST', _ajaxUrl);
+		req.setRequestHeader('content-type', 'application/json');
+		req.send(data);
+		console.log('sendRequest: ' + idx);
+	}
+
+	function onReceived(idx, msg) {
+		console.log('ajaxReceived: ' + idx);
+		_onReceiveOne(msg);
+		request(idx + 1);
+	}
+
+	function notifyFinished() {
+		const req = new XMLHttpRequest();
+		req.open('POST', _ajaxUrl);
+		req.setRequestHeader('content-type', 'application/json');
+		req.send('finished');
+	}
+
+	return ajaxSendItems;
 })();
