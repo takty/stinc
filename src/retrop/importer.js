@@ -3,7 +3,7 @@
  * Retrop: XLSX Loader (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-27
+ * @version 2019-01-28
  *
  */
 
@@ -137,8 +137,8 @@ RETROP['loadFiles'] = (function () {
 				var type = structs[key].type;
 
 				if (type === 'post_content' || (type === 'post_meta' && structs[key].filter === 'post_content')) {
-					if (cell && cell.h && cell.h.length > 0) {
-						var text = cell.h.replace(/<\/?span("[^"]*"|'[^']*'|[^'">])*>/g, '');  // remove automatically inserted 'span' tag.
+					if (cell && cell.w && cell.w.length > 0) {
+						var text = cell.w.replace(/<\/?span("[^"]*"|'[^']*'|[^'">])*>/g, '');  // remove automatically inserted 'span' tag.
 						text = text.replace(/<br\/>/g, '<br />');
 						text = text.replace(/&#x000d;&#x000a;/g, '<br />');
 						item[key] = text;
