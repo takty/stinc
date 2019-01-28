@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-16
+ * @version 2019-01-28
  *
  */
 
@@ -106,37 +106,41 @@ class Search {
 	// Callback Functions ------------------------------------------------------
 
 
-	public function _cb_template_redirect() {  // for Pretty Permalink of Search Query
+	public function _cb_add_rewrite_rules( $rewrite_rules ) {  // for set_blank_search_page_enabled
+		global $wp_rewrite;
+		if ( ! $wp_rewrite->using_permalinks() ) return;
+
+		$search_base = $wp_rewrite->search_base;
+		$rewrite_rules[ "$search_base/?$" ] = 'index.php?s=';
+		return $rewrite_rules;
+	}
+
+	public function _cb_template_redirect() {  // for set_blank_search_page_enabled & set_custom_search_page_enabled
 		global $wp_rewrite;
 		if ( ! $wp_rewrite->using_permalinks() ) return;
 
 		$search_base = $wp_rewrite->search_base;
 		if ( is_search() && ! is_admin() && ! empty( $_GET['s'] ) ) {
 			if ( class_exists( '\st\Multihome' ) ) {
-				$home_url = \st\Multihome::get_instance()->home_url( "/{$search_base}/" );
+				$home_url = \st\Multihome::get_instance()->home_url( "/$search_base/" );
 			} else if ( class_exists( '\st\Multilang' ) ) {
-				$home_url = \st\Multilang::get_instance()->home_url( "/{$search_base}/" );
+				$home_url = \st\Multilang::get_instance()->home_url( "/$search_base/" );
 			} else {
-				$home_url = home_url( "/{$search_base}/" );
+				$home_url = home_url( "/$search_base/" );
 			}
 			wp_redirect( $home_url . rawurlencode( get_query_var( 's' ) ) );
 			exit();
 		}
 	}
 
-	public function _cb_add_rewrite_rules( $rewrite_rules ) {
-		$rewrite_rules['search/?$'] = 'index.php?s=';
-		return $rewrite_rules;
-	}
-
-	public function _cb_request( $query_vars ) {
+	public function _cb_request( $query_vars ) {  // for set_custom_search_page_enabled
 		if ( isset( $query_vars['s'] ) && ! empty( $query_vars['pagename'] ) ) {
 			$query_vars['pagename'] = '';
 		}
 		return $query_vars;
 	}
 
-	public function _cb_posts_clauses( $pieces ) {
+	public function _cb_posts_clauses( $pieces ) {  // for add_meta_key
 		if ( ! is_search() || is_admin() || empty( $this->_meta_keys ) ) return $pieces;
 
 		$q_s    = get_query_var( 's' );
@@ -159,9 +163,10 @@ class Search {
 		return $pieces;
 	}
 
-	public function _cb_pre_get_posts( $query ) {
+	public function _cb_pre_get_posts( $query ) {  // for add_post_type
 		if ( $query->is_search ) {
-			$query->set( 'post_type', $this->_post_types );
+			$val = $query->get( 'post_type' );
+			if ( empty( $val ) ) $query->set( 'post_type', $this->_post_types );
 		}
 		return $query;
 	}
