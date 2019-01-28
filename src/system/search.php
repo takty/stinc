@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-28
+ * @version 2019-01-29
  *
  */
 
@@ -36,70 +36,94 @@ class Search {
 	private function __construct() {}
 
 	public function set_blank_search_page_enabled( $enabled ) {
-		if ( ! $this->_search_rewrite_rules_func && $enabled ) {
-			$this->_search_rewrite_rules_func = [ $this, '_cb_add_rewrite_rules' ];
-			add_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
-			if ( $this->_template_redirect_func === null ) {
-				$this->_template_redirect_func = [ $this, '_cb_template_redirect' ];
-				add_filter( 'template_redirect', $this->_template_redirect_func );
-			}
-		} else if ( $this->_search_rewrite_rules_func && ! $enabled ) {
-			remove_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
-			$this->_search_rewrite_rules_func = null;
-			if ( $this->_request_func === null ) {
-				remove_filter( 'template_redirect', $this->_template_redirect_func );
-				$this->_template_redirect_func = null;
-			}
+		if ( is_admin() ) return;
+		if ( $enabled ) {
+			$this->ensure_search_rewrite_rules_filter_added();
+			$this->ensure_template_redirect_filter_added();
+		} else {
+			$this->ensure_search_rewrite_rules_filter_removed();
+			$this->ensure_template_redirect_filter_removed();
 		}
 	}
 
 	public function set_custom_search_page_enabled( $enabled ) {
 		if ( is_admin() ) return;
-
-		if ( ! $this->_request_func && $enabled ) {
-			$this->_request_func = [ $this, '_cb_request' ];
-			add_filter( 'request', $this->_request_func, 20, 1 );
-			if ( $this->_template_redirect_func === null ) {
-				$this->_template_redirect_func = [ $this, '_cb_template_redirect' ];
-				add_filter( 'template_redirect', $this->_template_redirect_func );
-			}
-		} else if ( $this->_request_func && ! $enabled ) {
-			remove_filter( 'request', $this->_request_func, 20, 1 );
-			$this->_request_func = null;
-			if ( $this->_search_rewrite_rules_func === null ) {
-				remove_filter( 'template_redirect', $this->_template_redirect_func );
-				$this->_template_redirect_func = null;
-			}
+		if ( $enabled ) {
+			$this->ensure_request_filter_added();
+			$this->ensure_template_redirect_filter_added();
+		} else {
+			$this->ensure_request_filter_removed();
+			$this->ensure_template_redirect_filter_removed();
 		}
 	}
 
 	public function add_meta_key( $str_or_array ) {
 		if ( is_admin() ) return;
+		$this->ensure_posts_clauses_filter();
 
-		if ( ! $this->_posts_clauses_filter_added ) {
-			$this->_stop_words = $this->_get_search_stopwords();
-			add_filter( 'posts_clauses', [ $this, '_cb_posts_clauses' ], 20, 1 );
-			$this->_posts_clauses_filter_added = true;
-		}
-		if ( is_array( $str_or_array ) ) {
-			$this->_meta_keys += $str_or_array;
-		} else {
-			$this->_mata_keys[] = $str_or_array;
-		}
+		if ( ! is_array( $str_or_array ) ) $str_or_array = [ $str_or_array ];
+		$this->_meta_keys += $str_or_array;
 	}
 
 	public function add_post_type( $str_or_array ) {
 		if ( is_admin() ) return;
+		$this->ensure_pre_get_posts_filter();
 
-		if ( ! $this->_pre_get_posts_func ) {
-			$this->_pre_get_posts_func = [ $this, '_cb_pre_get_posts' ];
-			add_filter( 'pre_get_posts', $this->_pre_get_posts_func );
-		}
-		if ( is_array( $str_or_array ) ) {
-			$this->_post_types += $str_or_array;
-		} else {
-			$this->_post_types[] = $str_or_array;
-		}
+		if ( ! is_array( $str_or_array ) ) $str_or_array = [ $str_or_array ];
+		$this->_post_types[] = $str_or_array;
+	}
+
+
+	// Private Functions -------------------------------------------------------
+
+
+	private function ensure_search_rewrite_rules_filter_added() {
+		if ( $this->_search_rewrite_rules_func ) return;
+		$this->_search_rewrite_rules_func = [ $this, '_cb_request' ];
+		add_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
+	}
+
+	private function ensure_search_rewrite_rules_filter_removed() {
+		if ( ! $this->_search_rewrite_rules_func ) return;
+		remove_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
+		$this->_search_rewrite_rules_func = null;
+	}
+
+	private function ensure_request_filter_added() {
+		if ( $this->_request_func ) return;
+		$this->_request_func = [ $this, '_cb_request' ];
+		add_filter( 'request', $this->_request_func, 20, 1 );
+	}
+
+	private function ensure_request_filter_removed() {
+		if ( ! $this->_request_func ) return;
+		remove_filter( 'request', $this->_request_func, 20 );
+		$this->_request_func = null;
+	}
+
+	private function ensure_template_redirect_filter_added() {
+		if ( $this->_template_redirect_func ) return;
+		$this->_template_redirect_func = [ $this, '_cb_template_redirect' ];
+		add_filter( 'template_redirect', $this->_template_redirect_func );
+	}
+
+	private function ensure_template_redirect_filter_removed() {
+		if ( ! $this->_template_redirect_func ) return;
+		remove_filter( 'template_redirect', $this->_template_redirect_func );
+		$this->_template_redirect_func = null;
+	}
+
+	private function ensure_posts_clauses_filter() {
+		if ( $this->_posts_clauses_filter_added ) return;
+		$this->_stop_words = $this->_get_search_stopwords();
+		add_filter( 'posts_clauses', [ $this, '_cb_posts_clauses' ], 20, 1 );
+		$this->_posts_clauses_filter_added = true;
+	}
+
+	private function ensure_pre_get_posts_filter() {
+		if ( $this->_pre_get_posts_func ) return;
+		$this->_pre_get_posts_func = [ $this, '_cb_pre_get_posts' ];
+		add_filter( 'pre_get_posts', $this->_pre_get_posts_func );
 	}
 
 
