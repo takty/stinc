@@ -6,7 +6,7 @@ namespace st\retrop;
  * Utilities for Retrop
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-25
+ * @version 2019-01-28
  *
  */
 
@@ -18,11 +18,13 @@ const FS_TYPE       = 'type';
 const FS_TYPE_TITLE         = 'post_title';
 const FS_TYPE_CONTENT       = 'post_content';
 const FS_TYPE_META          = 'post_meta';
+const FS_TYPE_DATE          = 'post_date';
+const FS_TYPE_DATE_GMT      = 'post_date_gmt';
 const FS_TYPE_TERM          = 'term';
 const FS_TYPE_THUMBNAIL_URL = 'thumbnail_url';
 const FS_TYPE_ACF_PM        = 'acf_pm';
 
-const FS_TYPES = [ FS_TYPE_TITLE, FS_TYPE_CONTENT, FS_TYPE_META, FS_TYPE_TERM, FS_TYPE_THUMBNAIL_URL ];
+const FS_TYPES = [ FS_TYPE_TITLE, FS_TYPE_CONTENT, FS_TYPE_META, FS_TYPE_DATE, FS_TYPE_DATE_GMT, FS_TYPE_TERM, FS_TYPE_THUMBNAIL_URL ];
 
 // for FS_TYPE_META
 const FS_KEY    = 'key';

@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-27
+ * @version 2019-01-28
  *
  */
 
@@ -137,10 +137,12 @@ class Registerer {
 		$old_id = empty( $olds ) ? false : $olds[0]->ID;
 
 		$args = [
-			'post_type'    => $this->_post_type,
-			'post_title'   => $this->get_post_title( $item ),
-			'post_content' => $this->get_post_content( $item ),
-			'post_status'  => 'publish',
+			'post_type'     => $this->_post_type,
+			'post_title'    => $this->get_post_title( $item ),
+			'post_content'  => $this->get_post_content( $item ),
+			'post_date'     => $this->get_post_date( $item ),
+			'post_date_gmt' => $this->get_post_date_gmt( $item ),
+			'post_status'   => 'publish',
 		];
 		if ( $old_id !== false ) $args['ID'] = $old_id;
 		$post_id = wp_insert_post( $args );
@@ -221,6 +223,28 @@ class Registerer {
 			}
 		}
 		update_post_meta( $post_id, $key, $val );
+	}
+
+
+	// ---- POST DATE & DATE GMT
+
+
+	private function get_post_date( $item ) {
+		$date = '';
+		foreach ( $this->_type2structs[ R\FS_TYPE_DATE ] as $col => $s ) {
+			if ( ! isset( $item[ $col ] ) ) continue;
+			$date .= $item[ $col ];
+		}
+		return $date;
+	}
+
+	private function get_post_date_gmt( $item ) {
+		$date = '';
+		foreach ( $this->_type2structs[ R\FS_TYPE_DATE_GMT ] as $col => $s ) {
+			if ( ! isset( $item[ $col ] ) ) continue;
+			$date .= $item[ $col ];
+		}
+		return $date;
 	}
 
 

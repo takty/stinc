@@ -1,12 +1,13 @@
 <?php
 namespace st;
+use \st\retrop as R;
 
 /**
  *
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-25
+ * @version 2019-01-28
  *
  */
 
@@ -142,21 +143,27 @@ class Retrop_Exporter {
 		foreach ( $this->_structs as $key => $s ) {
 			$type = $s['type'];
 			switch ( $type ) {
-			case \st\retrop\FS_TYPE_TITLE:
+			case R\FS_TYPE_TITLE:
 				$val = $p->post_title;
 				break;
-			case \st\retrop\FS_TYPE_CONTENT:
+			case R\FS_TYPE_CONTENT:
 				$val = $p->post_content;
 				break;
-			case \st\retrop\FS_TYPE_META:
-				$key = $s[\st\retrop\FS_KEY];
+			case R\FS_TYPE_META:
+				$key = $s[R\FS_KEY];
 				$val = get_post_meta( $p->ID, $key, true );
-				if ( isset( $s[\st\retrop\FS_FILTER] ) && $s[\st\retrop\FS_FILTER] === \st\retrop\FS_FILTER_ADD_BR ) {
+				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_ADD_BR ) {
 					$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 				}
 				break;
-			case \st\retrop\FS_TYPE_TERM:
-				$tax = $s[\st\retrop\FS_TAXONOMY];
+			case R\FS_TYPE_DATE:
+				$val = $p->post_date;
+				break;
+			case R\FS_TYPE_DATE_GMT:
+				$val = $p->post_date_gmt;
+				break;
+			case R\FS_TYPE_TERM:
+				$tax = $s[R\FS_TAXONOMY];
 				$ts = get_the_terms( $p->ID, $tax );
 				if ( is_array( $ts ) ) {
 					$slugs = [];
@@ -166,17 +173,17 @@ class Retrop_Exporter {
 					$val = implode( ', ', $slugs );
 				}
 				break;
-			case \st\retrop\FS_TYPE_THUMBNAIL_URL:
+			case R\FS_TYPE_THUMBNAIL_URL:
 				if ( ! has_post_thumbnail( $p->ID ) ) break;
 				$id = get_post_thumbnail_id( $p->ID );
 				$ais = wp_get_attachment_image_src( $id, 'full' );
 				if ( $ais !== false ) $val = $ais[0];
 				break;
-			case \st\retrop\FS_TYPE_ACF_PM:
+			case R\FS_TYPE_ACF_PM:
 				if ( function_exists( 'get_field' ) ) {
-					$key = $s[\st\retrop\FS_KEY];
+					$key = $s[R\FS_KEY];
 					$val = get_field( $key, $p->ID );
-					if ( isset( $s[\st\retrop\FS_FILTER] ) && $s[\st\retrop\FS_FILTER] === \st\retrop\FS_FILTER_ADD_BR ) {
+					if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_ADD_BR ) {
 						$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 					}
 				}
