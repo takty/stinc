@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-28
+ * @version 2019-01-29
  *
  */
 
@@ -34,6 +34,8 @@ class Retrop_Exporter {
 		$this->_labels = [
 			'name'        => 'Retrop Exporter',
 			'description' => 'Export data to a Excel (.xlsx) file.',
+			'success'     => 'Successfully finished.',
+			'failure'     => 'Sorry, there has been an error.',
 		];
 		if ( isset( $args[ 'labels' ] ) ) $this->_labels = array_merge( $this->_labels, $args['labels'] );
 
@@ -55,7 +57,7 @@ class Retrop_Exporter {
 	}
 
 	public function _cb_output_page() {
-		wp_enqueue_script( 'retrop-saver', $this->_url_to . '/saver.min.js' );
+		wp_enqueue_script( 'retrop-exporter', $this->_url_to . '/exporter.min.js' );
 		wp_enqueue_script( 'xlsx', $this->_url_to . '/xlsx.full.min.js' );
 
 		$this->_header();
@@ -70,7 +72,6 @@ class Retrop_Exporter {
 				$this->_output_download_page();
 				break;
 		}
-
 		$this->_footer();
 	}
 
@@ -78,37 +79,35 @@ class Retrop_Exporter {
 		echo '<div class="narrow">';
 		echo '<p>' . $this->_labels['description'] . '</p>';
 ?>
-<form method="post" action="<?php echo esc_url( wp_nonce_url( 'tools.php?page=retrop_export&amp;step=1', 'export-option' ) ); ?>">
-<p>
-<!-- <label for="upload"><?php //_e( 'Choose a file from your computer:' ); ?></label> (<?php //printf( __('Maximum size: %s' ), $size ); ?>) -->
-<!-- <input type="file" id="upload" name="import" size="25" /> -->
-<!-- <input type="hidden" name="action" value="save" /> -->
-<!-- <input type="hidden" name="max_file_size" value="<?php //echo $bytes; ?>" /> -->
-</p>
-<?php submit_button( __('Submit'), 'primary' ); ?>
-</form>
+		<form method="post" action="<?php echo esc_url( wp_nonce_url( 'tools.php?page=retrop_export&amp;step=1', 'export-option' ) ); ?>">
+		<p>
+		<!-- <label for="upload"><?php //_e( 'Choose a file from your computer:' ); ?></label> (<?php //printf( __('Maximum size: %s' ), $size ); ?>) -->
+		<!-- <input type="file" id="upload" name="import" size="25" /> -->
+		</p>
+		<?php submit_button( __('Export'), 'primary' ); ?>
+		</form>
 <?php
 		echo '</div>';
-
 	}
 
 	private function _output_download_page() {
-		$json_structs = json_encode( array_keys( $this->_structs ) );
+		$json_structs = addslashes( json_encode( array_keys( $this->_structs ) ) );
 
 		echo '<div class="narrow">';
 		echo '<p>' . $this->_labels['description'] . '</p>';
 
 		$this->_output_data();
-
 ?>
 		<p class="submit"><input type="submit" name="download" id="download" class="button button-primary" value="<?php _e('Download Export File') ?>"></p>
+		<div id="retrop-success" style="display: none;"><?php echo esc_html( $this->_labels['success'] ) ?></div>
+		<div id="retrop-failure" style="display: none;"><?php echo esc_html( $this->_labels['failure'] ) ?></div>
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
-				const download = document.getElementsByName('download')[0];
-				download.addEventListener('click', (e) => {
-					RETROP.saveFile('<?php echo addslashes($json_structs) ?>', 'export.xlsx', '#retrop-chunk-', function (success) {
-						// if (success) document.form.submit.disabled = false;
-						// else document.getElementById('error').style.display = 'block';
+				const btn = document.getElementById('download');
+				btn.addEventListener('click', (e) => {
+					btn.classList.add('disabled');
+					RETROP.saveFile('<?php echo $json_structs ?>', 'export.xlsx', '#retrop-chunk-', function (success) {
+						document.getElementById('retrop-' + (success ? 'success' : 'failure')).style.display = 'block';
 					});
 				});
 			});
