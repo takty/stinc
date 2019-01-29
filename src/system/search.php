@@ -23,8 +23,9 @@ class Search {
 	// -------------------------------------------------------------------------
 
 
-	private $_meta_keys  = [];
-	private $_post_types = [];
+	private $_meta_keys   = [];
+	private $_post_types  = [];
+	private $_slug_to_pts = [];
 	private $_stop_words;
 
 	private $_search_rewrite_rules_func = null;
@@ -36,7 +37,6 @@ class Search {
 	private function __construct() {}
 
 	public function set_blank_search_page_enabled( $enabled ) {
-		if ( is_admin() ) return;
 		if ( $enabled ) {
 			$this->ensure_search_rewrite_rules_filter_added();
 			$this->ensure_template_redirect_filter_added();
@@ -73,13 +73,22 @@ class Search {
 		$this->_post_types[] = $str_or_array;
 	}
 
+	public function add_post_type_specific_search_page( $slug, $post_type_s ) {
+		$this->ensure_search_rewrite_rules_filter_added();
+		$this->ensure_template_redirect_filter_added();
+		$this->ensure_pre_get_posts_filter();
+
+		if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
+		$this->_slug_to_pts[ trim( $slug, '/' ) ] = $post_type_s;
+	}
+
 
 	// Private Functions -------------------------------------------------------
 
 
 	private function ensure_search_rewrite_rules_filter_added() {
 		if ( $this->_search_rewrite_rules_func ) return;
-		$this->_search_rewrite_rules_func = [ $this, '_cb_request' ];
+		$this->_search_rewrite_rules_func = [ $this, '_cb_add_rewrite_rules' ];
 		add_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
 	}
 
@@ -130,41 +139,67 @@ class Search {
 	// Callback Functions ------------------------------------------------------
 
 
-	public function _cb_add_rewrite_rules( $rewrite_rules ) {  // for set_blank_search_page_enabled
+	public function _cb_add_rewrite_rules( $rewrite_rules ) {
 		global $wp_rewrite;
 		if ( ! $wp_rewrite->using_permalinks() ) return;
 
 		$search_base = $wp_rewrite->search_base;
 		$rewrite_rules[ "$search_base/?$" ] = 'index.php?s=';
+
+		foreach ( $this->_slug_to_pts as $slug => $pts ) {
+			$pts_str = implode( ',', $pts );
+			$rewrite_rules[ "$slug/$search_base/(.+)/?$" ] = 'index.php?post_type=' . $pts_str . '&s=$matches[1]';
+			$rewrite_rules[ "$slug/$search_base/?$" ]      = 'index.php?post_type=' . $pts_str . '&s=';
+		}
 		return $rewrite_rules;
 	}
 
-	public function _cb_template_redirect() {  // for set_blank_search_page_enabled & set_custom_search_page_enabled
+	public function _cb_template_redirect() {
 		global $wp_rewrite;
 		if ( ! $wp_rewrite->using_permalinks() ) return;
 
 		$search_base = $wp_rewrite->search_base;
 		if ( is_search() && ! is_admin() && ! empty( $_GET['s'] ) ) {
-			if ( class_exists( '\st\Multihome' ) ) {
-				$home_url = \st\Multihome::get_instance()->home_url( "/$search_base/" );
-			} else if ( class_exists( '\st\Multilang' ) ) {
-				$home_url = \st\Multilang::get_instance()->home_url( "/$search_base/" );
-			} else {
-				$home_url = home_url( "/$search_base/" );
+			$home_url = $this->home_url( "/$search_base/" );
+			if ( ! empty( $_GET['post_type'] ) ) {
+				$pts = explode( ',', $_GET['post_type'] );
+				$slug = $this->get_matched_slug( $pts );
+				if ( $slug !== false ) $home_url = $this->home_url( "/$slug/$search_base/" );
 			}
 			wp_redirect( $home_url . rawurlencode( get_query_var( 's' ) ) );
 			exit();
 		}
 	}
 
-	public function _cb_request( $query_vars ) {  // for set_custom_search_page_enabled
+	private function get_matched_slug( $post_types ) {
+		foreach ( $this->_slug_to_pts as $slug => $pts ) {
+			foreach ( $post_types as $t ) {
+				if ( in_array( $t, $pts, true ) ) {
+					return $slug;
+				}
+			}
+		}
+		return false;
+	}
+
+	private function home_url( $slug ) {
+		if ( class_exists( '\st\Multihome' ) ) {
+			return \st\Multihome::get_instance()->home_url( $slug );
+		}
+		if ( class_exists( '\st\Multilang' ) ) {
+			return \st\Multilang::get_instance()->home_url( $slug );
+		}
+		return home_url( $slug );
+	}
+
+	public function _cb_request( $query_vars ) {
 		if ( isset( $query_vars['s'] ) && ! empty( $query_vars['pagename'] ) ) {
 			$query_vars['pagename'] = '';
 		}
 		return $query_vars;
 	}
 
-	public function _cb_posts_clauses( $pieces ) {  // for add_meta_key
+	public function _cb_posts_clauses( $pieces ) {
 		if ( ! is_search() || is_admin() || empty( $this->_meta_keys ) ) return $pieces;
 
 		$q_s    = get_query_var( 's' );
@@ -187,7 +222,7 @@ class Search {
 		return $pieces;
 	}
 
-	public function _cb_pre_get_posts( $query ) {  // for add_post_type
+	public function _cb_pre_get_posts( $query ) {
 		if ( $query->is_search ) {
 			$val = $query->get( 'post_type' );
 			if ( empty( $val ) ) $query->set( 'post_type', $this->_post_types );
