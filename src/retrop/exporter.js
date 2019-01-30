@@ -3,18 +3,18 @@
  * Retrop: XLSX Saver (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-24
+ * @version 2019-01-31
  *
  */
 
 
-var RETROP = RETROP ? RETROP : {};
+const RETROP = RETROP ? RETROP : {};
 RETROP['saveFile'] = (function () {
 
 	function saveFile(jsonStructs, fileName, chunkSelector, onFinished) {
-		var structs = JSON.parse(jsonStructs);
+		const structs = JSON.parse(jsonStructs);
 
-		var data = [];
+		const data = [];
 		let i = 0;
 		while (true) {
 			const c = document.querySelector(chunkSelector + i);
@@ -25,8 +25,8 @@ RETROP['saveFile'] = (function () {
 			i += 1;
 		}
 
-		var wb = XLSX.utils.book_new();
-		var ws = XLSX.utils.aoa_to_sheet(data);
+		const wb = XLSX.utils.book_new();
+		const ws = XLSX.utils.aoa_to_sheet(data);
 
 		XLSX.utils.book_append_sheet(wb, ws);
 		XLSX.writeFile(wb, fileName);
