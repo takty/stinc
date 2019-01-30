@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-29
+ * @version 2019-01-30
  *
  */
 
@@ -69,7 +69,8 @@ class Retrop_Exporter {
 				break;
 			case 1:
 				check_admin_referer( 'export-option' );
-				$this->_output_download_page();
+				$fn = empty( $_POST['filename'] ) ? 'export' : $_POST['filename'];
+				$this->_output_download_page( $fn );
 				break;
 		}
 		$this->_footer();
@@ -81,8 +82,8 @@ class Retrop_Exporter {
 ?>
 		<form method="post" action="<?php echo esc_url( wp_nonce_url( 'tools.php?page=retrop_export&amp;step=1', 'export-option' ) ); ?>">
 		<p>
-		<!-- <label for="upload"><?php //_e( 'Choose a file from your computer:' ); ?></label> (<?php //printf( __('Maximum size: %s' ), $size ); ?>) -->
-		<!-- <input type="file" id="upload" name="import" size="25" /> -->
+			<label for="filename"><?php _e('File name:') ?></label>
+			<input type="text" required="" class="regular-text" id="filename" name="filename">
 		</p>
 		<?php submit_button( __('Export'), 'primary' ); ?>
 		</form>
@@ -90,7 +91,12 @@ class Retrop_Exporter {
 		echo '</div>';
 	}
 
-	private function _output_download_page() {
+	private function _output_download_page( $fileName ) {
+		$pi = pathinfo( $fileName );
+		$fileName = $pi['basename'];
+		if ( empty( $pi['extension'] ) ) $fileName .= '.xlsx';
+		$_fn = esc_html( $fileName );
+
 		$json_structs = addslashes( json_encode( array_keys( $this->_structs ) ) );
 
 		echo '<div class="narrow">';
@@ -106,7 +112,7 @@ class Retrop_Exporter {
 				const btn = document.getElementById('download');
 				btn.addEventListener('click', (e) => {
 					btn.classList.add('disabled');
-					RETROP.saveFile('<?php echo $json_structs ?>', 'export.xlsx', '#retrop-chunk-', function (success) {
+					RETROP.saveFile('<?php echo $json_structs ?>', '<?php echo $_fn ?>', '#retrop-chunk-', function (success) {
 						document.getElementById('retrop-' + (success ? 'success' : 'failure')).style.display = 'block';
 					});
 				});
