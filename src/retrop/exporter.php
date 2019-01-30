@@ -162,6 +162,9 @@ class Retrop_Exporter {
 				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_ADD_BR ) {
 					$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 				}
+				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_MEDIA_URL ) {
+					$val = wp_get_attachment_image_src( intval( $val ), 'full' );
+				}
 				break;
 			case R\FS_TYPE_DATE:
 				$val = $p->post_date;
