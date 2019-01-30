@@ -16,17 +16,19 @@ class Retrop_Exporter {
 
 	static private $_instance = [];
 
-	static public function register( $args = [] ) {
-		self::$_instance[] = new Retrop_Exporter( $args );
+	static public function register( $id, $args = [] ) {
+		self::$_instance[] = new Retrop_Exporter( $id, $args );
 	}
 
+	private $_id;
 	private $_post_type;
 	private $_structs;
 	private $_url_to;
 
 	private $_labels;
 
-	private function __construct( $args ) {
+	private function __construct( $id, $args ) {
+		$this->_id        = 'retrop_' . $id;
 		$this->_post_type = $args['post_type'];
 		$this->_structs   = $args['structs'];
 		$this->_url_to    = $args['url_to'];
@@ -44,7 +46,7 @@ class Retrop_Exporter {
 
 	public function _cb_admin_menu() {
 		$label = $this->_labels['name'];
-		add_submenu_page( 'tools.php', $label, $label, 'level_7', 'retrop_export', [ $this, '_cb_output_page' ] );
+		add_submenu_page( 'tools.php', $label, $label, 'level_7', $this->_id, [ $this, '_cb_output_page' ] );
 	}
 
 	private function _header() {
@@ -80,7 +82,7 @@ class Retrop_Exporter {
 		echo '<div class="narrow">';
 		echo '<p>' . $this->_labels['description'] . '</p>';
 ?>
-		<form method="post" action="<?php echo esc_url( wp_nonce_url( 'tools.php?page=retrop_export&amp;step=1', 'export-option' ) ); ?>">
+		<form method="post" action="<?php echo esc_url( wp_nonce_url( 'tools.php?page=' . $this->_id . '&amp;step=1', 'export-option' ) ); ?>">
 		<p>
 			<label for="filename"><?php _e('File name:') ?></label>
 			<input type="text" required="" class="regular-text" id="filename" name="filename">
