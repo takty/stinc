@@ -1,9 +1,9 @@
 /**
  *
- * Retrop: XLSX Loader (js)
+ * Retrop: XLSX Importer (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-28
+ * @version 2019-01-31
  *
  */
 
@@ -152,7 +152,11 @@ RETROP['loadFiles'] = (function () {
 				} else if (type === 'term') {
 					if (cell && cell.w && cell.w.length > 0) {
 						var vals = cell.w.split(/\s*,\s*/);
-						item[key] = vals.map((x) => { return normalizeKey(x, false); });
+						if (structs[key].raw) {
+							item[key] = vals;
+						} else {
+							item[key] = vals.map((x) => { return normalizeKey(x, false); });
+						}
 						count += 1;
 					}
 				}
