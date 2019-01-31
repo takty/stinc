@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-28
+ * @version 2019-01-31
  *
  */
 
@@ -25,6 +25,7 @@ class Registerer {
 	private $_required_cols;
 	private $_digest_cols;
 	private $_labels;
+	private $_debug = '';
 
 	public function __construct( $post_type, $structs, $labels = [] ) {
 		$this->_post_type     = $post_type;
@@ -157,6 +158,7 @@ class Registerer {
 
 		$msg .= '<p>' . ( $old_id === false ? $this->_labels['new'] : $this->_labels['updated'] ) . ': ';
 		$msg .= wp_kses_post( $digested_text ) . '</p>';
+		$msg .= $this->_debug;
 		return $msg;
 	}
 
