@@ -27,7 +27,7 @@ class Retrop_Exporter {
 	private $_labels;
 
 	private function __construct( $id, $args ) {
-		$this->_id        = 'retrop_' . $id;
+		$this->_id        = 'retrop_export_' . $id;
 		$this->_post_type = $args['post_type'];
 		$this->_structs   = $args['structs'];
 		$this->_url_to    = $args['url_to'];
