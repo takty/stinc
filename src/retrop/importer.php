@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-27
+ * @version 2019-01-31
  *
  */
 
@@ -26,19 +26,13 @@ require_once __DIR__ . '/../system/ajax.php';
 
 class Retrop_Importer extends \WP_Importer {
 
-	static public function register( $args = [] ) {
-		$inst = new Retrop_Importer( $args );
-		$GLOBALS['retrop_import'] = $inst;
-		$name = 'Retrop Importer';
-		$description = 'Import data from a Excel (XLSX) file.';
-		if ( isset( $args[ 'labels' ] ) ) {
-			$labels = $args[ 'labels' ];
-			if ( isset( $labels['name'] ) ) $name = $labels['name'];
-			if ( isset( $labels['description'] ) ) $description = $labels['description'];
-		}
-		register_importer( 'retrop', $name, $description, [ $GLOBALS['retrop_import'], 'dispatch' ] );
+	static private $_instance = [];
+
+	static public function register( $id, $args = [] ) {
+		self::$_instance[] = new Retrop_Importer( $id, $args );
 	}
 
+	private $_id;
 	private $_json_structs;
 	private $_url_to;
 	private $_labels;
@@ -47,16 +41,18 @@ class Retrop_Importer extends \WP_Importer {
 	private $_is_ajax            = false;
 	private $_registerer;
 
-	private $_id;
+	private $_file_id;
 	private $_file_name;
 	private $_auto_add_terms = false;
 	private $_ajax_request_url;
 
-	public function __construct( $args ) {
+	private function __construct( $id, $args ) {
+		$this->_id           = 'retrop_import_' . $id;
 		$this->_json_structs = json_encode( $args['structs'] );
-		$this->_url_to = $args['url_to'];
+		$this->_url_to       = $args['url_to'];
+
 		if ( isset( $args['can_auto_add_terms'] ) ) $this->_can_auto_add_terms = $args['can_auto_add_terms'];
-		if ( isset( $args['ajax'] ) ) $this->_is_ajax = $args['ajax'];
+		if ( isset( $args['ajax'] ) )               $this->_is_ajax            = $args['ajax'];
 
 		$this->_labels = [
 			'name'              => 'Retrop Importer',
@@ -73,12 +69,23 @@ class Retrop_Importer extends \WP_Importer {
 		];
 		if ( isset( $args[ 'labels' ] ) ) $this->_labels = array_merge( $this->_labels, $args['labels'] );
 
+		$this->initialize();
 		$this->_registerer = new Registerer( $args['post_type'], $args['structs'], $this->_labels );
 		if ( $this->_is_ajax ) $this->_ajax_request_url = $this->initialize_ajax();
 	}
 
+	private function initialize() {
+		$GLOBALS[ $this->_id ] = $this;
+		register_importer(
+			$this->_id,
+			$this->_labels['name'],
+			$this->_labels['description'],
+			[ $GLOBALS[ $this->_id ], 'dispatch' ]
+		);
+	}
+
 	private function initialize_ajax() {
-		$ajax = new \st\Ajax( 'retrop_import_item', function () {
+		$ajax = new \st\Ajax( $this->_id, function () {
 			$cont = file_get_contents( 'php://input' );
 			if ( $cont === 'finished' ) {
 				$this->_import_ajax_actually_end();
@@ -112,8 +119,8 @@ class Retrop_Importer extends \WP_Importer {
 				break;
 			case 2:
 				check_admin_referer( 'import-retrop' );
-				$this->_id        = (int) $_POST['retrop_file_id'];
-				$this->_file_name = pathinfo( get_attached_file( $this->_id ), PATHINFO_FILENAME );
+				$this->_file_id        = (int) $_POST['retrop_file_id'];
+				$this->_file_name = pathinfo( get_attached_file( $this->_file_id ), PATHINFO_FILENAME );
 				$this->_auto_add_terms = $this->_can_auto_add_terms && ( ! empty( $_POST['add_terms'] ) && $_POST['add_terms'] === '1' );
 				set_time_limit(0);
 				if ( $this->_is_ajax ) {
@@ -144,7 +151,7 @@ class Retrop_Importer extends \WP_Importer {
 		echo '<div class="narrow">';
 		echo '<p>' . $this->_labels['description'] . '</p>';
 		echo '<p>' . $this->_labels['message'] . '</p>';
-		wp_import_upload_form( 'admin.php?import=retrop&amp;step=1' );
+		wp_import_upload_form( 'admin.php?import=' . $this->_id . '&amp;step=1' );
 		echo '</div>';
 	}
 
@@ -160,14 +167,14 @@ class Retrop_Importer extends \WP_Importer {
 			echo esc_html( $file['error'] ) . '</p>';
 			return false;
 		}
-		$this->_id = (int) $file['id'];
+		$this->_file_id = (int) $file['id'];
 		return true;
 	}
 
 	private function _parse_upload() {
 		$_jstr = esc_attr( $this->_json_structs );
-		$_url  = esc_attr( wp_get_attachment_url( $this->_id ) );
-		$_act  = esc_attr( admin_url( 'admin.php?import=retrop&amp;step=2' ) );
+		$_url  = esc_attr( wp_get_attachment_url( $this->_file_id ) );
+		$_act  = esc_attr( admin_url( 'admin.php?import=' . $this->_id . '&amp;step=2' ) );
 ?>
 		<form action="<?php echo $_act ?>" method="post" name="form">
 			<?php wp_nonce_field( 'import-retrop' ); ?>
@@ -175,7 +182,7 @@ class Retrop_Importer extends \WP_Importer {
 			<input type="hidden" id="retrop-structs" value="<?php echo $_jstr ?>" />
 			<input type="hidden" id="retrop-url" value="<?php echo $_url ?>" />
 			<input type="hidden" name="retrop_items" id="retrop-items" />
-			<input type="hidden" name="retrop_file_id" value="<?php echo $this->_id; ?>" />
+			<input type="hidden" name="retrop_file_id" value="<?php echo $this->_file_id; ?>" />
 
 <?php if ( $this->_can_auto_add_terms ) : ?>
 			<h3><?php echo $this->_labels['add_terms'] ?></h3>
@@ -226,7 +233,7 @@ class Retrop_Importer extends \WP_Importer {
 	}
 
 	private function _import_end( $added_count, $all_count ) {
-		wp_import_cleanup( $this->_id );
+		wp_import_cleanup( $this->_file_id );
 		wp_cache_flush();
 		echo '<p>' . $this->_labels['all_done'] . ' (' . $added_count . '/' . $all_count . ')</p>';
 		do_action( 'import_end' );
@@ -259,7 +266,7 @@ class Retrop_Importer extends \WP_Importer {
 	}
 
 	private function _import_ajax_end( $added_count, $all_count ) {
-		wp_import_cleanup( $this->_id );
+		wp_import_cleanup( $this->_file_id );
 		wp_cache_flush();
 	}
 
