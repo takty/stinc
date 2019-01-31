@@ -1,13 +1,12 @@
 <?php
 namespace st;
 use \st\retrop as R;
-
 /**
  *
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-30
+ * @version 2019-01-31
  *
  */
 
@@ -149,6 +148,7 @@ class Retrop_Exporter {
 		$ret = [];
 		foreach ( $this->_structs as $key => $s ) {
 			$type = $s['type'];
+			$val = '';
 			switch ( $type ) {
 			case R\FS_TYPE_TITLE:
 				$val = $p->post_title;
@@ -163,7 +163,8 @@ class Retrop_Exporter {
 					$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 				}
 				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_MEDIA_URL ) {
-					$val = wp_get_attachment_image_src( intval( $val ), 'full' );
+					$ais = wp_get_attachment_image_src( intval( $val ), 'full' );
+					if ( $ais !== false ) $val = $ais[0];
 				}
 				break;
 			case R\FS_TYPE_DATE:
