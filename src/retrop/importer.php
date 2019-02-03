@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-31
+ * @version 2019-02-04
  *
  */
 
@@ -46,7 +46,7 @@ class Retrop_Importer extends \WP_Importer {
 	private $_auto_add_terms = false;
 	private $_ajax_request_url;
 
-	private function __construct( $id, $args ) {
+	public function __construct( $id, $args ) {
 		$this->_id           = 'retrop_import_' . $id;
 		$this->_json_structs = json_encode( $args['structs'] );
 		$this->_url_to       = $args['url_to'];
