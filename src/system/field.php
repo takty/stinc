@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-16
+ * @version 2019-02-04
  *
  */
 
@@ -34,6 +34,11 @@ function add_post_meta_input( $post_id, $key, $label, $type = 'text' ) {
 function add_post_meta_textarea( $post_id, $key, $label ) {
 	$val = get_post_meta( $post_id, $key, true );
 	output_textarea_row( $label, $key, $val );
+}
+
+function add_post_meta_rich_editor( $post_id, $key, $label, $settings = [] ) {
+	$val = get_post_meta( $post_id, $key, true );
+	output_rich_editor_row( $label, $key, $val, $settings );
 }
 
 function add_post_meta_checkbox( $post_id, $key, $label ) {
@@ -67,6 +72,16 @@ function output_textarea_row( $label, $key, $val ) {
 			<?php echo esc_html( $label ) ?>
 			<textarea <?php name_id( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
 		</label>
+	</div>
+<?php
+}
+
+function output_rich_editor_row( $label, $key, $val, $settings =[] ) {
+?>
+	<div style="margin-top:1.5rem;">
+		<hr>
+		<div style="font-weight:bold;padding-bottom:0.5rem"><?php echo esc_html( $label ) ?></div>
+		<?php wp_editor( $val, $key, $settings ); ?>
 	</div>
 <?php
 }
