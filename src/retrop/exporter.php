@@ -6,7 +6,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-31
+ * @version 2019-02-05
  *
  */
 
@@ -125,10 +125,10 @@ class Retrop_Exporter {
 
 	private function _output_data() {
 		$ps = get_posts( [
-			'post_type' => $this->_post_type,
+			'post_type'      => $this->_post_type,
 			'posts_per_page' => -1,
-			'orderby' => 'date',
-			'order' => 'asc'
+			'orderby'        => 'date',
+			'order'          => 'asc'
 		] );
 		$pss = array_chunk( $ps, 20 );
 		foreach ( $pss as $idx => $ps ) {
@@ -193,7 +193,7 @@ class Retrop_Exporter {
 			case R\FS_TYPE_ACF_PM:
 				if ( function_exists( 'get_field' ) ) {
 					$key = $s[R\FS_KEY];
-					$val = get_field( $key, $p->ID );
+					$val = get_field( $key, $p->ID, false );
 					if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_ADD_BR ) {
 						$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
 					}
