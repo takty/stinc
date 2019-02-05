@@ -79,7 +79,7 @@ function output_textarea_row( $label, $key, $val ) {
 function output_rich_editor_row( $label, $key, $val, $settings = [] ) {
 ?>
 	<div style="margin-top:1.5rem;">
-		<hr style="margin:8px -12px;">
+		<hr style="margin:12px -12px;">
 		<div style="font-weight:bold;padding-bottom:0.5rem"><?php echo esc_html( $label ) ?></div>
 		<?php wp_editor( $val, $key, $settings ); ?>
 	</div>
