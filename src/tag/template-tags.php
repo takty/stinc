@@ -40,6 +40,7 @@ function get_post_title( $short = 8, $long = 32, $filter = 'segment_small' ) {
 
 // -----------------------------------------------------------------------------
 
+
 function the_loop_posts( $slug, $name = '', $ps ) {
 	global $post;
 	foreach ( $ps as $post ) {
@@ -99,6 +100,7 @@ function the_loop_of_posts( $slug, $name = '', $args = [], $opts = [] ) {
 
 // -----------------------------------------------------------------------------
 
+
 function the_sub_title( $meta_key, $post_id = false ) {
 	echo get_the_sub_title( $meta_key, $post_id );
 }
@@ -136,6 +138,7 @@ function echo_content( $content ) {
 
 
 // -----------------------------------------------------------------------------
+
 
 function get_sticky_posts( $term_slug, $taxonomy ) {
 	$t = get_term_by( 'slug', $term_slug, $taxonomy );
@@ -200,6 +203,7 @@ function get_pages_by_ids( $ids ) {
 
 // -----------------------------------------------------------------------------
 
+
 function the_post_list_item( $post, $link_class = '', $item_class = '', $current = false ) {
 	$link = esc_url( get_permalink( $post->ID ) );
 	$title = esc_html( get_the_title( $post->ID ) );
@@ -263,6 +267,7 @@ function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = 
 
 // -----------------------------------------------------------------------------
 
+
 function the_yearly_archive_select( $post_type = 'post', $default_title = 'YEAR', $args = [], $meta_key = false ) {
 	$args = array_merge( [
 		'type' => 'yearly', 'format' => 'option', 'post_type' => $post_type
@@ -323,6 +328,7 @@ function the_taxonomy_archive_select( $taxonomy, $default_title = 'CATEGORY', $c
 
 
 // -----------------------------------------------------------------------------
+
 
 function the_post_navigation_with_list_link( $args = [] ) {
 	echo get_the_post_navigation_with_list_link( $args );
@@ -416,6 +422,7 @@ function add_archive_current_class() {
 
 
 // -----------------------------------------------------------------------------
+
 
 function the_page_navigation( $args = [] ) {
 	echo get_the_page_navigation( $args );
