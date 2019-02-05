@@ -22,7 +22,7 @@ function is_content_empty( $str = false ) {
 	return trim( str_replace( '&nbsp;', '', strip_tags( $str, '<img><hr><br>' ) ) ) === '';
 }
 
-function get_post_title( $short = 8, $long = 32, $filter = 'segment_small' ) {
+function get_post_title( $short = 8, $long = 32, $mode = 'segment_small', $filter = 'esc_html' ) {
 	global $post;
 	if ( $post ) {
 		$title = get_the_title( $post->ID );
@@ -33,7 +33,7 @@ function get_post_title( $short = 8, $long = 32, $filter = 'segment_small' ) {
 	$option = '';
 	if ( $long <= $len ) $option = ' data-length="long"';
 	if ( $len <= $short )  $option = ' data-length="short"';
-	$title = \st\separate_line( $title, $filter );
+	$title = \st\separate_line( $title, $mode, $filter );
 	return compact( 'title', 'option' );
 }
 

@@ -6,7 +6,7 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-24
+ * @version 2019-02-05
  *
  */
 
@@ -28,28 +28,28 @@ function remove_separator_in_title_and_description() {
 // -----------------------------------------------------------------------------
 
 
-function separate_line( $str, $filter = 'raw' ) {
+function separate_line( $str, $mode = 'raw', $filter = 'esc_html' ) {
 	$ls = preg_split( "/　　|<\s*br\s*\/?>/ui", $str );
-	switch ( $filter ) {
+	switch ( $mode ) {
 		case 'raw':
 			return $ls;
 		case 'br':
 			return implode( '<br>', array_map( 'esc_html', $ls ) );
 		case 'span':
-			return '<span>' . implode( '</span><span>', array_map( 'esc_html', $ls ) ) . '</span>';
+			return '<span>' . implode( '</span><span>', array_map( $filter, $ls ) ) . '</span>';
 		case 'div':
-			return '<div>' . implode( '</div><div>', array_map( 'esc_html', $ls ) ) . '</div>';
+			return '<div>' . implode( '</div><div>', array_map( $filter, $ls ) ) . '</div>';
 		case 'segment':
-			return '<div>' . implode( '</div><div>', array_map( '\st\separate_text_and_make_spans', $ls ) ) . '</div>';
+			return '<div>' . implode( '</div><div>', array_map( function ( $s ) use ( $filter ) { \st\separate_text_and_make_spans( $s, $filter ); }, $ls ) ) . '</div>';
 		case 'segment_raw':
-			return array_map( '\st\separate_text_and_make_spans', $ls );
+			return array_map( function ( $s ) use ( $filter ) { \st\separate_text_and_make_spans( $s, $filter ); }, $ls );
 		case 'segment_small':
 			$sss = array_map( '\st\separate_small', $ls );
 			$newLs = [];
 			foreach ( $sss as $ss ) {
 				$newL = '';
 				foreach ( $ss as $s ) {
-					$temp = separate_text_and_make_spans( $s[0] );
+					$temp = separate_text_and_make_spans( $s[0], $filter );
 					if ( ! empty( $s[1] ) ) $temp = "<{$s[1]}>$temp</{$s[1]}>";
 					$newL .= $temp;
 				}
@@ -95,7 +95,17 @@ function separate_small( $str ) {
 // -----------------------------------------------------------------------------
 
 
-function separate_text_and_make_spans( $text ) {
+function separate_text_and_make_spans( $text, $filter = 'esc_html' ) {
+	$parts = separate_text( $text );
+	$ret = '';
+	foreach ( $parts as $ws ) {
+		$_w = $filter ? call_user_func( $filter, $ws[0] ) : $ws[0];
+		$ret .= $ws[1] ? "<span>$_w</span>" : $_w;
+	}
+	return $ret;
+}
+
+function separate_text( $text ) {
 	$pair = ['S*' => 1, '*E' => 1, 'II' => 1, 'KK' => 1, 'HH' => 1, 'HI' => 1];
 	$t_prev = '';
 	$word = '';
@@ -110,33 +120,28 @@ function separate_text_and_make_spans( $text ) {
 			if ( $t_prev === 'O' ) {
 				$word .= $c;
 			} else {
-				if ( ! empty( $word ) ) $parts[] = [$word, 1];
+				if ( ! empty( $word ) ) $parts[] = [ $word, true ];
 				$word = $c;
 			}
 		} else {
-			if ( ! empty( $word ) ) $parts[] = [$word, ( $t_prev === 'O' ) ? 0 : 1];
+			if ( ! empty( $word ) ) $parts[] = [ $word, ( $t_prev !== 'O' ) ];
 			$word = $c;
 		}
 		$t_prev = $t;
 	}
-	if ( ! empty( $word )) $parts[] = [$word, ( $t_prev === 'O' ) ? 0 : 1];
-
-	$ret = '';
-	foreach ( $parts as $ws ) {
-		$ret .= ($ws[1] === 1) ? ('<span>' . esc_html( $ws[0] ) . '</span>') : esc_html( $ws[0] );
-	}
-	return $ret;
+	if ( ! empty( $word ) ) $parts[] = [ $word, ( $t_prev !== 'O' ) ];
+	return $parts;
 }
 
 function _get_ctype( $c ) {
 	$pats = [
-		'[「『（［｛〈《【〔〖〘〚]' => 'S',
-		'[」』）］｝〉》】〕〗〙〛、，。．？！を]' => 'E',
-		'[ぁ-んゝ]' => 'I',
-		'[ァ-ヴーｱ-ﾝﾞｰ]' => 'K',
-		'[一-龠々〆ヵヶ]' => 'H',
+		'S' => '[「『（［｛〈《【〔〖〘〚]',
+		'E' => '[」』）］｝〉》】〕〗〙〛、，。．？！を]',
+		'I' => '[ぁ-んゝ]',
+		'K' => '[ァ-ヴーｱ-ﾝﾞｰ]',
+		'H' => '[一-龠々〆ヵヶ]',
 	];
-	foreach ( $pats as $p => $t ) {
+	foreach ( $pats as $t => $p ) {
 		if ( preg_match( "/" . $p . "/u", $c ) === 1 ) return $t;
 	}
 	return 'O';
