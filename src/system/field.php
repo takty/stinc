@@ -76,7 +76,7 @@ function output_textarea_row( $label, $key, $val ) {
 <?php
 }
 
-function output_rich_editor_row( $label, $key, $val, $settings =[] ) {
+function output_rich_editor_row( $label, $key, $val, $settings = [] ) {
 ?>
 	<div style="margin-top:1.5rem;">
 		<hr style="margin:8px -12px;">
