@@ -34,15 +34,19 @@ function separate_line( $str, $mode = 'raw', $filter = 'esc_html' ) {
 		case 'raw':
 			return $ls;
 		case 'br':
-			return implode( '<br>', array_map( 'esc_html', $ls ) );
+			$_ls = array_map( 'esc_html', $ls );
+			return implode( '<br>', $_ls );
 		case 'span':
-			return '<span>' . implode( '</span><span>', array_map( $filter, $ls ) ) . '</span>';
+			$_ls = array_map( $filter, $ls );
+			return '<span>' . implode( '</span><span>', $_ls ) . '</span>';
 		case 'div':
-			return '<div>' . implode( '</div><div>', array_map( $filter, $ls ) ) . '</div>';
+			$_ls = array_map( $filter, $ls );
+			return '<div>' . implode( '</div><div>', $_ls ) . '</div>';
 		case 'segment':
-			return '<div>' . implode( '</div><div>', array_map( function ( $s ) use ( $filter ) { \st\separate_text_and_make_spans( $s, $filter ); }, $ls ) ) . '</div>';
+			$_ls = array_map( function ( $s ) use ( $filter ) { return \st\separate_text_and_make_spans( $s, $filter ); }, $ls );
+			return '<div>' . implode( '</div><div>', $_ls ) . '</div>';
 		case 'segment_raw':
-			return array_map( function ( $s ) use ( $filter ) { \st\separate_text_and_make_spans( $s, $filter ); }, $ls );
+			return array_map( function ( $s ) use ( $filter ) { return \st\separate_text_and_make_spans( $s, $filter ); }, $ls );
 		case 'segment_small':
 			$sss = array_map( '\st\separate_small', $ls );
 			$newLs = [];
