@@ -6,7 +6,7 @@ namespace st\basic;
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-26
+ * @version 2019-02-15
  *
  */
 
@@ -126,6 +126,7 @@ function remove_taxonomy_metabox_checked_ontop() {
 
 // -----------------------------------------------------------------------------
 
+
 function ensure_admin_side_bar_menu_area() {
 	add_action( 'admin_menu', function () {
 		global $menu;
@@ -168,17 +169,21 @@ function enable_to_show_slug() {
 	} );
 }
 
-function enable_default_image_sizes() {
+function enable_default_image_sizes( $add_medium_small = false ) {
 	add_image_size( 'small', 320, 9999 );
 	add_image_size( 'huge', 2560, 9999 );
+	if ( $add_medium_small ) add_image_size( 'medium-small', 480, 9999 );
 
-	add_filter( 'image_size_names_choose', function ( $sizes ) {
+	add_filter( 'image_size_names_choose', function ( $sizes ) use ( $add_medium_small ) {
 		$is_ja = preg_match( '/^ja/', get_locale() );
 		$ns = [];
 		foreach ( $sizes as $idx => $s ) {
 			$ns[ $idx ] = $s;
-			if ( $idx === 'thumbnail' ) $ns[ 'small' ] = ($is_ja ? '小' : 'Small');
-			if ( $idx === 'medium' ) $ns[ 'medium_large' ] = ($is_ja ? '中大' : 'Medium Large');
+			if ( $idx === 'thumbnail' ) {
+				$ns[ 'small' ] = ($is_ja ? '小' : 'Small');
+				if ( $add_medium_small ) $ns[ 'medium-small' ] = ( $is_ja ? 'やや小' : 'Medium Small' );
+			}
+			if ( $idx === 'medium' ) $ns[ 'medium_large' ] = ( $is_ja ? 'やや大' : 'Medium Large' );
 		}
 		return $ns;
 	} );
@@ -202,6 +207,7 @@ function _add_time_stamp_as_param( $src ) {
 
 
 // -----------------------------------------------------------------------------
+
 
 function update_default_reading_options() {
 	update_option( 'show_on_front', 'page' );
