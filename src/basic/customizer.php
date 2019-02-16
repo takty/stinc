@@ -6,7 +6,7 @@ namespace st\basic;
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-15
+ * @version 2019-02-16
  *
  */
 
@@ -120,6 +120,14 @@ function remove_taxonomy_metabox_checked_ontop() {
 	add_filter('wp_terms_checklist_args', function ( $args ) {
 		$args['checked_ontop'] = false;
 		return $args;
+	} );
+}
+
+function remove_table_resize_bars() {
+	add_filter( 'tiny_mce_before_init', function ( $mceInit ) {
+		$mceInit['table_resize_bars'] = false;
+		$mceInit['object_resizing'] = 'img';
+		return $mceInit;
 	} );
 }
 
