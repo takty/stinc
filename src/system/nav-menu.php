@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-15
+ * @version 2019-02-16
  *
  */
 
@@ -29,6 +29,7 @@ class NavMenu {
 	private $_home_url;
 	private $_is_page;
 	private $_expanded_page_ids = false;
+	private $_cur_objs = false;
 
 	private $_pid_to_menu;
 	private $_pid_to_children_state;
@@ -55,6 +56,13 @@ class NavMenu {
 
 	public function set_expanded_page_ids( $ids ) {
 		$this->_expanded_page_ids = $ids;
+	}
+
+	public function set_object_type_of_current( $object_type_s ) {
+		if ( ! is_array( $object_type_s ) ) {
+			$object_type_s = [ $object_type_s ];
+		}
+		$this->_cur_objs = $object_type_s;
 	}
 
 
@@ -255,8 +263,7 @@ class NavMenu {
 
 	private function _has_current_url( $mis ) {
 		foreach ( $mis as $mi ) {
-			$url = trailingslashit( $mi->url );
-			if ( $url === $this->_cur_url ) return true;
+			if ( $this->_is_current( $mi ) ) return true;
 		}
 		return false;
 	}
@@ -269,8 +276,7 @@ class NavMenu {
 		$id2pid = [];
 		$curs = [];
 		foreach ( $mis as $mi ) {
-			$url = trailingslashit( $mi->url );
-			if ( $url === $this->_cur_url ) $curs[] = $mi->ID;
+			if ( $this->_is_current( $mi ) ) $curs[] = $mi->ID;
 			$id2pid[ $mi->ID ] = (int) $mi->menu_item_parent;
 		}
 		$ret = [];
@@ -292,7 +298,7 @@ class NavMenu {
 
 			$url = trailingslashit( $mi->url );
 			if ( $url === $this->_home_url ) $cs[] = self::CLS_HOME;
-			if ( $url === $this->_cur_url )  $cs[] = self::CLS_CURRENT;
+			if ( $this->_is_current( $mi ) )  $cs[] = self::CLS_CURRENT;
 
 			if ( $this->_is_menu_parent( $mi ) ) {
 				$cs[] = self::CLS_OPENED;
@@ -332,6 +338,13 @@ class NavMenu {
 		if ( ! $this->_is_page ) return false;
 		global $post;
 		return ( $post->ancestors && in_array( (int) $mi->object_id, $post->ancestors, true ) );
+	}
+
+	private function _is_current( $mi ) {
+		$url = trailingslashit( $mi->url );
+		if ( $url !== $this->_cur_url ) return false;
+		if ( $this->_cur_objs && ! in_array( $mi->object, $this->_cur_objs, true ) ) return false;
+		return true;
 	}
 
 }
