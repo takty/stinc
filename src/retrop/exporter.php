@@ -6,7 +6,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-05
+ * @version 2019-02-17
  *
  */
 
@@ -159,9 +159,6 @@ class Retrop_Exporter {
 			case R\FS_TYPE_META:
 				$key = $s[R\FS_KEY];
 				$val = get_post_meta( $p->ID, $key, true );
-				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_ADD_BR ) {
-					$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
-				}
 				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_MEDIA_URL ) {
 					$ais = wp_get_attachment_image_src( intval( $val ), 'full' );
 					if ( $ais !== false ) $val = $ais[0];
@@ -178,9 +175,7 @@ class Retrop_Exporter {
 				$ts = get_the_terms( $p->ID, $tax );
 				if ( is_array( $ts ) ) {
 					$slugs = [];
-					foreach ( $ts as $t ) {
-						$slugs[] = $t->slug;
-					}
+					foreach ( $ts as $t ) $slugs[] = $t->slug;
 					$val = implode( ', ', $slugs );
 				}
 				break;
@@ -194,13 +189,10 @@ class Retrop_Exporter {
 				if ( function_exists( 'get_field' ) ) {
 					$key = $s[R\FS_KEY];
 					$val = get_field( $key, $p->ID, false );
-					if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_ADD_BR ) {
-						$val = str_replace( ["\r\n", "\r", "\n"], '<br />\n', $val );
-					}
 				}
 				break;
 			}
-			$val = str_replace( ["\r\n", "\r", "\n"], '\\n', $val );
+			$val = str_replace( ["\r\n", "\r", "\n"], '\n', $val );
 			$ret[] = $val;
 		}
 		return $ret;
