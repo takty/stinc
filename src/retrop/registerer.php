@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-31
+ * @version 2019-02-17
  *
  */
 
@@ -28,11 +28,11 @@ class Registerer {
 	private $_debug = '';
 
 	public function __construct( $post_type, $structs, $labels = [] ) {
-		$this->_post_type     = $post_type;
-		$this->_type2structs  = $this->extract_type_struct( $structs );
-		$this->_required_cols = $this->extract_columns( $structs, R\FS_REQUIRED );
-		$this->_digest_cols   = $this->extract_columns( $structs, R\FS_FOR_DIGEST );
-		$this->_labels        = $labels;
+		$this->_post_type      = $post_type;
+		$this->_type2structs   = $this->extract_type_struct( $structs );
+		$this->_required_cols  = $this->extract_columns( $structs, R\FS_REQUIRED );
+		$this->_digest_cols    = $this->extract_columns( $structs, R\FS_FOR_DIGEST );
+		$this->_labels         = $labels;
 	}
 
 	private function extract_type_struct( $structs ) {
@@ -81,52 +81,7 @@ class Registerer {
 	// -------------------------------------------------------------------------
 
 
-	public function add_unexisting_terms( $items ) {
-		$tax_to_terms = [];
-		foreach ( $items as $item ) $this->collect_unexisting_terms( $item, $tax_to_terms );
-		$this->insert_terms( $tax_to_terms );
-	}
-
-	private function collect_unexisting_terms( $item, &$tax_to_terms ) {
-		foreach ( $this->_type2structs[ R\FS_TYPE_TERM ] as $col => $s ) {
-			if ( ! isset( $item[ $col ] ) ) continue;
-
-			if ( ! isset( $s[ R\FS_AUTO_ADD ] ) || $s[ R\FS_AUTO_ADD ] === false ) continue;
-			if ( ! isset( $s[ R\FS_TAXONOMY ] ) ) continue;
-			$tax = $s[ R\FS_TAXONOMY ];
-
-			$vals = $item[ $col ];
-			if ( ! is_array( $vals ) ) $vals = [ $vals ];
-
-			$ts = get_terms( $tax, [ 'hide_empty' => false, 'fields' => 'id=>slug' ] );
-			if ( is_wp_error( $ts ) ) return;
-			$ts = array_values( $ts );
-
-			$slugs = array_filter( $vals, function ( $v ) use ( $ts ) {
-				return ! in_array( $v, $ts, true );
-			} );
-			if ( empty( $slugs ) ) continue;
-
-			$tts = isset( $tax_to_terms[ $tax ] ) ? $tax_to_terms[ $tax ] : [];
-			foreach ( $slugs as $slug ) $tts[] = $slug;
-			$tax_to_terms[ $tax ] = $tts;
-		}
-	}
-
-	private function insert_terms( $tax_to_terms ) {
-		foreach ( $tax_to_terms as $tax => $terms ) {
-			$terms = array_values( array_unique( $terms ) );
-			foreach ( $terms as $t ) {
-				$ret = wp_insert_term( $t, $tax, [ 'slug' => $t ] );
-			}
-		}
-	}
-
-
-	// -------------------------------------------------------------------------
-
-
-	public function process_item( $item, $file_name ) {
+	public function process_item( $item, $file_name, $is_term_inserted = false ) {
 		if ( ! $this->is_required_field_filled( $item ) ) return false;
 		$digested_text = $this->get_digested_text( $item );
 		$digest = \st\retrop\make_digest( $digested_text );
@@ -153,13 +108,40 @@ class Registerer {
 		update_post_meta( $post_id, self::PMK_DIGEST,      $digest );
 
 		$this->update_post_metas( $item, $post_id );
-		$this->add_terms( $item, $post_id );
+		$this->add_terms( $item, $post_id, $is_term_inserted );
 		$msg = $this->update_post_thumbnail( $item, $post_id );
 
 		$msg .= '<p>' . ( $old_id === false ? $this->_labels['new'] : $this->_labels['updated'] ) . ': ';
 		$msg .= wp_kses_post( $digested_text ) . '</p>';
 		$msg .= $this->_debug;
 		return $msg;
+	}
+
+	private function filter( $val, $filter ) {
+		if ( $filter ) {
+			switch ( $filter ) {
+			case R\FS_FILTER_CONTENT:
+				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
+				$val = wp_kses_post( $val );
+				break;
+			case R\FS_FILTER_NORM_DATE:
+				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
+				$val = \st\field\normalize_date( $val );
+				break;
+			case R\FS_FILTER_NL2BR:
+				// Do not add "\n" because WP recognizes "\n" as a paragraph separator.
+				$val = str_replace( ['\n\n', '\n\n'], '\n&nbsp;\n', $val );
+				$val = str_replace( '\n', '<br />', $val );
+				break;
+			default:
+				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
+				if ( is_callable( $filter ) ) $val = call_user_func( $filter, $val );
+				break;
+			}
+		} else {
+			$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
+		}
+		return $val;
 	}
 
 
@@ -183,8 +165,11 @@ class Registerer {
 		$content = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_CONTENT ] as $col => $s ) {
 			if ( ! isset( $item[ $col ] ) ) continue;
-			$c = $item[ $col ];
-			$content .= str_replace( '\\n', PHP_EOL, $c );
+			$val = trim( $item[ $col ] );
+			if ( empty( $val ) ) continue;
+
+			$filter = isset( $s[ R\FS_FILTER ] ) ? $s[ R\FS_FILTER ] : false;
+			$content .= $this->filter( $val, $filter );
 		}
 		return $content;
 	}
@@ -202,29 +187,9 @@ class Registerer {
 			if ( ! isset( $s[ R\FS_KEY ] ) ) continue;
 			$key = $s[ R\FS_KEY ];
 			$filter = isset( $s[ R\FS_FILTER ] ) ? $s[ R\FS_FILTER ] : false;
-
-			$this->update_post_meta( $post_id, $key, $val, $filter );
+			update_post_meta( $post_id, $key, $this->filter( $val, $filter ) );
 		}
 		return true;
-	}
-
-	private function update_post_meta( $post_id, $key, $val, $filter ) {
-		$val = str_replace( '\\n', PHP_EOL, $val );
-
-		if ( $filter ) {
-			switch ( $filter ) {
-			case R\FS_FILTER_CONTENT:
-				$val = wp_kses_post( $val );
-				break;
-			case R\FS_FILTER_NORM_DATE:
-				$val = \st\field\normalize_date( $val );
-				break;
-			default:
-				if ( is_callable( $filter ) ) $val = call_user_func( $filter, $val );
-				break;
-			}
-		}
-		update_post_meta( $post_id, $key, $val );
 	}
 
 
@@ -253,7 +218,7 @@ class Registerer {
 	// ---- TERM
 
 
-	private function add_terms( $item, $post_id ) {
+	private function add_terms( $item, $post_id, $is_term_inserted ) {
 		foreach ( $this->_type2structs[ R\FS_TYPE_TERM ] as $col => $s ) {
 			if ( ! isset( $item[ $col ] ) ) continue;
 
@@ -267,7 +232,7 @@ class Registerer {
 			if ( isset( $s[ R\FS_NORM_SLUG ] ) && $s[ R\FS_NORM_SLUG ] === true ) {
 				$vals = $this->normalize_slugs( $vals );
 			}
-			$this->add_term( $post_id, $vals, $tax );
+			$this->add_term( $post_id, $vals, $tax, $is_term_inserted );
 		}
 		return true;
 	}
@@ -292,7 +257,7 @@ class Registerer {
 		return $ret;
 	}
 
-	private function add_term( $post_id, $vals, $tax ) {
+	private function add_term( $post_id, $vals, $tax, $is_term_inserted ) {
 		$ts = get_terms( $tax, [ 'hide_empty' => false, 'fields' => 'id=>slug' ] );
 		if ( is_wp_error( $ts ) ) return;
 		$ts = array_values( $ts );
@@ -300,7 +265,24 @@ class Registerer {
 		$slugs = array_filter( $vals, function ( $v ) use ( $ts ) {
 			return in_array( $v, $ts, true );
 		} );
+		if ( $is_term_inserted && count( $slugs ) !== count( $vals ) ) {
+			$ue_slugs = $this->ensure_term_existing( $vals );
+			$slugs += $ue_slugs;
+		}
 		if ( ! empty( $slugs ) ) wp_set_object_terms( $post_id, $slugs, $tax );  // Replace existing terms
+	}
+
+	private function ensure_term_existing( $vals ) {
+		$ue_slugs = array_filter( $vals, function ( $v ) use ( $ts ) {
+			return ! in_array( $v, $ts, true );
+		} );
+		if ( ! empty( $ue_slugs ) ) {
+			$ue_slugs = array_values( array_unique( $ue_slugs ) );
+			foreach ( $ue_slugs as $slug ) {
+				$ret = wp_insert_term( $slug, $tax, [ 'slug' => $slug ] );
+			}
+		}
+		return $us_slugs;
 	}
 
 

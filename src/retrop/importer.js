@@ -3,7 +3,7 @@
  * Retrop: XLSX Importer (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-31
+ * @version 2019-02-17
  *
  */
 
@@ -13,23 +13,35 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (lf) {
 		const jsonStructs = document.getElementById('retrop-structs').value;
 		const url = document.getElementById('retrop-url').value;
-		RETROP.loadFiles(jsonStructs, [url], '#retrop-items', (successAll) => {
-			if (successAll) document.form.submit.disabled = false;
-			else document.getElementById('error').style.display = 'block';
+		RETROP.loadFiles(jsonStructs, [url], 'retrop-item-', (successAll) => {
+			if (successAll) {
+				const btn = document.getElementsByName('retrop-submit-ajax')[0];
+				btn.disabled = false;
+			}
+			else document.getElementById('retrop-failure').style.display = 'block';
 		});
 	}
-	const ar = document.getElementById('ajax-request-url');
+	const ar = document.getElementById('retrop-ajax-request-url');
 	if (ar) {
-		const btn = document.getElementsByName('submit-ajax')[0];
+		const btn = document.getElementsByName('retrop-submit-ajax')[0];
 		btn.addEventListener('click', () => {
 			btn.classList.add('disabled');
-			RETROP.ajaxSendItems(ar.value, '#retrop-item', (msg) => {
-				document.getElementById('response-msgs').innerHTML += msg.msg;
+
+			const msgArea = document.getElementById('response-msgs');
+			const resPb = document.getElementById('response-pb');
+			const resPbInner = resPb.children[0];
+			const count = document.getElementsByClassName('retrop-item').length;
+
+			RETROP.ajaxSendItems(ar.value, 'retrop-item-', (msg, idx) => {
+				msgArea.innerHTML += msg.msg;
+				msgArea.scrollTop = msgArea.scrollHeight;
+				const p = parseInt(100 * (idx + 1) / count);
+				resPbInner.style.width = p + '%';
 			}, (success) => {
 				if (success) {
-					document.getElementById('success').style.display = 'block';
+					document.getElementById('retrop-success').style.display = 'block';
 				} else {
-					document.getElementById('error').style.display = 'block';
+					document.getElementById('retrop-failure').style.display = 'block';
 				}
 			});
 		});
@@ -43,15 +55,13 @@ document.addEventListener('DOMContentLoaded', () => {
 var RETROP = RETROP ? RETROP : {};
 RETROP['loadFiles'] = (function () {
 
-	function loadFiles(jsonStructs, urls, resSelector, onFinished) {
+	function loadFiles(jsonStructs, urls, resIdBase, onFinished) {
 		var structs = JSON.parse(jsonStructs);
 		var recCount = 0;
 		var successCount = 0;
 		var items = [];
 
 		if (urls.length === 0) {
-			var res = document.querySelector(resSelector);
-			if (res) res.value = '';
 			console.log('Complete filtering (No data)');
 			onFinished();
 			return;
@@ -98,8 +108,21 @@ RETROP['loadFiles'] = (function () {
 		}
 
 		function finished(successAll) {
-			var res = document.querySelector(resSelector);
-			if (res) res.value = JSON.stringify(items);
+			const fileName = document.getElementById('retrop-file-name').value;
+			const addTerm  = document.getElementById('retrop-add-term');
+			const isTermAdded = addTerm ? (addTerm.value === 1) : false;
+			const target   = document.getElementById('retrop-url');
+
+			for (let i = 0; i < items.length; i += 1) {
+				const id = resIdBase + i;
+				const input = document.createElement('input');
+				input.id = id;
+				input.type = 'hidden';
+				input.value = JSON.stringify({ file_name: fileName, index: i, item: items[i], add_term: isTermAdded });
+				input.classList.add('retrop-item');
+				target.parentElement.appendChild(input);
+			}
+
 			console.log('Complete filtering (' + items.length + ' items)');
 			onFinished(successAll);
 		}
@@ -188,14 +211,14 @@ RETROP['loadFiles'] = (function () {
 
 RETROP['ajaxSendItems'] = (function () {
 
-	let _resSelector;
+	let _resIdBase;
 	let _onReceiveOne;
 	let _onFinished;
 	let _ajaxUrl;
 
-	function ajaxSendItems(url, resSelector, onReceiveOne, onFinished) {
+	function ajaxSendItems(url, resIdBase, onReceiveOne, onFinished) {
 		_ajaxUrl      = url;
-		_resSelector  = resSelector;
+		_resIdBase    = resIdBase;
 		_onReceiveOne = onReceiveOne;
 		_onFinished   = onFinished;
 		console.log('ajaxSendItems: ' + _ajaxUrl);
@@ -203,7 +226,7 @@ RETROP['ajaxSendItems'] = (function () {
 	}
 
 	function request(idx) {
-		const di = document.querySelector(_resSelector + '-' + idx);
+		const di = document.getElementById(_resIdBase + idx);
 		if (!di) {
 			notifyFinished();
 			_onFinished(true);
@@ -230,15 +253,17 @@ RETROP['ajaxSendItems'] = (function () {
 
 	function onReceived(idx, msg) {
 		console.log('ajaxReceived: ' + idx);
-		_onReceiveOne(msg);
+		_onReceiveOne(msg, idx);
 		request(idx + 1);
 	}
 
 	function notifyFinished() {
+		const fileId = document.getElementById('retrop-file-id');
+
 		const req = new XMLHttpRequest();
 		req.open('POST', _ajaxUrl);
 		req.setRequestHeader('content-type', 'application/json');
-		req.send('finished');
+		req.send(JSON.stringify({ msg: 'finished', file_id: fileId }));
 	}
 
 	return ajaxSendItems;

@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-04
+ * @version 2019-02-17
  *
  */
 
@@ -38,11 +38,8 @@ class Retrop_Importer extends \WP_Importer {
 	private $_labels;
 
 	private $_can_auto_add_terms = false;
-	private $_is_ajax            = false;
 	private $_registerer;
 
-	private $_file_id;
-	private $_file_name;
 	private $_auto_add_terms = false;
 	private $_ajax_request_url;
 
@@ -52,7 +49,6 @@ class Retrop_Importer extends \WP_Importer {
 		$this->_url_to       = $args['url_to'];
 
 		if ( isset( $args['can_auto_add_terms'] ) ) $this->_can_auto_add_terms = $args['can_auto_add_terms'];
-		if ( isset( $args['ajax'] ) )               $this->_is_ajax            = $args['ajax'];
 
 		$this->_labels = [
 			'name'              => 'Retrop Importer',
@@ -71,7 +67,7 @@ class Retrop_Importer extends \WP_Importer {
 
 		$this->initialize();
 		$this->_registerer = new Registerer( $args['post_type'], $args['structs'], $this->_labels );
-		if ( $this->_is_ajax ) $this->_ajax_request_url = $this->initialize_ajax();
+		$this->_ajax_request_url = $this->initialize_ajax();
 	}
 
 	private function initialize() {
@@ -87,11 +83,20 @@ class Retrop_Importer extends \WP_Importer {
 	private function initialize_ajax() {
 		$ajax = new \st\Ajax( $this->_id, function () {
 			$cont = file_get_contents( 'php://input' );
-			if ( $cont === 'finished' ) {
-				$this->_import_ajax_actually_end();
+			$data = json_decode( $cont, true );
+			if ( $data['index'] === 0 ) {
+				add_filter( 'http_request_timeout', function () { return 60; } );
+				do_action( 'import_start' );
+				wp_suspend_cache_invalidation( true );
+			}
+			if ( isset( $data['msg'] ) && $data['msg'] === 'finished' ) {
+				wp_suspend_cache_invalidation( false );
+				wp_import_cleanup( (int) $data['file_id'] );
+				wp_cache_flush();
+				do_action( 'import_end' );
 			} else {
-				$item = json_decode( $cont, true );
-				$msg = $this->_registerer->process_item( $item, $this->_file_name );
+				set_time_limit(0);
+				$msg = $this->_registerer->process_item( $data['item'], $data['file_name'], $data['add_term'] );
 				return [ 'msg' => $msg ];
 			}
 		}, false );
@@ -115,19 +120,8 @@ class Retrop_Importer extends \WP_Importer {
 				break;
 			case 1:
 				check_admin_referer( 'import-upload' );
-				if ( $this->_handle_upload() ) $this->_parse_upload();
-				break;
-			case 2:
-				check_admin_referer( 'import-retrop' );
-				$this->_file_id        = (int) $_POST['retrop_file_id'];
-				$this->_file_name = pathinfo( get_attached_file( $this->_file_id ), PATHINFO_FILENAME );
-				$this->_auto_add_terms = $this->_can_auto_add_terms && ( ! empty( $_POST['add_terms'] ) && $_POST['add_terms'] === '1' );
-				set_time_limit(0);
-				if ( $this->_is_ajax ) {
-					$this->_import_ajax( stripslashes( $_POST['retrop_items'] ) );
-				} else {
-					$this->_import( stripslashes( $_POST['retrop_items'] ) );
-				}
+				$fid = $this->_handle_upload();
+				if ( $fid !== false ) $this->_parse_upload( $fid );
 				break;
 		}
 
@@ -167,111 +161,41 @@ class Retrop_Importer extends \WP_Importer {
 			echo esc_html( $file['error'] ) . '</p>';
 			return false;
 		}
-		$this->_file_id = (int) $file['id'];
-		return true;
+		return (int) $file['id'];
 	}
 
-	private function _parse_upload() {
-		$_jstr = esc_attr( $this->_json_structs );
-		$_url  = esc_attr( wp_get_attachment_url( $this->_file_id ) );
-		$_act  = esc_attr( admin_url( 'admin.php?import=' . $this->_id . '&amp;step=2' ) );
+	private function _parse_upload( $file_id ) {
+		$_jstr  = esc_attr( $this->_json_structs );
+		$_url   = esc_attr( wp_get_attachment_url( $file_id ) );
+		$_fname = esc_attr( pathinfo( get_attached_file( $file_id ), PATHINFO_FILENAME ) );
+		$_ajax  = esc_attr( $this->_ajax_request_url );
 ?>
-		<form action="<?php echo $_act ?>" method="post" name="form">
-			<?php wp_nonce_field( 'import-retrop' ); ?>
-			<input type="hidden" id="retrop-load-files" />
-			<input type="hidden" id="retrop-structs" value="<?php echo $_jstr ?>" />
-			<input type="hidden" id="retrop-url" value="<?php echo $_url ?>" />
-			<input type="hidden" name="retrop_items" id="retrop-items" />
-			<input type="hidden" name="retrop_file_id" value="<?php echo $this->_file_id; ?>" />
+		<input type="hidden" id="retrop-load-files" />
+		<input type="hidden" id="retrop-structs" value="<?php echo $_jstr ?>" />
+		<input type="hidden" id="retrop-url" value="<?php echo $_url ?>" />
+		<input type="hidden" id="retrop-file-name" value="<?php echo $_fname ?>" />
+		<input type="hidden" id="retrop-ajax-request-url" value="<?php echo $_ajax ?>" />
+		<input type="hidden" id="retrop-file-id" value="<?php echo $file_id; ?>" />
 
 <?php if ( $this->_can_auto_add_terms ) : ?>
-			<h3><?php echo $this->_labels['add_terms'] ?></h3>
-			<p>
-				<input type="radio" value="1" name="add_terms" id="add-terms" />
-				<label for="add-terms"><?php echo $this->_labels['add_terms_message'] ?></label>
-			</p>
+		<h3><?php echo $this->_labels['add_terms'] ?></h3>
+		<p>
+			<input type="radio" value="1" id="retrop-add-term" />
+			<label for="retrop-add-term"><?php echo $this->_labels['add_terms_message'] ?></label>
+		</p>
 <?php endif; ?>
 
-			<p class="submit"><input type="submit" name="submit" disabled class="button button-primary" value="<?php esc_attr_e( 'Submit' ); ?>" /></p>
-		</form>
-		<p id="error" style="display: none;"><strong><?php echo $this->_labels['error'] ?></strong></p>
+		<p class="submit">
+			<input type="submit" disabled name="retrop-submit-ajax" class="button button-primary" value="<?php esc_attr_e( 'Import' ); ?>" />
+		</p>
+		<div id="response-pb" style="height:2em;background:#fcfdfd;border:1px solid #c5dbec;border-radius:5px;overflow:hidden;">
+			<div style="margin:-1px;height:100%;border:1px solid #4297d7;background:#5c9ccc;width:0%;"></div>
+		</div>
+		<div id="response-msgs" style="margin-top:1em;max-height:50vh;overflow:auto;"></div>
+
+		<p id="retrop-failure" style="display: none;"><strong><?php echo $this->_labels['error'] ?></strong></p>
+		<p id="retrop-success" style="display: none;"><strong><?php echo $this->_labels['success'] ?></strong></p>
 <?php
-	}
-
-
-	// Step 2 ------------------------------------------------------------------
-
-
-	private function _import( $json ) {
-		add_filter( 'http_request_timeout', function ( $val ) { return 60; } );
-		$items = $this->_import_start( $json );
-		wp_suspend_cache_invalidation( true );
-		if ( $this->_auto_add_terms ) $this->_registerer->add_unexisting_terms( $items );
-
-		$count = 0;
-		foreach ( $items as $item ) {
-			$msg = $this->_registerer->process_item( $item, $this->_file_name );
-			if ( $msg !== false ) {
-				echo $msg;
-				$count += 1;
-			}
-		}
-		wp_suspend_cache_invalidation( false );
-		$this->_import_end( $count, count( $items ) );
-	}
-
-	private function _import_start( $json ) {
-		$data = json_decode( $json, true );
-		if ( $data === null ) {
-			echo '<p><strong>' . $this->_labels['error'] . '</strong><br />';
-			echo $this->_labels['error_wrong_file'] . '</p>';
-			$this->_footer();
-			die();
-		}
-		do_action( 'import_start' );
-		return $data;
-	}
-
-	private function _import_end( $added_count, $all_count ) {
-		wp_import_cleanup( $this->_file_id );
-		wp_cache_flush();
-		echo '<p>' . $this->_labels['all_done'] . ' (' . $added_count . '/' . $all_count . ')</p>';
-		do_action( 'import_end' );
-	}
-
-
-	// Step 2 (Ajax) -----------------------------------------------------------
-
-
-	private function _import_ajax( $json ) {
-		add_filter( 'http_request_timeout', function ( $val ) { return 60; } );
-		$items = $this->_import_start( $json );
-		wp_suspend_cache_invalidation( true );
-		if ( $this->_auto_add_terms ) $this->_registerer->add_unexisting_terms( $items );
-
-		$count = 0;
-		foreach ( $items as $idx => $item ) {
-			$ij = json_encode( $item, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-			echo '<input type="hidden" id="retrop-item-' . $idx . '" value="' . esc_attr( $ij ) . '" />';
-		}
-?>
-	<input type="hidden" id="ajax-request-url" value="<?php echo esc_attr( $this->_ajax_request_url ) ?>" />
-	<p class="submit"><input type="submit" name="submit-ajax" class="button button-primary" value="<?php esc_attr_e( 'Submit' ); ?>" /></p>
-	<div id="response-msgs"></div>
-	<p id="error" style="display: none;"><strong><?php echo $this->_labels['error'] ?></strong></p>
-	<p id="success" style="display: none;"><strong><?php echo $this->_labels['success'] ?></strong></p>
-<?php
-		wp_suspend_cache_invalidation( false );
-		$this->_import_ajax_end( $count, count( $items ) );
-	}
-
-	private function _import_ajax_end( $added_count, $all_count ) {
-		wp_import_cleanup( $this->_file_id );
-		wp_cache_flush();
-	}
-
-	private function _import_ajax_actually_end() {
-		do_action( 'import_end' );
 	}
 
 }
