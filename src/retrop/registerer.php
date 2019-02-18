@@ -7,12 +7,13 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-17
+ * @version 2019-02-18
  *
  */
 
 
 require_once __DIR__ . '/util.php';
+require_once __DIR__ . '/simple_html_dom.php';
 
 
 class Registerer {
@@ -27,12 +28,13 @@ class Registerer {
 	private $_labels;
 	private $_debug = '';
 
-	public function __construct( $post_type, $structs, $labels = [] ) {
-		$this->_post_type      = $post_type;
-		$this->_type2structs   = $this->extract_type_struct( $structs );
-		$this->_required_cols  = $this->extract_columns( $structs, R\FS_REQUIRED );
-		$this->_digest_cols    = $this->extract_columns( $structs, R\FS_FOR_DIGEST );
-		$this->_labels         = $labels;
+	public function __construct( $post_type, $structs, $labels = [], $target_url_base = '' ) {
+		$this->_post_type       = $post_type;
+		$this->_type2structs    = $this->extract_type_struct( $structs );
+		$this->_required_cols   = $this->extract_columns( $structs, R\FS_REQUIRED );
+		$this->_digest_cols     = $this->extract_columns( $structs, R\FS_FOR_DIGEST );
+		$this->_labels          = $labels;
+		$this->_target_url_base = $target_url_base;
 	}
 
 	private function extract_type_struct( $structs ) {
@@ -123,6 +125,11 @@ class Registerer {
 			case R\FS_FILTER_CONTENT:
 				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
 				$val = wp_kses_post( $val );
+				break;
+			case R\FS_FILTER_CONTENT_MEDIA:
+				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
+				$val = wp_kses_post( $val );
+				$val = $this->_filter_content_media( $val );
 				break;
 			case R\FS_FILTER_NORM_DATE:
 				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
@@ -319,6 +326,34 @@ class Registerer {
 
 		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
 		return $attachment_id;
+	}
+
+
+	// ---- CONTENT MEDIA
+
+
+	private function _filter_content_media( $val ) {
+		$dom = str_get_html( $val );
+		foreach ( $dom->find( 'img' ) as &$elm ) {
+			$p = strpos( $elm->src, $this->_target_base_url );
+			if ( $p !== false ) $elm->src = $this->_convert_url( $elm->src );
+		}
+		foreach ( $dom->find( 'a' ) as &$elm ) {
+			$p = strpos( $elm->href, $this->_target_base_url );
+			if ( $p !== false ) $elm->href = $this->_convert_url( $elm->href );
+		}
+		$val = $dom->save();
+		$dom->clear();
+		unset($dom);
+		return $val;
+	}
+
+	private function _convert_url( $url ) {
+		// get full size image url
+		// wp-image-****
+		// size-****
+		// How to avoid duplication
+		return $url;
 	}
 
 }
