@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-16
+ * @version 2019-02-18
  *
  */
 
@@ -35,7 +35,7 @@ class NavMenu {
 	private $_pid_to_children_state;
 	private $_id_to_attr;
 
-	public function __construct( $menu_name, $expanded_page_ids = false ) {
+	public function __construct( $menu_name, $expanded_page_ids = false, $object_type_s = false ) {
 		$ml = class_exists( '\st\Multilang' ) ? \st\Multilang::get_instance() : null;
 		$mh = class_exists( '\st\Multihome' ) ? \st\Multihome::get_instance() : null;
 
@@ -46,6 +46,7 @@ class NavMenu {
 
 		$this->_is_page = is_page();
 		$this->_expanded_page_ids = $expanded_page_ids;
+		if ( $object_type_s !== false ) $this->_cur_objs = is_array( $object_type_s ) ? $object_type_s : [ $object_type_s ];
 
 		$mis = $this->_get_all_items( $menu_name );
 		$this->_pid_to_menu = $this->_get_menus( $mis );
@@ -59,9 +60,7 @@ class NavMenu {
 	}
 
 	public function set_object_type_of_current( $object_type_s ) {
-		if ( ! is_array( $object_type_s ) ) {
-			$object_type_s = [ $object_type_s ];
-		}
+		if ( ! is_array( $object_type_s ) ) $object_type_s = [ $object_type_s ];
 		$this->_cur_objs = $object_type_s;
 	}
 
