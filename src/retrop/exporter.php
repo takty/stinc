@@ -6,7 +6,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-17
+ * @version 2019-02-18
  *
  */
 
@@ -58,8 +58,8 @@ class Retrop_Exporter {
 	}
 
 	public function _cb_output_page() {
-		wp_enqueue_script( 'retrop-exporter', $this->_url_to . '/exporter.min.js' );
 		wp_enqueue_script( 'xlsx', $this->_url_to . '/xlsx.full.min.js' );
+		wp_enqueue_script( 'retrop-exporter', $this->_url_to . '/exporter.min.js' );
 
 		$this->_header();
 
@@ -71,7 +71,9 @@ class Retrop_Exporter {
 			case 1:
 				check_admin_referer( 'export-option' );
 				$fn = empty( $_POST['filename'] ) ? 'export' : $_POST['filename'];
-				$this->_output_download_page( $fn );
+				$bgn = empty( $_POST['date_bgn'] ) ? false : $_POST['date_bgn'];
+				$end = empty( $_POST['date_end'] ) ? false : $_POST['date_end'];
+				$this->_output_download_page( $fn, $bgn, $end );
 				break;
 		}
 		$this->_footer();
@@ -82,17 +84,50 @@ class Retrop_Exporter {
 		echo '<p>' . $this->_labels['description'] . '</p>';
 ?>
 		<form method="post" action="<?php echo esc_url( wp_nonce_url( 'tools.php?page=' . $this->_id . '&amp;step=1', 'export-option' ) ); ?>">
-		<p>
-			<label for="filename"><?php _e('File name:') ?></label>
-			<input type="text" required="" class="regular-text" id="filename" name="filename">
-		</p>
-		<?php submit_button( __('Export'), 'primary' ); ?>
+			<p>
+				<label for="filename"><?php _e('File name:') ?></label>
+				<input type="text" required="" class="regular-text" id="filename" name="filename">
+			</p>
+			<fieldset>
+				<legend class="screen-reader-text"><?php _e( 'Date range:' ); ?></legend>
+				<label for="date-bgn" class="label-responsive"><?php _e( 'Start date:' ); ?></label>
+				<select name="date_bgn" id="date-bgn">
+					<option value="0"><?php _e( '&mdash; Select &mdash;' ); ?></option>
+					<?php $this->export_date_options(); ?>
+				</select>
+				<label for="date-end" class="label-responsive"><?php _e( 'End date:' ); ?></label>
+				<select name="date_end" id="date-end">
+					<option value="0"><?php _e( '&mdash; Select &mdash;' ); ?></option>
+					<?php $this->export_date_options(); ?>
+				</select>
+			</fieldset>
+			<?php submit_button( __('Export'), 'primary' ); ?>
 		</form>
 <?php
 		echo '</div>';
 	}
 
-	private function _output_download_page( $fileName ) {
+	private function export_date_options() {
+		global $wpdb, $wp_locale;
+
+		$months = $wpdb->get_results( $wpdb->prepare( "
+			SELECT DISTINCT YEAR( post_date ) AS year, MONTH( post_date ) AS month
+			FROM $wpdb->posts
+			WHERE post_type = %s AND post_status != 'auto-draft'
+			ORDER BY post_date DESC
+		", $this->_post_type ) );
+
+		$month_count = count( $months );
+		if ( !$month_count || ( 1 == $month_count && 0 == $months[0]->month ) ) return;
+
+		foreach ( $months as $date ) {
+			if ( 0 == $date->year ) continue;
+			$month = zeroise( $date->month, 2 );
+			echo '<option value="' . $date->year . '-' . $month . '">' . $wp_locale->get_month( $month ) . ' ' . $date->year . '</option>';
+		}
+	}
+
+	private function _output_download_page( $fileName, $bgn, $end ) {
 		$pi = pathinfo( $fileName );
 		$fileName = $pi['basename'];
 		if ( empty( $pi['extension'] ) ) $fileName .= '.xlsx';
@@ -103,7 +138,7 @@ class Retrop_Exporter {
 		echo '<div class="narrow">';
 		echo '<p>' . $this->_labels['description'] . '</p>';
 
-		$this->_output_data();
+		$this->_output_data( $bgn, $end );
 ?>
 		<p class="submit"><input type="submit" name="download" id="download" class="button button-primary" value="<?php _e('Download Export File') ?>"></p>
 		<div id="retrop-success" style="display: none;"><?php echo esc_html( $this->_labels['success'] ) ?></div>
@@ -123,13 +158,36 @@ class Retrop_Exporter {
 		echo '</div>';
 	}
 
-	private function _output_data() {
-		$ps = get_posts( [
+	private function _output_data( $bgn, $end ) {
+		$args = [
 			'post_type'      => $this->_post_type,
 			'posts_per_page' => -1,
 			'orderby'        => 'date',
 			'order'          => 'asc'
-		] );
+		];
+		if ( $bgn !== false || $end !== false ) {
+			$dq = [];
+			if ( $bgn !== false ) {
+				$bgn_ym = explode( '-', $bgn );
+				$dq[] = [
+					'year' => intval( $bgn_ym[0] ),
+					'month' => intval( $bgn_ym[1] ),
+					'compare' => '>='
+				];
+			}
+			if ( $end !== false ) {
+				$end_ym = explode( '-', $end );
+				$dq[] = [
+					'year' => intval( $end_ym[0] ),
+					'month' => intval( $end_ym[1] ),
+					'compare' => '<='
+				];
+			}
+			if ( $bgn !== false && $end !== false ) $dq['relation'] = 'AND';
+			$args['date_query'] = $dq;
+		}
+		var_dump( $args );
+		$ps = get_posts( $args );
 		$pss = array_chunk( $ps, 20 );
 		foreach ( $pss as $idx => $ps ) {
 			$as = [];

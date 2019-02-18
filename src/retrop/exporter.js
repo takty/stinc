@@ -3,7 +3,7 @@
  * Retrop: XLSX Saver (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-31
+ * @version 2019-02-18
  *
  */
 
