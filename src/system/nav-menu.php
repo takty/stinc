@@ -59,11 +59,6 @@ class NavMenu {
 		$this->_expanded_page_ids = $ids;
 	}
 
-	public function set_object_type_of_current( $object_type_s ) {
-		if ( ! is_array( $object_type_s ) ) $object_type_s = [ $object_type_s ];
-		$this->_cur_objs = $object_type_s;
-	}
-
 
 	// -------------------------------------------------------------------------
 
