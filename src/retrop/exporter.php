@@ -11,6 +11,9 @@ use \st\retrop as R;
  */
 
 
+require_once __DIR__ . '/simple_html_dom.php';
+
+
 class Retrop_Exporter {
 
 	static private $_instance = [];
@@ -23,13 +26,13 @@ class Retrop_Exporter {
 	private $_post_type;
 	private $_structs;
 	private $_url_to;
-
 	private $_labels;
+	private $_key_to_media = [];
 
 	private function __construct( $id, $args ) {
 		$this->_id        = 'retrop_export_' . $id;
 		$this->_post_type = $args['post_type'];
-		$this->_structs   = $args['structs'];
+		$this->_structs   = $this->_sort_structs( $args['structs'] );
 		$this->_url_to    = $args['url_to'];
 
 		$this->_labels = [
@@ -38,9 +41,22 @@ class Retrop_Exporter {
 			'success'     => 'Successfully finished.',
 			'failure'     => 'Sorry, there has been an error.',
 		];
-		if ( isset( $args[ 'labels' ] ) ) $this->_labels = array_merge( $this->_labels, $args['labels'] );
+		if ( isset( $args['labels'] ) ) $this->_labels = array_merge( $this->_labels, $args['labels'] );
 
 		add_action( 'admin_menu', [ $this, '_cb_admin_menu' ] );
+	}
+
+	private function _sort_structs( &$structs ) {
+		$temp = [];
+		foreach ( $structs as $key => $s ) {
+			if ( $s['type'] === \R\FS_TYPE_MEDIA ) {
+				$temp[ $key ] = $s;
+				unset( $structs[ $key ] );
+			}
+		}
+		foreach ( $temp as $key => $s ) {
+			$structs[ $key ] = $s;
+		}
 	}
 
 	public function _cb_admin_menu() {
@@ -131,31 +147,22 @@ class Retrop_Exporter {
 		$pi = pathinfo( $fileName );
 		$fileName = $pi['basename'];
 		if ( empty( $pi['extension'] ) ) $fileName .= '.xlsx';
-		$_fn = esc_html( $fileName );
+		$_fn = esc_attr( $fileName );
 
 		$json_structs = addslashes( json_encode( array_keys( $this->_structs ) ) );
-
-		echo '<div class="narrow">';
-		echo '<p>' . $this->_labels['description'] . '</p>';
-
-		$this->_output_data( $bgn, $end );
 ?>
-		<p class="submit"><input type="submit" name="download" id="download" class="button button-primary" value="<?php _e('Download Export File') ?>"></p>
-		<div id="retrop-success" style="display: none;"><?php echo esc_html( $this->_labels['success'] ) ?></div>
-		<div id="retrop-failure" style="display: none;"><?php echo esc_html( $this->_labels['failure'] ) ?></div>
-		<script>
-			document.addEventListener('DOMContentLoaded', function () {
-				const btn = document.getElementById('download');
-				btn.addEventListener('click', (e) => {
-					btn.classList.add('disabled');
-					RETROP.saveFile('<?php echo $json_structs ?>', '<?php echo $_fn ?>', '#retrop-chunk-', function (success) {
-						document.getElementById('retrop-' + (success ? 'success' : 'failure')).style.display = 'block';
-					});
-				});
-			});
-		</script>
+		<div class="narrow">
+			<p><?php echo $this->_labels['description'] ?></p>
+			<?php $this->_output_data( $bgn, $end ); ?>
+			<p class="submit">
+				<input type="submit" name="download" id="download" class="button button-primary" value="<?php _e('Download Export File') ?>">
+			</p>
+			<div id="retrop-success" style="display: none;"><?php echo esc_html( $this->_labels['success'] ) ?></div>
+			<div id="retrop-failure" style="display: none;"><?php echo esc_html( $this->_labels['failure'] ) ?></div>
+			<input id="retrop-structs" type="hidden" value="<?php echo $json_structs ?>">
+			<input id="retrop-filename" type="hidden" value="<?php echo $_fn ?>">
+		</div>
 <?php
-		echo '</div>';
 	}
 
 	private function _output_data( $bgn, $end ) {
@@ -186,7 +193,6 @@ class Retrop_Exporter {
 			if ( $bgn !== false && $end !== false ) $dq['relation'] = 'AND';
 			$args['date_query'] = $dq;
 		}
-		var_dump( $args );
 		$ps = get_posts( $args );
 		$pss = array_chunk( $ps, 20 );
 		foreach ( $pss as $idx => $ps ) {
@@ -213,10 +219,17 @@ class Retrop_Exporter {
 				break;
 			case R\FS_TYPE_CONTENT:
 				$val = $p->post_content;
+				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_CONTENT_MEDIA ) {
+					$this->_key_to_media[ $key ] = $this->_extract_media( $val );
+				}
+				break;
+			case R\FS_TYPE_MEDIA:
+				$ckey = $s[R\FS_CONTENT_KEY];
+				$val = isset( $this->_key_to_media[ $ckey ] ) ? $this->_key_to_media[ $ckey ] : '';
 				break;
 			case R\FS_TYPE_META:
-				$key = $s[R\FS_KEY];
-				$val = get_post_meta( $p->ID, $key, true );
+				$mkey = $s[R\FS_KEY];
+				$val = get_post_meta( $p->ID, $mkey, true );
 				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_MEDIA_URL ) {
 					$ais = wp_get_attachment_image_src( intval( $val ), 'full' );
 					if ( $ais !== false ) $val = $ais[0];
@@ -245,8 +258,8 @@ class Retrop_Exporter {
 				break;
 			case R\FS_TYPE_ACF_PM:
 				if ( function_exists( 'get_field' ) ) {
-					$key = $s[R\FS_KEY];
-					$val = get_field( $key, $p->ID, false );
+					$mkey = $s[R\FS_KEY];
+					$val = get_field( $mkey, $p->ID, false );
 				}
 				break;
 			}
@@ -254,6 +267,66 @@ class Retrop_Exporter {
 			$ret[] = $val;
 		}
 		return $ret;
+	}
+
+	private function _extract_media( $val ) {
+		$ud = wp_upload_dir();
+		$upload_url = $ud['baseurl'];
+		$dom = str_get_html( $val );
+		$id2url = [];
+
+		foreach ( $dom->find( 'img' ) as &$elm ) {
+			$p = strpos( $elm->src, $upload_url );
+			if ( $p === 0 ) {
+				// $elm->src = $this->_convert_url( $elm->src );
+			}
+		}
+		foreach ( $dom->find( 'a' ) as &$elm ) {
+			$p = strpos( $elm->href, $upload_url );
+			if ( $p === 0 ) {
+				// $elm->href = $this->_convert_url( $elm->href );
+			}
+		}
+		$dom->clear();
+		unset($dom);
+		return $id2url;
+	}
+
+	// private function _get_media_id( $url ) {
+		// global $wpdb;
+		// $at = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid='%s';", $url ) ); 
+		// return $at[0];
+
+		// global $wpdb;
+		// $sql = "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s";
+		// preg_match('/([^\/]+?)(-e\d+)?(-\d+x\d+)?(\.\w+)?$/', $url, $matches);
+		// $post_name = $matches[1];
+		// return (int)$wpdb->get_var($wpdb->prepare($sql, $post_name));
+	// }
+
+	private function _get_media_id( $url ) {
+		$aid = $this->_search_media_id( $url );
+		if ( ! $aid ) $aid = $this->_search_media_id( $url, false );
+		return $aid;
+	}
+
+	private function _search_media_id( $url, $is_full_size = true ) {
+		global $wpdb;
+		$full_size_url = $url;
+
+		if ( ! $is_full_size ) {
+			$full_size_url = preg_replace( '/(-[0-9]+x[0-9]+)(\.[^.]+){0,1}$/i', '${2}', $url );
+			if ( $url === $full_size_url ) return 0;
+		}
+		$ud = wp_upload_dir();
+		$upload_url = $ud['baseurl'];
+		if ( strpos( $full_size_url, $upload_url ) !== 0 ) return 0;
+
+		$attached_file = str_replace( $upload_url . '/', '', $full_size_url );
+		return (int) $wpdb->get_var( $wpdb->prepare(
+			"SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wp_attached_file' AND meta_value='%s' LIMIT 1;",
+			$attached_file
+		) );
 	}
 
 }

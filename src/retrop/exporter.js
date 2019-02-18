@@ -8,6 +8,21 @@
  */
 
 
+document.addEventListener('DOMContentLoaded', () => {
+	const btn = document.getElementById('download');
+	if (!btn) return;
+
+	const st = document.getElementById('retrop-structs').value;
+	const fn = document.getElementById('retrop-filename').value;
+
+	btn.addEventListener('click', () => {
+		btn.classList.add('disabled');
+		RETROP.saveFile(st, fn, '#retrop-chunk-', (success) => {
+			document.getElementById('retrop-' + (success ? 'success' : 'failure')).style.display = 'block';
+		});
+	});
+});
+
 const RETROP = RETROP ? RETROP : {};
 RETROP['saveFile'] = (function () {
 
