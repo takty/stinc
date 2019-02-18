@@ -6,7 +6,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-18
+ * @version 2019-02-19
  *
  */
 
@@ -273,60 +273,54 @@ class Retrop_Exporter {
 		$ud = wp_upload_dir();
 		$upload_url = $ud['baseurl'];
 		$dom = str_get_html( $val );
-		$id2url = [];
+		$id2urls = [];
 
 		foreach ( $dom->find( 'img' ) as &$elm ) {
-			$p = strpos( $elm->src, $upload_url );
-			if ( $p === 0 ) {
-				// $elm->src = $this->_convert_url( $elm->src );
-			}
+			$this->_add_media( $id2urls, $elm->src );
 		}
 		foreach ( $dom->find( 'a' ) as &$elm ) {
-			$p = strpos( $elm->href, $upload_url );
-			if ( $p === 0 ) {
-				// $elm->href = $this->_convert_url( $elm->href );
-			}
+			$this->_add_media( $id2urls, $elm->href );
 		}
 		$dom->clear();
 		unset($dom);
+		$ret = [];
+		foreach ( $id2url as $id => $urlh ) {
+			$ret[ $id ] = array_keys( $urlh );
+		}
 		return $id2url;
 	}
 
-	// private function _get_media_id( $url ) {
-		// global $wpdb;
-		// $at = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM $wpdb->posts WHERE guid='%s';", $url ) ); 
-		// return $at[0];
-
-		// global $wpdb;
-		// $sql = "SELECT ID FROM {$wpdb->posts} WHERE post_name = %s";
-		// preg_match('/([^\/]+?)(-e\d+)?(-\d+x\d+)?(\.\w+)?$/', $url, $matches);
-		// $post_name = $matches[1];
-		// return (int)$wpdb->get_var($wpdb->prepare($sql, $post_name));
-	// }
-
-	private function _get_media_id( $url ) {
-		$aid = $this->_search_media_id( $url );
-		if ( ! $aid ) $aid = $this->_search_media_id( $url, false );
-		return $aid;
+	private function _add_media( &$id2urls, $url ) {
+		$id_url = $this->_get_media_id( $url );
+		if ( $id_url === false ) return;
+		$id = $id_url['id'];
+		$url = $id_url['url'];
+		if ( ! isset( $id2urls[ $id ] ) ) $id2urls[ $id ] = [];
+		$id2urls[ $id ][ $url ] = true;
 	}
 
-	private function _search_media_id( $url, $is_full_size = true ) {
-		global $wpdb;
-		$full_size_url = $url;
-
-		if ( ! $is_full_size ) {
-			$full_size_url = preg_replace( '/(-[0-9]+x[0-9]+)(\.[^.]+){0,1}$/i', '${2}', $url );
-			if ( $url === $full_size_url ) return 0;
-		}
+	private function _get_media_id( $url ) {
 		$ud = wp_upload_dir();
 		$upload_url = $ud['baseurl'];
-		if ( strpos( $full_size_url, $upload_url ) !== 0 ) return 0;
+		if ( strpos( $url, $upload_url ) !== 0 ) return false;
 
-		$attached_file = str_replace( $upload_url . '/', '', $full_size_url );
-		return (int) $wpdb->get_var( $wpdb->prepare(
+		$id_url = $this->_search_media_id( $url, $upload_url );
+		if ( $id_url !== false ) return $id_url;
+
+		$full_url = preg_replace( '/(-[0-9]+x[0-9]+)(\.[^.]+){0,1}$/i', '${2}', $url );
+		if ( $url === $full_url ) return false;
+		return $this->_search_media_id( $full_url, $upload_url );
+	}
+
+	private function _search_media_id( $url, $upload_url ) {
+		global $wpdb;
+
+		$attached_file = str_replace( $upload_url . '/', '', $url );
+		$id = (int) $wpdb->get_var( $wpdb->prepare(
 			"SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wp_attached_file' AND meta_value='%s' LIMIT 1;",
 			$attached_file
 		) );
+		return [ 'id' => $id, 'url' => $url ];
 	}
 
 }
