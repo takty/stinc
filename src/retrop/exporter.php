@@ -27,7 +27,6 @@ class Retrop_Exporter {
 	private $_structs;
 	private $_url_to;
 	private $_labels;
-	private $_key_to_media = [];
 
 	private function __construct( $id, $args ) {
 		$this->_id        = 'retrop_export_' . $id;
@@ -211,6 +210,8 @@ class Retrop_Exporter {
 
 	private function _make_record_array( $p ) {
 		$ret = [];
+		$id2urls = [];
+
 		foreach ( $this->_structs as $key => $s ) {
 			$type = $s['type'];
 			$val = '';
@@ -221,12 +222,12 @@ class Retrop_Exporter {
 			case R\FS_TYPE_CONTENT:
 				$val = $p->post_content;
 				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_CONTENT_MEDIA ) {
-					$this->_key_to_media[ $key ] = $this->_extract_media( $val );
+					$this->_extract_media( $val, $id2urls );
 				}
 				break;
 			case R\FS_TYPE_MEDIA:
-				$ckey = $s[R\FS_CONTENT_KEY];
-				$val = isset( $this->_key_to_media[ $ckey ] ) ? $this->_key_to_media[ $ckey ] : '';
+				$val = [];
+				foreach ( $id2urls as $id => $urlh ) $val[ $id ] = array_keys( $urlh );
 				break;
 			case R\FS_TYPE_META:
 				$mkey = $s[R\FS_KEY];
@@ -271,11 +272,10 @@ class Retrop_Exporter {
 		return $ret;
 	}
 
-	private function _extract_media( $val ) {
+	private function _extract_media( $val, &$id2urls ) {
 		$ud = wp_upload_dir();
 		$upload_url = $ud['baseurl'];
 		$dom = str_get_html( $val );
-		$id2urls = [];
 
 		foreach ( $dom->find( 'img' ) as &$elm ) {
 			$this->_add_media( $id2urls, $elm->src );
@@ -285,11 +285,6 @@ class Retrop_Exporter {
 		}
 		$dom->clear();
 		unset($dom);
-		$ret = [];
-		foreach ( $id2urls as $id => $urlh ) {
-			$ret[ $id ] = array_keys( $urlh );
-		}
-		return $ret;
 	}
 
 	private function _add_media( &$id2urls, $url ) {
