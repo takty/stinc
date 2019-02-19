@@ -46,10 +46,10 @@ class Retrop_Exporter {
 		add_action( 'admin_menu', [ $this, '_cb_admin_menu' ] );
 	}
 
-	private function _sort_structs( &$structs ) {
+	private function _sort_structs( $structs ) {
 		$temp = [];
 		foreach ( $structs as $key => $s ) {
-			if ( $s['type'] === \R\FS_TYPE_MEDIA ) {
+			if ( $s['type'] === R\FS_TYPE_MEDIA ) {
 				$temp[ $key ] = $s;
 				unset( $structs[ $key ] );
 			}
@@ -57,6 +57,7 @@ class Retrop_Exporter {
 		foreach ( $temp as $key => $s ) {
 			$structs[ $key ] = $s;
 		}
+		return $structs;
 	}
 
 	public function _cb_admin_menu() {
@@ -149,7 +150,7 @@ class Retrop_Exporter {
 		if ( empty( $pi['extension'] ) ) $fileName .= '.xlsx';
 		$_fn = esc_attr( $fileName );
 
-		$json_structs = addslashes( json_encode( array_keys( $this->_structs ) ) );
+		$json_structs = esc_attr( json_encode( array_keys( $this->_structs ) ) );
 ?>
 		<div class="narrow">
 			<p><?php echo $this->_labels['description'] ?></p>
@@ -263,7 +264,8 @@ class Retrop_Exporter {
 				}
 				break;
 			}
-			$val = str_replace( ["\r\n", "\r", "\n"], '\n', $val );
+			if ( is_string( $val ) ) $val = str_replace( ["\r\n", "\r", "\n"], '\n', $val );
+			else if ( is_array( $val ) ) $val = json_encode( $val, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 			$ret[] = $val;
 		}
 		return $ret;
@@ -284,19 +286,20 @@ class Retrop_Exporter {
 		$dom->clear();
 		unset($dom);
 		$ret = [];
-		foreach ( $id2url as $id => $urlh ) {
+		foreach ( $id2urls as $id => $urlh ) {
 			$ret[ $id ] = array_keys( $urlh );
 		}
-		return $id2url;
+		return $ret;
 	}
 
 	private function _add_media( &$id2urls, $url ) {
 		$id_url = $this->_get_media_id( $url );
 		if ( $id_url === false ) return;
-		$id = $id_url['id'];
-		$url = $id_url['url'];
+		$id   = $id_url['id'];
+		$furl = $id_url['url'];
 		if ( ! isset( $id2urls[ $id ] ) ) $id2urls[ $id ] = [];
-		$id2urls[ $id ][ $url ] = true;
+		$id2urls[ $id ][ $furl ] = true;
+		$id2urls[ $id ][ $url ]  = true;
 	}
 
 	private function _get_media_id( $url ) {
@@ -320,6 +323,7 @@ class Retrop_Exporter {
 			"SELECT post_id FROM $wpdb->postmeta WHERE meta_key='_wp_attached_file' AND meta_value='%s' LIMIT 1;",
 			$attached_file
 		) );
+		if ( $id === 0 ) return false;
 		return [ 'id' => $id, 'url' => $url ];
 	}
 
