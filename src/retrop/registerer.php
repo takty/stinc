@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-18
+ * @version 2019-02-19
  *
  */
 
@@ -25,16 +25,27 @@ class Registerer {
 	private $_type2structs;
 	private $_required_cols;
 	private $_digest_cols;
+	private $_media_col = false;
 	private $_labels;
 	private $_debug = '';
 
-	public function __construct( $post_type, $structs, $labels = [], $target_url_base = '' ) {
+	public function __construct( $post_type, $structs, $labels = [] ) {
 		$this->_post_type       = $post_type;
 		$this->_type2structs    = $this->extract_type_struct( $structs );
 		$this->_required_cols   = $this->extract_columns( $structs, R\FS_REQUIRED );
 		$this->_digest_cols     = $this->extract_columns( $structs, R\FS_FOR_DIGEST );
 		$this->_labels          = $labels;
-		$this->_target_url_base = $target_url_base;
+
+		if ( isset( $this->_type2structs[ R\FS_TYPE_MEDIA ] ) ) {
+			$keys = array_keys( $this->_type2structs[ R\FS_TYPE_MEDIA ] );
+			if ( count( $keys ) ) $this->_media_col = $keys[0];
+		}
+		$this->_media_orig_to_cur = get_option( "retrop_registerer_media_$post_type", [] );
+	}
+
+	private function update_media_table() {
+		$post_type = $this->_post_type;
+		update_option( "retrop_registerer_media_$post_type", $this->_media_orig_to_cur );
 	}
 
 	private function extract_type_struct( $structs ) {
@@ -94,10 +105,17 @@ class Registerer {
 		] );
 		$old_id = empty( $olds ) ? false : $olds[0]->ID;
 
+		if ( $this->_media_col && ! empty( $item[ $this->_media_col ] ) ) {
+			$val = $item[ $this->_media_col ];
+			$media = json_decode( $val, true );
+			$item[ $this->_media_col ] = $media;
+		}
+
+		$title = $this->get_post_title( $item );
 		$args = [
 			'post_type'     => $this->_post_type,
-			'post_title'    => $this->get_post_title( $item ),
-			'post_content'  => $this->get_post_content( $item ),
+			'post_title'    => $title,
+			'post_content'  => 'A dummy text for inserting.',
 			'post_date'     => $this->get_post_date( $item ),
 			'post_date_gmt' => $this->get_post_date_gmt( $item ),
 			'post_status'   => 'publish',
@@ -106,12 +124,22 @@ class Registerer {
 		$post_id = wp_insert_post( $args );
 		if ( $post_id === 0 ) return false;
 
+		$msg = '';
+		$args = [
+			'ID'           => $post_id,
+			'post_type'    => $this->_post_type,
+			'post_title'   => $title,
+			'post_content' => $this->get_post_content( $item, $post_id, $msg ),
+			'post_status'  => 'publish',
+		];
+		$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
+
 		update_post_meta( $post_id, self::PMK_IMPORT_FROM, $file_name );
 		update_post_meta( $post_id, self::PMK_DIGEST,      $digest );
 
-		$this->update_post_metas( $item, $post_id );
+		$this->update_post_metas( $item, $post_id, $msg );
 		$this->add_terms( $item, $post_id, $is_term_inserted );
-		$msg = $this->update_post_thumbnail( $item, $post_id );
+		$msg .= $this->update_post_thumbnail( $item, $post_id );
 
 		$msg .= '<p>' . ( $old_id === false ? $this->_labels['new'] : $this->_labels['updated'] ) . ': ';
 		$msg .= wp_kses_post( $digested_text ) . '</p>';
@@ -119,7 +147,7 @@ class Registerer {
 		return $msg;
 	}
 
-	private function filter( $val, $filter ) {
+	private function filter( $item, $val, $filter, $post_id = false, &$msg ) {
 		if ( $filter ) {
 			switch ( $filter ) {
 			case R\FS_FILTER_CONTENT:
@@ -129,7 +157,7 @@ class Registerer {
 			case R\FS_FILTER_CONTENT_MEDIA:
 				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
 				$val = wp_kses_post( $val );
-				$val = $this->_filter_content_media( $val );
+				$val = $this->_filter_content_media( $val, $item, $post_id, $msg );
 				break;
 			case R\FS_FILTER_NORM_DATE:
 				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
@@ -168,7 +196,7 @@ class Registerer {
 	// ---- POST CONTENT
 
 
-	private function get_post_content( $item ) {
+	private function get_post_content( $item, $post_id, &$msg ) {
 		$content = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_CONTENT ] as $col => $s ) {
 			if ( ! isset( $item[ $col ] ) ) continue;
@@ -176,7 +204,7 @@ class Registerer {
 			if ( empty( $val ) ) continue;
 
 			$filter = isset( $s[ R\FS_FILTER ] ) ? $s[ R\FS_FILTER ] : false;
-			$content .= $this->filter( $val, $filter );
+			$content .= $this->filter( $item, $val, $filter, $post_id, $msg );
 		}
 		return $content;
 	}
@@ -185,7 +213,7 @@ class Registerer {
 	// ---- POST META
 
 
-	private function update_post_metas( $item, $post_id ) {
+	private function update_post_metas( $item, $post_id, &$msg ) {
 		foreach ( $this->_type2structs[ R\FS_TYPE_META ] as $col => $s ) {
 			if ( ! isset( $item[ $col ] ) ) continue;
 			$val = trim( $item[ $col ] );
@@ -194,7 +222,7 @@ class Registerer {
 			if ( ! isset( $s[ R\FS_KEY ] ) ) continue;
 			$key = $s[ R\FS_KEY ];
 			$filter = isset( $s[ R\FS_FILTER ] ) ? $s[ R\FS_FILTER ] : false;
-			update_post_meta( $post_id, $key, $this->filter( $val, $filter ) );
+			update_post_meta( $post_id, $key, $this->filter( $item, $val, $filter, $post_id, $msg ) );
 		}
 		return true;
 	}
@@ -319,7 +347,7 @@ class Registerer {
 
 	private function insert_attachment_from_url( $url, $post_id = 0, $timeout = 30 ) {
 		$temp = download_url( $url, $timeout );
-		if ( is_wp_error( $temp ) ) return $temp;
+		if ( is_wp_error( $temp ) ) return false;
 
 		$file = [ 'name' => basename( $url ), 'tmp_name' => $temp ];
 		$attachment_id = media_handle_sideload( $file, $post_id );
@@ -332,15 +360,27 @@ class Registerer {
 	// ---- CONTENT MEDIA
 
 
-	private function _filter_content_media( $val ) {
-		$dom = str_get_html( $val );
+	private function _filter_content_media( $val, $item, $post_id, &$msg ) {
+		if ( empty( $item[ $this->_media_col ] ) ) return $val;
+		$media = $item[ $this->_media_col ];
+
+		$targets = [];
+		foreach ( $media as $id => $urls ) {
+			foreach ( $urls as $url ) $targets[ $url ] = $id;
+		}
+
+		$dom = str_get_html( $val, true, true, DEFAULT_TARGET_CHARSET, false );
 		foreach ( $dom->find( 'img' ) as &$elm ) {
-			$p = strpos( $elm->src, $this->_target_base_url );
-			if ( $p !== false ) $elm->src = $this->_convert_url( $elm->src );
+			$url = $elm->src;
+			if ( ! isset( $targets[ $url ] ) ) continue;
+			$id = $targets[ $url ];
+			$elm->src = $this->_convert_url( $media[ $id ], (int) $id, $elm->class, $post_id, $msg );
 		}
 		foreach ( $dom->find( 'a' ) as &$elm ) {
-			$p = strpos( $elm->href, $this->_target_base_url );
-			if ( $p !== false ) $elm->href = $this->_convert_url( $elm->href );
+			$url = $elm->href;
+			if ( ! isset( $targets[ $url ] ) ) continue;
+			$id = $targets[ $url ];
+			$elm->href = $this->_convert_url( $media[ $id ], (int) $id, $elm->class, $post_id, $msg );
 		}
 		$val = $dom->save();
 		$dom->clear();
@@ -348,11 +388,33 @@ class Registerer {
 		return $val;
 	}
 
-	private function _convert_url( $url ) {
-		// get full size image url
-		// wp-image-****
-		// size-****
-		// How to avoid duplication
+	private function _convert_url( $orig_urls, $orig_id, $class, $post_id, &$msg ) {
+		sort( $orig_urls );  // The shortest might be the full size url.
+		$aid = false;
+		if ( isset( $this->_media_orig_to_cur[ $orig_id ] ) ) {
+			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
+			$aid = $this->_media_orig_to_cur[ $orig_id ];
+		} else {
+			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
+			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
+			if( $aid !== false) {
+				$this->_media_orig_to_cur[ $orig_id ] = $aid;
+				$this->update_media_table();
+			}
+		}
+		if ( empty( $class ) ) {
+			$url = wp_get_attachment_url( $aid );
+		} else {
+			$cs = explode( ' ', $class );
+			$size = 'full';
+			foreach ( $cs as $c ) {
+				if ( strpos( $c, 'size-' ) === 0 ) {
+					$size = str_replace( 'size-', '', $c );
+				}
+			}
+			$ais = wp_get_attachment_image_src( $aid, $size );
+			$url = $ais[0];
+		}
 		return $url;
 	}
 

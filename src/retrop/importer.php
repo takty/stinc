@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-17
+ * @version 2019-02-19
  *
  */
 
@@ -84,7 +84,7 @@ class Retrop_Importer extends \WP_Importer {
 		$ajax = new \st\Ajax( $this->_id, function () {
 			$cont = file_get_contents( 'php://input' );
 			$data = json_decode( $cont, true );
-			if ( $data['index'] === 0 ) {
+			if ( isset( $data['index'] ) && $data['index'] === 0 ) {
 				add_filter( 'http_request_timeout', function () { return 60; } );
 				do_action( 'import_start' );
 				wp_suspend_cache_invalidation( true );
