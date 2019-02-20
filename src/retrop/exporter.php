@@ -6,7 +6,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-19
+ * @version 2019-02-20
  *
  */
 
@@ -177,17 +177,21 @@ class Retrop_Exporter {
 			if ( $bgn !== false ) {
 				$bgn_ym = explode( '-', $bgn );
 				$dq[] = [
-					'year' => intval( $bgn_ym[0] ),
-					'month' => intval( $bgn_ym[1] ),
-					'compare' => '>='
+					'after' => [
+						'year'  => intval( $bgn_ym[0] ),
+						'month' => intval( $bgn_ym[1] ),
+					],
+					'inclusive' => true
 				];
 			}
 			if ( $end !== false ) {
 				$end_ym = explode( '-', $end );
 				$dq[] = [
-					'year' => intval( $end_ym[0] ),
-					'month' => intval( $end_ym[1] ),
-					'compare' => '<='
+					'before' => [
+						'year'  => intval( $end_ym[0] ),
+						'month' => intval( $end_ym[1] ),
+					],
+					'inclusive' => true
 				];
 			}
 			if ( $bgn !== false && $end !== false ) $dq['relation'] = 'AND';
