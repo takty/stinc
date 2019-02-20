@@ -6,7 +6,7 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-05
+ * @version 2019-02-21
  *
  */
 
@@ -109,16 +109,24 @@ function separate_text_and_make_spans( $text, $filter = 'esc_html' ) {
 	return $ret;
 }
 
+$CPATS = [
+	'S' => '/[「『（［｛〈《【〔〖〘〚＜]/u',
+	'E' => '/[」』）］｝〉》】〕〗〙〛＞、，。．？！を：]/u',
+	'I' => '/[ぁ-んゝ]/u',
+	'K' => '/[ァ-ヴーｱ-ﾝﾞｰ]/u',
+	'H' => '/[一-龠々〆ヵヶ]/u',
+];
+$PAIRS = ['S*' => 1, '*E' => 1, 'II' => 1, 'KK' => 1, 'HH' => 1, 'HI' => 1];
+
 function separate_text( $text ) {
-	$pair = ['S*' => 1, '*E' => 1, 'II' => 1, 'KK' => 1, 'HH' => 1, 'HI' => 1];
+	$parts = [];
 	$t_prev = '';
 	$word = '';
-	$parts = [];
 
 	for ( $i = 0, $I = mb_strlen( $text ); $i < $I; $i += 1 ) {
 		$c = mb_substr( $text, $i, 1 );
 		$t = _get_ctype( $c );
-		if ( isset( $pair[ $t_prev . $t ] ) || isset( $pair[ '*' . $t ] ) || isset( $pair[ $t_prev . '*' ] ) ) {
+		if ( isset( $PAIRS[ $t_prev . $t ] ) || isset( $PAIRS[ '*' . $t ] ) || isset( $PAIRS[ $t_prev . '*' ] ) ) {
 			$word .= $c;
 		} else if ( $t === 'O' ) {
 			if ( $t_prev === 'O' ) {
@@ -138,15 +146,8 @@ function separate_text( $text ) {
 }
 
 function _get_ctype( $c ) {
-	$pats = [
-		'S' => '[「『（［｛〈《【〔〖〘〚]',
-		'E' => '[」』）］｝〉》】〕〗〙〛、，。．？！を]',
-		'I' => '[ぁ-んゝ]',
-		'K' => '[ァ-ヴーｱ-ﾝﾞｰ]',
-		'H' => '[一-龠々〆ヵヶ]',
-	];
-	foreach ( $pats as $t => $p ) {
-		if ( preg_match( "/" . $p . "/u", $c ) === 1 ) return $t;
+	foreach ( $CPATS as $t => $p ) {
+		if ( preg_match( $p, $c ) === 1 ) return $t;
 	}
 	return 'O';
 }
