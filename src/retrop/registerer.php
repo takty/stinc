@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-19
+ * @version 2019-02-20
  *
  */
 
@@ -113,12 +113,10 @@ class Registerer {
 
 		$title = $this->get_post_title( $item );
 		$args = [
-			'post_type'     => $this->_post_type,
-			'post_title'    => $title,
-			'post_content'  => 'A dummy text for inserting.',
-			'post_date'     => $this->get_post_date( $item ),
-			'post_date_gmt' => $this->get_post_date_gmt( $item ),
-			'post_status'   => 'publish',
+			'post_type'    => $this->_post_type,
+			'post_title'   => $title,
+			'post_content' => 'A dummy text for inserting.',
+			'post_status'  => 'publish',
 		];
 		if ( $old_id !== false ) $args['ID'] = $old_id;
 		$post_id = wp_insert_post( $args );
@@ -126,11 +124,13 @@ class Registerer {
 
 		$msg = '';
 		$args = [
-			'ID'           => $post_id,
-			'post_type'    => $this->_post_type,
-			'post_title'   => $title,
-			'post_content' => $this->get_post_content( $item, $post_id, $msg ),
-			'post_status'  => 'publish',
+			'ID'            => $post_id,
+			'post_type'     => $this->_post_type,
+			'post_title'    => $title,
+			'post_content'  => $this->get_post_content( $item, $post_id, $msg ),
+			'post_date'     => $this->get_post_date( $item ),
+			'post_date_gmt' => $this->get_post_date_gmt( $item ),
+			'post_status'   => 'publish',
 		];
 		$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
 
