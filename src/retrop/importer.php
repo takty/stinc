@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-19
+ * @version 2019-02-20
  *
  */
 
@@ -54,7 +54,7 @@ class Retrop_Importer extends \WP_Importer {
 			'name'              => 'Retrop Importer',
 			'description'       => 'Import data from a Excel (.xlsx) file.',
 			'message'           => 'Choose a Excel (.xlsx) file to upload, then click Upload file and import.',
-			'error'             => 'Sorry, there has been an error.',
+			'failure'           => 'Sorry, there has been an error.',
 			'success'           => 'Successfully finished.',
 			'error_wrong_file'  => 'The file is wrong, please try again.',
 			'all_done'          => 'All done.',
@@ -157,7 +157,7 @@ class Retrop_Importer extends \WP_Importer {
 		$file = wp_import_handle_upload();
 
 		if ( isset( $file['error'] ) || ! file_exists( $file['file'] ) ) {
-			echo '<p><strong>' . $this->_labels['error'] . '</strong><br />';
+			echo '<p><strong>' . $this->_labels['failure'] . '</strong><br />';
 			echo esc_html( $file['error'] ) . '</p>';
 			return false;
 		}
@@ -193,7 +193,7 @@ class Retrop_Importer extends \WP_Importer {
 		</div>
 		<div id="response-msgs" style="margin-top:1em;max-height:50vh;overflow:auto;"></div>
 
-		<p id="retrop-failure" style="display: none;"><strong><?php echo $this->_labels['error'] ?></strong></p>
+		<p id="retrop-failure" style="display: none;"><strong><?php echo $this->_labels['failure'] ?></strong></p>
 		<p id="retrop-success" style="display: none;"><strong><?php echo $this->_labels['success'] ?></strong></p>
 <?php
 	}
