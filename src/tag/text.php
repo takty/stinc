@@ -109,16 +109,8 @@ function separate_text_and_make_spans( $text, $filter = 'esc_html' ) {
 	return $ret;
 }
 
-$CPATS = [
-	'S' => '/[「『（［｛〈《【〔〖〘〚＜]/u',
-	'E' => '/[」』）］｝〉》】〕〗〙〛＞、，。．？！を：]/u',
-	'I' => '/[ぁ-んゝ]/u',
-	'K' => '/[ァ-ヴーｱ-ﾝﾞｰ]/u',
-	'H' => '/[一-龠々〆ヵヶ]/u',
-];
-$PAIRS = ['S*' => 1, '*E' => 1, 'II' => 1, 'KK' => 1, 'HH' => 1, 'HI' => 1];
-
 function separate_text( $text ) {
+	$PAIRS = ['S*' => 1, '*E' => 1, 'II' => 1, 'KK' => 1, 'HH' => 1, 'HI' => 1];
 	$parts = [];
 	$t_prev = '';
 	$word = '';
@@ -146,6 +138,13 @@ function separate_text( $text ) {
 }
 
 function _get_ctype( $c ) {
+	$CPATS = [
+		'S' => '/[「『（［｛〈《【〔〖〘〚＜]/u',
+		'E' => '/[」』）］｝〉》】〕〗〙〛＞、，。．？！を：]/u',
+		'I' => '/[ぁ-んゝ]/u',
+		'K' => '/[ァ-ヴーｱ-ﾝﾞｰ]/u',
+		'H' => '/[一-龠々〆ヵヶ]/u',
+	];
 	foreach ( $CPATS as $t => $p ) {
 		if ( preg_match( $p, $c ) === 1 ) return $t;
 	}
