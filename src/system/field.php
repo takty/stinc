@@ -449,6 +449,8 @@ function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) 
 	$url_to = \st\get_file_uri( __DIR__ );
 	$url_to = untrailingslashit( $url_to );
 	wp_enqueue_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
+	// wp_enqueue_script( 'st-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
+	// wp_enqueue_style( 'st-field', $url_to . '/asset/field.min.css' );
 
 	$_src = '';
 	$_title = '';
