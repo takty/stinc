@@ -52,15 +52,15 @@ gulp.task('css', gulp.parallel('css-raw', 'css-min'));
 
 gulp.task('php', () => {
 	return gulp.src(['src/**/*.php'])
-		.pipe($.changed('dist'))
 		.pipe($.plumber())
+		.pipe($.changed('dist'))
 		.pipe(gulp.dest('dist'));
 });
 
 gulp.task('img', () => {
 	return gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], { base: 'src' })
-		.pipe($.changed('dist'))
 		.pipe($.plumber())
+		.pipe($.changed('dist'))
 		.pipe(gulp.dest('dist'));
 });
 
