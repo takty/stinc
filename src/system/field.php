@@ -459,30 +459,27 @@ function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) 
 		if ( $p ) $_title = esc_html( $p->post_title );
 	}
 ?>
-		<div id="<?php echo "{$key}-body" ?>" class="st-field-media-picker-body" style="margin-top:1rem;">
+		<div id="<?php echo "{$key}-body" ?>" style="margin-top:1rem;">
 			<label><?php echo esc_html( $label ) ?></label>
 			<div style="display:flex;">
 				<div style="margin-right:8px;">
 					<a href="javascript:void(0);" style="width:4rem;height:4rem;background:no-repeat center/contain url('<?php echo $_src ?>') #f7f7f7;" <?php name_id( "{$key}_src" ) ?> class="button st-field-media-picker-select"></a>
 				</div>
-				<div style="display:flex;flex-direction:column;align-items:flex-end;flex-grow:1;justify-content:space-between;">
+				<div style="display:flex;flex-direction:column;flex-grow:1;align-items:flex-end;justify-content:space-between;">
 					<input type="text" style="width:100%" disabled <?php name_id( "{$key}_title" ) ?> value="<?php echo $_title ?>">
-					<a href="javascript:void(0);" class="st-field-media-picker-delete widget-control-remove"><?php _e( 'Remove', 'default' ); ?></a>
+					<a href="javascript:void(0);" class="st-field-media-picker-delete"><?php _e( 'Remove', 'default' ); ?></a>
 				</div>
 			</div>
 			<input type="hidden" <?php name_id( $key ) ?> value="<?php echo $media_id ?>" />
 			<script>window.addEventListener('load', function () {
 				function st_field_media_picker_initialize_admin(key) {
 					const NS = 'st-field-media-picker';
-					const CLS_SEL = NS + '-select';
-					const CLS_DEL = NS + '-delete';
 					init(document.getElementById(key + '-body'));
-
 					function init(body) {
-						const del = body.getElementsByClassName(CLS_DEL)[0];
+						const del = body.getElementsByClassName(NS + '-delete')[0];
 						del.addEventListener('click', () => { set_item(null, { id: '', url: '', title: '' }); });
-						const sel = body.getElementsByClassName(CLS_SEL)[0];
-						setMediaPicker(sel, false, set_item, { multiple: false, title: sel.innerText });
+						const sel = body.getElementsByClassName(NS + '-select')[0];
+						setMediaPicker(sel, false, set_item, { multiple: false, title: sel.innerText, media_id_input: '<?php echo $key ?>' });
 					}
 					function set_item(dummy, f) {
 						document.getElementById(key).value = f.id;
