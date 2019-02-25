@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-20
+ * @version 2019-02-25
  *
  */
 
@@ -41,11 +41,6 @@ class Registerer {
 			if ( count( $keys ) ) $this->_media_col = $keys[0];
 		}
 		$this->_media_orig_to_cur = get_option( "retrop_registerer_media_$post_type", [] );
-	}
-
-	private function update_media_table() {
-		$post_type = $this->_post_type;
-		update_option( "retrop_registerer_media_$post_type", $this->_media_orig_to_cur );
 	}
 
 	private function extract_type_struct( $structs ) {
@@ -94,6 +89,55 @@ class Registerer {
 	// -------------------------------------------------------------------------
 
 
+	private function get_media_id( $orig_id ) {
+		if ( ! isset( $this->_media_orig_to_cur[ $orig_id ] ) ) return false;
+
+		$aid = $this->_media_orig_to_cur[ $orig_id ];
+		$p = get_post( $aid );
+		if ( $p === null || $p->post_type !== 'attachment' ) {
+			unset( $this->_media_orig_to_cur[ $orig_id ] );
+			return false;
+		}
+		return $aid;
+	}
+
+	private function add_media_id( $orig_id, $id ) {
+		$this->_media_orig_to_cur[ $orig_id ] = $id;
+
+		$post_type = $this->_post_type;
+		update_option( "retrop_registerer_media_$post_type", $this->_media_orig_to_cur );
+	}
+
+	private function convert_media_id( $orig_id, $orig_urls, $post_id, &$msg ) {
+		sort( $orig_urls );  // The shortest might be the full size url.
+		$aid = $this->get_media_id( $orig_id );
+		if ( $aid !== false ) {
+			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
+		} else {
+			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
+			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
+			if( $aid !== false) {
+				$this->add_media_id( $orig_id, $aid );
+			}
+		}
+		return $aid;
+	}
+
+	private function insert_attachment_from_url( $url, $post_id = 0, $timeout = 30 ) {
+		$temp = download_url( $url, $timeout );
+		if ( is_wp_error( $temp ) ) return false;
+
+		$file = [ 'name' => basename( $url ), 'tmp_name' => $temp ];
+		$attachment_id = media_handle_sideload( $file, $post_id );
+
+		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
+		return $attachment_id;
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
 	public function process_item( $item, $file_name, $is_term_inserted = false ) {
 		if ( ! $this->is_required_field_filled( $item ) ) return false;
 		$digested_text = $this->get_digested_text( $item );
@@ -130,6 +174,7 @@ class Registerer {
 			'post_content'  => $this->get_post_content( $item, $post_id, $msg ),
 			'post_date'     => $this->get_post_date( $item ),
 			'post_date_gmt' => $this->get_post_date_gmt( $item ),
+			'post_name'     => $this->get_post_name( $item ),
 			'post_status'   => 'publish',
 		];
 		$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
@@ -167,6 +212,12 @@ class Registerer {
 				// Do not add "\n" because WP recognizes "\n" as a paragraph separator.
 				$val = str_replace( ['\n\n', '\n\n'], '\n&nbsp;\n', $val );
 				$val = str_replace( '\n', '<br />', $val );
+				break;
+			case R\FS_FILTER_MEDIA_URL:
+				$id_urls = json_decode( $val, true );
+				$id = array_keys( $id_urls )[0];
+				$val = $this->convert_media_id( $id, $id_urls[ $id ], $post_id, $msg );
+				if ( $val === false ) $val = '';
 				break;
 			default:
 				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
@@ -228,7 +279,7 @@ class Registerer {
 	}
 
 
-	// ---- POST DATE & DATE GMT
+	// ---- POST DATE & DATE GMT & POST NAME
 
 
 	private function get_post_date( $item ) {
@@ -247,6 +298,14 @@ class Registerer {
 			$date .= $item[ $col ];
 		}
 		return $date;
+	}
+
+	private function get_post_name( $item ) {
+		foreach ( $this->_type2structs[ R\FS_TYPE_SLUG ] as $col => $s ) {
+			if ( ! isset( $item[ $col ] ) ) continue;
+			return $item[ $col ];
+		}
+		return '';
 	}
 
 
@@ -328,32 +387,15 @@ class Registerer {
 		$msg = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_THUMBNAIL_URL ] as $col => $s ) {
 			if ( ! isset( $item[ $col ] ) ) continue;
-			$url = $item[ $col ];
 
-			if ( has_post_thumbnail( $post_id ) ) {
-				$id = get_post_thumbnail_id( $post_id );
-				$ais = wp_get_attachment_image_src( $id, 'full' );
-				if ( $ais !== false && basename( $url ) === basename( $ais[0] ) ) {
-					$msg .= '<p>The thumbnail image might be the same.</p>';
-					continue;
-				}
+			$id_urls = json_decode( $item[ $col ], true );
+			$id = array_keys( $id_urls )[0];
+			$aid = $this->convert_media_id( $id, $id_urls[ $id ], $post_id, $msg );
+			if ( $aid !== false ) {
+				set_post_thumbnail( $post_id, $aid );
 			}
-			$msg .= '<p>Try to download the thumbnail image: ' . esc_html( $url ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $url, $post_id );
-			set_post_thumbnail( $post_id, $aid );
 		}
 		return $msg;
-	}
-
-	private function insert_attachment_from_url( $url, $post_id = 0, $timeout = 30 ) {
-		$temp = download_url( $url, $timeout );
-		if ( is_wp_error( $temp ) ) return false;
-
-		$file = [ 'name' => basename( $url ), 'tmp_name' => $temp ];
-		$attachment_id = media_handle_sideload( $file, $post_id );
-
-		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
-		return $attachment_id;
 	}
 
 
@@ -374,13 +416,13 @@ class Registerer {
 			$url = $elm->src;
 			if ( ! isset( $targets[ $url ] ) ) continue;
 			$id = $targets[ $url ];
-			$elm->src = $this->_convert_url( $media[ $id ], (int) $id, $elm->class, $post_id, $msg );
+			$elm->src = $this->_convert_url( (int) $id, $media[ $id ], $elm->class, $post_id, $msg );
 		}
 		foreach ( $dom->find( 'a' ) as &$elm ) {
 			$url = $elm->href;
 			if ( ! isset( $targets[ $url ] ) ) continue;
 			$id = $targets[ $url ];
-			$elm->href = $this->_convert_url( $media[ $id ], (int) $id, $elm->class, $post_id, $msg );
+			$elm->href = $this->_convert_url( (int) $id, $media[ $id ], $elm->class, $post_id, $msg );
 		}
 		$val = $dom->save();
 		$dom->clear();
@@ -388,19 +430,11 @@ class Registerer {
 		return $val;
 	}
 
-	private function _convert_url( $orig_urls, $orig_id, $class, $post_id, &$msg ) {
-		sort( $orig_urls );  // The shortest might be the full size url.
-		$aid = false;
-		if ( isset( $this->_media_orig_to_cur[ $orig_id ] ) ) {
-			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
-			$aid = $this->_media_orig_to_cur[ $orig_id ];
-		} else {
-			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
-			if( $aid !== false) {
-				$this->_media_orig_to_cur[ $orig_id ] = $aid;
-				$this->update_media_table();
-			}
+	private function _convert_url( $orig_id, $orig_urls, $class, $post_id, &$msg ) {
+		$aid = $this->convert_media_id( $orig_id, $orig_urls, $post_id, $msg );
+		if ( $aid === false ) {
+			sort( $orig_urls );  // The shortest might be the full size url.
+			return $orig_urls[0];
 		}
 		if ( empty( $class ) ) {
 			$url = wp_get_attachment_url( $aid );

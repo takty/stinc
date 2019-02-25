@@ -6,7 +6,7 @@ namespace st\retrop;
  * Utilities for Retrop
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-19
+ * @version 2019-02-25
  *
  */
 
@@ -20,12 +20,13 @@ const FS_TYPE_CONTENT       = 'post_content';
 const FS_TYPE_META          = 'post_meta';
 const FS_TYPE_DATE          = 'post_date';
 const FS_TYPE_DATE_GMT      = 'post_date_gmt';
+const FS_TYPE_SLUG          = 'post_name';
 const FS_TYPE_TERM          = 'term';
 const FS_TYPE_THUMBNAIL_URL = 'thumbnail_url';
 const FS_TYPE_MEDIA         = 'media';
 const FS_TYPE_ACF_PM        = 'acf_pm';
 
-const FS_TYPES = [ FS_TYPE_TITLE, FS_TYPE_CONTENT, FS_TYPE_META, FS_TYPE_DATE, FS_TYPE_DATE_GMT, FS_TYPE_TERM, FS_TYPE_THUMBNAIL_URL, FS_TYPE_MEDIA ];
+const FS_TYPES = [ FS_TYPE_TITLE, FS_TYPE_CONTENT, FS_TYPE_META, FS_TYPE_DATE, FS_TYPE_DATE_GMT, FS_TYPE_SLUG, FS_TYPE_TERM, FS_TYPE_THUMBNAIL_URL, FS_TYPE_MEDIA ];
 
 // for FS_TYPE_META
 const FS_KEY    = 'key';
@@ -35,7 +36,7 @@ const FS_FILTER_CONTENT       = 'post_content';        // for Importer
 const FS_FILTER_CONTENT_MEDIA = 'post_content_media';  // for Importer & Exporter
 const FS_FILTER_NORM_DATE     = 'norm_date';           // for Importer
 const FS_FILTER_NL2BR         = 'nl2br';               // for Importer
-const FS_FILTER_MEDIA_URL     = 'media_url';           // for Exporter
+const FS_FILTER_MEDIA_URL     = 'media_url';           // for Importer & Exporter
 
 // for FS_TYPE_TERM
 const FS_TAXONOMY  = 'taxonomy';

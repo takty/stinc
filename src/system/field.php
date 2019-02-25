@@ -6,9 +6,21 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-05
+ * @version 2019-02-26
  *
  */
+
+
+add_action( 'admin_enqueue_scripts', function () {
+	$url_to = \st\get_file_uri( __DIR__ );
+	$url_to = untrailingslashit( $url_to );
+	wp_register_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
+	wp_register_script( 'st-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
+	wp_register_style( 'st-field', $url_to . '/asset/field.min.css' );
+} );
+
+
+// -----------------------------------------------------------------------------
 
 
 function save_post_meta( $post_id, $key, $filter = null, $default = null ) {
@@ -31,9 +43,9 @@ function add_post_meta_input( $post_id, $key, $label, $type = 'text' ) {
 	output_input_row( $label, $key, $val, $type );
 }
 
-function add_post_meta_textarea( $post_id, $key, $label ) {
+function add_post_meta_textarea( $post_id, $key, $label, $rows = 2 ) {
 	$val = get_post_meta( $post_id, $key, true );
-	output_textarea_row( $label, $key, $val );
+	output_textarea_row( $label, $key, $val, $rows );
 }
 
 function add_post_meta_rich_editor( $post_id, $key, $label, $settings = [] ) {
@@ -64,13 +76,13 @@ function output_input_row( $label, $key, $val, $type = 'text' ) {
 <?php
 }
 
-function output_textarea_row( $label, $key, $val ) {
+function output_textarea_row( $label, $key, $val, $rows = 2 ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
 	<div style="margin-top:1rem;">
 		<label>
 			<?php echo esc_html( $label ) ?>
-			<textarea <?php name_id( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+			<textarea <?php name_id( $key ) ?> cols="64" rows="<?php echo $rows ?>" style="width:100%;"><?php echo $val ?></textarea>
 		</label>
 	</div>
 <?php
@@ -434,4 +446,43 @@ function set_admin_columns_sortable( $post_type, $sortable_columns ) {
 		}
 		return $vars;
 	} );
+}
+
+
+// Media Picker ----------------------------------------------------------------
+
+
+function add_post_meta_media_picker( $post_id, $key, $label, $settings = [] ) {
+	$val = get_post_meta( $post_id, $key, true );
+	output_media_picker_row( $label, $key, $val, $settings );
+}
+
+function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) {
+	wp_enqueue_script( 'st-field' );
+	wp_enqueue_style( 'st-field' );
+
+	$_src = '';
+	$_title = '';
+	if ( $media_id ) {
+		$ais = wp_get_attachment_image_src( $media_id, 'small' );
+		$_src = ( $ais !== false ) ? esc_attr( $ais[0] ) : '';
+		$p = get_post( $media_id );
+		if ( $p ) $_title = esc_html( $p->post_title );
+	}
+?>
+		<div id="<?php echo "{$key}-body" ?>" class="st-field-media-picker">
+			<label><?php echo esc_html( $label ) ?></label>
+			<div>
+				<div>
+					<a href="javascript:void(0);" style="background-image:url('<?php echo $_src ?>');" <?php name_id( "{$key}_src" ) ?> class="button st-field-media-picker-select"></a>
+				</div>
+				<div>
+					<input type="text" disabled <?php name_id( "{$key}_title" ) ?> value="<?php echo $_title ?>">
+					<a href="javascript:void(0);" class="st-field-media-picker-delete"><?php _e( 'Remove', 'default' ); ?></a>
+				</div>
+			</div>
+			<input type="hidden" <?php name_id( $key ) ?> value="<?php echo $media_id ?>" />
+			<script>window.addEventListener('load', function () { st_field_media_picker_initialize_admin('<?php echo $key ?>'); });</script>
+		</div>
+	<?php
 }

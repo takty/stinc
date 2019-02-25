@@ -1,0 +1,43 @@
+/**
+ *
+ * Field (SCSS)
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2019-02-26
+ *
+ */
+
+
+.st-field-media-picker {
+	margin-top: 1em;
+
+	> div {
+		display: flex;
+
+		> div:first-child {
+			margin-right: 8px;
+		}
+		> div:last-child {
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+			align-items: flex-end;
+			justify-content: space-between;
+
+			input {
+				width: 100%;
+			}
+		}
+	}
+}
+
+.st-field-media-picker-select {
+	&.button, &.button:focus, &.button:hover {
+		width: 4rem;
+		height: 4rem;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-size: contain;
+		background-color: #f7f7f7;
+	}
+}
