@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-20
+ * @version 2019-02-25
  *
  */
 
@@ -43,7 +43,21 @@ class Registerer {
 		$this->_media_orig_to_cur = get_option( "retrop_registerer_media_$post_type", [] );
 	}
 
-	private function update_media_table() {
+	private function get_media_id( $orig_id ) {
+		if ( ! isset( $this->_media_orig_to_cur[ $orig_id ] ) ) return false;
+
+		$aid = $this->_media_orig_to_cur[ $orig_id ];
+		$p = get_post( $aid );
+		if ( $p === null || $p->post_type !== 'attachment' ) {
+			unset( $this->_media_orig_to_cur[ $orig_id ] );
+			return false;
+		}
+		return $aid;
+	}
+
+	private function add_media_id( $orig_id, $id ) {
+		$this->_media_orig_to_cur[ $orig_id ] = $id;
+
 		$post_type = $this->_post_type;
 		update_option( "retrop_registerer_media_$post_type", $this->_media_orig_to_cur );
 	}
@@ -168,6 +182,12 @@ class Registerer {
 				$val = str_replace( ['\n\n', '\n\n'], '\n&nbsp;\n', $val );
 				$val = str_replace( '\n', '<br />', $val );
 				break;
+			case R\FS_FILTER_MEDIA_URL:
+				$id_urls = json_decode( $val, true );
+				$id = array_keys( $id_url )[0];
+				$val = $this->convert_media_id( $id, $id_urls[ $id ], $post_id, $msg );
+				if ( $val === false ) $val = '';
+				break;
 			default:
 				$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
 				if ( is_callable( $filter ) ) $val = call_user_func( $filter, $val );
@@ -177,6 +197,21 @@ class Registerer {
 			$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
 		}
 		return $val;
+	}
+
+	private function convert_media_id( $orig_id, $orig_urls, $post_id, &$msg ) {
+		sort( $orig_urls );  // The shortest might be the full size url.
+		$aid = $this->get_media_id( $orig_id );
+		if ( $aid !== false ) {
+			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
+		} else {
+			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
+			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
+			if( $aid !== false) {
+				$this->add_media_id( $orig_id, $aid );
+			}
+		}
+		return $aid;
 	}
 
 
@@ -374,13 +409,13 @@ class Registerer {
 			$url = $elm->src;
 			if ( ! isset( $targets[ $url ] ) ) continue;
 			$id = $targets[ $url ];
-			$elm->src = $this->_convert_url( $media[ $id ], (int) $id, $elm->class, $post_id, $msg );
+			$elm->src = $this->_convert_url( (int) $id, $media[ $id ], $elm->class, $post_id, $msg );
 		}
 		foreach ( $dom->find( 'a' ) as &$elm ) {
 			$url = $elm->href;
 			if ( ! isset( $targets[ $url ] ) ) continue;
 			$id = $targets[ $url ];
-			$elm->href = $this->_convert_url( $media[ $id ], (int) $id, $elm->class, $post_id, $msg );
+			$elm->href = $this->_convert_url( (int) $id, $media[ $id ], $elm->class, $post_id, $msg );
 		}
 		$val = $dom->save();
 		$dom->clear();
@@ -388,19 +423,11 @@ class Registerer {
 		return $val;
 	}
 
-	private function _convert_url( $orig_urls, $orig_id, $class, $post_id, &$msg ) {
-		sort( $orig_urls );  // The shortest might be the full size url.
-		$aid = false;
-		if ( isset( $this->_media_orig_to_cur[ $orig_id ] ) ) {
-			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
-			$aid = $this->_media_orig_to_cur[ $orig_id ];
-		} else {
-			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
-			if( $aid !== false) {
-				$this->_media_orig_to_cur[ $orig_id ] = $aid;
-				$this->update_media_table();
-			}
+	private function _convert_url( $orig_id, $orig_urls, $class, $post_id, &$msg ) {
+		$aid = $this->convert_media_id( $orig_id, $orig_urls, $post_id, $msg );
+		if ( $aid === false ) {
+			sort( $orig_urls );  // The shortest might be the full size url.
+			return $orig_urls[0];
 		}
 		if ( empty( $class ) ) {
 			$url = wp_get_attachment_url( $aid );
