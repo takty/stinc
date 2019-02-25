@@ -43,25 +43,6 @@ class Registerer {
 		$this->_media_orig_to_cur = get_option( "retrop_registerer_media_$post_type", [] );
 	}
 
-	private function get_media_id( $orig_id ) {
-		if ( ! isset( $this->_media_orig_to_cur[ $orig_id ] ) ) return false;
-
-		$aid = $this->_media_orig_to_cur[ $orig_id ];
-		$p = get_post( $aid );
-		if ( $p === null || $p->post_type !== 'attachment' ) {
-			unset( $this->_media_orig_to_cur[ $orig_id ] );
-			return false;
-		}
-		return $aid;
-	}
-
-	private function add_media_id( $orig_id, $id ) {
-		$this->_media_orig_to_cur[ $orig_id ] = $id;
-
-		$post_type = $this->_post_type;
-		update_option( "retrop_registerer_media_$post_type", $this->_media_orig_to_cur );
-	}
-
 	private function extract_type_struct( $structs ) {
 		$t2ss = [];
 		foreach ( R\FS_TYPES as $t ) $t2ss[ $t ] = [];
@@ -102,6 +83,55 @@ class Registerer {
 			$text .= trim( $item[ $col ] );
 		}
 		return $text;
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
+	private function get_media_id( $orig_id ) {
+		if ( ! isset( $this->_media_orig_to_cur[ $orig_id ] ) ) return false;
+
+		$aid = $this->_media_orig_to_cur[ $orig_id ];
+		$p = get_post( $aid );
+		if ( $p === null || $p->post_type !== 'attachment' ) {
+			unset( $this->_media_orig_to_cur[ $orig_id ] );
+			return false;
+		}
+		return $aid;
+	}
+
+	private function add_media_id( $orig_id, $id ) {
+		$this->_media_orig_to_cur[ $orig_id ] = $id;
+
+		$post_type = $this->_post_type;
+		update_option( "retrop_registerer_media_$post_type", $this->_media_orig_to_cur );
+	}
+
+	private function convert_media_id( $orig_id, $orig_urls, $post_id, &$msg ) {
+		sort( $orig_urls );  // The shortest might be the full size url.
+		$aid = $this->get_media_id( $orig_id );
+		if ( $aid !== false ) {
+			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
+		} else {
+			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
+			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
+			if( $aid !== false) {
+				$this->add_media_id( $orig_id, $aid );
+			}
+		}
+		return $aid;
+	}
+
+	private function insert_attachment_from_url( $url, $post_id = 0, $timeout = 30 ) {
+		$temp = download_url( $url, $timeout );
+		if ( is_wp_error( $temp ) ) return false;
+
+		$file = [ 'name' => basename( $url ), 'tmp_name' => $temp ];
+		$attachment_id = media_handle_sideload( $file, $post_id );
+
+		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
+		return $attachment_id;
 	}
 
 
@@ -184,7 +214,7 @@ class Registerer {
 				break;
 			case R\FS_FILTER_MEDIA_URL:
 				$id_urls = json_decode( $val, true );
-				$id = array_keys( $id_url )[0];
+				$id = array_keys( $id_urls )[0];
 				$val = $this->convert_media_id( $id, $id_urls[ $id ], $post_id, $msg );
 				if ( $val === false ) $val = '';
 				break;
@@ -197,21 +227,6 @@ class Registerer {
 			$val = str_replace( '\n', PHP_EOL, $val );  // '\n' is '\' + 'n', but not \n.
 		}
 		return $val;
-	}
-
-	private function convert_media_id( $orig_id, $orig_urls, $post_id, &$msg ) {
-		sort( $orig_urls );  // The shortest might be the full size url.
-		$aid = $this->get_media_id( $orig_id );
-		if ( $aid !== false ) {
-			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
-		} else {
-			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
-			if( $aid !== false) {
-				$this->add_media_id( $orig_id, $aid );
-			}
-		}
-		return $aid;
 	}
 
 
@@ -363,32 +378,15 @@ class Registerer {
 		$msg = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_THUMBNAIL_URL ] as $col => $s ) {
 			if ( ! isset( $item[ $col ] ) ) continue;
-			$url = $item[ $col ];
 
-			if ( has_post_thumbnail( $post_id ) ) {
-				$id = get_post_thumbnail_id( $post_id );
-				$ais = wp_get_attachment_image_src( $id, 'full' );
-				if ( $ais !== false && basename( $url ) === basename( $ais[0] ) ) {
-					$msg .= '<p>The thumbnail image might be the same.</p>';
-					continue;
-				}
+			$id_urls = json_decode( $item[ $col ], true );
+			$id = array_keys( $id_urls )[0];
+			$aid = $this->convert_media_id( $id, $id_urls[ $id ], $post_id, $msg );
+			if ( $aid !== false ) {
+				set_post_thumbnail( $post_id, $aid );
 			}
-			$msg .= '<p>Try to download the thumbnail image: ' . esc_html( $url ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $url, $post_id );
-			set_post_thumbnail( $post_id, $aid );
 		}
 		return $msg;
-	}
-
-	private function insert_attachment_from_url( $url, $post_id = 0, $timeout = 30 ) {
-		$temp = download_url( $url, $timeout );
-		if ( is_wp_error( $temp ) ) return false;
-
-		$file = [ 'name' => basename( $url ), 'tmp_name' => $temp ];
-		$attachment_id = media_handle_sideload( $file, $post_id );
-
-		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
-		return $attachment_id;
 	}
 
 

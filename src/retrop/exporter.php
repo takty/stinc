@@ -217,9 +217,8 @@ class Retrop_Exporter {
 		$id2urls = [];
 
 		foreach ( $this->_structs as $key => $s ) {
-			$type = $s['type'];
 			$val = '';
-			switch ( $type ) {
+			switch ( $s['type'] ) {
 			case R\FS_TYPE_TITLE:
 				$val = $p->post_title;
 				break;
@@ -237,8 +236,12 @@ class Retrop_Exporter {
 				$mkey = $s[R\FS_KEY];
 				$val = get_post_meta( $p->ID, $mkey, true );
 				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_MEDIA_URL ) {
-					$ais = wp_get_attachment_image_src( intval( $val ), 'full' );
-					if ( $ais !== false ) $val[ intval( $val ) ] = [ $ais[0] ];
+					$orig_id = intval( $val );
+					$ais = wp_get_attachment_image_src( $orig_id, 'full' );
+					if ( $ais !== false ) {
+						$val = [];
+						$val[ $orig_id ] = [ $ais[0] ];
+					}
 				}
 				break;
 			case R\FS_TYPE_DATE:
@@ -260,12 +263,16 @@ class Retrop_Exporter {
 				if ( ! has_post_thumbnail( $p->ID ) ) break;
 				$id = get_post_thumbnail_id( $p->ID );
 				$ais = wp_get_attachment_image_src( $id, 'full' );
-				if ( $ais !== false ) $val = $ais[0];
+				if ( $ais !== false ) {
+					$val = [];
+					$val[ $id ] = [ $ais[0] ];
+				}
 				break;
 			case R\FS_TYPE_ACF_PM:
 				if ( function_exists( 'get_field' ) ) {
 					$mkey = $s[R\FS_KEY];
 					$val = get_field( $mkey, $p->ID, false );
+					if ( ! $val ) $val = '';
 				}
 				break;
 			}
