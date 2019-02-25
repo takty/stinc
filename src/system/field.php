@@ -448,7 +448,7 @@ function add_post_meta_media_picker( $post_id, $key, $label, $settings = [] ) {
 function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) {
 	$url_to = \st\get_file_uri( __DIR__ );
 	$url_to = untrailingslashit( $url_to );
-	wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
+	wp_enqueue_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
 
 	$_src = '';
 	$_title = '';
