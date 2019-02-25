@@ -174,6 +174,7 @@ class Registerer {
 			'post_content'  => $this->get_post_content( $item, $post_id, $msg ),
 			'post_date'     => $this->get_post_date( $item ),
 			'post_date_gmt' => $this->get_post_date_gmt( $item ),
+			'post_name'     => $this->get_post_name( $item ),
 			'post_status'   => 'publish',
 		];
 		$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
@@ -278,7 +279,7 @@ class Registerer {
 	}
 
 
-	// ---- POST DATE & DATE GMT
+	// ---- POST DATE & DATE GMT & POST NAME
 
 
 	private function get_post_date( $item ) {
@@ -297,6 +298,14 @@ class Registerer {
 			$date .= $item[ $col ];
 		}
 		return $date;
+	}
+
+	private function get_post_name( $item ) {
+		foreach ( $this->_type2structs[ R\FS_TYPE_SLUG ] as $col => $s ) {
+			if ( ! isset( $item[ $col ] ) ) continue;
+			return $item[ $col ];
+		}
+		return '';
 	}
 
 

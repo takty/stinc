@@ -250,6 +250,9 @@ class Retrop_Exporter {
 			case R\FS_TYPE_DATE_GMT:
 				$val = $p->post_date_gmt;
 				break;
+			case R\FS_TYPE_SLUG:
+				$val = $p->post_name;
+				break;
 			case R\FS_TYPE_TERM:
 				$tax = $s[R\FS_TAXONOMY];
 				$ts = get_the_terms( $p->ID, $tax );

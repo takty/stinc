@@ -3,7 +3,7 @@
  * Retrop: XLSX Importer (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-19
+ * @version 2019-02-25
  *
  */
 
@@ -172,6 +172,7 @@ RETROP['loadFiles'] = (function () {
 					type === 'post_meta' ||
 					type === 'post_date' ||
 					type === 'post_date_gmt' ||
+					type === 'post_name' ||
 					type === 'thumbnail_url' ||
 					type === 'media'
 				) {
