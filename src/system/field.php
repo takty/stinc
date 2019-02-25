@@ -6,9 +6,21 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-25
+ * @version 2019-02-26
  *
  */
+
+
+add_action( 'admin_enqueue_scripts', function () {
+	$url_to = \st\get_file_uri( __DIR__ );
+	$url_to = untrailingslashit( $url_to );
+	wp_register_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
+	wp_register_script( 'st-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
+	wp_register_style( 'st-field', $url_to . '/asset/field.min.css' );
+} );
+
+
+// -----------------------------------------------------------------------------
 
 
 function save_post_meta( $post_id, $key, $filter = null, $default = null ) {
@@ -446,11 +458,8 @@ function add_post_meta_media_picker( $post_id, $key, $label, $settings = [] ) {
 }
 
 function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) {
-	$url_to = \st\get_file_uri( __DIR__ );
-	$url_to = untrailingslashit( $url_to );
-	wp_enqueue_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
-	// wp_enqueue_script( 'st-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
-	// wp_enqueue_style( 'st-field', $url_to . '/asset/field.min.css' );
+	wp_enqueue_script( 'st-field' );
+	wp_enqueue_style( 'st-field' );
 
 	$_src = '';
 	$_title = '';
@@ -461,36 +470,19 @@ function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) 
 		if ( $p ) $_title = esc_html( $p->post_title );
 	}
 ?>
-		<div id="<?php echo "{$key}-body" ?>" style="margin-top:1rem;">
+		<div id="<?php echo "{$key}-body" ?>" class="st-field-media-picker">
 			<label><?php echo esc_html( $label ) ?></label>
-			<div style="display:flex;">
-				<div style="margin-right:8px;">
-					<a href="javascript:void(0);" style="width:4rem;height:4rem;background:no-repeat center/contain url('<?php echo $_src ?>') #f7f7f7;" <?php name_id( "{$key}_src" ) ?> class="button st-field-media-picker-select"></a>
+			<div>
+				<div>
+					<a href="javascript:void(0);" style="background-image:url('<?php echo $_src ?>');" <?php name_id( "{$key}_src" ) ?> class="button st-field-media-picker-select"></a>
 				</div>
-				<div style="display:flex;flex-direction:column;flex-grow:1;align-items:flex-end;justify-content:space-between;">
-					<input type="text" style="width:100%" disabled <?php name_id( "{$key}_title" ) ?> value="<?php echo $_title ?>">
+				<div>
+					<input type="text" disabled <?php name_id( "{$key}_title" ) ?> value="<?php echo $_title ?>">
 					<a href="javascript:void(0);" class="st-field-media-picker-delete"><?php _e( 'Remove', 'default' ); ?></a>
 				</div>
 			</div>
 			<input type="hidden" <?php name_id( $key ) ?> value="<?php echo $media_id ?>" />
-			<script>window.addEventListener('load', function () {
-				function st_field_media_picker_initialize_admin(key) {
-					const NS = 'st-field-media-picker';
-					init(document.getElementById(key + '-body'));
-					function init(body) {
-						const del = body.getElementsByClassName(NS + '-delete')[0];
-						del.addEventListener('click', () => { set_item(null, { id: '', url: '', title: '' }); });
-						const sel = body.getElementsByClassName(NS + '-select')[0];
-						setMediaPicker(sel, false, set_item, { multiple: false, title: sel.innerText, media_id_input: '<?php echo $key ?>' });
-					}
-					function set_item(dummy, f) {
-						document.getElementById(key).value = f.id;
-						document.getElementById(key + '_src'  ).style.backgroundImage = 'url(' + f.url + ')';
-						document.getElementById(key + '_title').value = f.title;
-					}
-				}
-				st_field_media_picker_initialize_admin('<?php echo $key ?>');
-			});</script>
+			<script>window.addEventListener('load', function () { st_field_media_picker_initialize_admin('<?php echo $key ?>'); });</script>
 		</div>
 	<?php
 }
