@@ -31,9 +31,9 @@ function add_post_meta_input( $post_id, $key, $label, $type = 'text' ) {
 	output_input_row( $label, $key, $val, $type );
 }
 
-function add_post_meta_textarea( $post_id, $key, $label ) {
+function add_post_meta_textarea( $post_id, $key, $label, $rows = 2 ) {
 	$val = get_post_meta( $post_id, $key, true );
-	output_textarea_row( $label, $key, $val );
+	output_textarea_row( $label, $key, $val, $rows );
 }
 
 function add_post_meta_rich_editor( $post_id, $key, $label, $settings = [] ) {
@@ -64,13 +64,13 @@ function output_input_row( $label, $key, $val, $type = 'text' ) {
 <?php
 }
 
-function output_textarea_row( $label, $key, $val ) {
+function output_textarea_row( $label, $key, $val, $rows = 2 ) {
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
 	<div style="margin-top:1rem;">
 		<label>
 			<?php echo esc_html( $label ) ?>
-			<textarea <?php name_id( $key ) ?> cols="64" rows="2" style="width:100%;"><?php echo $val ?></textarea>
+			<textarea <?php name_id( $key ) ?> cols="64" rows="<?php echo $rows ?>" style="width:100%;"><?php echo $val ?></textarea>
 		</label>
 	</div>
 <?php
@@ -477,7 +477,7 @@ function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) 
 					const CLS_SEL = NS + '-select';
 					const CLS_DEL = NS + '-delete';
 					init(document.getElementById(key + '-body'));
-					
+
 					function init(body) {
 						const del = body.getElementsByClassName(CLS_DEL)[0];
 						del.addEventListener('click', () => { set_item(null, { id: '', url: '', title: '' }); });
