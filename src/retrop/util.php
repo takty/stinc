@@ -6,7 +6,7 @@ namespace st\retrop;
  * Utilities for Retrop
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-25
+ * @version 2019-02-26
  *
  */
 
@@ -37,6 +37,7 @@ const FS_FILTER_CONTENT_MEDIA = 'post_content_media';  // for Importer & Exporte
 const FS_FILTER_NORM_DATE     = 'norm_date';           // for Importer
 const FS_FILTER_NL2BR         = 'nl2br';               // for Importer
 const FS_FILTER_MEDIA_URL     = 'media_url';           // for Importer & Exporter
+const FS_FILTER_SLUG          = 'post_name';           // for Importer
 
 // for FS_TYPE_TERM
 const FS_TAXONOMY  = 'taxonomy';

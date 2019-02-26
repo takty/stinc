@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-25
+ * @version 2019-02-26
  *
  */
 
@@ -41,6 +41,11 @@ class Registerer {
 			if ( count( $keys ) ) $this->_media_col = $keys[0];
 		}
 		$this->_media_orig_to_cur = get_option( "retrop_registerer_media_$post_type", [] );
+	}
+
+	private function split_column_name( $col ) {
+		$cs = explode( '|', $col );
+		return $cs[0];
 	}
 
 	private function extract_type_struct( $structs ) {
@@ -237,6 +242,7 @@ class Registerer {
 	private function get_post_title( $item ) {
 		$title = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_TITLE ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 			$title .= $item[ $col ];
 		}
@@ -250,6 +256,7 @@ class Registerer {
 	private function get_post_content( $item, $post_id, &$msg ) {
 		$content = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_CONTENT ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 			$val = trim( $item[ $col ] );
 			if ( empty( $val ) ) continue;
@@ -266,6 +273,7 @@ class Registerer {
 
 	private function update_post_metas( $item, $post_id, &$msg ) {
 		foreach ( $this->_type2structs[ R\FS_TYPE_META ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 			$val = trim( $item[ $col ] );
 			if ( empty( $val ) ) continue;
@@ -285,6 +293,7 @@ class Registerer {
 	private function get_post_date( $item ) {
 		$date = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_DATE ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 			$date .= $item[ $col ];
 		}
@@ -294,6 +303,7 @@ class Registerer {
 	private function get_post_date_gmt( $item ) {
 		$date = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_DATE_GMT ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 			$date .= $item[ $col ];
 		}
@@ -302,8 +312,15 @@ class Registerer {
 
 	private function get_post_name( $item ) {
 		foreach ( $this->_type2structs[ R\FS_TYPE_SLUG ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
-			return $item[ $col ];
+			$val = $item[ $col ];
+			if ( isset( $s[ R\FS_FILTER ] ) && $s[ R\FS_FILTER ] === R\FS_FILTER_SLUG ) {
+				$val = strtolower( $val );
+				$val = preg_replace( '/[^A-Za-z0-9]/', '-', $val );
+				$val = preg_replace( '/--+/', '-', $val );
+			}
+			return $val;
 		}
 		return '';
 	}
@@ -314,6 +331,7 @@ class Registerer {
 
 	private function add_terms( $item, $post_id, $is_term_inserted ) {
 		foreach ( $this->_type2structs[ R\FS_TYPE_TERM ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 
 			if ( ! isset( $s[ R\FS_TAXONOMY ] ) ) continue;
@@ -386,6 +404,7 @@ class Registerer {
 	private function update_post_thumbnail( $item, $post_id ) {
 		$msg = '';
 		foreach ( $this->_type2structs[ R\FS_TYPE_THUMBNAIL_URL ] as $col => $s ) {
+			$col = $this->split_column_name( $col );
 			if ( ! isset( $item[ $col ] ) ) continue;
 
 			$id_urls = json_decode( $item[ $col ], true );
