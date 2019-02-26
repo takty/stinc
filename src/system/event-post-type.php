@@ -6,7 +6,7 @@ namespace st;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-04
+ * @version 2019-02-26
  *
  */
 
@@ -60,6 +60,7 @@ class EventPostType {
 	}
 
 	static public function _echo_date_vals( $vals ) {  // Private
+		if ( empty( $vals ) ) return;
 		echo esc_attr( date( get_option( 'date_format' ), strtotime( $vals ) ) );
 	}
 
