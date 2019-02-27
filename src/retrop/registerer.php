@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-26
+ * @version 2019-02-27
  *
  */
 
@@ -114,13 +114,13 @@ class Registerer {
 	}
 
 	private function convert_media_id( $orig_id, $orig_urls, $post_id, &$msg ) {
-		sort( $orig_urls );  // The shortest might be the full size url.
+		$orig_url = $this->get_full_size_url( $orig_urls );
 		$aid = $this->get_media_id( $orig_id );
 		if ( $aid !== false ) {
-			$msg .= '<p>The media file (#' . $orig_id . ') already exists.</p>';
+			$msg .= '<p>The media file (#' . $orig_id . '): ' . esc_html( $orig_url ) . ' already exists.</p>';
 		} else {
-			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_urls[0] ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $orig_urls[0], $post_id, 60 );
+			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_url ) . '</p>';
+			$aid = $this->insert_attachment_from_url( $orig_url, $post_id, 60 );
 			if( $aid !== false) {
 				$this->add_media_id( $orig_id, $aid );
 			}
@@ -137,6 +137,14 @@ class Registerer {
 
 		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
 		return $attachment_id;
+	}
+
+	private function get_full_size_url( $orig_urls ) {
+		usort( $orig_urls, function ( $a, $b ) {  // The shortest might be the full size url.
+			if ( strlen( $a ) === strlen( $b ) ) return 0;
+			return ( strlen( $a ) < strlen( $b ) ) ? -1 : 1;
+		} );
+		return $orig_urls[0];
 	}
 
 
@@ -452,8 +460,7 @@ class Registerer {
 	private function _convert_url( $orig_id, $orig_urls, $class, $post_id, &$msg ) {
 		$aid = $this->convert_media_id( $orig_id, $orig_urls, $post_id, $msg );
 		if ( $aid === false ) {
-			sort( $orig_urls );  // The shortest might be the full size url.
-			return $orig_urls[0];
+			return $this->get_full_size_url( $orig_urls );;
 		}
 		if ( empty( $class ) ) {
 			$url = wp_get_attachment_url( $aid );
