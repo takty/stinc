@@ -6,7 +6,7 @@ namespace st;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-26
+ * @version 2019-02-27
  *
  */
 
@@ -255,5 +255,5 @@ function set_admin_columns( $all_columns, $sortable_columns ) {
 }
 
 function get_event_date_tags( $post_id, $raw = false, $format = "<span>%year%</span><span>%month%</span><span>%day%</span>" ) {
-	return \st\EventPostType::get_instance()->get_event_date_tags( $post_id, $raw, $format );
+	return \st\EventPostType::get_instance()->get_date_tags( $post_id, $raw, $format );
 }
