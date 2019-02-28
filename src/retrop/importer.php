@@ -48,7 +48,7 @@ class Retrop_Importer extends \WP_Importer {
 		$this->_id           = 'retrop_import_' . $id;
 		$this->_json_structs = json_encode( $args['structs'] );
 		$this->_url_to       = $args['url_to'];
-		$this->_post_filter  = $args['post_filter'];
+		if ( isset( $args['post_filter'] ) ) $this->_post_filter = $args['post_filter'];
 
 		if ( isset( $args['can_auto_add_terms'] ) ) $this->_can_auto_add_terms = $args['can_auto_add_terms'];
 
