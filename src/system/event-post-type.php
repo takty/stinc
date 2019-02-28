@@ -6,7 +6,7 @@ namespace st;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-27
+ * @version 2019-02-28
  *
  */
 
@@ -53,10 +53,7 @@ class EventPostType {
 		} else {
 			$ds = ['?', '?', '?'];
 		}
-		$tags = str_replace( '%year%',  $ds[0], $format );
-		$tags = str_replace( '%month%', $ds[1], $tags );
-		$tags = str_replace( '%day%',   $ds[2], $tags );
-		return $tags;
+		return str_replace( [ '%year%', '%month%', '%day%' ], $ds, $format );
 	}
 
 	static public function _echo_date_vals( $vals ) {  // Private
