@@ -199,6 +199,37 @@ class EventPostType {
 		\st\field\set_admin_columns( $this->_post_type, $cs, $scs );
 	}
 
+	public function get_date_strings( $post_id, $tab_separated_format = "Y\tm\td" ) {
+		$date_bgn = get_post_meta( $post_id, self::KEY_BGN, true );
+		$date_end = get_post_meta( $post_id, self::KEY_END, true );
+
+		if ( ! empty( $date_bgn ) ) {
+			$val_bgn = date_create_from_format( 'Y-m-d', $date_bgn );
+			$ds_bgn = explode( "\t", date_format( $val_bgn, $tab_separated_format ) );
+		} else {
+			$ds_bgn = false;
+		}
+		if ( ! empty( $date_end ) ) {
+			$val_end = date_create_from_format( 'Y-m-d', $date_end );
+			$ds_end = explode( "\t", date_format( $val_end, $tab_separated_format ) );
+		} else {
+			$ds_end = false;
+		}
+		$lic = '';
+		if ( ! empty( $date_bgn ) || ! empty( $date_end ) ) {
+			if ( empty( $date_bgn ) ) $date_bgn = $date_end;
+			if ( empty( $date_end ) ) $date_end = $date_bgn;
+
+			$today = intval( date_i18n( 'Ymd' ) );
+			$bgn = intval( str_replace( '-', '', $date_bgn ) );
+			$end = intval( str_replace( '-', '', $date_end ) );
+			if ( $today < $bgn ) $lic = ' upcoming';
+			else if ( $end < $today ) $lic = ' finished';
+			else $lic = ' ongoing';
+		}
+		return [ $lic, $ds_bgn, $ds_end ];
+	}
+
 	public function get_date_tags( $post_id, $raw = false, $format = "<span>%year%</span><span>%month%</span><span>%day%</span>", $base_format = false ) {
 		$date_bgn = get_post_meta( $post_id, self::KEY_BGN, true );
 		$date_end = get_post_meta( $post_id, self::KEY_END, true );
