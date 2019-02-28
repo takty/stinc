@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-27
+ * @version 2019-02-28
  *
  */
 
@@ -27,14 +27,16 @@ class Registerer {
 	private $_digest_cols;
 	private $_media_col = false;
 	private $_labels;
+	private $_post_filter;
 	private $_debug = '';
 
-	public function __construct( $post_type, $structs, $labels = [] ) {
+	public function __construct( $post_type, $structs, $labels = [], $post_filter = null ) {
 		$this->_post_type       = $post_type;
 		$this->_type2structs    = $this->extract_type_struct( $structs );
 		$this->_required_cols   = $this->extract_columns( $structs, R\FS_REQUIRED );
 		$this->_digest_cols     = $this->extract_columns( $structs, R\FS_FOR_DIGEST );
 		$this->_labels          = $labels;
+		$this->_post_filter     = $post_filter;
 
 		if ( isset( $this->_type2structs[ R\FS_TYPE_MEDIA ] ) ) {
 			$keys = array_keys( $this->_type2structs[ R\FS_TYPE_MEDIA ] );
@@ -198,6 +200,7 @@ class Registerer {
 		$this->update_post_metas( $item, $post_id, $msg );
 		$this->add_terms( $item, $post_id, $is_term_inserted );
 		$msg .= $this->update_post_thumbnail( $item, $post_id );
+		if ( $this->_post_filter ) call_user_func( $this->_post_filter, $post_id );
 
 		$msg .= '<p>' . ( $old_id === false ? $this->_labels['new'] : $this->_labels['updated'] ) . ': ';
 		$msg .= wp_kses_post( $digested_text ) . '</p>';

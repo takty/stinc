@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Importer: Versatile XLSX Importer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-20
+ * @version 2019-02-28
  *
  */
 
@@ -35,6 +35,7 @@ class Retrop_Importer extends \WP_Importer {
 	private $_id;
 	private $_json_structs;
 	private $_url_to;
+	private $_post_filter;
 	private $_labels;
 
 	private $_can_auto_add_terms = false;
@@ -47,6 +48,7 @@ class Retrop_Importer extends \WP_Importer {
 		$this->_id           = 'retrop_import_' . $id;
 		$this->_json_structs = json_encode( $args['structs'] );
 		$this->_url_to       = $args['url_to'];
+		$this->_post_filter  = $args['post_filter'];
 
 		if ( isset( $args['can_auto_add_terms'] ) ) $this->_can_auto_add_terms = $args['can_auto_add_terms'];
 
@@ -66,7 +68,7 @@ class Retrop_Importer extends \WP_Importer {
 		if ( isset( $args[ 'labels' ] ) ) $this->_labels = array_merge( $this->_labels, $args['labels'] );
 
 		$this->initialize();
-		$this->_registerer = new Registerer( $args['post_type'], $args['structs'], $this->_labels );
+		$this->_registerer = new Registerer( $args['post_type'], $args['structs'], $this->_labels, $this->_post_filter );
 		$this->_ajax_request_url = $this->initialize_ajax();
 	}
 
