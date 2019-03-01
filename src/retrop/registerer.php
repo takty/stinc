@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-28
+ * @version 2019-03-01
  *
  */
 
@@ -162,41 +162,52 @@ class Registerer {
 			'post_type' => $this->_post_type,
 			'meta_query' => [ [ 'key' => self::PMK_DIGEST, 'value' => $digest ] ],
 		] );
-		$old_id = empty( $olds ) ? false : $olds[0]->ID;
+		$post_id = empty( $olds ) ? false : $olds[0]->ID;
 
 		if ( $this->_media_col && ! empty( $item[ $this->_media_col ] ) ) {
 			$val = $item[ $this->_media_col ];
 			$media = json_decode( $val, true );
 			$item[ $this->_media_col ] = $media;
 		}
-
 		$title = $this->get_post_title( $item );
-		$args = [
-			'post_type'    => $this->_post_type,
-			'post_title'   => $title,
-			'post_content' => 'A dummy text for inserting.',
-			'post_status'  => 'publish',
-		];
-		if ( $old_id !== false ) $args['ID'] = $old_id;
-		$post_id = wp_insert_post( $args );
-		if ( $post_id === 0 ) return false;
 
-		$msg = '';
-		$args = [
-			'ID'            => $post_id,
-			'post_type'     => $this->_post_type,
-			'post_title'    => $title,
-			'post_content'  => $this->get_post_content( $item, $post_id, $msg ),
-			'post_date'     => $this->get_post_date( $item ),
-			'post_date_gmt' => $this->get_post_date_gmt( $item ),
-			'post_name'     => $this->get_post_name( $item ),
-			'post_status'   => 'publish',
-		];
-		$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
-
+		if ( $post_id === false ) {  // Add a new post
+			$args = [
+				'post_type'    => $this->_post_type,
+				'post_title'   => $title,
+				'post_content' => 'A dummy text for inserting.',
+			];
+			$post_id = wp_insert_post( $args );
+			if ( $post_id === 0 ) return false;
+			$args = [
+				'ID'            => $post_id,
+				'post_type'     => $this->_post_type,
+				'post_title'    => $title,
+				'post_content'  => $this->get_post_content( $item, $post_id, $msg ),
+				'post_date'     => $this->get_post_date( $item ),
+				'post_date_gmt' => $this->get_post_date_gmt( $item ),
+				'post_name'     => $this->get_post_name( $item ),
+				'post_status'   => 'publish',
+			];
+			$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
+		} else {  // Update the old post
+			$args = [
+				'ID'            => $post_id,
+				'post_type'     => $this->_post_type,
+				'post_title'    => $title,
+				'post_content'  => $this->get_post_content( $item, $post_id, $msg ),
+				'post_date'     => $this->get_post_date( $item ),
+				'post_date_gmt' => $this->get_post_date_gmt( $item ),
+				'post_name'     => $this->get_post_name( $item ),
+				'post_status'   => 'publish',
+			];
+			$post_id = wp_insert_post( $args );  // Insert again for assigning media to the page
+			if ( $post_id === 0 ) return false;
+		}
 		update_post_meta( $post_id, self::PMK_IMPORT_FROM, $file_name );
 		update_post_meta( $post_id, self::PMK_DIGEST,      $digest );
 
+		$msg = '';
 		$this->update_post_metas( $item, $post_id, $msg );
 		$this->add_terms( $item, $post_id, $is_term_inserted );
 		$msg .= $this->update_post_thumbnail( $item, $post_id );
