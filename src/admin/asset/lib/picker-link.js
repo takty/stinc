@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2019-03-04
  *
  */
 
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 	if (cls === false) cls = 'link';
-	opts = Object.assign({ isInternalOnly: false, parentGen: 1 }, opts );
+	opts = Object.assign({ isInternalOnly: false, isLinkTargetAllowed: false, parentGen: 1 }, opts );
 
 	elm.addEventListener('click', function (e) {
 		if (elm.getAttribute('disabled')) return;
@@ -26,7 +26,7 @@ function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 			const parent = getParent(e.target, opts.parentGen);
 			setItem(parent, cls, f);
 			if (fn) fn(e.target, f);
-		}, opts.isInternalOnly);
+		}, opts.isInternalOnly, opts.isLinkTargetAllowed);
 	});
 
 	function getParent(elm, gen) {
@@ -53,7 +53,7 @@ function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 		}
 	}
 
-	function createLink(callbackFunc, isInternalOnly) {
+	function createLink(callbackFunc, isInternalOnly, isLinkTargetAllowed) {
 		const id = 'picker-link-ta' + (0 | (Math.random() * 8191));
 		const ta = document.createElement('textarea');
 		ta.style.display = 'none';
@@ -82,6 +82,12 @@ function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 			const qrs = document.querySelectorAll('#link-selector .query-results');
 			for (let i = 0; i < qrs.length; i += 1) {
 				qrs[i].style.top = '48px';
+			}
+		} else if (!isLinkTargetAllowed) {
+			jQuery('#link-options > .link-target').hide();
+			const qrs = document.querySelectorAll('#link-selector .query-results');
+			for (let i = 0; i < qrs.length; i += 1) {
+				qrs[i].style.top = '177px';
 			}
 		}
 	}
