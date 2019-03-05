@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2019-03-05
  *
  */
 
@@ -47,12 +47,12 @@ class Multilang_Tag {
 			register_taxonomy_for_object_type( $this->_taxonomy, $post_type );
 		}
 		\st\taxonomy\set_taxonomy_default_term( $post_type_s, $this->_taxonomy, $this->_core->get_default_site_lang() );
-		$this->_post_types += $post_type_s;
+		$this->_post_types = array_merge( $this->_post_types, $post_type_s );
 	}
 
 	public function add_tagged_taxonomy( $taxonomy_s ) {
 		if ( ! is_array( $taxonomy_s ) ) $taxonomy_s = [ $taxonomy_s ];
-		$this->_taxonomies += $taxonomy_s;
+		$this->_taxonomies = array_merge( $this->_taxonomies, $taxonomy_s );
 	}
 
 	public function get_taxonomy() {

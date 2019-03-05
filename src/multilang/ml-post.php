@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2019-03-05
  *
  */
 
@@ -31,7 +31,7 @@ class Multilang_Post {
 		foreach ( $post_type_s as $post_type ) {
 			add_action( "save_post_$post_type", [$this, '_cb_save_post_lang'], 10, 2 );
 		}
-		$this->_post_types += $post_type_s;
+		$this->_post_types = array_merge( $this->_post_types, $post_type_s );
 	}
 
 
