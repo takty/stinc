@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-01
+ * @version 2019-03-05
  *
  */
 
@@ -400,13 +400,13 @@ class Registerer {
 			return in_array( $v, $ts, true );
 		} );
 		if ( $is_term_inserted && count( $slugs ) !== count( $vals ) ) {
-			$ue_slugs = $this->ensure_term_existing( $vals );
-			$slugs += $ue_slugs;
+			$ue_slugs = $this->ensure_term_existing( $vals, $ts );
+			$slugs = array_merge( $slugs, $ue_slugs );
 		}
 		if ( ! empty( $slugs ) ) wp_set_object_terms( $post_id, $slugs, $tax );  // Replace existing terms
 	}
 
-	private function ensure_term_existing( $vals ) {
+	private function ensure_term_existing( $vals, $ts ) {
 		$ue_slugs = array_filter( $vals, function ( $v ) use ( $ts ) {
 			return ! in_array( $v, $ts, true );
 		} );
