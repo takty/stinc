@@ -76,7 +76,6 @@ class Search {
 	public function add_post_type_specific_search_page( $slug, $post_type_s ) {
 		$this->ensure_search_rewrite_rules_filter_added();
 		$this->ensure_template_redirect_filter_added();
-		$this->ensure_pre_get_posts_filter();
 
 		if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
 		$this->_slug_to_pts[ trim( $slug, '/' ) ] = $post_type_s;
@@ -225,7 +224,9 @@ class Search {
 	public function _cb_pre_get_posts( $query ) {
 		if ( $query->is_search ) {
 			$val = $query->get( 'post_type' );
-			if ( empty( $val ) ) $query->set( 'post_type', $this->_post_types );
+			if ( empty( $val ) && ! empty( $this->_post_types ) ) {
+				$query->set( 'post_type', $this->_post_types );
+			}
 		}
 		return $query;
 	}
