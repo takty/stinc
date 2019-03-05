@@ -6,7 +6,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-05
+ * @version 2019-03-05
  *
  */
 
@@ -78,22 +78,22 @@ function the_loop_query( $slug, $name = '', $args, $opts = [] ) {
 }
 
 function the_loop_of_child_pages( $slug, $name, $args = [], $opts = [] ) {
-	$args += [
+	$args = array_merge( [
+		'post_type'      => 'page',
 		'posts_per_page' => -1,
-		'post_type' => 'page',
-		'orderby' => 'menu_order',
-		'order' => 'asc',
-		'post_parent' => get_the_ID()
-	];
+		'orderby'        => 'menu_order',
+		'order'          => 'asc',
+		'post_parent'    => get_the_ID()
+	], $args );
 	the_loop_query( $slug, $name, $args, $opts );
 }
 
 function the_loop_of_posts( $slug, $name = '', $args = [], $opts = [] ) {
-	$args += [
-		'post_type' => 'post',
+	$args = array_merge( [
+		'post_type'      => 'post',
 		'posts_per_page' => -1,
-		'order' => 'asc',
-	];
+		'order'          => 'asc',
+	], $args );
 	the_loop_query( $slug, $name, $args, $opts );
 }
 
