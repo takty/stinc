@@ -6,7 +6,7 @@ namespace st;
  * Structured Data
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-18
+ * @version 2019-03-05
  *
  */
 
@@ -15,14 +15,14 @@ require_once __DIR__ . '/text.php';
 
 
 function the_structured_data( $args = [], $same_as = [] ) {
-	$args += [
+	$args = array_merge( [
 		'@context' => 'http://schema.org',
-		'@type' => 'Organization',
-		'name' => get_structured_data_name(),
-		'url' => get_structured_data_url(),
-		'logo' => '',
-		'sameAs' => $same_as
-	];
+		'@type'    => 'Organization',
+		'name'     => get_structured_data_name(),
+		'url'      => get_structured_data_url(),
+		'logo'     => '',
+		'sameAs'   => $same_as
+	], $args );
 ?>
 <script type="application/ld+json"><?php echo json_encode( $args, JSON_UNESCAPED_UNICODE ); ?></script>
 <?php
