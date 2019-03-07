@@ -240,7 +240,7 @@ class NavMenu {
 		if ( $menu === false ) return [];
 		$ret = [];
 		if ( self::$_is_cache_enabled ) {
-			$ret = $this->_get_nav_menu_items( $menu->term_id );
+			$ret = self::get_nav_menu_items( $menu->term_id );
 		} else {
 			$ret = wp_get_nav_menu_items( $menu->term_id );
 		}
@@ -290,7 +290,7 @@ class NavMenu {
 		}
 	}
 
-	private function _get_nav_menu_items( $id ) {
+	static public function get_nav_menu_items( $id ) {
 		$key = 'cache-menu-id-' . $id;
 		$items = get_transient( $key );
 		if ( $items !== false ) return $items;
