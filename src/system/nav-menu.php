@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-18
+ * @version 2019-03-07
  *
  */
 
@@ -24,6 +24,13 @@ class NavMenu {
 	const CLS_MENU_ANCESTOR = 'menu-ancestor';
 	const CLS_PAGE_PARENT   = 'page-parent';
 	const CLS_PAGE_ANCESTOR = 'page-ancestor';  // Same as CLS_ANCESTOR
+
+	static private $_is_cache_enabled;
+
+	static public function enable_cache() {
+		self::$_is_cache_enabled = true;
+		add_action( 'wp_update_nav_menu', [ '\st\NavMenu', '_cb_wp_update_nav_menu' ], 10, 2 );
+	}
 
 	private $_cur_url;
 	private $_home_url;
@@ -229,7 +236,12 @@ class NavMenu {
 
 		$menu = wp_get_nav_menu_object( $ls[ $menu_name ] );
 		if ( $menu === false ) return [];
-		$ret = wp_get_nav_menu_items( $menu->term_id );
+		$ret = [];
+		if ( self::$_is_cache_enabled ) {
+			$ret = $this->_get_nav_menu_items( $menu->term_id );
+		} else {
+			$ret = wp_get_nav_menu_items( $menu->term_id );
+		}
 		if ( $ret === false ) return [];
 		return $ret;
 	}
@@ -260,6 +272,29 @@ class NavMenu {
 			if ( $this->_is_current( $mi ) ) return true;
 		}
 		return false;
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
+	static public function _cb_wp_update_nav_menu( $menu_id, $menu_data = null ) {
+		if ( is_array( $menu_data ) && isset( $menu_data['menu-name'] ) ) {
+			$menu = wp_get_nav_menu_object( $menu_data['menu-name'] );
+			if ( isset( $menu->term_id ) ) {
+				$key = 'cache-menu-id-' . $menu->term_id;
+				delete_transient( $key );
+			}
+		}
+	}
+
+	private function _get_nav_menu_items( $id ) {
+		$key = 'cache-menu-id-' . $id;
+		$items = get_transient( $key );
+		if ( $items !== false ) return $items;
+		$items = wp_get_nav_menu_items( $id );
+		set_transient( $key, $items, 60 * 60 * 24 );
+		return $items;
 	}
 
 
