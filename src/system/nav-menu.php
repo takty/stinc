@@ -25,6 +25,8 @@ class NavMenu {
 	const CLS_PAGE_PARENT   = 'page-parent';
 	const CLS_PAGE_ANCESTOR = 'page-ancestor';  // Same as CLS_ANCESTOR
 
+	const CACHE_EXPIRATION  = 60 * 60 * 24;  // One day
+
 	static private $_is_cache_enabled;
 
 	static public function enable_cache() {
@@ -293,7 +295,7 @@ class NavMenu {
 		$items = get_transient( $key );
 		if ( $items !== false ) return $items;
 		$items = wp_get_nav_menu_items( $id );
-		set_transient( $key, $items, 60 * 60 * 24 );
+		set_transient( $key, $items, self::CACHE_EXPIRATION );
 		return $items;
 	}
 
