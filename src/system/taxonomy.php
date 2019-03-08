@@ -6,7 +6,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-05
+ * @version 2019-03-08
  *
  */
 
@@ -168,11 +168,11 @@ function _count_term( $taxonomy, $term, &$post_sets ) {
 	foreach ( $child as $c ) {
 		_count_term( $taxonomy, $c, $post_sets );
 		if ( isset( $post_sets[ $c->slug ] ) ) {
-			$set = array_marge( $set, $post_sets[ $c->slug ] );
+			$set = array_merge( $set, $post_sets[ $c->slug ] );
 		}
 	}
 	if ( ! isset( $post_sets[ $term->slug ] ) ) $post_sets[ $term->slug ] = [];
-	$post_sets[ $term->slug ] = array_marge( $post_sets[ $term->slug ], $set );
+	$post_sets[ $term->slug ] = array_merge( $post_sets[ $term->slug ], $set );
 }
 
 
