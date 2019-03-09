@@ -6,7 +6,7 @@ use \st\retrop as R;
  * Retrop Exporter: Versatile XLSX Exporter
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-25
+ * @version 2019-03-09
  *
  */
 
@@ -243,6 +243,9 @@ class Retrop_Exporter {
 						$val[ $orig_id ] = [ $ais[0] ];
 					}
 				}
+				if ( isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_CONTENT_MEDIA ) {
+					$this->_extract_media( $val, $id2urls );
+				}
 				break;
 			case R\FS_TYPE_DATE:
 				$val = $p->post_date;
@@ -276,6 +279,9 @@ class Retrop_Exporter {
 					$mkey = $s[R\FS_KEY];
 					$val = get_field( $mkey, $p->ID, false );
 					if ( ! $val ) $val = '';
+					if ( ! empty( $val ) && isset( $s[R\FS_FILTER] ) && $s[R\FS_FILTER] === R\FS_FILTER_CONTENT_MEDIA ) {
+						$this->_extract_media( $val, $id2urls );
+					}
 				}
 				break;
 			}
@@ -287,9 +293,11 @@ class Retrop_Exporter {
 	}
 
 	private function _extract_media( $val, &$id2urls ) {
-		$ud = wp_upload_dir();
-		$upload_url = $ud['baseurl'];
 		$dom = str_get_html( $val );
+		if ( $dom === false ) {
+			$dom = str_get_html( '<html><body>' . $val . '</body></html>' );
+		}
+		if ( $dom === false ) return;
 
 		foreach ( $dom->find( 'img' ) as &$elm ) {
 			$this->_add_media( $id2urls, $elm->src );
