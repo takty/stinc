@@ -7,7 +7,7 @@ use \st\retrop as R;
  * Retrop Registerer
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-05
+ * @version 2019-03-09
  *
  */
 
@@ -163,6 +163,7 @@ class Registerer {
 			'meta_query' => [ [ 'key' => self::PMK_DIGEST, 'value' => $digest ] ],
 		] );
 		$post_id = empty( $olds ) ? false : $olds[0]->ID;
+		$exists = $post_id !== false;
 
 		if ( $this->_media_col && ! empty( $item[ $this->_media_col ] ) ) {
 			$val = $item[ $this->_media_col ];
@@ -213,7 +214,7 @@ class Registerer {
 		$msg .= $this->update_post_thumbnail( $item, $post_id );
 		if ( $this->_post_filter ) call_user_func( $this->_post_filter, $post_id );
 
-		$msg .= '<p>' . ( $old_id === false ? $this->_labels['new'] : $this->_labels['updated'] ) . ': ';
+		$msg .= '<p>' . $this->_labels[ $exists ? 'updated' : 'new' ] . ': ';
 		$msg .= wp_kses_post( $digested_text ) . '</p>';
 		$msg .= $this->_debug;
 		return $msg;
