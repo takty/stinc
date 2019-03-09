@@ -3,7 +3,7 @@
  * Retrop: XLSX Importer (js)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-25
+ * @version 2019-03-09
  *
  */
 
@@ -132,9 +132,11 @@ RETROP['loadFiles'] = (function () {
 	// -------------------------------------------------------------------------
 
 
+	const MAX_COLUMN = 100;
+
 	function processSheet(sheet, retItems, structs) {
 		var range = XLSX.utils.decode_range(sheet['!ref']);
-		var x0 = range.s.c, x1 = Math.min(range.e.c, 40) + 1;
+		var x0 = range.s.c, x1 = Math.min(range.e.c, MAX_COLUMN) + 1;
 		var y0 = range.s.r, y1 = range.e.r + 1;
 
 		var colCount = 0, colToKey = {};
