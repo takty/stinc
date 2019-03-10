@@ -122,22 +122,31 @@ class Registerer {
 			$msg .= '<p>The media file (#' . $orig_id . '): ' . esc_html( $orig_url ) . ' already exists.</p>';
 		} else {
 			$msg .= '<p>Try to download the media (#' . $orig_id . '): ' . esc_html( $orig_url ) . '</p>';
-			$aid = $this->insert_attachment_from_url( $orig_url, $post_id, 60 );
+			$aid = $this->insert_attachment_from_url( $orig_url, $post_id, 60, $msg );
 			if( $aid !== false) {
+				$msg .= '<p>Download finished (new#' . $aid . ')</p>';
 				$this->add_media_id( $orig_id, $aid );
+			} else {
+				$msg .= '<p>Failuer!</p>';
 			}
 		}
 		return $aid;
 	}
 
-	private function insert_attachment_from_url( $url, $post_id = 0, $timeout = 30 ) {
+	private function insert_attachment_from_url( $url, $post_id = 0, $timeout, &$msg ) {
 		$temp = download_url( $url, $timeout );
-		if ( is_wp_error( $temp ) ) return false;
-
+		if ( is_wp_error( $temp ) ) {
+			if ( $msg ) $msg .= '<p>Error: ' . esc_html( $temp->get_error_message() ) . '</p>';
+			return false;
+		}
 		$file = [ 'name' => basename( $url ), 'tmp_name' => $temp ];
 		$attachment_id = media_handle_sideload( $file, $post_id );
 
-		if ( is_wp_error( $attachment_id ) ) @unlink( $temp );
+		if ( is_wp_error( $attachment_id ) ) {
+			if ( $msg ) $msg .= '<p>Error: ' . esc_html( $attachment_id->get_error_message() ) . '</p>';
+			@unlink( $temp );
+			return false;
+		}
 		return $attachment_id;
 	}
 
