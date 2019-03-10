@@ -3,13 +3,13 @@
  * Field (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-26
+ * @version 2019-03-10
  *
  */
 
 
-function st_field_media_picker_initialize_admin(key) {
-	const NS        = 'st-field-media-picker';
+function stinc_field_media_picker_initialize_admin(key) {
+	const NS        = 'stinc-field-media-picker';
 	const CLS_SEL   = NS + '-select';
 	const CLS_DEL   = NS + '-delete';
 	const ID_BODY   = key + '-body';

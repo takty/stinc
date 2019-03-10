@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-26
+ * @version 2019-03-10
  *
  */
 
@@ -15,8 +15,8 @@ add_action( 'admin_enqueue_scripts', function () {
 	$url_to = \st\get_file_uri( __DIR__ );
 	$url_to = untrailingslashit( $url_to );
 	wp_register_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
-	wp_register_script( 'st-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
-	wp_register_style( 'st-field', $url_to . '/asset/field.min.css' );
+	wp_register_script( 'stinc-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
+	wp_register_style( 'stinc-field', $url_to . '/asset/field.min.css' );
 } );
 
 
@@ -36,6 +36,10 @@ function save_post_meta( $post_id, $key, $filter = null, $default = null ) {
 		$val = $default;
 	}
 	update_post_meta( $post_id, $key, $val );
+}
+
+function add_separator() {
+	output_separator();
 }
 
 function add_post_meta_input( $post_id, $key, $label, $type = 'text' ) {
@@ -64,62 +68,74 @@ function add_post_meta_related_term_select( $post_id, $key, $label, $taxonomy, $
 	output_term_select_row( $label, $key, $terms, $val, $field );
 }
 
+function output_separator() {
+	wp_enqueue_style( 'stinc-field' );
+?>
+	<hr class="stinc-field-separator">
+<?php
+}
+
 function output_input_row( $label, $key, $val, $type = 'text' ) {
+	wp_enqueue_style( 'stinc-field' );
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
-	<div style="margin-top:1rem;">
+	<div class="stinc-field-single">
 		<label>
-			<?php echo esc_html( $label ) ?>
-			<input <?php name_id( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64" style="width:100%;">
+			<span><?php echo esc_html( $label ) ?></span>
+			<input <?php name_id( $key ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $val ?>" size="64">
 		</label>
 	</div>
 <?php
 }
 
 function output_textarea_row( $label, $key, $val, $rows = 2 ) {
+	wp_enqueue_style( 'stinc-field' );
 	$val = isset( $val ) ? esc_attr( $val ) : '';
 ?>
-	<div style="margin-top:1rem;">
+	<div class="stinc-field-single">
 		<label>
-			<?php echo esc_html( $label ) ?>
-			<textarea <?php name_id( $key ) ?> cols="64" rows="<?php echo $rows ?>" style="width:100%;"><?php echo $val ?></textarea>
+			<span><?php echo esc_html( $label ) ?></span>
+			<textarea <?php name_id( $key ) ?> cols="64" rows="<?php echo $rows ?>"><?php echo $val ?></textarea>
 		</label>
 	</div>
 <?php
 }
 
 function output_rich_editor_row( $label, $key, $val, $settings = [] ) {
+	wp_enqueue_style( 'stinc-field' );
+	$cls = '';
+	if ( isset( $settings['media_buttons'] ) && $settings['media_buttons'] === false ) {
+		$cls = ' no-media-button';
+	}
 ?>
-	<div style="margin-top:1.5rem;">
-		<hr style="margin:12px -12px;">
-		<div style="font-weight:bold;padding-bottom:0.5rem"><?php echo esc_html( $label ) ?></div>
+	<div class="stinc-field-rich-editor<?php echo $cls ?>">
+		<label><?php echo esc_html( $label ) ?></label>
 		<?php wp_editor( $val, $key, $settings ); ?>
 	</div>
 <?php
 }
 
 function output_checkbox_row( $label, $key, $chekced = false ) {
+	wp_enqueue_style( 'stinc-field' );
 ?>
-	<div style="margin-top:1rem;">
+	<div class="stinc-field-single">
 		<label>
+			<span><?php echo esc_html( $label ) ?></span>
 			<input <?php name_id( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>>
-			<?php echo esc_html( $label ) ?>
 		</label>
 	</div>
 <?php
 }
 
 function output_term_select_row( $label, $key, $taxonomy_or_terms, $cur_val, $field = 'slug' ) {
-	if ( is_array( $taxonomy_or_terms ) ) {
-		$terms = $taxonomy_or_terms;
-	} else {
-		$terms = get_terms( $taxonomy_or_terms );
-	}
+	wp_enqueue_style( 'stinc-field' );
+	$terms = is_array( $taxonomy_or_terms ) ? $taxonomy_or_terms : get_terms( $taxonomy_or_terms );
 	if ( ! is_array( $terms ) ) $terms = [];
 ?>
-	<div style="margin-top:1rem;">
-		<label><?php echo esc_html( $label ) ?>
-			<select style="width:100%;" name="<?php echo esc_attr( $key ) ?>">
+	<div class="stinc-field-single">
+		<label>
+			<span><?php echo esc_html( $label ) ?></span>
+			<select name="<?php echo esc_attr( $key ) ?>">
 <?php
 	foreach ( $terms as $t ) {
 		$_name = esc_html( $t->name );
@@ -194,16 +210,18 @@ function add_post_meta_textarea_postfix( $post_id, $key, $postfixes, $label ) {
 }
 
 function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 'text' ) {
+	wp_enqueue_style( 'stinc-field' );
 ?>
-	<div style="margin-top:1rem;">
+	<div class="stile-field-group">
 <?php
 	foreach ( $postfixes as $pf ) {
 		$_val = isset( $values[ $pf ] ) ? esc_attr( $values[ $pf ] ) : '';
 		$ni = "{$key}_$pf";
 ?>
-		<div>
-			<label><?php echo esc_html( "$label [$pf]" ) ?>
-			<input <?php name_id( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $_val ?>" size="64" style="width:100%;">
+		<div class="stinc-field-single">
+			<label>
+				<span><?php echo esc_html( "$label [$pf]" ) ?></span>
+				<input <?php name_id( $ni ) ?> type="<?php echo esc_attr( $type ) ?>" value="<?php echo $_val ?>" size="64">
 			</label>
 		</div>
 <?php
@@ -213,17 +231,19 @@ function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 't
 <?php
 }
 
-function output_textarea_row_postfix( $label, $key, $postfixes, $values ) {
+function output_textarea_row_postfix( $label, $key, $postfixes, $values, $rows = 2 ) {
+	wp_enqueue_style( 'stinc-field' );
 ?>
-	<div style="margin-top:1rem;">
+	<div class="stile-field-group">
 <?php
 	foreach ( $postfixes as $pf ) {
 		$_val = isset( $values[ $pf ] ) ? esc_textarea( $values[ $pf ] ) : '';
 		$ni = "{$key}_$pf";
 ?>
-		<div>
-			<label><?php echo esc_html( "$label [$pf]" ) ?>
-			<textarea <?php name_id( $ni ) ?> cols="64" rows="2" style="width:100%;"><?php echo $_val ?></textarea>
+		<div class="stinc-field-single">
+			<label>
+				<span><?php echo esc_html( "$label [$pf]" ) ?></span>
+				<textarea <?php name_id( $ni ) ?> cols="64" rows="<?php echo $rows ?>"><?php echo $_val ?></textarea>
 			</label>
 		</div>
 <?php
@@ -256,9 +276,8 @@ function save_rich_editor_meta_box( $post_id, $key ) {
 	save_post_meta( $post_id, $key, 'wp_kses_post' );
 }
 
-const TITLE_STYLE = 'padding:3px 8px;font-size:1.7em;line-height:100%;height:1.7em;width:100%;outline:none;margin:0 0 6px;background-color:#fff';
-
 function add_title_content_meta_box( $key, $sub_key_title, $sub_key_content, $label, $screen ) {
+	wp_enqueue_style( 'stinc-field' );
 	add_meta_box(
 		$key . '_mb', $label,
 		function ( $post ) use ( $key, $sub_key_title, $sub_key_content ) {
@@ -267,8 +286,8 @@ function add_title_content_meta_box( $key, $sub_key_title, $sub_key_content, $la
 			$title   = get_post_meta( $post->ID, $sub_key_title, true );
 			$content = get_post_meta( $post->ID, $sub_key_content, true );
 		?>
-		<div class="st-field-title">
-			<input style="<?php echo TITLE_STYLE ?>"
+		<div class="stinc-field-title">
+			<input
 				type="text" size="30" spellcheck="true" autocomplete="off" placeholder="<?php echo $title_placeholder ?>"
 				name="<?php echo $sub_key_title ?>" id="<?php echo $sub_key_title ?>"
 				value="<?php echo esc_attr( $title ) ?>"
@@ -458,8 +477,8 @@ function add_post_meta_media_picker( $post_id, $key, $label, $settings = [] ) {
 }
 
 function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) {
-	wp_enqueue_script( 'st-field' );
-	wp_enqueue_style( 'st-field' );
+	wp_enqueue_script( 'stinc-field' );
+	wp_enqueue_style( 'stinc-field' );
 
 	$_src = '';
 	$_title = '';
@@ -470,19 +489,19 @@ function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) 
 		if ( $p ) $_title = esc_html( $p->post_title );
 	}
 ?>
-		<div id="<?php echo "{$key}-body" ?>" class="st-field-media-picker">
+		<div id="<?php echo "{$key}-body" ?>" class="stinc-field-media-picker">
 			<label><?php echo esc_html( $label ) ?></label>
 			<div>
 				<div>
-					<a href="javascript:void(0);" style="background-image:url('<?php echo $_src ?>');" <?php name_id( "{$key}_src" ) ?> class="button st-field-media-picker-select"></a>
+					<a href="javascript:void(0);" style="background-image:url('<?php echo $_src ?>');" <?php name_id( "{$key}_src" ) ?> class="button stinc-field-media-picker-select"></a>
 				</div>
 				<div>
 					<input type="text" disabled <?php name_id( "{$key}_title" ) ?> value="<?php echo $_title ?>">
-					<a href="javascript:void(0);" class="st-field-media-picker-delete"><?php _e( 'Remove', 'default' ); ?></a>
+					<a href="javascript:void(0);" class="stinc-field-media-picker-delete"><?php _e( 'Remove', 'default' ); ?></a>
 				</div>
 			</div>
 			<input type="hidden" <?php name_id( $key ) ?> value="<?php echo $media_id ?>" />
-			<script>window.addEventListener('load', function () { st_field_media_picker_initialize_admin('<?php echo $key ?>'); });</script>
+			<script>window.addEventListener('load', function () { stinc_field_media_picker_initialize_admin('<?php echo $key ?>'); });</script>
 		</div>
 	<?php
 }
