@@ -286,13 +286,13 @@ function the_yearly_archive_select( $post_type = 'post', $default_title = 'YEAR'
 <?php
 }
 
-function the_taxonomy_archive_select( $taxonomy, $default_title = 'CATEGORY', $check_lang_visible = false ) {
+function the_taxonomy_archive_select( $taxonomy, $default_title = 'CATEGORY', $check_lang_visible = false, $hide_empty = false ) {
 	$key_visible = '_visible';
 	if ( class_exists( '\st\Multilang' ) ) {
 		$ml = \st\Multilang::get_instance();
 		$key_visible .= '_' . $ml->get_site_lang();
 	}
-	$terms = get_terms( $taxonomy, [ 'hide_empty' => false, 'parent' => 0 ] );
+	$terms = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => 0 ] );
 ?>
 		<select onchange="document.location.href = this.value;">
 			<option value="#"><?php echo $default_title ?></option>
@@ -303,7 +303,7 @@ function the_taxonomy_archive_select( $taxonomy, $default_title = 'CATEGORY', $c
 			if ( $check_lang_visible && empty( get_term_meta( $t->term_id, $key_visible, true ) ) ) continue;
 			echo '<option value="' . esc_attr( get_term_link( $t ) ) . '">' . esc_html( $ml->get_term_name( $t ) ) . '</option>';
 
-			$cts = get_terms( $taxonomy, [ 'hide_empty' => false, 'parent' => $t->term_id ] );
+			$cts = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => $t->term_id ] );
 			foreach ( $cts as $ct ) {
 				echo '<option value="' . esc_attr( get_term_link( $ct ) ) . '">' . '— ' . esc_html( $ml->get_term_name( $ct ) ) . '</option>';
 			}
@@ -314,7 +314,7 @@ function the_taxonomy_archive_select( $taxonomy, $default_title = 'CATEGORY', $c
 			if ( $check_lang_visible && empty( get_term_meta( $t->term_id, $key_visible, true ) ) ) continue;
 			echo '<option value="' . esc_attr( get_term_link( $t ) ) . '">' . esc_html( $t->name ) . '</option>';
 
-			$cts = get_terms( $taxonomy, [ 'hide_empty' => false, 'parent' => $t->term_id ] );
+			$cts = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => $t->term_id ] );
 			foreach ( $cts as $ct ) {
 				echo '<option value="' . esc_attr( get_term_link( $ct ) ) . '">' . '— ' . esc_html( $ct->name ) . '</option>';
 			}
