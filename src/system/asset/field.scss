@@ -12,7 +12,7 @@ $breakpoint-single-wrap: 45rem;
 
 
 .stinc-field-single {
-	&:not(:first-of-type) {
+	&:not(:first-child) {
 		margin-top: 0.75rem;
 	}
 	> label {
