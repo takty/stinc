@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-10
+ * @version 2019-03-13
  *
  */
 
@@ -121,7 +121,7 @@ function output_checkbox_row( $label, $key, $chekced = false ) {
 	<div class="stinc-field-single">
 		<label>
 			<span><?php echo esc_html( $label ) ?></span>
-			<input <?php name_id( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>>
+			<span class="checkbox"><input <?php name_id( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>></span>
 		</label>
 	</div>
 <?php

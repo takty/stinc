@@ -3,7 +3,7 @@
  * Field (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-10
+ * @version 2019-03-13
  *
  */
 
@@ -21,7 +21,7 @@ $breakpoint-single-wrap: 45rem;
 		justify-content: space-between;
 		flex-wrap: wrap;
 
-		> span {
+		> span:not([class]) {
 			padding-top: 0.35rem;
 			padding-bottom: 0.25rem;
 
@@ -32,7 +32,7 @@ $breakpoint-single-wrap: 45rem;
 			font-weight: bold;
 			color: #666;
 		}
-		> input, > textarea, > select {
+		> input:not([type='checkbox']), > textarea, > select, > span.checkbox {
 			padding-top: 0.25rem;
 			padding-bottom: 0.25rem;
 
