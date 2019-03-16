@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-05
+ * @version 2019-03-16
  *
  */
 
@@ -239,7 +239,7 @@ class Search {
 		global $wp_the_query;
 
 		$q_s = stripslashes( $q_s );
-		if ( empty( $_GET['s'] ) && $wp_the_query->is_main_query() ) $q_s = urldecode( $q_s );
+		if ( empty( $_GET['s'] ) && $wp_the_query->is_main_query() ) $q_s = rawurldecode( $q_s );
 		$q_s = str_replace( ["\r", "\n"], '', $q_s );
 
 		$terms = [];
