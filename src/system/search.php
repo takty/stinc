@@ -23,6 +23,8 @@ class Search {
 	// -------------------------------------------------------------------------
 
 
+	private $_is_slash_in_query_enabled = false;
+
 	private $_meta_keys   = [];
 	private $_post_types  = [];
 	private $_slug_to_pts = [];
@@ -35,6 +37,11 @@ class Search {
 	private $_pre_get_posts_func = null;
 
 	private function __construct() {}
+
+	public function set_slash_in_query_enabled( $enabled ) {
+		$this->_is_slash_in_query_enabled = $enabled;
+		$this->ensure_request_filter_added();
+	}
 
 	public function set_blank_search_page_enabled( $enabled ) {
 		if ( $enabled ) {
@@ -165,7 +172,7 @@ class Search {
 				$slug = $this->get_matched_slug( $pts );
 				if ( $slug !== false ) $home_url = $this->home_url( "/$slug/$search_base/" );
 			}
-			wp_redirect( $home_url . rawurlencode( get_query_var( 's' ) ) );
+			wp_redirect( $home_url . $this->urlencode( get_query_var( 's' ) ) );
 			exit();
 		}
 	}
@@ -194,6 +201,9 @@ class Search {
 	public function _cb_request( $query_vars ) {
 		if ( isset( $query_vars['s'] ) && ! empty( $query_vars['pagename'] ) ) {
 			$query_vars['pagename'] = '';
+		}
+		if ( isset( $query_vars['s'] ) && $this->_is_slash_in_query_enabled ) {
+			$query_vars['s'] = str_replace( [ '%1f', '%1F' ], [ '%2f', '%2F' ], $query_vars['s'] );
 		}
 		return $query_vars;
 	}
@@ -239,7 +249,7 @@ class Search {
 		global $wp_the_query;
 
 		$q_s = stripslashes( $q_s );
-		if ( empty( $_GET['s'] ) && $wp_the_query->is_main_query() ) $q_s = rawurldecode( $q_s );
+		if ( empty( $_GET['s'] ) && $wp_the_query->is_main_query() ) $q_s = $this->urldecode( $q_s );
 		$q_s = str_replace( ["\r", "\n"], '', $q_s );
 
 		$terms = [];
@@ -276,6 +286,24 @@ class Search {
 	private function _get_search_stopwords() {
 		$stopwords = explode( ',', 'about,an,are,as,at,be,by,com,for,from,how,in,is,it,of,on,or,that,the,this,to,was,what,when,where,who,will,with,www' );
 		return $stopwords;
+	}
+
+	private function urlencode( $str ) {
+		if ( $this->_is_slash_in_query_enabled ) {
+			$ret = rawurlencode( $str );
+			return str_replace( [ '%2f', '%2F' ], [ '%1f', '%1F' ], $ret );
+		} else {
+			return rawurlencode( $str );
+		}
+	}
+
+	private function urldecode( $str ) {
+		if ( $this->_is_slash_in_query_enabled ) {
+			$ret = str_replace( [ '%1f', '%1F' ], [ '%2f', '%2F' ], $str );
+			return rawurldecode( $ret );
+		} else {
+			return rawurldecode( $str );
+		}
 	}
 
 }
