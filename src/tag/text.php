@@ -6,7 +6,7 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-21
+ * @version 2019-03-29
  *
  */
 
@@ -57,6 +57,15 @@ function separate_line( $str, $mode = 'raw', $filter = 'esc_html' ) {
 					if ( ! empty( $s[1] ) ) $temp = "<{$s[1]}>$temp</{$s[1]}>";
 					$newL .= $temp;
 				}
+				$newLs[] = $newL;
+			}
+			return '<div>' . implode( '</div><div>', $newLs ) . '</div>';
+		case 'segment_small_simple':
+			$sss = array_map( '\st\separate_small', $ls );
+			$newLs = [];
+			foreach ( $sss as $ss ) {
+				$newL = '';
+				foreach ( $ss as $s ) $newL .= $s[0];
 				$newLs[] = $newL;
 			}
 			return '<div>' . implode( '</div><div>', $newLs ) . '</div>';
