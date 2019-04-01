@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-04
+ * @version 2019-04-02
  *
  */
 
@@ -93,6 +93,7 @@ class SlideShow {
 	private $_is_picture_scroll     = false;
 	private $_is_dual               = false;
 	private $_is_video_enablde      = false;
+	private $_is_shuffled           = false;
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -147,6 +148,11 @@ class SlideShow {
 
 	public function set_video_enabled( $enabled ) {
 		$this->_is_video_enablde = $enabled;
+		return $this;
+	}
+
+	public function set_shuffled( $enabled ) {
+		$this->_is_shuffled = $enabled;
 		return $this;
 	}
 
@@ -477,6 +483,7 @@ class SlideShow {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
 			}
 		}
+		if ( $this->_is_shuffled ) shuffle( $its );
 		return $its;
 	}
 
