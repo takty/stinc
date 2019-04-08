@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-04-02
+ * @version 2019-04-09
  *
  */
 
@@ -189,7 +189,7 @@ class Search {
 		if ( ! $wp_rewrite->using_permalinks() ) return;
 
 		$search_base = $wp_rewrite->search_base;
-		if ( is_search() && ! is_admin() && ! empty( $_GET['s'] ) ) {
+		if ( is_search() && ! is_admin() && isset( $_GET['s'] ) ) {
 			$home_url = $this->home_url( "/$search_base/" );
 			if ( ! empty( $_GET['post_type'] ) ) {
 				$pts = explode( ',', $_GET['post_type'] );
@@ -243,7 +243,7 @@ class Search {
 	}
 
 	public function _cb_posts_search( $search, $query ) {
-		if ( ! $query->is_search() || ! $query->is_main_query() ) return $search;
+		if ( ! $query->is_search() || ! $query->is_main_query() || empty( $search ) ) return $search;
 
 		$q = $query->query_vars;
 		global $wpdb;
