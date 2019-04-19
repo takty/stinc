@@ -6,7 +6,7 @@ namespace st;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-28
+ * @version 2019-04-19
  *
  */
 
@@ -272,7 +272,7 @@ function register_event_post_type( $labels, $calendar_locale, $args = [] ) {
 	$instance = new \st\EventPostType();
 	$instance->set_post_type_label( $labels['type_label'] );
 	$instance->set_meta_box_label( $labels['period_label'] );
-	$instance->set_calendar_locale( $calendar_local );
+	$instance->set_calendar_locale( $calendar_locale );
 	if ( isset( $labels['year_label'] ) ) $instance->set_year_label( $labels['year_label'] );
 	$instance->set_duration_labels( $labels['period_begin_label'], $labels['period_end_label'] );
 	$instance->register( $args );
