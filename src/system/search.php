@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-04-09
+ * @version 2019-05-15
  *
  */
 
@@ -277,12 +277,16 @@ class Search {
 
 	public function _cb_posts_join( $join, $query ) {
 		if ( ! $query->is_search() || ! $query->is_main_query() ) return $join;
-
-		global $wpdb;
-		$join .= " INNER JOIN ( ";
-		$join .= " SELECT post_id, meta_value FROM $wpdb->postmeta ";
+		$sql_mks = '';
 		if ( ! empty( $this->_meta_keys ) ) {
-			$join .= " WHERE meta_key IN ( '" . implode( "', '", $this->_meta_keys ) . "' ) ";
+			$_mks = [];
+			foreach ( $this->_meta_keys as $mk ) $_mks[] = "'" . esc_sql( $mk ) . "'";
+			$sql_mks = implode( ', ', $_mks );
+		}
+		global $wpdb;
+		$join .= " INNER JOIN ( SELECT post_id, meta_value FROM $wpdb->postmeta";
+		if ( ! empty( $sql_mks ) ) {
+			$join .= " WHERE meta_key IN ( $sql_mks )";
 		}
 		$join .= " ) AS stinc_search ON ($wpdb->posts.ID = stinc_search.post_id) ";
 		return $join;
