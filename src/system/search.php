@@ -40,7 +40,6 @@ class Search {
 	private $_pre_get_posts_func = null;
 
 	private $_posts_search_filter_added = false;
-	private $_posts_join_filter_added = false;
 
 	private function __construct() {}
 
@@ -88,12 +87,10 @@ class Search {
 
 	public function set_post_meta_search_enabled( $enabled ) {
 		$this->ensure_posts_search_filter();
-		$this->ensure_posts_join_filter();
 	}
 
 	public function add_meta_key( $str_or_array ) {
 		$this->ensure_posts_search_filter();
-		$this->ensure_posts_join_filter();
 
 		if ( ! is_array( $str_or_array ) ) $str_or_array = [ $str_or_array ];
 		$this->_meta_keys = array_merge( $this->_meta_keys, $str_or_array );
@@ -152,13 +149,9 @@ class Search {
 	private function ensure_posts_search_filter() {
 		if ( $this->_posts_search_filter_added ) return;
 		add_filter( 'posts_search', [ $this, '_cb_posts_search' ], 10, 2 );
-		$this->_posts_search_filter_added = true;
-	}
-
-	private function ensure_posts_join_filter() {
-		if ( $this->_posts_join_filter_added ) return;
 		add_filter( 'posts_join', [ $this, '_cb_posts_join' ], 10, 2 );
-		$this->_posts_join_filter_added = true;
+		add_filter( 'posts_groupby', [ $this, '_cb_posts_groupby' ], 10, 2 );
+		$this->_posts_search_filter_added = true;
 	}
 
 
@@ -290,6 +283,14 @@ class Search {
 		}
 		$join .= " ) AS stinc_search ON ($wpdb->posts.ID = stinc_search.post_id) ";
 		return $join;
+	}
+
+	public function _cb_posts_groupby( $groupby, $query ) {
+		global $wpdb;
+		if ( $query->is_search() && $query->is_main_query() ) {
+			$groupby = "{$wpdb->posts}.ID";
+		}
+		return $groupby;
 	}
 
 
