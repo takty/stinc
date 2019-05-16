@@ -6,7 +6,7 @@ namespace st;
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2019-05-16
  *
  */
 
@@ -101,6 +101,7 @@ class MediaPicker {
 	public function save_meta_box( $post_id ) {
 		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
 		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
+		if ( empty( $_POST[ $this->_key ] ) ) return;  // Do not save before JS is executed
 		$this->_save_items( $post_id );
 	}
 
