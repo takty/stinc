@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-10
+ * @version 2019-05-16
  *
  */
 
@@ -120,7 +120,13 @@ class Multilang_Post {
 
 		$t = get_post_meta( $id, $this->_key_title . $lang, true );
 		if ( empty( $t ) ) return $title;
-		return preg_replace( '/' . preg_quote( $post->post_title, '/' ) . '/', $t, $title );
+
+		$basic_title = $post->post_title;
+		$basic_title = \capital_P_dangit( $basic_title );
+		$basic_title = \wptexturize( $basic_title );
+		$basic_title = \convert_chars( $basic_title );
+		$basic_title = \trim( $basic_title );
+		return preg_replace( '/' . preg_quote( $basic_title, '/' ) . '/', $t, $title );
 	}
 
 	public function _cb_the_content( $content ) {  // Private
@@ -131,6 +137,11 @@ class Multilang_Post {
 
 		$c = get_post_meta( $post->ID, $this->_key_content . $lang, true );
 		if ( empty( $c ) ) return $content;
+
+		if ( post_password_required( $post ) ) {
+			return get_the_password_form( $post );
+		}
+
 		remove_filter( 'the_content', [$this, '_cb_the_content'] );
 		$c = apply_filters( 'the_content', $c );
 		add_filter( 'the_content', [$this, '_cb_the_content'] );
