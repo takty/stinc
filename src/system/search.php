@@ -6,7 +6,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-15
+ * @version 2019-05-16
  *
  */
 
@@ -143,7 +143,7 @@ class Search {
 	private function ensure_pre_get_posts_filter() {
 		if ( $this->_pre_get_posts_func ) return;
 		$this->_pre_get_posts_func = [ $this, '_cb_pre_get_posts' ];
-		add_filter( 'pre_get_posts', $this->_pre_get_posts_func );
+		add_action( 'pre_get_posts', $this->_pre_get_posts_func );
 	}
 
 	private function ensure_posts_search_filter() {
@@ -232,7 +232,6 @@ class Search {
 				$query->set( 'post_type', $this->_post_types );
 			}
 		}
-		return $query;
 	}
 
 	public function _cb_posts_search( $search, $query ) {
