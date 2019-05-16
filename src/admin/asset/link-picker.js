@@ -3,12 +3,12 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-04
+ * @version 2019-05-16
  *
  */
 
 
-function st_link_picker_initialize_admin(key, is_internal_only = false, max_count = false, is_link_target_allowed = false) {
+function st_link_picker_initialize_admin(key, is_internal_only = false, max_count = false, is_link_target_allowed = false, post_type = null) {
 	const NS = 'st-link-picker';
 
 	const CLS_TABLE       = NS + '-table';
@@ -59,7 +59,12 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 		add_new_item(l);
 		reorder_item_ids();
 		if (max_count !== false && max_count <= items.length) add.setAttribute('disabled', 'true');
-	}, { isInternalOnly: is_internal_only, isLinkTargetAllowed: is_link_target_allowed, title: STR_ADD });
+	}, {
+		isInternalOnly     : is_internal_only,
+		isLinkTargetAllowed: is_link_target_allowed,
+		title              : STR_ADD,
+		postType           : post_type
+	});
 
 
 	// -------------------------------------------------------------------------
@@ -124,7 +129,13 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 			const url = document.getElementById(idi + '_url').value;
 			if (url) window.open(url);
 		});
-		setLinkPicker(sel, false, false, { isInternalOnly: is_internal_only, isLinkTargetAllowed: is_link_target_allowed, parentGen: 2, title: STR_SEL });
+		setLinkPicker(sel, false, false, {
+			isInternalOnly     : is_internal_only,
+			isLinkTargetAllowed: is_link_target_allowed,
+			parentGen          : 2,
+			title              : STR_SEL,
+			postType           : post_type
+		});
 	}
 
 }

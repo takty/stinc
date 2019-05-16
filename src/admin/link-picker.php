@@ -15,6 +15,14 @@ require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../tag/url.php';
 
 
+add_filter( 'wp_link_query_args', function ( $query ) {
+	if ( array_key_exists( 'link_picker_pt', $_POST ) ) {
+		$query['post_type'] = explode( ',', $_POST['link_picker_pt'] );
+	}
+	return $query;
+} );
+
+
 class LinkPicker {
 
 	const NS = 'st-link-picker';
@@ -60,6 +68,8 @@ class LinkPicker {
 
 	private $_is_internal_only = false;
 	private $_max_count = false;
+	private $_is_link_target_allowed = false;
+	private $_post_type_str = null;
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -74,6 +84,20 @@ class LinkPicker {
 
 	public function set_max_count( $count ) {
 		$this->_max_count = $count;
+		return $this;
+	}
+
+	public function set_link_target_allowed( $enabled ) {
+		$this->_is_link_target_allowed = $enabled;
+		return $this;
+	}
+
+	public function set_post_type( $post_type_s ) {
+		if ( is_array( $post_type_s ) ) {
+			$this->_post_type_str = "'" . implode( ',', $post_type_s ) . "'";
+		} else {
+			$this->_post_type_str = "'" . $post_type_s . "'";
+		}
 		return $this;
 	}
 
@@ -144,7 +168,7 @@ class LinkPicker {
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Link', 'default' ) ?></a></div>
 			</div>
 			<script>window.addEventListener('load', function () {
-				st_link_picker_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_internal_only ? 'true' : 'false' ?>, <?php echo $this->_max_count ? $this->_max_count : 'false' ?>);
+				st_link_picker_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_internal_only ? 'true' : 'false' ?>, <?php echo $this->_max_count ? $this->_max_count : 'false' ?>, <?php echo $this->_is_link_target_allowed ? 'true' : 'false' ?>, <?php echo $this->_post_type_str ?>);
 			});</script>
 		</div>
 <?php
@@ -243,10 +267,14 @@ function get_items( $key, $post_id = false ) { return \st\LinkPicker::get_instan
 function get_posts( $key, $post_id = false, $skip_other_than_post = true ) { return \st\LinkPicker::get_instance( $key )->get_posts( $post_id, $skip_other_than_post ); }
 function set_internal_only( $key, $enabled ) { return \st\LinkPicker::get_instance( $key )->set_internal_only( $enabled ); }
 function set_max_count( $key, $count ) { return \st\LinkPicker::get_instance( $key )->set_max_count( $count ); }
+function set_link_target_allowed( $key, $enabled ) { return \st\LinkPicker::get_instance( $key )->set_link_target_allowed( $enabled ); }
+function set_post_type( $key, $post_type ) { return \st\LinkPicker::get_instance( $key )->set_post_type( $post_type ); }
 
 function add_meta_box( $key, $label, $screen, $context = 'advanced', $opts = [] ) {
 	if ( isset( $opts['is_internal_only'] ) ) set_internal_only( $key, $opts['is_internal_only'] );
 	if ( isset( $opts['max_count'] ) ) set_max_count( $key, $opts['max_count'] );
+	if ( isset( $opts['is_link_target_allowed'] ) ) set_link_target_allowed( $key, $opts['is_link_target_allowed'] );
+	if ( isset( $opts['post_type'] ) ) set_post_type( $key, $opts['post_type'] );
 	\st\LinkPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
 }
 function save_meta_box( $post_id, $key ) { \st\LinkPicker::get_instance( $key )->save_meta_box( $post_id ); }
