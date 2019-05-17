@@ -6,7 +6,7 @@ namespace st;
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-05-17
  *
  */
 
@@ -129,6 +129,9 @@ class MediaPicker {
 <?php
 	}
 
+	const CLS_ITEM_CTRL = self::NS . '-item-ctrl';
+	const CLS_ITEM_CONT = self::NS . '-item-cont';
+
 	public function _output_row( $it, $cls ) {
 		$_url       = isset( $it['url'] )      ? esc_attr( $it['url'] )      : '';
 		$_media     = isset( $it['media'] )    ? esc_attr( $it['media'] )    : '';
@@ -139,19 +142,21 @@ class MediaPicker {
 		$ro = $this->_is_title_editable ? '' : 'readonly="readonly"';
 ?>
 		<div class="<?php echo $cls ?>">
-			<div>
+			<div class="<?php echo self::CLS_ITEM_CTRL ?>">
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
 				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
 			</div>
-			<div>
+			<div class="<?php echo self::CLS_ITEM_CONT ?>">
 				<div class="<?php echo self::CLS_ITEM_IR ?>">
 					<span><?php _e( 'Title', 'default' ) ?>:</span>
 					<input <?php echo $ro ?> type="text" class="<?php echo self::CLS_TITLE ?>" value="<?php echo $_title ?>" />
 				</div>
 				<div class="<?php echo self::CLS_ITEM_IR ?>">
 					<span><a href="javascript:void(0);" class="<?php echo self::CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
-					<span class="<?php echo self::CLS_H_FILENAME ?>"><?php echo $h_filename ?></span>
-					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+					<span>
+						<span class="<?php echo self::CLS_H_FILENAME ?>"><?php echo $h_filename ?></span>
+						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+					</span>
 				</div>
 			</div>
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />

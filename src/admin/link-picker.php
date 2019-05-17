@@ -66,10 +66,10 @@ class LinkPicker {
 	private $_key;
 	private $_id;
 
-	private $_is_internal_only = false;
-	private $_max_count = false;
+	private $_is_internal_only       = false;
+	private $_max_count              = false;
 	private $_is_link_target_allowed = false;
-	private $_post_type_str = null;
+	private $_post_type_str          = null;
 
 	public function __construct( $key ) {
 		$this->_key = $key;

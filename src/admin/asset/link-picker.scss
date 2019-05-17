@@ -79,11 +79,6 @@ $breakpoint-single-wrap: 20rem;
 
 .st-link-picker-item-cont {
 	flex-grow: 1;
-
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: column;
-	align-items: stretch;
 	width: calc(100% - 40px);
 
 	.st-link-picker-item-deleted > & {
@@ -98,6 +93,16 @@ $breakpoint-single-wrap: 20rem;
 	align-items: center;
 	padding: 2px 0;
 
+	&:nth-child(1) > input {
+		flex-grow: 1;
+	}
+	&:nth-child(2) {
+		width: 100%;
+		input {
+			flex-grow: 1;
+			width: 100%;  // for IE11
+		}
+	}
 	span:first-child {
 		display: inline-block;
 		padding-right: 4px;
@@ -111,16 +116,7 @@ $breakpoint-single-wrap: 20rem;
 		flex-grow: 1;
 		display: flex;
 	}
-	&:nth-child(1) > input {
-		flex-grow: 1;
-	}
-	&:nth-child(2) {
-		width: 100%;
-		input {
-			flex-grow: 1;
-			width: 100%;  // for IE11
-		}
-	}
+
 	.st-link-picker-select {
 		margin-left: 4px !important;
 	}
@@ -128,6 +124,6 @@ $breakpoint-single-wrap: 20rem;
 
 .st-link-picker-h-filename {
 	flex-grow: 1;
-	padding-left: 6px;
 	word-break: break-all;
+	padding-left: 6px;
 }

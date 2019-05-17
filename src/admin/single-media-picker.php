@@ -102,6 +102,9 @@ class SingleMediaPicker {
 	// -------------------------------------------------------------------------
 
 
+	const CLS_ITEM_CTRL = self::NS . '-item-ctrl';
+	const CLS_ITEM_CONT = self::NS . '-item-cont';
+
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$it = $this->get_item( $post->ID );
@@ -116,10 +119,10 @@ class SingleMediaPicker {
 		<div id="<?php echo $this->_id ?>"></div>
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_ITEM ?>">
-				<div>
+				<div class="<?php echo self::CLS_ITEM_CTRL ?>">
 					<a href="javascript:void(0);" class="<?php echo self::CLS_DEL ?> widget-control-remove"><?php _e( 'Remove', 'default' ); ?></a>
 				</div>
-				<div>
+				<div class="<?php echo self::CLS_ITEM_CONT ?>">
 					<div class="<?php echo self::CLS_ITEM_IR ?>">
 						<span><?php _e( 'Title', 'default' ) ?>:</span>
 						<input <?php echo $ro ?> type="text" <?php \st\field\name_id( $id_title ) ?> value="<?php echo $_title ?>" />
