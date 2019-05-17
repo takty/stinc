@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-04-02
+ * @version 2019-05-17
  *
  */
 
@@ -263,7 +263,7 @@ class SlideShow {
 			} else if ( $it['type'] === self::TYPE_VIDEO ) {
 				$_video = esc_url( $it['video'] );
 ?>
-				<li><a href="javascript:void(0)" onclick="<?php echo $event ?>"><video><source src="<?php echo $_video ?>" /></video></a></li>
+				<li><a href="javascript:void(0)" onclick="<?php echo $event ?>"><video><source src="<?php echo $_video ?>"></video></a></li>
 <?php
 			}
 		}
@@ -291,7 +291,7 @@ class SlideShow {
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$its = $this->_get_items( $post->ID );
 ?>
-		<input type="hidden" <?php \st\field\name_id( $this->_id ) ?> value="" />
+		<input type="hidden" <?php \st\field\name_id( $this->_id ) ?> value="">
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
 <?php
@@ -338,15 +338,15 @@ class SlideShow {
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></label>
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
 					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
-					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>"></div>
 					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
 					<div>
-						<input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+						<input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>">
 						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a>
 					</div>
 				</div>
@@ -354,8 +354,8 @@ class SlideShow {
 					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
 				</div>
 			</div>
-			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
-			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image" />
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image">
 		</div>
 <?php
 	}
@@ -373,14 +373,14 @@ class SlideShow {
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></label>
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
 					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
-					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>"></div>
 					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
-					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+					<div><input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>">
 					<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a></div>
 				</div>
 				<div class="st-slide-show-thumbnail-wrap">
@@ -392,9 +392,9 @@ class SlideShow {
 					</div>
 				</div>
 			</div>
-			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
-			<input type="hidden" class="<?php echo self::CLS_MEDIA_SUB ?>" value="<?php echo $_media_s ?>" />
-			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image" />
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
+			<input type="hidden" class="<?php echo self::CLS_MEDIA_SUB ?>" value="<?php echo $_media_s ?>">
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image">
 		</div>
 	<?php
 	}
@@ -408,26 +408,26 @@ class SlideShow {
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></label>
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_INFO ?>">
 					<div><?php esc_html_e( 'Caption', 'default' ) ?>:</div>
-					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>" /></div>
+					<div><input type="text" class="<?php echo self::CLS_CAP ?>" value="<?php echo $_cap ?>"></div>
 					<div><a href="javascript:void(0);" class="<?php echo self::CLS_URL_OPENER ?>">URL</a>:</div>
 					<div>
-						<input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>" />
+						<input type="text" class="<?php echo self::CLS_URL ?>" value="<?php echo $_url ?>">
 						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL_URL ?>"><?php _e( 'Select', 'default' ) ?></a>
 					</div>
 				</div>
 				<div class="<?php echo self::CLS_TN ?>">
 					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>">
-						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>" />
+						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>">
 					</a>
 				</div>
 			</div>
-			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
-			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="video" />
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="video">
 		</div>
 <?php
 	}
