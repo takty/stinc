@@ -6,7 +6,7 @@ namespace st;
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-26
+ * @version 2019-05-17
  *
  */
 
@@ -126,8 +126,10 @@ class SingleMediaPicker {
 					</div>
 					<div class="<?php echo self::CLS_ITEM_IR ?>">
 						<span><a href="javascript:void(0);" class="<?php echo self::CLS_MEDIA_OPENER ?>"><?php _e( 'File name:', 'default' ) ?></a></span>
-						<span class="<?php echo self::CLS_FILENAME ?>"><?php echo $h_filename ?></span>
-						<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+						<span>
+							<span class="<?php echo self::CLS_FILENAME ?>"><?php echo $h_filename ?></span>
+							<a href="javascript:void(0);" class="button <?php echo self::CLS_SEL ?>"><?php _e( 'Select', 'default' ) ?></a>
+						</span>
 					</div>
 				</div>
 			</div>

@@ -6,7 +6,7 @@ namespace st;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-05-17
  *
  */
 
@@ -168,7 +168,7 @@ class LinkPicker {
 				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Link', 'default' ) ?></a></div>
 			</div>
 			<script>window.addEventListener('load', function () {
-				st_link_picker_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_internal_only ? 'true' : 'false' ?>, <?php echo $this->_max_count ? $this->_max_count : 'false' ?>, <?php echo $this->_is_link_target_allowed ? 'true' : 'false' ?>, <?php echo $this->_post_type_str ?>);
+				st_link_picker_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_internal_only ? 'true' : 'false' ?>, <?php echo $this->_max_count ? $this->_max_count : 'false' ?>, <?php echo $this->_is_link_target_allowed ? 'true' : 'false' ?>, <?php echo $this->_post_type_str ? $this->_post_type_str : 'null' ?>);
 			});</script>
 		</div>
 <?php

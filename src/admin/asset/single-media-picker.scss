@@ -3,9 +3,12 @@
  * Single Media Picker (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-13
+ * @version 2019-05-17
  *
  */
+
+
+$breakpoint-single-wrap: 20rem;
 
 
 .st-single-media-picker {
@@ -16,20 +19,24 @@
 	display: flex;
 
 	> div:nth-child(1) {
-		padding: 4px 2px;
+		padding: 4px 12px 4px 2px;
+		width: 28px;
 	}
-	div:nth-child(2) {
+	> div:nth-child(2) {
 		flex-grow: 1;
+
+		width: calc(100% - 40px);
 	}
 }
 
 .st-single-media-picker-item-inside-row {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	padding: 2px 0;
 
 	&:nth-child(1) > input {
-		width: 100%;
+		flex-grow: 1;
 	}
 	&:nth-child(2) {
 		width: 100%;
@@ -37,15 +44,25 @@
 	span:first-child {
 		display: inline-block;
 		padding-right: 4px;
-		min-width: 5rem;
-		text-align: right;
+		text-align: left;
+
+		min-width: 4.5rem;
+		width: calc((#{$breakpoint-single-wrap} - 100%) * 1000);
+		max-width: 100%;
+	}
+	span:last-child {
+		display: flex;
+		flex-grow: 1;
 	}
 }
 
 .st-single-media-picker-filename {
 	flex-grow: 1;
-	padding-left: 6px;
 	word-break: break-all;
+
+	border: 1px solid #eee;
+	margin: 1px;
+	padding: 3px 5px;
 }
 
 .st-single-media-picker-add-row {
