@@ -6,7 +6,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-17
+ * @version 2019-05-22
  *
  */
 
@@ -111,7 +111,7 @@ add_action( 'init', function () {
 
 	add_action( 'wp_enqueue_scripts', function () {
 		global $post;
-		if ( has_shortcode( $post->post_content, 'instagram' ) ) {
+		if ( $post && has_shortcode( $post->post_content, 'instagram' ) ) {
 			wp_enqueue_script( 'instagramjs', '//platform.instagram.com/en_US/embeds.js' );
 		}
 	} );
