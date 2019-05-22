@@ -10,13 +10,13 @@ gulp.task('js-raw', () => {
 		.pipe($.babel({ presets: [['@babel/env', { targets: { ie: 11 } }]] }))
 		.pipe($.rename({ extname: '.min.js' }))
 		.pipe($.uglify())
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('js-min', () => {
 	return gulp.src(['src/**/*.min.js'])
 		.pipe($.plumber())
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('js', gulp.parallel('js-raw', 'js-min'));
@@ -29,7 +29,7 @@ gulp.task('sass', () => {
 		.pipe($.autoprefixer({ browsers: ['ie >= 11'], remove: false }))
 		.pipe($.rename({ extname: '.min.css' }))
 		.pipe($.sourcemaps.write('.'))
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('css-raw', () => {
@@ -39,13 +39,13 @@ gulp.task('css-raw', () => {
 		.pipe($.cleanCss())
 		.pipe($.rename({ extname: '.min.css' }))
 		.pipe($.sourcemaps.write('.'))
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('css-min', () => {
 	return gulp.src(['src/**/*.min.css'])
 		.pipe($.plumber())
-		.pipe(gulp.dest('dist'));
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('css', gulp.parallel('css-raw', 'css-min'));
@@ -53,15 +53,15 @@ gulp.task('css', gulp.parallel('css-raw', 'css-min'));
 gulp.task('php', () => {
 	return gulp.src(['src/**/*.php'])
 		.pipe($.plumber())
-		.pipe($.changed('dist'))
-		.pipe(gulp.dest('dist'));
+		.pipe($.changed('./dist'))
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('img', () => {
 	return gulp.src(['src/**/*.png', 'src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.svg'], { base: 'src' })
 		.pipe($.plumber())
-		.pipe($.changed('dist'))
-		.pipe(gulp.dest('dist'));
+		.pipe($.changed('./dist'))
+		.pipe(gulp.dest('./dist'));
 });
 
 gulp.task('watch', () => {
