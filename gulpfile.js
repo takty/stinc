@@ -7,7 +7,7 @@ const $ = require('gulp-load-plugins')({ pattern: ['gulp-*'] });
 gulp.task('js-raw', () => {
 	return gulp.src(['src/**/*.js', '!src/**/*.min.js'], { base: 'src' })
 		.pipe($.plumber())
-		.pipe($.babel({ presets: [['@babel/env', { targets: { ie: 11 } }]] }))
+		.pipe($.babel())
 		.pipe($.rename({ extname: '.min.js' }))
 		.pipe($.uglify())
 		.pipe(gulp.dest('./dist'));
