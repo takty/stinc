@@ -6,7 +6,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-06-20
  *
  */
 
@@ -100,7 +100,7 @@ function set_taxonomy_exclusive( $taxonomy_s ) {
 				var checklist = $('.' + taxes[i] + '-checklist input[type=checkbox]');
 				checklist.each(function () { $(this).prop('type', 'radio'); });
 			}
-			$('#the-list').on('click', 'a.editinline', function () {
+			$('#the-list').on('click', 'button.editinline', function () {
 				var post_id = inlineEditPost.getId(this);
 				var rowData = $('#inline_'+ post_id);
 				$('.post_category', rowData).each(function () {
