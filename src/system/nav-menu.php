@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-07
+ * @version 2019-06-20
  *
  */
 
@@ -202,8 +202,16 @@ class NavMenu {
 	}
 
 	private function _get_item( $mi, $cs, $filter = 'esc_html' ) {
+		$cls = empty( $cs ) ? '' : implode( ' ', $cs );
+		if ( ! empty( $mi->classes ) ) {
+			$opt_cls = trim( implode( ' ', $mi->classes ) );
+			if ( ! empty( $opt_cls ) ) {
+				if ( ! empty( $cls ) ) $cls .= ' ';
+				$cls .= $opt_cls;
+			}
+		}
+		$li_cls  = empty( $cls ) ? '' : " class=\"$cls\"";
 		$li_id   = " id=\"menu-item-{$mi->ID}\"";
-		$li_cls  = empty( $cs ) ? '' : (' class="' . implode( ' ', $cs ) . '"');
 		$li_attr = $li_id . $li_cls;
 		$obj_id  = intval( $mi->object_id );
 		$title   = $filter( $mi->title, $mi );
