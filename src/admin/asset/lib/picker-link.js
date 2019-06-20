@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-06-20
  *
  */
 
@@ -15,22 +15,22 @@ document.addEventListener('DOMContentLoaded', function () {
 	}
 });
 
-function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
-	if (cls === false) cls = 'link';
-	opts = Object.assign({ isInternalOnly: false, isLinkTargetAllowed: false, parentGen: 1, postType: null }, opts);
+const setLinkPicker = (function () {
 
-	const postTypeSpec = [''];
-	setupPostTypeSpecification(postTypeSpec);
+	function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
+		if (cls === false) cls = 'link';
+		opts = Object.assign({ isInternalOnly: false, isLinkTargetAllowed: false, parentGen: 1, postType: null }, opts);
 
-	elm.addEventListener('click', function (e) {
-		if (elm.getAttribute('disabled')) return;
-		e.preventDefault();
-		createLink(function (f) {
-			const parent = getParent(e.target, opts.parentGen);
-			setItem(parent, cls, f);
-			if (fn) fn(e.target, f);
-		}, opts.isInternalOnly, opts.isLinkTargetAllowed, opts.postType);
-	});
+		elm.addEventListener('click', function (e) {
+			if (elm.getAttribute('disabled')) return;
+			e.preventDefault();
+			createLink(function (f) {
+				const parent = getParent(e.target, opts.parentGen);
+				setItem(parent, cls, f);
+				if (fn) fn(e.target, f);
+			}, opts.isInternalOnly, opts.isLinkTargetAllowed, opts.postType);
+		});
+	}
 
 	function getParent(elm, gen) {
 		while (0 < gen-- && elm.parentNode) elm = elm.parentNode;
@@ -64,21 +64,26 @@ function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 		document.body.appendChild(ta);
 
 		const scan = function () {
-			if (ta.value === '') return false;
-			const f = readAnchorLink(ta);
-			jQuery('#wp-link').find('.query-results').off('river-select', onSelect);
-			document.body.removeChild(ta);
-			callbackFunc(f);
-			postTypeSpec[0] = null;
+			if (wpLink.modalOpen && ta.value === '') return false;
+
+			if (ta.value !== '') {
+				const f = readAnchorLink(ta);
+				jQuery('#wp-link').find('.query-results').off('river-select', onSelect);
+				document.body.removeChild(ta);
+				callbackFunc(f);
+			}
+			postTypeSpec = null;
+			wpLink.close();
 			return true;
 		}
 		const onSelect = function (e, li) {
 			const val = (li.hasClass('no-title')) ? '' : li.children('.item-title').text();
 			jQuery('#wp-link-text').val(val);
 		};
-		executeTimeoutFunc(scan, 100);
-		postTypeSpec[0] = postType;
+		setPostTypeSpecification(postType);
+
 		wpLink.open(id);
+		executeTimeoutFunc(scan, 100);
 		jQuery('#wp-link').find('.query-results').on('river-select', onSelect);
 
 		if (isInternalOnly) {
@@ -111,15 +116,31 @@ function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 		setTimeout(toFunc, time);
 	}
 
-	function setupPostTypeSpecification(postType) {
-		$.ajaxSetup({
+	let postTypeSpec = null;
+	let lastPostTypeSpec = null;
+	let isPostTypeSpecInitialized = false;
+
+	function setPostTypeSpecification(postType) {
+		postTypeSpec = postType;
+		if (postType === null || postType === lastPostTypeSpec) return;
+		lastPostTypeSpec = postType;
+
+		wpLink.init();
+		wpLink.lastSearch = '';
+		$('#search-results > ul').empty();
+		$('#most-recent-results > ul').empty();
+
+		if (isPostTypeSpecInitialized) return;
+		isPostTypeSpecInitialized = true;
+
+		jQuery.ajaxSetup({
 			beforeSend: function (jqXHR, d) {
 				if (!d.data) return true;
-				if (!postType[0]) return true;
+				if (!postTypeSpec) return true;
 				$.each(d.data.split('&'), function (i, p) {
 					const kv = p.split('=');
 					if (kv[0] === 'action' && kv[1] === 'wp-link-ajax') {
-						d.data += '&link_picker_pt=' + postType[0];
+						d.data += '&link_picker_pt=' + postTypeSpec;
 					}
 				});
 				return true;
@@ -127,4 +148,5 @@ function setLinkPicker(elm, cls = false, fn = null, opts = {}) {
 		});
 	}
 
-}
+	return setLinkPicker;
+})();
