@@ -27,22 +27,22 @@ class NavMenu {
 
 	const CACHE_EXPIRATION  = 60 * 60 * 24;  // One day
 
-	static private $_is_cache_enabled;
+	static protected $_is_cache_enabled;
 
 	static public function enable_cache() {
 		self::$_is_cache_enabled = true;
 		add_action( 'wp_update_nav_menu', [ '\st\NavMenu', '_cb_wp_update_nav_menu' ], 10, 2 );
 	}
 
-	private $_cur_url;
-	private $_home_url;
-	private $_is_page;
-	private $_expanded_page_ids = false;
-	private $_cur_objs = false;
+	protected $_cur_url;
+	protected $_home_url;
+	protected $_is_page;
+	protected $_expanded_page_ids = false;
+	protected $_cur_objs = false;
 
-	private $_pid_to_menu;
-	private $_pid_to_children_state;
-	private $_id_to_attr;
+	protected $_pid_to_menu;
+	protected $_pid_to_children_state;
+	protected $_id_to_attr;
 
 	public function __construct( $menu_name, $expanded_page_ids = false, $object_type_s = false ) {
 		$ml = class_exists( '\st\Multilang' ) ? \st\Multilang::get_instance() : null;
@@ -83,7 +83,7 @@ class NavMenu {
 		$this->_echo_items_recursive( $pid, $depth );
 	}
 
-	private function _echo_items_recursive( $pid, $depth ) {
+	protected function _echo_items_recursive( $pid, $depth ) {
 		if ( $depth === 0 ) return;
 		$this->echo_items( $pid, $this->_menu_before, $this->_menu_after, $this->_menu_filter, function ( $pid ) use ( $depth ) { $this->_echo_items_recursive( $pid, $depth - 1 ); } );
 	}
@@ -201,7 +201,7 @@ class NavMenu {
 		return true;
 	}
 
-	private function _get_item( $mi, $cs, $filter = 'esc_html' ) {
+	protected function _get_item( $mi, $cs, $filter = 'esc_html' ) {
 		$cls = empty( $cs ) ? '' : implode( ' ', $cs );
 		if ( ! empty( $mi->classes ) ) {
 			$opt_cls = trim( implode( ' ', $mi->classes ) );
@@ -240,7 +240,7 @@ class NavMenu {
 	// -------------------------------------------------------------------------
 
 
-	private function _get_all_items( $menu_name ) {
+	protected function _get_all_items( $menu_name ) {
 		$ls = get_nav_menu_locations();
 		if ( ! $ls || ! isset( $ls[ $menu_name ] ) ) return [];
 
@@ -256,7 +256,7 @@ class NavMenu {
 		return $ret;
 	}
 
-	private function _get_menus( $mis ) {
+	protected function _get_menus( $mis ) {
 		$ret = [];
 		foreach ( $mis as $mi ) {
 			$pid = intval( $mi->menu_item_parent );
@@ -269,7 +269,7 @@ class NavMenu {
 		return $ret;
 	}
 
-	private function _get_children_state( $p2m ) {
+	protected function _get_children_state( $p2m ) {
 		$ret = [];
 		foreach ( $p2m as $pid => $mis ) {
 			$ret[ $pid ] = $this->_has_current_url( $mis );
@@ -277,7 +277,7 @@ class NavMenu {
 		return $ret;
 	}
 
-	private function _has_current_url( $mis ) {
+	protected function _has_current_url( $mis ) {
 		foreach ( $mis as $mi ) {
 			if ( $this->_is_current( $mi ) ) return true;
 		}
@@ -311,7 +311,7 @@ class NavMenu {
 	// -------------------------------------------------------------------------
 
 
-	private function _get_menu_ancestors( $mis ) {
+	protected function _get_menu_ancestors( $mis ) {
 		$id2pid = [];
 		$curs = [];
 		foreach ( $mis as $mi ) {
@@ -330,7 +330,7 @@ class NavMenu {
 		return $ret;
 	}
 
-	private function _get_attributes( $mis ) {
+	protected function _get_attributes( $mis ) {
 		$ret = [];
 		foreach ( $mis as $mi ) {
 			$cs = [];
@@ -358,28 +358,28 @@ class NavMenu {
 		return $ret;
 	}
 
-	private function _is_menu_parent( $mi ) {
+	protected function _is_menu_parent( $mi ) {
 		$id = $mi->ID;
 		return ( isset( $this->_pid_to_children_state[ $id ] ) && $this->_pid_to_children_state[ $id ] );
 	}
 
-	private function _is_menu_ancestor( $mi ) {
+	protected function _is_menu_ancestor( $mi ) {
 		return ( in_array( $mi->ID, $this->_ancestor_ids, true ) );
 	}
 
-	private function _is_page_parent( $mi ) {
+	protected function _is_page_parent( $mi ) {
 		if ( ! $this->_is_page ) return false;
 		global $post;
 		return ( $post->post_parent === (int) $mi->object_id );
 	}
 
-	private function _is_page_ancestor( $mi ) {
+	protected function _is_page_ancestor( $mi ) {
 		if ( ! $this->_is_page ) return false;
 		global $post;
 		return ( $post->ancestors && in_array( (int) $mi->object_id, $post->ancestors, true ) );
 	}
 
-	private function _is_current( $mi ) {
+	protected function _is_current( $mi ) {
 		$url = trailingslashit( $mi->url );
 		if ( $url !== $this->_cur_url ) return false;
 		if ( $this->_cur_objs && ! in_array( $mi->object, $this->_cur_objs, true ) ) return false;
