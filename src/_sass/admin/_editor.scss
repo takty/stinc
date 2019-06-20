@@ -1,0 +1,197 @@
+/**
+ *
+ * Editor Style
+ *
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2019-06-20
+ *
+ * @import 'stile/sass/basic';
+ * @import 'stile/sass/content';
+ * @import 'stile/sass/option';
+ *
+ */
+
+
+$editor-color          : #bce !default;
+$editor-color-container: #c4c !default;
+$editor-size-text-width: 48rem !default;
+$editor-size-font      : 0.85rem !default;
+
+$stile-size-unit: 0.9rem !default;  // Variable in stile
+@function base-vr($val) {@return $val * $stile-size-unit;}
+
+
+@mixin stinc-editor($inside-body: true, $custom-font: false) {
+	@if $inside-body {
+		body {
+			@include font-family($custom-font);
+
+			margin   : base-vr(1) auto base-vr(1) base-vr(1);
+			max-width: $editor-size-text-width;
+			width    : calc(100% - #{base-vr(2)});
+
+			@include stinc-editor-child-margin;
+		}
+	} @else {
+		@include font-family($custom-font);
+		@include stinc-editor-child-margin;
+	}
+
+	blockquote {
+		@include stinc-editor-child-margin;
+	}
+
+	p, ul, ol, dl { border: dashed 1px $editor-color; }
+
+	// From Stile Content
+	@include stile-block-main;
+	@include stile-inline;
+	@include stile-list;
+	// From Stile Option
+	@include stile-container;
+
+	@include stinc-editor-heading;
+	@include stinc-editor-link;
+	@include stinc-editor-table;
+	@include stinc-editor-option;
+	@include stinc-editor-class;
+}
+
+@mixin stinc-editor-child-margin {
+	> * + * { margin-top: base-vr(2); }
+	> *:first-child { margin-top: 0; }
+}
+
+@mixin stinc-editor-heading {
+	h3:not(:first-child) { margin-top: 3rem; }
+	h4:not(:first-child) { margin-top: 1.5rem; }
+	h5:not(:first-child) { margin-top: 1rem; }
+
+	h2, h3, h4, h5, h6, hr { clear: both; }
+}
+
+@mixin stinc-editor-link {
+	a:not([class]) {
+		color          : $stile-link-color-text;
+		text-decoration: underline;
+	}
+}
+
+@mixin stinc-editor-table {
+	td {
+		min-width: 1rem;
+		padding  : 0.25rem;
+	}
+}
+
+@mixin stinc-editor-option {
+
+	// Alignment ---------------------------------------------------------------
+
+	.alignleft,
+	.alignright {
+		min-width : 10rem;  // Same with size-thumbnail and size-small
+		margin    : { top: base-vr(1); bottom: base-vr(1); }
+		background: {
+			size  : 1rem 1rem;
+			color : #fff;
+			repeat: repeat;
+			image : linear-gradient(-45deg,
+				$editor-color 1%, transparent 1%,
+				transparent 50%, $editor-color 50%,
+				$editor-color 51%, transparent 51%, transparent
+			);
+		}
+	}
+
+	.alignleft  { margin-right: base-vr(2); }
+	.alignright { margin-left : base-vr(2); }
+
+
+	// Container ---------------------------------------------------------------
+
+	.column-2,
+	.column-3,
+	.column-4 {
+		position: relative;
+		&::before {
+			position        : absolute;
+			top             : 0;
+			left            : 0;
+			background-color: #fff;
+			color           : $editor-color-container;
+			font-size       : $editor-size-font;
+			line-height     : 1;
+		}
+		> * {
+			padding: 1rem 0.5rem;
+			border : dotted 1px $editor-color-container;
+			@include stinc-editor-child-margin;
+		}
+	}
+	.column-2::before { content: 'Column 2'; }
+	.column-3::before { content: 'Column 3'; }
+	.column-4::before { content: 'Column 4'; }
+
+
+	// Image Size --------------------------------------------------------------
+
+	.size-thumbnail    { width: 10rem; }
+	.size-small        { width: 10rem; }
+	.size-medium-small { width: 15rem; }
+	.size-medium       { width: 20rem; }
+	.size-medium_large { width: 30rem; }
+	.size-large        { width: 40rem; }
+
+	.mceTemp > .wp-caption {
+		&.alignleft, &.alignright {
+			width: auto !important;
+		}
+	}
+
+
+	// Tab Page ----------------------------------------------------------------
+
+	.tab-page,
+	.pseudo-tab-page {
+		padding: 1rem 0.5rem;
+		border : dotted 1px $editor-color-container;
+		@include stinc-editor-child-margin;
+
+		position: relative;
+		&::before {
+			position        : absolute;
+			top             : -1px;
+			left            : -1px;
+			background-color: #fff;
+			color           : $editor-color-container;
+			font-size       : $editor-size-font;
+			line-height: 1;
+		}
+	}
+
+	.tab-page::before { content: 'Tab Page'; }
+	.pseudo-tab-page::before { content: 'Pseudo Tab Page'; }
+
+}
+
+@mixin stinc-editor-class {
+	div.frame {
+		background-color: $stile-block-color-background;
+		padding         : base-vr(2);
+		line-height     : base-vr(2);
+
+		@include stinc-editor-child-margin;
+	}
+
+	div.clear {
+		border: dotted 1px $editor-color-container;
+		clear : both;
+
+		&::after {
+			content  : 'Clear Float';
+			color    : $editor-color-container;
+			font-size: $editor-size-font;
+		}
+	}
+}

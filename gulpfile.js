@@ -64,6 +64,14 @@ gulp.task('img', () => {
 		.pipe(gulp.dest('./dist'));
 });
 
+gulp.task('sass_copy', () => {
+	return gulp.src(['src/_sass/**'], { base: 'src' })
+		.pipe($.plumber())
+		.pipe($.ignore.include({ isFile: true }))
+		.pipe($.changed('./dist', { hasChanged: $.changed.compareContents }))
+		.pipe(gulp.dest('./dist'));
+});
+
 gulp.task('watch', () => {
 	gulp.watch('src/**/*.js', gulp.series('js'));
 	gulp.watch('src/**/*.scss', gulp.series('sass'));
@@ -72,6 +80,6 @@ gulp.task('watch', () => {
 	gulp.watch('src/**/*.img', gulp.series('img'));
 });
 
-gulp.task('build', gulp.parallel('js', 'sass', 'css', 'php', 'img'));
+gulp.task('build', gulp.parallel('js', 'sass', 'css', 'php', 'img', 'sass_copy'));
 
 gulp.task('default', gulp.series('build', 'watch'));
