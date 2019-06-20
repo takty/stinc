@@ -6,7 +6,7 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-15
+ * @version 2019-06-20
  *
  */
 
@@ -29,14 +29,23 @@ function get_server_host() {
 function get_file_uri( $path ) {
 	$path = wp_normalize_path( $path );
 
-	if ( defined( 'THEME_PATH' ) ) {
-		$theme_path = wp_normalize_path( THEME_PATH );
-	} else {
-		$theme_path = wp_normalize_path( get_theme_file_path() );
-	}
-	$theme_uri = get_theme_file_uri();
+	if ( is_child_theme() ) {
+		$theme_path = wp_normalize_path( defined( 'CHILD_THEME_PATH' ) ? CHILD_THEME_PATH : get_stylesheet_directory() );
+		$theme_uri  = get_stylesheet_directory_uri();
 
-	return str_replace( $theme_path, $theme_uri, $path );
+		// When child theme is used, and libraries exist in the parent theme
+		$tlen = strlen( $theme_path );
+		$len  = strlen( $path );
+		if ( $tlen < $len && 0 !== strncmp( $theme_path . $path[ $tlen ], $path, $tlen + 1 ) ) {
+			$theme_path = wp_normalize_path( defined( 'THEME_PATH' ) ? THEME_PATH : get_template_directory() );
+			$theme_uri  = get_template_directory_uri();
+		}
+		return str_replace( $theme_path, $theme_uri, $path );
+	} else {
+		$theme_path = wp_normalize_path( defined( 'THEME_PATH' ) ? THEME_PATH : get_stylesheet_directory() );
+		$theme_uri  = get_stylesheet_directory_uri();
+		return str_replace( $theme_path, $theme_uri, $path );
+	}
 }
 
 function get_first_slug( $url ) {
