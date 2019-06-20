@@ -6,7 +6,7 @@ namespace st;
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-17
+ * @version 2019-06-21
  *
  */
 
@@ -144,7 +144,7 @@ class MediaPicker {
 		<div class="<?php echo $cls ?>">
 			<div class="<?php echo self::CLS_ITEM_CTRL ?>">
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><span><?php _e( 'Remove', 'default' ) ?></span><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
 			</div>
 			<div class="<?php echo self::CLS_ITEM_CONT ?>">
 				<div class="<?php echo self::CLS_ITEM_IR ?>">

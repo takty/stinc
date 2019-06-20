@@ -3,7 +3,7 @@
  * Link Picker (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-17
+ * @version 2019-06-21
  *
  */
 
@@ -49,8 +49,8 @@ $breakpoint-single-wrap: 20rem;
 	display: flex;
 	flex-direction: column;
 	padding-top: 0.15em;
-	padding-right: 12px;
-	width: 28px;
+	padding-right: 16px;
+	width: 40px;
 
 	.st-link-picker-handle {
 		flex-grow: 1;
@@ -64,9 +64,12 @@ $breakpoint-single-wrap: 20rem;
 		max-height: 3rem;
 	}
 	.st-link-picker-delete-label {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
 		white-space: nowrap;
 		color: #a00;
-		text-align: center;
 		font-size: 11px;
 		line-height: 1;
 	}

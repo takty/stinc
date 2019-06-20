@@ -3,7 +3,7 @@
  * Single Media Picker (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-17
+ * @version 2019-06-21
  *
  */
 
@@ -25,8 +25,12 @@ $breakpoint-single-wrap: 20rem;
 }
 
 .st-single-media-picker-item-ctrl {
-	padding: 4px 12px 4px 2px;
-	width: 28px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+
+	padding: 4px 16px 4px 2px;
+	width: 40px;
 
 	.st-single-media-picker-delete {
 		white-space: nowrap;
