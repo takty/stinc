@@ -6,7 +6,7 @@ namespace st\article;
  * Article Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-15
+ * @version 2019-06-21
  *
  */
 
@@ -58,7 +58,7 @@ function register_post_type(
 function _add_category_taxonomy( $post_type, $slug ) {
 	register_taxonomy( "{$post_type}_category", $post_type, [
 		'hierarchical'      => true,
-		'label'             => 'カテゴリー',
+		'label'             => __('Categories'),
 		'public'            => true,
 		'show_ui'           => true,
 		'rewrite'           => [ 'with_front' => false, 'slug' => "{$slug}/category" ],
@@ -71,7 +71,7 @@ function _add_category_taxonomy( $post_type, $slug ) {
 function _add_tag_taxonomy( $post_type, $slug ) {
 	register_taxonomy( "{$post_type}_tag", $post_type, [
 		'hierarchical'      => true,
-		'label'             => 'タグ',
+		'label'             => __('Tags'),
 		'public'            => true,
 		'show_ui'           => true,
 		'rewrite'           => [ 'with_front' => false, 'slug' => "{$slug}/tag" ],

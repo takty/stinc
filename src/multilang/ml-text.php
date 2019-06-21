@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Text)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-10-22
+ * @version 2019-06-21
  *
  */
 
@@ -84,7 +84,12 @@ class Multilang_Text {
 	public function _cb_gettext( $translation, $text, $domain ) {
 		if ( isset( $this->_text_to_lang[ $text ] ) ) {
 			$dict = &$this->_text_to_lang[ $text ];
-			$lang = $this->_core->get_site_lang();
+			if ( is_admin() ) {
+				$lang_c = explode( '_', get_user_locale() );
+				$lang = $lang_c[0];
+			} else {
+				$lang = $this->_core->get_site_lang();
+			}
 			if ( isset( $dict[ $lang ] ) ) return $dict[ $lang ];
 			return $text;
 		}

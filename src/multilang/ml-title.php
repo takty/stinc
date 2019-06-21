@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Title)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2019-06-21
  *
  */
 
@@ -58,6 +58,19 @@ class Multilang_Title {
 			$this->_is_archive_title_filtered = true;
 		} else {
 			$this->_is_post_type_name_filtered = true;
+		}
+		if ( is_admin() || is_admin_bar_showing() ) {
+			$lang_c = explode( '_', get_user_locale() );
+			if ( $lang_c[0] === $lang ) {
+				global $wp_post_types;
+				$labels = $wp_post_types[ $post_type ]->labels;
+				$labels->name           = $name;
+				$labels->all_items      = $name;
+				$labels->menu_name      = $name;
+				$labels->archives       = $name;
+				$labels->singular_name  = $singular_name;
+				$labels->name_admin_bar = $singular_name;
+			}
 		}
 	}
 

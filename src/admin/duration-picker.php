@@ -6,7 +6,7 @@ namespace st;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-04
+ * @version 2019-06-21
  *
  */
 
@@ -90,7 +90,7 @@ class DurationPicker {
 
 
 	public function add_meta_box( $label, $screen, $context = 'side' ) {
-		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
+		\add_meta_box( "{$this->_key}_mb", __( $label ), [ $this, '_cb_output_html' ], $screen, $context );
 	}
 
 	public function save_meta_box( $post_id ) {
@@ -123,14 +123,14 @@ class DurationPicker {
 		<div>
 			<table class="<?php echo self::CLS_TABLE ?>">
 				<tr>
-					<td><?php echo $_label_bgn; ?>: </td>
+					<td><?php _e( $_label_bgn ) ?>: </td>
 					<td class="flatpickr input-group" id="<?php echo $id_row_bgn ?>">
 						<input type="text" <?php \st\field\name_id( $id_bgn ) ?> size="12" value="<?php echo $_bgn; ?>" data-input />
 						<a class="button" title="clear" data-clear>X</a>
 					</td>
 				</tr>
 				<tr>
-					<td><?php echo $_label_end; ?>: </td>
+					<td><?php _e( $_label_end ) ?>: </td>
 					<td class="flatpickr input-group" id="<?php echo $id_row_end ?>">
 						<input type="text" <?php \st\field\name_id( $id_end ) ?> size="12" value="<?php echo $_end; ?>" data-input />
 						<a class="button" title="clear" data-clear>X</a>
