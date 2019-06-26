@@ -2,6 +2,7 @@
   "name": "stinc",
   "version": "1.0.0",
   "description": "Include Files for WordPress Websites",
+  "author": "Takuto Yanagida",
   "main": "gulpfile.js",
   "scripts": {
     "start": "gulp",
@@ -11,12 +12,17 @@
     "type": "git",
     "url": "git+https://github.com/takty/stinc.git"
   },
-  "author": "Takuto Yanagida",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/takty/stinc/issues"
   },
   "homepage": "https://github.com/takty/stinc#readme",
+  "browserslist": [
+    "ie >= 11"
+  ],
+  "devDependencies": {
+    "gulp-ignore": "^2.0.2"
+  },
   "dependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",
@@ -31,8 +37,5 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2"
-  },
-  "devDependencies": {
-    "gulp-ignore": "^2.0.2"
   }
 }
