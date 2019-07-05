@@ -6,7 +6,7 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-20
+ * @version 2019-07-05
  *
  */
 
@@ -36,7 +36,7 @@ function get_file_uri( $path ) {
 		// When child theme is used, and libraries exist in the parent theme
 		$tlen = strlen( $theme_path );
 		$len  = strlen( $path );
-		if ( $tlen < $len && 0 !== strncmp( $theme_path . $path[ $tlen ], $path, $tlen + 1 ) ) {
+		if ( $tlen >= $len || 0 !== strncmp( $theme_path . $path[ $tlen ], $path, $tlen + 1 ) ) {
 			$theme_path = wp_normalize_path( defined( 'THEME_PATH' ) ? THEME_PATH : get_template_directory() );
 			$theme_uri  = get_template_directory_uri();
 		}
