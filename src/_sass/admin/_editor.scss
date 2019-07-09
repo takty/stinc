@@ -3,7 +3,7 @@
  * Editor Style
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-05
+ * @version 2019-07-09
  *
  * @import 'stile/sass/basic';
  * @import 'stile/sass/content';
@@ -12,10 +12,11 @@
  */
 
 
-$editor-color          : #bce !default;
-$editor-color-container: #c4c !default;
-$editor-size-text-width: 48rem !default;
-$editor-size-font      : 0.85rem !default;
+$editor-color           : #bce !default;
+$editor-color-background: #bec !default;
+$editor-color-container : #c4c !default;
+$editor-size-text-width : 48rem !default;
+$editor-size-font       : 0.85rem !default;
 
 $stile-size-unit: 0.9rem !default;  // Variable in stile
 @function base-vr($val) {@return $val * $stile-size-unit;}
@@ -81,6 +82,10 @@ $stile-size-unit: 0.9rem !default;  // Variable in stile
 	td {
 		min-width: 1rem;
 		padding  : 0.25rem;
+	}
+	thead td,
+	th {
+		background-color: $editor-color-background;
 	}
 }
 
