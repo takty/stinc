@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-07-18
  *
  */
 
@@ -51,11 +51,13 @@ class Multilang_Post {
 		if ( ! current_user_can( 'edit_post', $post_ID ) ) return;
 
 		foreach ( $this->_core->get_site_langs( false ) as $lang ) {
-			if ( ! isset( $_POST["post_{$lang}_nonce"] ) ) continue;
-			if ( ! wp_verify_nonce( $_POST["post_{$lang}_nonce"], "post_$lang" ) ) continue;
+			if ( ! isset( $_POST[ "post_{$lang}_nonce" ] ) ) continue;
+			if ( ! wp_verify_nonce( $_POST[ "post_{$lang}_nonce" ], "post_$lang" ) ) continue;
 
-			$title = $_POST[$this->_key_title . $lang];
-			$content = wp_kses_post( $_POST[$this->_key_content . $lang] );
+			$title   = $_POST[ $this->_key_title   . $lang ];
+			$content = $_POST[ $this->_key_content . $lang ];
+			$title   = apply_filters(   'title_save_pre', $title );
+			$content = apply_filters( 'content_save_pre', $content );
 			update_post_meta( $post_ID, $this->_key_title   . $lang, $title );
 			update_post_meta( $post_ID, $this->_key_content . $lang, $content );
 		}

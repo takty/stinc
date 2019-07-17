@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-25
+ * @version 2019-07-18
  *
  */
 
@@ -27,6 +27,21 @@ function save_post_meta( $post_id, $key, $filter = null, $default = null ) {
 	$val = isset( $_POST[ $key ] ) ? $_POST[ $key ] : null;
 	if ( $filter !== null && $val !== null ) {
 		$val = $filter( $val );
+	}
+	if ( empty( $val ) ) {
+		if ( $default === null ) {
+			delete_post_meta( $post_id, $key );
+			return;
+		}
+		$val = $default;
+	}
+	update_post_meta( $post_id, $key, $val );
+}
+
+function save_post_meta_with_wp_filter( $post_id, $key, $filter_name = null, $default = null ) {
+	$val = isset( $_POST[ $key ] ) ? $_POST[ $key ] : null;
+	if ( $filter_name !== null && $val !== null ) {
+		$val = apply_filters( $filter_name, $val );
 	}
 	if ( empty( $val ) ) {
 		if ( $default === null ) {
@@ -273,7 +288,7 @@ function save_rich_editor_meta_box( $post_id, $key ) {
 	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
 	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
 
-	save_post_meta( $post_id, $key, 'wp_kses_post' );
+	save_post_meta_with_wp_filter( $post_id, $key, 'content_save_pre' );
 }
 
 function add_title_content_meta_box( $key, $sub_key_title, $sub_key_content, $label, $screen ) {
@@ -304,8 +319,8 @@ function save_title_content_meta_box( $post_id, $key, $sub_key_title, $sub_key_c
 	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
 	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
 
-	save_post_meta( $post_id, $sub_key_title );
-	save_post_meta( $post_id, $sub_key_content, 'wp_kses_post' );
+	save_post_meta_with_wp_filter( $post_id, $sub_key_title,     'title_save_pre' );
+	save_post_meta_with_wp_filter( $post_id, $sub_key_content, 'content_save_pre' );
 }
 
 
