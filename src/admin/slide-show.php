@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-17
+ * @version 2019-07-18
  *
  */
 
@@ -483,7 +483,7 @@ class SlideShow {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
 			}
 		}
-		if ( $this->_is_shuffled ) shuffle( $its );
+		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
 		return $its;
 	}
 
