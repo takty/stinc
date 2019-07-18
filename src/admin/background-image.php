@@ -6,7 +6,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-27
+ * @version 2019-07-18
  *
  */
 
@@ -66,6 +66,7 @@ class BackgroundImage {
 	private $_duration_time    = 8; // [second]
 	private $_transition_time  = 1; // [second]
 	private $_is_random_timing = true;
+	private $_is_shuffled      = false;
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -95,6 +96,11 @@ class BackgroundImage {
 
 	public function set_random_timing_enabled( $enabled ) {
 		$this->_is_random_timing = $enabled;
+		return $this;
+	}
+
+	public function set_shuffled( $enabled ) {
+		$this->_is_shuffled = $enabled;
 		return $this;
 	}
 
@@ -244,6 +250,7 @@ class BackgroundImage {
 				}
 			}
 		}
+		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
 		return $its;
 	}
 
