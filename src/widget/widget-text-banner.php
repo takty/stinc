@@ -10,7 +10,7 @@ namespace st;
  */
 
 
-class Widget_Text_Banner extends WP_Widget {
+class Widget_Text_Banner extends \WP_Widget {
 
 	static private $_template     = '';
 	static private $_use_color    = true;
