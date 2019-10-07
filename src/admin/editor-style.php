@@ -80,6 +80,11 @@ function initialize( $url_to = false, $row_index = 2 ) {
 		return $buttons;
 	}, 10 );
 
+	add_quick_tags();
+	add_allowed_tags();
+}
+
+function add_quick_tags() {
 	add_action( 'admin_print_footer_scripts', function () {
 		if ( wp_script_is( 'quicktags' ) ) {
 ?>
@@ -92,4 +97,11 @@ function initialize( $url_to = false, $row_index = 2 ) {
 <?php
 		}
 	} );
+}
+
+function add_allowed_tags() {
+	global $allowedtags;
+	$allowedtags['sub']  = [];
+	$allowedtags['sup']  = [];
+	$allowedtags['span'] = [];
 }
