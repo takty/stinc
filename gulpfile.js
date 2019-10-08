@@ -9,8 +9,8 @@ gulp.task('js-raw', () => {
 	return gulp.src(['src/**/*.js', '!src/**/*.min.js'], { base: 'src' })
 		.pipe($.plumber())
 		.pipe($.babel())
+		.pipe($.terser())
 		.pipe($.rename({ extname: '.min.js' }))
-		.pipe($.uglify())
 		.pipe(gulp.dest('./dist'));
 });
 
@@ -24,7 +24,12 @@ gulp.task('js', gulp.parallel('js-raw', 'js-min'));
 
 gulp.task('sass', () => {
 	return gulp.src(['src/**/*.scss'])
-		.pipe($.plumber())
+		.pipe($.plumber({
+			errorHandler: function (err) {
+				console.log(err.messageFormatted);
+				this.emit('end');
+			}
+		}))
 		.pipe($.sourcemaps.init())
 		.pipe($.sass({ outputStyle: 'compressed' }))
 		.pipe($.autoprefixer({ remove: false }))
