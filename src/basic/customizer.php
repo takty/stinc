@@ -1,12 +1,11 @@
 <?php
 namespace st\basic;
-
 /**
  *
  * Customizer for Clients
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-02-16
+ * @version 2019-10-08
  *
  */
 
@@ -131,6 +130,33 @@ function remove_table_resize_bars() {
 	} );
 }
 
+function remove_single_title_indication( $protected, $private ) {
+	if ( $protected ) {
+		add_filter( 'protected_title_format', function ( $prepend ) {
+			if ( ! is_single() ) return $prepend;
+			return '%s';
+		} );
+	}
+	if ( $private ) {
+		add_filter( 'private_title_format', function ( $prepend ) {
+			if ( ! is_single() ) return $prepend;
+			return '%s';
+		} );
+	}
+}
+
+function remove_emoji() {
+	remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+	remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+	remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+
+	remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+	remove_action( 'wp_print_styles', 'print_emoji_styles' );
+	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+	remove_action( 'admin_print_styles', 'print_emoji_styles' );
+	remove_action( 'embed_head', 'print_emoji_detection_script' );
+}
+
 
 // -----------------------------------------------------------------------------
 
@@ -140,6 +166,33 @@ function ensure_admin_side_bar_menu_area() {
 		global $menu;
 		$menu[19] = $menu[10];
 		unset( $menu[10] );
+	} );
+}
+
+function enable_used_tags() {
+	global $allowedtags;
+	$allowedtags['sub']  = [];
+	$allowedtags['sup']  = [];
+	$allowedtags['span'] = [];
+}
+
+function enable_default_image_sizes( $add_medium_small = false ) {
+	add_image_size( 'small', 320, 9999 );
+	add_image_size( 'huge', 2560, 9999 );
+	if ( $add_medium_small ) add_image_size( 'medium-small', 480, 9999 );
+
+	add_filter( 'image_size_names_choose', function ( $sizes ) use ( $add_medium_small ) {
+		$is_ja = preg_match( '/^ja/', get_locale() );
+		$ns = [];
+		foreach ( $sizes as $idx => $s ) {
+			$ns[ $idx ] = $s;
+			if ( $idx === 'thumbnail' ) {
+				$ns[ 'small' ] = ($is_ja ? '小' : 'Small');
+				if ( $add_medium_small ) $ns[ 'medium-small' ] = ( $is_ja ? 'やや小' : 'Medium Small' );
+			}
+			if ( $idx === 'medium' ) $ns[ 'medium_large' ] = ( $is_ja ? 'やや大' : 'Medium Large' );
+		}
+		return $ns;
 	} );
 }
 
@@ -174,26 +227,6 @@ function enable_to_show_slug() {
 	}, 10, 2);
 	add_action( 'admin_head', function () {
 		echo '<style>.fixed .column-slug{width:20%;}</style>';
-	} );
-}
-
-function enable_default_image_sizes( $add_medium_small = false ) {
-	add_image_size( 'small', 320, 9999 );
-	add_image_size( 'huge', 2560, 9999 );
-	if ( $add_medium_small ) add_image_size( 'medium-small', 480, 9999 );
-
-	add_filter( 'image_size_names_choose', function ( $sizes ) use ( $add_medium_small ) {
-		$is_ja = preg_match( '/^ja/', get_locale() );
-		$ns = [];
-		foreach ( $sizes as $idx => $s ) {
-			$ns[ $idx ] = $s;
-			if ( $idx === 'thumbnail' ) {
-				$ns[ 'small' ] = ($is_ja ? '小' : 'Small');
-				if ( $add_medium_small ) $ns[ 'medium-small' ] = ( $is_ja ? 'やや小' : 'Medium Small' );
-			}
-			if ( $idx === 'medium' ) $ns[ 'medium_large' ] = ( $is_ja ? 'やや大' : 'Medium Large' );
-		}
-		return $ns;
 	} );
 }
 

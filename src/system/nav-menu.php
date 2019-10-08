@@ -6,7 +6,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-20
+ * @version 2019-10-08
  *
  */
 
@@ -27,14 +27,38 @@ class NavMenu {
 
 	const CACHE_EXPIRATION  = 60 * 60 * 24;  // One day
 
-	static protected $_is_cache_enabled;
+	static protected $_is_cache_enabled = false;
+	static protected $_is_current_archive_enabled = true;
+	static protected $_custom_post_type_archive = [];
 
-	static public function enable_cache() {
-		self::$_is_cache_enabled = true;
+	static private function _get_ancestor_terms( $t ) {
+		$ret = [];
+		while ( $t->parent !== 0 ) {
+			$t = get_term( $t->parent, $t->taxonomy );
+			$ret[] = $t;
+		}
+		return $ret;
+	}
+
+	static public function set_cache_enabled( $flag ) {
+		self::$_is_cache_enabled = $flag;
 		add_action( 'wp_update_nav_menu', [ '\st\NavMenu', '_cb_wp_update_nav_menu' ], 10, 2 );
 	}
 
+	static public function set_current_archive_enabled( $flag ) {
+		self::$_is_current_archive_enabled = $flag;
+	}
+
+	static public function add_custom_post_type_archive( $post_type, $slug ) {
+		self::$_custom_post_type_archive[ $post_type ] = $slug;
+	}
+
 	protected $_cur_url;
+	protected $_cur_post_type         = false;
+	protected $_cur_tax               = false;
+	protected $_cur_term_archive_urls = [];
+	protected $_cur_is_archive        = false;
+
 	protected $_home_url;
 	protected $_is_page;
 	protected $_expanded_page_ids = false;
@@ -49,6 +73,30 @@ class NavMenu {
 		$mh = class_exists( '\st\Multihome' ) ? \st\Multihome::get_instance() : null;
 
 		$this->_cur_url = trailingslashit( strtok( \st\get_current_uri( true ), '?' ) );
+		if ( self::$_is_current_archive_enabled && ( is_single() || is_archive() ) ) {
+			$this->_cur_post_type = get_post_type();
+			if ( is_tax() ) {
+				$queried_object = get_queried_object();
+				$this->_cur_tax = $queried_object->taxonomy;
+			}
+			if ( is_single() ) {
+				$tax_names = get_object_taxonomies( $this->_cur_post_type );
+				$pid = get_the_ID();
+				$terms = [];
+				foreach ( $tax_names as $tax_name ) {
+					$ts = wp_get_post_terms( $pid, $tax_name );
+					foreach ( $ts as $t ) {
+						$terms[ $t->taxonomy . ' ' . $t->slug ] = $t;
+						$ats = self::_get_ancestor_terms( $t );
+						foreach ( $ats as $at ) {
+							$terms[ $at->taxonomy . ' ' . $at->slug ] = $at;
+						}
+					}
+				}
+				$this->_cur_term_archive_urls = array_map( 'get_term_link', $terms );
+			}
+			if ( is_archive() ) $this->_cur_is_archive = true;
+		}
 
 		$url = $mh ? $mh->home_url() : ( $ml ? $ml->home_url() : home_url() );
 		$this->_home_url = trailingslashit( $url );
@@ -312,9 +360,26 @@ class NavMenu {
 
 
 	protected function _get_menu_ancestors( $mis ) {
-		$id2pid = [];
-		$curs = [];
+		$id2pid  = [];
+		$curs    = [];
+		$dummy_n = 0;
+
 		foreach ( $mis as $mi ) {
+			$url_ps = explode( '/', untrailingslashit( $mi->url ) );
+			$is_custom_pta = (
+				isset( self::$_custom_post_type_archive[ $this->_cur_post_type ] ) &&
+				self::$_custom_post_type_archive[ $this->_cur_post_type ] === $url_ps[ count( $url_ps ) - 1 ]
+			);
+			$is_archive = (
+				$mi->object === $this->_cur_tax ||
+				$mi->object === $this->_cur_post_type ||
+				( ! $this->_cur_is_archive && in_array( $mi->url, $this->_cur_term_archive_urls, true ) )
+			);
+			if ( $is_custom_pta || $is_archive ) {
+				$curs[] = "dummy_$dummy_n";
+				$id2pid[ "dummy_$dummy_n" ] = $mi->ID;
+				++$dummy_n;
+			}
 			if ( $this->_is_current( $mi ) ) $curs[] = $mi->ID;
 			$id2pid[ $mi->ID ] = (int) $mi->menu_item_parent;
 		}

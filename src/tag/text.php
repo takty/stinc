@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-29
+ * @version 2019-10-07
  *
  */
 
@@ -22,6 +21,19 @@ function remove_separator_in_title_and_description() {
 		$title['title'] = implode( ' ', \st\separate_line( $title['title'] ) );
 		return $title;
 	} );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function mb_trim( $str ) {
+	return preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str );
+}
+
+function the_mb_excerpt( $count = 160 ) {
+	$text = get_the_excerpt();
+	echo esc_html( mb_trim( mb_strimwidth( $text, 0, $count ) ) ) . '...';
 }
 
 

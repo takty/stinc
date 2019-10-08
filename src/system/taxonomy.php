@@ -1,12 +1,11 @@
 <?php
 namespace st\taxonomy;
-
 /**
  *
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-18
+ * @version 2019-10-07
  *
  */
 
@@ -207,6 +206,11 @@ function limit_archive_links_by_terms( $post_type ) {
 
 // Utilities -------------------------------------------------------------------
 
+
+function make_tax_query( $tax, $term_slug_s ) {
+	$terms = is_array( $term_slug_s ) ?  implode( ',', $term_slug_s ) : $term_slug_s;
+	return [ 'taxonomy' => $tax, 'field' => 'slug', 'terms' => $terms ];
+}
 
 function get_term_root( $term, $root_id ) {
 	$cur = $term->term_id;

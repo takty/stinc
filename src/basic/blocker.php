@@ -1,12 +1,11 @@
 <?php
 namespace st\basic;
-
 /**
  *
  * Blocker - Disable Unused Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-16
+ * @version 2019-10-08
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/blocker.php' );
@@ -158,7 +157,7 @@ function disable_robotstxt() {
 			if ( preg_match( '/robots\\.txt\$/', $rule ) ) {
 				unset( $rules[ $rule ] );
 			}
-	    }
+		}
 		return $rules;
 	} );
 }
