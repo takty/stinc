@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-18
+ * @version 2019-10-08
  *
  */
 
@@ -18,6 +18,31 @@ add_action( 'admin_enqueue_scripts', function () {
 	wp_register_script( 'stinc-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
 	wp_register_style( 'stinc-field', $url_to . '/asset/field.min.css' );
 } );
+
+
+// -----------------------------------------------------------------------------
+
+
+function get_post_meta_date( $post_id, $key ) {
+	$ml = \st\Multilang::get_instance();
+
+	$val = mb_trim( get_post_meta( $post_id, $key, true ) );
+	$val = mysql2date( $ml->get_date_format(), $val );
+
+	return $val;
+}
+
+function get_post_meta_lines( $post_id, $key ) {
+	$ml = \st\Multilang::get_instance();
+
+	$val  = mb_trim( get_post_meta( $post_id, $key, true ) );
+	$vals = explode( "\n", $val );
+	$vals = array_map( 'mb_trim', $vals );
+	$vals = array_filter( $vals, function ( $e ) { return ! empty( $e ); } );
+	$vals = array_values( $vals );
+
+	return $vals;
+}
 
 
 // -----------------------------------------------------------------------------
