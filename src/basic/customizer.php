@@ -130,6 +130,21 @@ function remove_table_resize_bars() {
 	} );
 }
 
+function remove_single_title_indication( $protected, $private ) {
+	if ( $protected ) {
+		add_filter( 'protected_title_format', function ( $prepend ) {
+			if ( ! is_single() ) return $prepend;
+			return '%s';
+		} );
+	}
+	if ( $private ) {
+		add_filter( 'private_title_format', function ( $prepend ) {
+			if ( ! is_single() ) return $prepend;
+			return '%s';
+		} );
+	}
+}
+
 
 // -----------------------------------------------------------------------------
 
