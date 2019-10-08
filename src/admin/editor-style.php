@@ -26,7 +26,19 @@ function initialize( $url_to = false, $row_index = 2 ) {
 		$plugins['columns'] = $url_to . '/asset/editor-command.min.js';
 		return $plugins;
 	} );
+	add_filter( "mce_buttons_$row_index", function ( $buttons ) {
+		$buttons[] = 'styleselect';
+		$buttons[] = 'column_2';
+		$buttons[] = 'column_3';
+		$buttons[] = 'column_4';
+		return $buttons;
+	}, 10 );
 
+	add_style_formats();
+	add_quick_tags();
+}
+
+function add_style_formats() {
 	add_filter( 'tiny_mce_before_init', function ( $settings ) {
 		$formats = [];
 		if ( isset( $settings['style_formats'] ) ) {
@@ -71,16 +83,6 @@ function initialize( $url_to = false, $row_index = 2 ) {
 		$settings['style_formats'] = json_encode( $formats );
 		return $settings;
 	} );
-
-	add_filter( "mce_buttons_$row_index", function ( $buttons ) {
-		$buttons[] = 'styleselect';
-		$buttons[] = 'column_2';
-		$buttons[] = 'column_3';
-		$buttons[] = 'column_4';
-		return $buttons;
-	}, 10 );
-
-	add_quick_tags();
 }
 
 function add_quick_tags() {

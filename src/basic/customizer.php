@@ -1,6 +1,5 @@
 <?php
 namespace st\basic;
-
 /**
  *
  * Customizer for Clients
