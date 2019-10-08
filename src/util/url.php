@@ -1,14 +1,24 @@
 <?php
 namespace st;
-
 /**
  *
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-05
+ * @version 2019-10-08
  *
  */
+
+
+function _home_url( $path = '' ) {
+	if ( class_exists( '\st\Multilang' ) ) {
+		return \st\Multilang::get_instance()->home_url( $path );
+	}
+	return home_url( $path );
+}
+
+
+// -----------------------------------------------------------------------------
 
 
 function get_current_uri( $raw = false ) {
@@ -25,6 +35,10 @@ function get_server_host() {
 	}
 	return $_SERVER['HTTP_HOST'];
 }
+
+
+// -----------------------------------------------------------------------------
+
 
 function get_file_uri( $path ) {
 	$path = wp_normalize_path( $path );
@@ -48,12 +62,12 @@ function get_file_uri( $path ) {
 	}
 }
 
+
+// -----------------------------------------------------------------------------
+
+
 function get_first_slug( $url ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$hu = \st\Multilang::get_instance()->home_url( '/' );
-	} else {
-		$hu = home_url( '/' );
-	}
+	$hu = _home_url( '/' );
 	$temp = str_replace( $hu, '', $url );
 	$ps = explode( '/', $temp );
 	if ( count( $ps ) > 0 ) return $ps[0];
@@ -61,15 +75,16 @@ function get_first_slug( $url ) {
 }
 
 function get_first_and_second_slug( $url ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$hu = \st\Multilang::get_instance()->home_url( '/' );
-	} else {
-		$hu = home_url( '/' );
-	}
+	$hu = _home_url( '/' );
 	$temp = str_replace( $hu, '', $url );
 	$ps = explode( '/', $temp );
 	$ss = ['', ''];
 	if ( count( $ps ) > 0 ) $ss[0] = $ps[0];
 	if ( count( $ps ) > 1 ) $ss[1] = $ps[1];
 	return $ss;
+}
+
+function get_last_slug( $url ) {
+	$url_ps = explode( '/', untrailingslashit( $url ) );
+	return $url_ps[ count( $url_ps ) - 1 ];
 }

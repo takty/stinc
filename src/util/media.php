@@ -1,12 +1,11 @@
 <?php
-namespace st\media;
-
+namespace st;
 /**
  *
  * Media Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-03
+ * @version 2019-10-08
  *
  */
 

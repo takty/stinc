@@ -112,35 +112,3 @@ function _cb_enter_title_here( $enter_title_here, $post ) {
 	}
 	return $enter_title_here;
 }
-
-function get_sticky_articles( $post_type = 'article', $ml_tag = true, $opts = [] ) {
-	$args = [
-		'post_type' => $post_type,
-		'posts_per_page' => -1,
-	];
-	$args = array_merge( $args, $opts );
-	if ( $ml_tag && class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		if ( $ml->has_tag() ) {
-			if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
-			$args['tax_query'][] = $ml->get_tax_query();
-		}
-	}
-	return \st\sticky\get_sticky_posts( $args );
-}
-
-function get_latest_articles( $post_type, $post_per_page = 6, $ml_tag = true, $opts = [] ) {
-	$args = [
-		'post_type' => $post_type,
-		'posts_per_page' => $post_per_page,
-	];
-	$args = array_merge( $args, $opts );
-	if ( $ml_tag && class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		if ( $ml->has_tag() ) {
-			if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
-			$args['tax_query'][] = $ml->get_tax_query();
-		}
-	}
-	return get_posts( $args );
-}

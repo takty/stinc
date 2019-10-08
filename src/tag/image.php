@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Custom Template Tags for Responsive Images
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-01-04
+ * @version 2019-10-08
  *
  */
 
@@ -69,7 +68,7 @@ class Image {
 	static public function get_attachment_id( $url ) {
 		global $wpdb;
 		preg_match( '/([^\/]+?)(-e\d+)?(-\d+x\d+)?(\.\w+)?$/', $url, $matches );
-	 	$guid = str_replace( $matches[0], $matches[1] . $matches[4], $url );
+		$guid = str_replace( $matches[0], $matches[1] . $matches[4], $url );
 		$sql = "SELECT ID FROM {$wpdb->posts} WHERE guid = %s";
 		$v = $wpdb->get_var( $wpdb->prepare( $sql, $guid ) );
 		return $v === null ? false : intval( $v );

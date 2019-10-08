@@ -1,12 +1,11 @@
 <?php
 namespace st\shortcode;
-
 /**
  *
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-22
+ * @version 2019-10-08
  *
  */
 
@@ -51,46 +50,42 @@ add_action( 'init', function () {
 		return ob_get_clean();
 	} );
 
-	add_shortcode( 'latest-post-list', function ( $atts ) {
-		$atts = shortcode_atts([
-			'taxonomy' => 'category',
-			'term' => '',
-			'post_type' => 'post',
-		], $atts );
+	// add_shortcode( 'latest-post-list', function ( $atts ) {
+	// 	$atts = shortcode_atts([
+	// 		'taxonomy' => 'category',
+	// 		'term' => '',
+	// 		'post_type' => 'post',
+	// 	], $atts );
 
-		$tq = [ [
-			'taxonomy' => $atts['taxonomy'],
-			'field' => 'slug',
-			'terms' => $atts['term']
-		] ];
-		if ( class_exists( '\st\Multilang' ) ) {
-			$ml = \st\Multilang::get_instance();
-			$tq[] = [
-				'taxonomy' => 'post_lang',
-				'field' => 'slug',
-				'terms' => $ml->get_site_lang()
-			];
-		}
-		$ps = get_posts( [
-			'post_type' => $atts['post_type'],
-			'posts_per_page' => 6,
-			'tax_query' => $tq
-		] );
-		if ( count( $ps ) === 0 ) return;
+	// 	$tq = [ [
+	// 		'taxonomy' => $atts['taxonomy'],
+	// 		'field' => 'slug',
+	// 		'terms' => $atts['term']
+	// 	] ];
+	// 	if ( class_exists( '\st\Multilang' ) ) {
+	// 		$ml = \st\Multilang::get_instance();
+	// 		$tq[] = [
+	// 			'taxonomy' => 'post_lang',
+	// 			'field' => 'slug',
+	// 			'terms' => $ml->get_site_lang()
+	// 		];
+	// 	}
+	// 	$ps = get_posts( [
+	// 		'post_type' => $atts['post_type'],
+	// 		'posts_per_page' => 6,
+	// 		'tax_query' => $tq
+	// 	] );
+	// 	if ( count( $ps ) === 0 ) return;
 
-		ob_start();
-		echo '<ul class="list-item-post">';
-		\st\the_loop_posts( 'template-parts/item', 'post', $ps );
-		echo '</ul>';
-		return ob_get_clean();
-	} );
-
-
+	// 	ob_start();
+	// 	echo '<ul class="list-item-post">';
+	// 	\st\the_loop_posts( 'template-parts/item', 'post', $ps );
+	// 	echo '</ul>';
+	// 	return ob_get_clean();
+	// } );
 
 
 	// -------------------------------------------------------------------------
-
-
 
 
 	add_shortcode( 'instagram', function ( $atts ) {

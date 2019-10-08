@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Custom Template Tags
@@ -11,8 +10,8 @@ namespace st;
  */
 
 
-require_once __DIR__ . '/text.php';
-require_once __DIR__ . '/url.php';
+require_once __DIR__ . '/../text.php';
+require_once __DIR__ . '/../url.php';
 
 
 function is_content_empty( $str = false ) {
@@ -35,66 +34,6 @@ function get_post_title( $short = 8, $long = 32, $mode = 'segment_small', $filte
 	if ( $len <= $short )  $option = ' data-length="short"';
 	$title = \st\separate_line( $title, $mode, $filter );
 	return compact( 'title', 'option' );
-}
-
-
-// -----------------------------------------------------------------------------
-
-
-function the_loop_posts( $slug, $name = '', $ps ) {
-	global $post;
-	foreach ( $ps as $post ) {
-		setup_postdata( $post );
-		get_template_part( $slug, $name );
-	}
-	wp_reset_postdata();
-}
-
-function the_loop_posts_with_custom_page_template( $slug, $name = '', $ps ) {
-	global $post;
-	foreach ( $ps as $post ) {
-		setup_postdata( $post );
-
-		$pt = get_post_meta( $post->ID, '_wp_page_template', TRUE );
-		if ( ! empty( $pt ) && $pt !== 'default' ) {
-			get_template_part( $slug, basename( $pt, '.php' ) );
-		} else {
-			get_template_part( $slug, $name );
-		}
-	}
-	wp_reset_postdata();
-}
-
-function the_loop_query( $slug, $name = '', $args, $opts = [] ) {
-	$ps = get_posts( $args );
-	if ( isset( $opts['has_post_thumbnail'] ) ) {
-		$hpt = $opts['has_post_thumbnail'];
-		$ps = array_values( array_filter( $ps, function ( $p ) use ( $hpt ) {
-			return $hpt === has_post_thumbnail( $p->ID );
-		} ) );
-	}
-	if ( count( $ps ) === 0 ) return;
-	the_loop_posts( $slug, $name, $ps );
-}
-
-function the_loop_of_child_pages( $slug, $name, $args = [], $opts = [] ) {
-	$args = array_merge( [
-		'post_type'      => 'page',
-		'posts_per_page' => -1,
-		'orderby'        => 'menu_order',
-		'order'          => 'asc',
-		'post_parent'    => get_the_ID()
-	], $args );
-	the_loop_query( $slug, $name, $args, $opts );
-}
-
-function the_loop_of_posts( $slug, $name = '', $args = [], $opts = [] ) {
-	$args = array_merge( [
-		'post_type'      => 'post',
-		'posts_per_page' => -1,
-		'order'          => 'asc',
-	], $args );
-	the_loop_query( $slug, $name, $args, $opts );
 }
 
 
@@ -136,68 +75,9 @@ function echo_content( $content ) {
 	echo $content;
 }
 
-
-// -----------------------------------------------------------------------------
-
-
-function get_sticky_posts( $term_slug, $taxonomy ) {
-	$t = get_term_by( 'slug', $term_slug, $taxonomy );
-	$stickies = get_option( 'sticky_posts' );
-	if ( count( $stickies ) === 0 ) return [];
-
-	return get_posts( [
-		'posts_per_page' => 4,
-		'category' => $t->slug,
-		'post__in'  => $stickies,
-		'ignore_sticky_posts' => 1,
-	] );
-}
-
-function get_child_pages( $parent_id = false ) {
-	if ( $parent_id === false ) $parent_id = get_the_ID();
-	return get_posts( [
-		'posts_per_page' => -1,
-		'post_type' => 'page',
-		'orderby' => 'menu_order',
-		'order' => 'asc',
-		'post_parent' => $parent_id
-	] );
-}
-
-function get_sibling_pages( $sibling_id = false ) {
-	$post = null;
-	if ( $sibling_id === false ) {
-		$post = get_post();
-	} else {
-		$post = get_post( $sibling_id );
-	}
-	$parent_id = ! empty( $post ) ? $post->post_parent : 0;
-	return get_posts( [
-		'posts_per_page' => -1,
-		'post_type' => 'page',
-		'orderby' => 'menu_order',
-		'order' => 'asc',
-		'post_parent' => $parent_id
-	] );
-}
-
-function get_pages_by_ids( $ids ) {
-	$ps = get_posts( [
-		'posts_per_page' => -1,
-		'post_type' => 'page',
-		'orderby' => 'menu_order',
-		'order' => 'asc',
-		'post__in' => $ids
-	] );
-	$id2p = [];
-	foreach ( $ps as $p ) {
-		$id2p[ $p->ID ] = $p;
-	}
-	$ret = [];
-	foreach ( $ids as $id ) {
-		if ( isset( $id2p[ $id ] ) ) $ret[] = $id2p[ $id ];
-	}
-	return $ret;
+function the_mb_excerpt( $count = 160 ) {
+	$text = get_the_excerpt();
+	echo esc_html( mb_trim( mb_strimwidth( $text, 0, $count ) ) ) . '...';
 }
 
 
@@ -241,9 +121,9 @@ function the_sibling_page_list( $before = '<ul>', $after = '</ul>', $link_class 
 function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = '</h3>', $list_before = '<ul>', $list_after = '</ul>', $is_fiscal_year = false ) {
 	$ps = get_posts( [
 		'posts_per_page' => -1,
-		'post_type' => $post_type,
-		'orderby' => 'date',
-		'order' => 'desc',
+		'post_type'      => $post_type,
+		'orderby'        => 'date',
+		'order'          => 'desc',
 	] );
 	$year = -1;
 	if ( count( $ps ) === 0 ) return;
@@ -400,7 +280,7 @@ function add_archive_current_class() {
 				break;
 			case 'li>':
 				$search = '<li>';
-				$replace = '<li class="current-arichive-item">';
+				$replace = '<li class="current-archive-item">';
 				$regex = "/^\t<li><a href='([^']+)' title='[^']+'>[^<]+<\/a><\/li>/";
 				break;
 			default:
@@ -410,8 +290,7 @@ function add_archive_current_class() {
 			}
 		}
 		if ( is_year() && $regex && preg_match( $regex, $link_html, $m ) ) {
-			$host = \st\get_server_host();
-			$url = ( is_ssl() ? 'https://' : 'http://' ) . $host . $_SERVER[ 'REQUEST_URI' ];
+			$url = \st\get_current_uri();
 			if ( strpos( $url, $m[1] ) === 0 ) {
 				$link_html = str_replace( $search, $replace, $link_html );
 			}
@@ -436,12 +315,12 @@ function get_the_page_navigation( $args = [] ) {
 		} ) );
 	}
 	if ( count( $ps ) === 0 ) return;
-	?>
+?>
 			<nav class="navigation page-navigation">
 				<ul class="nav-links">
-	<?php
+<?php
 	foreach ( $ps as $p ) the_post_list_item( $p, 'child-page-nav-link' );
-	?>
+?>
 				</ul>
 			</nav>
 	<?php

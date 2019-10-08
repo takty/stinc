@@ -64,7 +64,7 @@ function remove_post_menu_when_empty() {
 	}
 }
 
-function remvoe_archive_title_text() {
+function remove_archive_title_text() {
 	add_filter( 'get_the_archive_title', function ( $title ) {
 		if ( is_category() || is_tag() || is_tax() ) {
 			$title = single_term_title( '', false );
@@ -155,6 +155,19 @@ function remove_emoji() {
 	remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
 	remove_action( 'admin_print_styles', 'print_emoji_styles' );
 	remove_action( 'embed_head', 'print_emoji_detection_script' );
+}
+
+function remove_separator_in_title_and_description() {
+	add_filter( 'bloginfo', function ( $output, $show ) {
+		if ( $show === 'description' || $show === 'name' || $show === '' ) {
+			return implode( ' ', \st\separate_line( $output ) );
+		}
+		return $output;
+	}, 10, 2 );
+	add_filter( 'document_title_parts', function ( $title ) {
+		$title['title'] = implode( ' ', \st\separate_line( $title['title'] ) );
+		return $title;
+	} );
 }
 
 
