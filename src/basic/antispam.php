@@ -1,12 +1,11 @@
 <?php
 namespace st\basic;
-
 /**
  *
  * Anti-Spam - Disable Comment and Trackback Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-16
+ * @version 2019-10-08
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/antispam.php' );
