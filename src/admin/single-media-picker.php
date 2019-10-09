@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Single Media Picker (PHP)

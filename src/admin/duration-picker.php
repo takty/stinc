@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Duration Picker (PHP)

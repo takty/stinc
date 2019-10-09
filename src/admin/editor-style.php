@@ -34,11 +34,11 @@ function initialize( $url_to = false, $row_index = 2 ) {
 		return $buttons;
 	}, 10 );
 
-	add_style_formats();
-	add_quick_tags();
+	_add_style_formats();
+	_add_quick_tags();
 }
 
-function add_style_formats() {
+function _add_style_formats() {
 	add_filter( 'tiny_mce_before_init', function ( $settings ) {
 		$formats = [];
 		if ( isset( $settings['style_formats'] ) ) {
@@ -85,7 +85,7 @@ function add_style_formats() {
 	} );
 }
 
-function add_quick_tags() {
+function _add_quick_tags() {
 	add_action( 'admin_print_footer_scripts', function () {
 		if ( wp_script_is( 'quicktags' ) ) {
 ?>

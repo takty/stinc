@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Link Picker (PHP)

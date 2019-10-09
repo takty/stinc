@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Background Images (PHP)

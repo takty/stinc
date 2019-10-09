@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Slide Show (PHP)

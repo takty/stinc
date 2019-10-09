@@ -1,6 +1,5 @@
 <?php
 namespace st\post_thumbnail;
-
 /**
  *
  * Custom Post Thumbnail (PHP)
