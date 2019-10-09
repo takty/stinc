@@ -2,12 +2,47 @@
 namespace st;
 /**
  *
- * Media Utilities
+ * Utilities for Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-09
  *
  */
+
+
+function get_post_id() {
+	$post_id = '';
+	if ( isset( $_GET['post'] ) || isset( $_POST['post_ID'] ) ) {
+		$post_id = isset( $_GET['post'] ) ? $_GET['post'] : $_POST['post_ID'];
+	}
+	return intval( $post_id );
+}
+
+function get_post_type( $post_id ) {
+	$p = get_post( $post_id );
+	if ( $p === null ) {
+		if ( isset( $_GET['post_type'] ) ) return $_GET['post_type'];
+		return '';
+	}
+	return $p->post_type;
+}
+
+function is_post_type( $post_type ) {
+	$post_id = get_post_id();
+	$pt = get_post_type( $post_id );
+	return $post_type === $pt;
+}
+
+function is_page_on_front( $post_id ) {
+	$pof = get_option( 'page_on_front' );
+	if ( 'page' === get_option( 'show_on_front') && $pof && $post_id === intval( $pof ) ) {
+		return true;
+	}
+	return false;
+}
+
+
+// -----------------------------------------------------------------------------
 
 
 function extract_media_id( $url ) {

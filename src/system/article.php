@@ -1,12 +1,11 @@
 <?php
 namespace st\article;
-
 /**
  *
  * Article Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-21
+ * @version 2019-10-09
  *
  */
 
@@ -56,7 +55,6 @@ function register_post_type(
 			set_admin_columns( $post_type, $add_category, $add_tag );
 		} );
 	}
-	add_filter( 'enter_title_here', '\st\article\_cb_enter_title_here', 10, 2 );
 }
 
 function _add_category_taxonomy( $post_type, $slug ) {
@@ -103,12 +101,4 @@ function set_admin_columns( $post_type, $add_category, $add_tag )  {
 	}
 	$cs[] = 'date';
 	\st\field\set_admin_columns( $post_type, $cs );
-}
-
-function _cb_enter_title_here( $enter_title_here, $post ) {
-	$post_type = get_post_type_object( $post->post_type );
-	if ( isset( $post_type->labels->enter_title_here ) && $post_type->labels->enter_title_here && is_string( $post_type->labels->enter_title_here ) ) {
-		$enter_title_here = esc_html( $post_type->labels->enter_title_here );
-	}
-	return $enter_title_here;
 }

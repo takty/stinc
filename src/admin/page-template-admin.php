@@ -10,7 +10,7 @@ namespace st\page_template_admin;
  */
 
 
-require_once __DIR__ . '/../util/admin.php';
+require_once __DIR__ . '/../system/util.php';
 
 
 function initialize() {

@@ -12,7 +12,7 @@ namespace st;
 
 
 require_once __DIR__ . '/../admin/duration-picker.php';
-require_once __DIR__ . '/../admin/page-template-admin.php';
+require_once __DIR__ . '/../util/admin.php';
 require_once __DIR__ . '/post-type.php';
 
 

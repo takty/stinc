@@ -1,12 +1,11 @@
 <?php
 namespace st\post_type;
-
 /**
  *
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-11-24
+ * @version 2019-10-09
  *
  */
 
@@ -366,10 +365,10 @@ function get_custom_archives( $meta_key, $args = '' ) {
 	}
 }
 
-function set_enter_title_here( $post_type, $text ) {
-	add_filter( 'enter_title_here', function ( $title ) use ( $post_type, $text ) {
-		$screen = get_current_screen();
-		if ( $screen->post_type === $post_type ) $title = $text;
-		return $title;
-	} );
-}
+// function set_enter_title_here( $post_type, $text ) {
+// 	add_filter( 'enter_title_here', function ( $title ) use ( $post_type, $text ) {
+// 		$screen = get_current_screen();
+// 		if ( $screen->post_type === $post_type ) $title = $text;
+// 		return $title;
+// 	} );
+// }
