@@ -10,6 +10,13 @@ namespace st\basic;
  */
 
 
+function disable_embedded_sticky_post_behavior() {
+	add_action( 'pre_get_posts', function ( $query ) {
+		if ( is_admin() || ! $query->is_main_query() ) return;
+		$query->set( 'ignore_sticky_posts', '1' );  // Only for embedded 'post' type
+	} );
+}
+
 function disable_emoji() {
 	remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
 	remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );

@@ -59,6 +59,7 @@ function apply_custom() {
 	} else {
 		remove_archive_title_text();
 		remove_separator_in_title_and_description();
+		disable_embedded_sticky_post_behavior();
 	}
 	disable_emoji();
 	enable_used_tags();
