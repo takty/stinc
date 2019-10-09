@@ -13,7 +13,7 @@ namespace st\event;
 require_once __DIR__ . '/post-type.php';
 require_once __DIR__ . '/../admin/list_table_column.php';
 require_once __DIR__ . '/../admin/util.php';
-require_once __DIR__ . '/../metabox/mb-duration-picker.php';
+require_once __DIR__ . '/../metabox/duration-picker.php';
 
 
 const PMK_BGN   = '_date_bgn';
