@@ -5,9 +5,13 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-10
  *
  */
+
+
+require_once __DIR__ . '/taxonomy.php';
+require_once __DIR__ . '/sticky.php';
 
 
 function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date', $by_post_name = false ) {
@@ -364,11 +368,3 @@ function get_custom_archives( $meta_key, $args = '' ) {
 		return $output;
 	}
 }
-
-// function set_enter_title_here( $post_type, $text ) {
-// 	add_filter( 'enter_title_here', function ( $title ) use ( $post_type, $text ) {
-// 		$screen = get_current_screen();
-// 		if ( $screen->post_type === $post_type ) $title = $text;
-// 		return $title;
-// 	} );
-// }

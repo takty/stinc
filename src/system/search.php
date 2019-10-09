@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-10-09
  *
  */
 
@@ -20,11 +19,7 @@ class Search {
 	}
 
 
-
-
 	// -------------------------------------------------------------------------
-
-
 
 
 	private $_is_slash_in_query_enabled = false;
@@ -97,11 +92,7 @@ class Search {
 	}
 
 
-
-
 	// Private Functions -------------------------------------------------------
-
-
 
 
 	private function ensure_search_rewrite_rules_filter_added() {
@@ -155,11 +146,7 @@ class Search {
 	}
 
 
-
-
 	// Callback Functions ------------------------------------------------------
-
-
 
 
 	public function _cb_add_rewrite_rules( $rewrite_rules ) {
@@ -293,11 +280,7 @@ class Search {
 	}
 
 
-
-
 	// Private Functions -------------------------------------------------------
-
-
 
 
 	private function urlencode( $str ) {

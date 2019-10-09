@@ -18,7 +18,7 @@ function get_post_id() {
 	return intval( $post_id );
 }
 
-function get_post_type( $post_id ) {
+function get_post_type_in_admin( $post_id ) {
 	$p = get_post( $post_id );
 	if ( $p === null ) {
 		if ( isset( $_GET['post_type'] ) ) return $_GET['post_type'];
@@ -29,7 +29,7 @@ function get_post_type( $post_id ) {
 
 function is_post_type( $post_type ) {
 	$post_id = get_post_id();
-	$pt = get_post_type( $post_id );
+	$pt = get_post_type_in_admin( $post_id );
 	return $post_type === $pt;
 }
 

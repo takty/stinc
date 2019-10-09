@@ -10,7 +10,7 @@ namespace st\page_template_admin;
  */
 
 
-require_once __DIR__ . '/../system/util.php';
+require_once __DIR__ . '/util.php';
 
 
 function initialize() {
@@ -26,7 +26,7 @@ function initialize() {
 		if ( \st\is_page_on_front( $post_id ) ) {
 			if ( _load_page_template_admin( $post_id, 'front-page.php', $POST_FIX ) ) return;
 		}
-		$post_type = \st\get_post_type( $post_id );
+		$post_type = \st\get_post_type_in_admin( $post_id );
 		if ( ! empty( $post_type ) ) {
 			if ( _load_page_template_admin( $post_id, $post_type . '.php', $POST_FIX ) ) return;
 		}

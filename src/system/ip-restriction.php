@@ -1,15 +1,13 @@
 <?php
+namespace st;
 /**
  *
  * IP Restriction (IPv4)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2019-10-09
  *
  */
-
-
-namespace st;
 
 
 require_once __DIR__ . '/field.php';
@@ -27,6 +25,7 @@ class IpRestriction {
 
 
 	// -------------------------------------------------------------------------
+
 
 	private $_whites = [];
 	private $_is_allowed = false;

@@ -1,6 +1,5 @@
 <?php
 namespace st\field;
-
 /**
  *
  * Custom Field Utilities
@@ -294,61 +293,6 @@ function output_textarea_row_postfix( $label, $key, $postfixes, $values, $rows =
 }
 
 
-// Custom Meta Box -------------------------------------------------------------
-
-
-function add_rich_editor_meta_box( $key, $label, $screen, $settings = [] ) {
-	add_meta_box(
-		$key . '_mb', $label,
-		function ( $post ) use ( $key, $settings ) {
-			wp_nonce_field( $key, "{$key}_nonce" );
-			$value = get_post_meta( $post->ID, $key, true );
-			wp_editor( $value, $key, $settings );
-		},
-		$screen
-	);
-}
-
-function save_rich_editor_meta_box( $post_id, $key ) {
-	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
-	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
-
-	save_post_meta_with_wp_filter( $post_id, $key, 'content_save_pre' );
-}
-
-function add_title_content_meta_box( $key, $sub_key_title, $sub_key_content, $label, $screen ) {
-	add_meta_box(
-		$key . '_mb', $label,
-		function ( $post ) use ( $key, $sub_key_title, $sub_key_content ) {
-			wp_nonce_field( $key, "{$key}_nonce" );
-			wp_enqueue_style( 'stinc-field' );
-			$title_placeholder = apply_filters( 'enter_title_here', __( 'Enter title here' ), $post );
-			$title   = get_post_meta( $post->ID, $sub_key_title, true );
-			$content = get_post_meta( $post->ID, $sub_key_content, true );
-		?>
-		<div class="stinc-field-title">
-			<input
-				type="text" size="30" spellcheck="true" autocomplete="off" placeholder="<?php echo $title_placeholder ?>"
-				name="<?php echo $sub_key_title ?>" id="<?php echo $sub_key_title ?>"
-				value="<?php echo esc_attr( $title ) ?>"
-			>
-		</div>
-		<?php
-			wp_editor( $content, $sub_key_content );
-		},
-		$screen
-	);
-}
-
-function save_title_content_meta_box( $post_id, $key, $sub_key_title, $sub_key_content ) {
-	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
-	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
-
-	save_post_meta_with_wp_filter( $post_id, $sub_key_title,     'title_save_pre' );
-	save_post_meta_with_wp_filter( $post_id, $sub_key_content, 'content_save_pre' );
-}
-
-
 // Multiple Post Meta ----------------------------------------------------------
 
 
@@ -412,99 +356,6 @@ function update_multiple_post_meta( $post_id, $base_key, $metas, $keys = null ) 
 			update_post_meta( $post_id, $bki . $key, $set[$key] );
 		}
 	}
-}
-
-
-// Admin Columns ---------------------------------------------------------------
-
-
-function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
-	$DEFAULT_COLUMNS = [
-		'cb'     => '<input type="checkbox" />',
-		'title'  => _x( 'Title', 'column name', 'default' ),
-		'author' => __( 'Author', 'default' ),
-		'date'   => __( 'Date', 'default' ),
-		'order'  => __( 'Order', 'default' ),
-	];
-	$columns = [];
-	$styles  = [];
-	$val_fns = [];
-
-	foreach ( $all_columns as $c ) {
-		if ( is_array( $c ) ) {
-			if ( taxonomy_exists( $c['name'] ) ) {
-				$l = empty( $c['label'] ) ? get_taxonomy( $c['name'] )->labels->name : $c['label'];
-				$columns[ 'taxonomy-' . $c['name'] ] = $l;
-			} else {
-				$columns[ $c['name'] ] = empty( $c['label'] ) ? $c['name'] : $c['label'];
-			}
-			// Column Styles
-			if ( isset( $c['name'] ) && isset( $c['width'] ) ) {
-				$tax = taxonomy_exists( $c['name'] ) ? 'taxonomy-' : '';
-				$styles[] = ".column-$tax{$c['name']} {width: {$c['width']} !important;}";
-			}
-			// Column Value Functions
-			if ( isset( $c['value'] ) && is_callable( $c['value'] ) ) {
-				$val_fns[ $c['name'] ] = $c['value'];
-			}
-		} else {
-			if ( taxonomy_exists( $c ) ) {
-				$columns[ 'taxonomy-' . $c ] = get_taxonomy( $c )->labels->name;
-			} else {
-				$columns[ $c ] = $DEFAULT_COLUMNS[ $c ];
-			}
-		}
-	}
-	add_filter( "manage_edit-{$post_type}_columns", function () use ( $columns ) {
-		return $columns;
-	} );
-	add_action( 'admin_head', function () use ( $post_type, $styles ) {
-		if ( get_query_var( 'post_type' ) === $post_type ) {
-			?><style>
-			<?php echo implode( "\n", $styles ); ?>
-			</style><?php
-		}
-	} );
-	add_action( "manage_{$post_type}_posts_custom_column", function ( $column_name, $post_id ) use ( $val_fns ) {
-		if ( isset( $val_fns[ $column_name ] ) ) {
-			$fn = $val_fns[ $column_name ];
-			echo call_user_func( $fn, get_post_meta( $post_id, $column_name, true ) );
-		}
-	}, 10, 2 );
-
-	if ( count( $sortable_columns ) > 0 ) set_admin_columns_sortable( $post_type, $sortable_columns );
-}
-
-function set_admin_columns_sortable( $post_type, $sortable_columns ) {
-	$names = [];
-	$types = [];
-	foreach ( $sortable_columns as $c ) {
-		if ( is_array( $c ) ) {
-			$names[] = $c['name'];
-			if ( isset( $c['type'] ) ) $types[ $c['name'] ] = $c['type'];
-		} else {
-			$names[] = $c;
-		}
-	}
-	add_filter( "manage_edit-{$post_type}_sortable_columns", function ( $cols ) use ( $names ) {
-		foreach ( $names as $name ) {
-			$tax = taxonomy_exists( $name ) ? 'taxonomy-' : '';
-			$cols[ $tax . $name ] = $name;
-		}
-		return $cols;
-	} );
-	add_filter( 'request', function ( $vars ) use ( $names, $types ) {
-		if ( ! isset( $vars['orderby'] ) ) return $vars;
-		$key = $vars['orderby'];
-		if ( in_array( $key, $names, true ) && ! taxonomy_exists( $key ) ) {
-			$orderby = [ 'meta_key' => $key, 'orderby' => 'meta_value' ];
-			if ( isset( $types[ $key ] ) ) {
-				$orderby['meta_type'] = $types[ $key ];
-			}
-			$vars = array_merge( $vars, $orderby );
-		}
-		return $vars;
-	} );
 }
 
 

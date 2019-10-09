@@ -1,17 +1,14 @@
 <?php
 namespace st;
-
 /**
  *
  * Ajax
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-03-16
+ * @version 2019-10-09
  *
  */
 
-
-if ( ! class_exists( 'Ajax' ) ) :
 
 class Ajax {
 
@@ -27,9 +24,9 @@ class Ajax {
 		$this->response = $response;
 		$this->nonce    = ( $nonce === null ) ? $action : $nonce;
 
-		add_action( 'wp_ajax_' . $action, [ $this, 'do_ajax_action' ] );
+		add_action( 'wp_ajax_' . $action, [ $this, '_cb_ajax_action' ] );
 		if ( $public ) {
-			add_action( 'wp_ajax_nopriv_' . $action, [ $this, 'do_ajax_action' ] );
+			add_action( 'wp_ajax_nopriv_' . $action, [ $this, '_cb_ajax_action' ] );
 		}
 	}
 
@@ -44,7 +41,7 @@ class Ajax {
 		return $url;
 	}
 
-	public function do_ajax_action() {  // must be public for the use of action
+	public function _cb_ajax_action() {
 		check_ajax_referer( $this->nonce, 'nonce' );
 		nocache_headers();
 
@@ -58,5 +55,3 @@ class Ajax {
 	}
 
 }
-
-endif;

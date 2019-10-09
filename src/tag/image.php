@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags for Responsive Images
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-09
  *
  */
 
@@ -29,6 +29,7 @@ class Image {
 
 	// -------------------------------------------------------------------------
 
+
 	static public function get_thumbnail_src( $size = 'large', $post_id = false, $meta_key = false ) {
 		$tid = self::get_thumbnail_id( $post_id, $meta_key );
 		if ( $tid === false ) return '';
@@ -50,6 +51,7 @@ class Image {
 
 
 	// -------------------------------------------------------------------------
+
 
 	static public function get_thumbnail_id( $post_id = false, $meta_key = false ) {
 		global $post;
@@ -93,6 +95,7 @@ class Image {
 
 
 	// -------------------------------------------------------------------------
+
 
 	public function the_thumbnail_style( $size = 'large', $post_id = false, $meta_key = false ) {
 		echo $this->get_the_thumbnail_style( $size, $post_id, $meta_key );
@@ -142,6 +145,7 @@ class Image {
 
 
 	// -----------------------------------------------------------------------------
+
 
 	public function output_responsive_styles() {
 		if ( empty( $this->_res_styles ) ) return;

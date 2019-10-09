@@ -5,7 +5,7 @@ namespace st\sticky;
  * Sticky for Custom Post Types
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-09
  *
  */
 
@@ -34,15 +34,4 @@ function make_custom_post_type_sticky( $post_types ) {
 			update_post_meta( $post_id, '_sticky', isset( $_POST['_sticky'] ) );
 		} );
 	}
-}
-
-
-// -----------------------------------------------------------------------------
-
-
-function ignore_sticky_posts() {
-	add_action( 'pre_get_posts', function ( $query ) {
-		if ( is_admin() || ! $query->is_main_query() ) return;
-		$query->set( 'ignore_sticky_posts', '1' );  // Only for embedded 'post' type
-	} );
 }

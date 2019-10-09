@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-09
  *
  */
 

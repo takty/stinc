@@ -22,17 +22,35 @@ function register( $post_type, $slug, $label, $hierarchical = true, $show_ui = t
 	] );
 }
 
-function register_without_post_type( $taxonomy, $label, $hierarchical = true, $show_ui = true ) {
-	register_taxonomy( $taxonomy, null, [
-		'hierarchical'      => $hierarchical,
-		'label'             => $label,
+function register_category( $post_type, $slug ) {
+	register_taxonomy( "{$post_type}_category", $post_type, [
+		'label'             => __('Categories'),
+		'rewrite'           => [ 'with_front' => false, 'slug' => "{$slug}/category" ],
+		'hierarchical'      => true,
 		'public'            => true,
-		'show_ui'           => $show_ui,
-		'rewrite'           => false,
+		'show_ui'           => true,
 		'sort'              => true,
 		'show_admin_column' => true
 	] );
+	set_taxonomy_post_type_specific( [ "{$post_type}_category" ], $post_type );
 }
+
+function register_tag( $post_type, $slug ) {
+	register_taxonomy( "{$post_type}_tag", $post_type, [
+		'label'             => __('Tags'),
+		'rewrite'           => [ 'with_front' => false, 'slug' => "{$slug}/tag" ],
+		'hierarchical'      => false,
+		'public'            => true,
+		'show_ui'           => true,
+		'sort'              => true,
+		'show_admin_column' => true
+	] );
+	set_taxonomy_post_type_specific( [ "{$post_type}_tag" ], $post_type );
+}
+
+
+// -----------------------------------------------------------------------------
+
 
 function set_terms( $taxonomy, $slugs_to_labels, $parent_id = 0, $force_rename = false ) {
 	foreach ( $slugs_to_labels as $slug => $label ) {

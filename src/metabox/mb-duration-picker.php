@@ -5,7 +5,7 @@ namespace st;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-21
+ * @version 2019-10-09
  *
  */
 
@@ -18,7 +18,7 @@ class DurationPicker {
 
 	const NS = 'st-duration-picker';
 
-	const CLS_TABLE      = self::NS . '-table';
+	const CLS_TABLE = self::NS . '-table';
 
 	static private $_instance   = [];
 	static private $_locale     = 'en';
@@ -26,6 +26,9 @@ class DurationPicker {
 	static private $_is_echo_script = false;
 
 	static public function get_instance( $key = false ) {
+		$lang_c = explode( '_', get_user_locale() );
+		self::$_locale = $lang_c[0];
+
 		if ( $key === false ) return reset( self::$_instance );
 		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
 		return new DurationPicker( $key );
