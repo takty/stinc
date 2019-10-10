@@ -6,7 +6,7 @@ namespace st;
  * Mock of Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-10
+ * @version 2019-10-10
  *
  */
 
@@ -204,9 +204,9 @@ class Multilang {
 		$this->_title->add_taxonomy_name_translation( $taxonomy, $lang, $name, $singular_name );
 	}
 
-	public function get_post_type_name( $post_type, $lang = false ) {
+	public function get_post_type_name( $post_type, $lang = false, $singular_name = false ) {
 		if ( $this->_title === null ) $this->initialize_title();
-		return $this->_title->get_post_type_name( $post_type, $lang );
+		return $this->_title->get_post_type_name( $post_type, $lang, $singular_name );
 	}
 
 	public function get_site_title( $raw = false ) {
