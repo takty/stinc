@@ -5,7 +5,7 @@ namespace st;
  * Query
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-11
  *
  */
 
@@ -18,12 +18,26 @@ function append_post_type_query( $post_type, $post_per_page, $args = [] ) {
 }
 
 function append_tax_query( $taxonomy, $term_slug_s, $args = [] ) {
-	$terms = is_array( $term_slug_s ) ? implode( ',', $term_slug_s ) : $term_slug_s;
+	$term_slugs = is_array( $term_slug_s ) ? implode( ',', $term_slug_s ) : $term_slug_s;
 	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
 	$args['tax_query'][] = [
 		'taxonomy' => $taxonomy,
 		'field'    => 'slug',
-		'terms'    => $terms
+		'terms'    => $term_slugs
+	];
+	return $args;
+}
+
+function append_tax_query_with_term_of( $taxonomy, $post_id, $args = [] ) {
+	$term_slugs = [];
+	$ts = get_the_terms( $post_id, $taxonomy );
+	if ( $ts !== false ) $term_slugs = array_map( function ( $t ) { return $t->slug; }, $ts );
+
+	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
+	$args['tax_query'][] = [
+		'taxonomy' => $taxonomy,
+		'field'    => 'slug',
+		'terms'    => $term_slugs
 	];
 	return $args;
 }
@@ -31,7 +45,7 @@ function append_tax_query( $taxonomy, $term_slug_s, $args = [] ) {
 function append_custom_sticky_query( $args = [] ) {
 	if ( ! isset( $args['meta_query'] ) ) $args['meta_query'] = [];
 	$args['meta_query'][] = [
-		'key'   => '_sticky',
+		'key'   => \st\sticky\PMK_STICKY,
 		'value' => '1'
 	];
 	return $args;
@@ -56,6 +70,28 @@ function append_mh_tag_query( $args = [] ) {
 
 	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
 	$args['tax_query'][] = $mh->get_tax_query();
+	return $args;
+}
+
+function append_upcoming_post_query( $month_offset = 0, $day_offset = 0, $year_offset = 1, $args = [] ) {
+	$today  = date_i18n( 'Y-m-d' );
+	$limit  = date_i18n( 'Y-m-d', mktime( 0, 0, 0, date( 'm' ) + $month_offset, date( 'd' ) + $day_offset, date( 'Y' ) + $year_offset ) );
+
+	if ( ! isset( $args['meta_query'] ) ) $args['meta_query'] = [];
+	$args['meta_query']['relation'] = 'AND';
+	$args['meta_query'][] = [
+		'key'     => \st\event\PMK_DATE_END,
+		'value'   => $today,
+		'type'    => 'DATE',
+		'compare' => '>=',
+	];
+	$args['meta_query'][] = [
+		'key'     => \st\event\PMK_DATE_BGN,
+		'value'   => $limit,
+		'type'    => 'DATE',
+		'compare' => '<=',
+	];
+	$args['order'] = 'ASC';
 	return $args;
 }
 
@@ -107,6 +143,29 @@ function get_custom_sticky_posts( $post_type, $ml_tag = false, $args = [] ) {
 	$args = append_custom_sticky_query( $args );
 	if ( $ml_tag ) $args = append_ml_tag_query( $args );
 	return get_posts( $args );
+}
+
+function get_custom_sticky_and_latest_posts( $post_type, $post_per_page = 6, $ml_tag = false, $args = [] ) {
+	$sticky = get_custom_sticky_posts( $post_type, $ml_tag, $args );
+	$latest = get_latest_posts( $post_type, $post_per_page, $ml_tag, $args );
+
+	return merge_sticky_and_latest( $sticky, $latest, $$post_per_page );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function merge_sticky_and_latest( $sticky, $latest, $count ) {
+	$sticky_ids = array_map( function ( $p ) { return $p->ID; }, $sticky );
+	$ret = $sticky;
+
+	foreach ( $latest as $l ) {
+		if ( $count !== -1 && $count <= count( $ret ) ) break;
+		if ( in_array( $l->ID, $sticky_ids, true ) ) continue;
+		$ret[] = $l;
+	}
+	return $ret;
 }
 
 

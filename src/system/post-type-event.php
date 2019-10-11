@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-10
+ * @version 2019-10-11
  *
  */
 
@@ -16,8 +16,8 @@ require_once __DIR__ . '/../admin/util.php';
 require_once __DIR__ . '/../metabox/duration-picker.php';
 
 
-const PMK_BGN   = '_date_bgn';
-const PMK_END   = '_date_end';
+const PMK_DATE_BGN = '_date_bgn';
+const PMK_DATE_END = '_date_end';
 
 
 function register_post_type( $post_type = 'event', $slug = false, $opts = [], $labels = [], $args = [] ) {
@@ -48,13 +48,13 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 	\register_post_type( $post_type, $args );
 	\st\post_type\add_rewrite_rules( $post_type, $slug, 'date' );
 
-	$pmk_o = $opts['order_by_type'] === 'begin' ? PMK_BGN : ( $opts['order_by_type'] === 'end' ? PMK_END : false );
+	$pmk_o = $opts['order_by_type'] === 'begin' ? PMK_DATE_BGN : ( $opts['order_by_type'] === 'end' ? PMK_DATE_END : false );
 	if ( $pmk_o ) {
 		\st\post_type\make_custom_date_sortable( $post_type, 'date', $pmk_o );
 		\st\post_type\enable_custom_date_adjacent_post_link( $post_type, $pmk_o );
 	}
 
-	$pmk_d = $opts['date_replaced_by_type'] === 'begin' ? PMK_BGN : ( $opts['date_replaced_by_type'] === 'end' ? PMK_END : false );
+	$pmk_d = $opts['date_replaced_by_type'] === 'begin' ? PMK_DATE_BGN : ( $opts['date_replaced_by_type'] === 'end' ? PMK_DATE_END : false );
 	if ( $pmk_d ) {
 		add_filter( 'get_the_date', function ( $the_date, $d, $post ) use ( $post_type, $pmk_d ) {
 			if ( $post->post_type !== $post_type ) return $the_date;
@@ -82,10 +82,6 @@ function _set_duration_picker( $post_type, $opts, $labels ) {
 	} );
 }
 
-
-// -----------------------------------------------------------------------------
-
-
 function set_admin_columns( $post_type, $add_cat, $add_tag ) {
 	add_action( 'wp_loaded', function () use ( $post_type, $add_cat, $add_tag )  {
 		$cs = \st\list_table_column\insert_default_columns();
@@ -98,13 +94,17 @@ function set_admin_columns( $post_type, $add_cat, $add_tag ) {
 	} );
 }
 
+
+// -----------------------------------------------------------------------------
+
+
 function insert_date_columns( $post_type, $pos = false, $cs = [] ) {
 	$pto = get_post_type_object( $post_type );
 	$label_bgn = isset( $pto['labels']['period_begin_label'] ) ? $pto['labels']['period_begin_label'] : 'Begin';
 	$label_end = isset( $pto['labels']['period_end_label'] ) ? $pto['labels']['period_end_label'] : 'End';
 	$ns = [
-		[ 'name' => PMK_BGN, 'label' => $label_bgn, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ],
-		[ 'name' => PMK_END, 'label' => $label_end, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ]
+		[ 'name' => PMK_DATE_BGN, 'label' => $label_bgn, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ],
+		[ 'name' => PMK_DATE_END, 'label' => $label_end, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ]
 	];
 	if ( $pos === false ) return array_marge( $cs, $ns );
 	return array_splice( $cs, $pos, 0, $ns );
@@ -116,7 +116,7 @@ function _echo_date_val( $val ) {
 }
 
 function insert_date_sortable_columns( $pos = false, $scs = [] ) {
-	$ns = [ PMK_BGN, PMK_END ];
+	$ns = [ PMK_DATE_BGN, PMK_DATE_END ];
 	if ( $pos === false ) return array_marge( $scs, $ns );
 	return array_splice( $scs, $pos, 0, $ns );
 }
@@ -126,8 +126,8 @@ function insert_date_sortable_columns( $pos = false, $scs = [] ) {
 
 
 function get_date_tags( $post_id, $raw = false, $format = "<span>%year%</span><span>%month%</span><span>%day%</span>", $base_format = false ) {
-	$date_bgn = get_post_meta( $post_id, PMK_BGN, true );
-	$date_end = get_post_meta( $post_id, PMK_END, true );
+	$date_bgn = get_post_meta( $post_id, PMK_DATE_BGN, true );
+	$date_end = get_post_meta( $post_id, PMK_DATE_END, true );
 	$lic = '';
 
 	if ( ! empty( $date_bgn ) ) {
@@ -176,7 +176,7 @@ function _make_date_tags( $date, $format, $base_format = false ) {
 		$date = date_create_from_format( 'Y-m-d', $date );
 		$ds = explode( "\t", date_format( $date, $base_format ) );
 	} else {
-		$ds = [ '?', '?', '?' ];
+		$ds = [ '?', '?', '?', '?' ];
 	}
-	return str_replace( [ '%year%', '%month%', '%day%' ], $ds, $format );
+	return str_replace( [ '%year%', '%month%', '%day%', '%week%' ], $ds, $format );
 }
