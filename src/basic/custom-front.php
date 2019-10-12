@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom Front
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-12
  *
  */
 
@@ -57,4 +57,39 @@ function remove_separator_in_title_and_description() {
 		$title['title'] = implode( ' ', \st\separate_line( $title['title'] ) );
 		return $title;
 	} );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function add_current_to_archive_link() {
+	add_filter( 'get_archives_link', function ( $link_html ) {
+		$regex = '/^\t<(link |option |li>)/';
+		if ( preg_match( $regex, $link_html, $m ) ) {
+			switch ( $m[1] ) {
+			case 'option ':
+				$search  = '<option';
+				$replace = '<option selected  = "selected"';
+				$regex   = "/^\t<option value = '([^']+)'>[^<]+<\/option>/";
+				break;
+			case 'li>':
+				$search = '<li>';
+				$replace = '<li class="current">';
+				$regex = "/^\t<li><a href='([^']+)' title='[^']+'>[^<]+<\/a><\/li>/";
+				break;
+			default:
+				$search = '';
+				$replace = '';
+				$regex = '';
+			}
+		}
+		if ( $regex && preg_match( $regex, $link_html, $m ) ) {
+			$url = \st\get_current_uri();
+			if ( strpos( $url, $m[1] ) === 0 ) {
+				$link_html = str_replace( $search, $replace, $link_html );
+			}
+		}
+		return $link_html;
+	}, 99 );
 }

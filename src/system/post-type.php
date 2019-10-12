@@ -5,13 +5,26 @@ namespace st\post_type;
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-10
+ * @version 2019-10-12
  *
  */
 
 
 require_once __DIR__ . '/taxonomy.php';
 require_once __DIR__ . '/sticky.php';
+
+
+function post_type_title( $prefix = '', $display = true ) {
+	$post_type = get_query_var( 'post_type' );
+	if ( is_array( $post_type ) ) $post_type = reset( $post_type );
+	$post_type_obj = get_post_type_object( $post_type );
+	$title = apply_filters( 'post_type_archive_title', $post_type_obj->labels->name, $post_type );
+	if ( $display ) echo $prefix . $title;
+	else return $prefix . $title;
+}
+
+
+// -----------------------------------------------------------------------------
 
 
 function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date', $by_post_name = false ) {
@@ -157,6 +170,10 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' 
 	}, 10, 6 );
 }
 
+
+// -----------------------------------------------------------------------------
+
+
 function make_custom_date_sortable( $post_type, $slug, $meta_key ) {
 	add_action( 'pre_get_posts', function ( $query ) use ( $post_type, $slug, $meta_key ) {
 		if ( is_admin() ) return;
@@ -258,113 +275,4 @@ function enable_custom_date_adjacent_post_link( $post_type, $meta_key ) {
 		}
 		return $sort;
 	}, 10, 2 );
-}
-
-function post_type_title( $prefix = '', $display = true ) {
-	$post_type = get_query_var( 'post_type' );
-	if ( is_array( $post_type ) ) $post_type = reset( $post_type );
-	$post_type_obj = get_post_type_object( $post_type );
-	$title = apply_filters( 'post_type_archive_title', $post_type_obj->labels->name, $post_type );
-	if ( $display ) echo $prefix . $title;
-	else return $prefix . $title;
-}
-
-function get_custom_archives( $meta_key, $args = '' ) {
-	global $wpdb, $wp_locale;
-
-	$defaults = [
-		'type' => 'monthly', 'limit' => '',
-		'format' => 'html', 'before' => '',
-		'after' => '', 'show_post_count' => false,
-		'echo' => 1, 'order' => 'DESC',
-		'post_type' => 'post'
-	];
-
-	$r = wp_parse_args( $args, $defaults );
-
-	$post_type_object = get_post_type_object( $r['post_type'] );
-	if ( ! is_post_type_viewable( $post_type_object ) ) {
-		return;
-	}
-	$r['post_type'] = $post_type_object->name;
-
-	if ( '' === $r['type'] ) {
-		$r['type'] = 'monthly';
-	}
-
-	if ( ! empty( $r['limit'] ) ) {
-		$r['limit'] = absint( $r['limit'] );
-		$r['limit'] = ' LIMIT ' . $r['limit'];
-	}
-
-	$order = strtoupper( $r['order'] );
-	if ( $order !== 'ASC' ) $order = 'DESC';
-
-	// this is what will separate dates on weekly archive links
-	$archive_week_separator = '&#8211;';
-
-	$sql_where = $wpdb->prepare( "WHERE post_type = %s AND post_status = 'publish'", $r['post_type'] );
-
-	$where = apply_filters( 'getarchives_where', $sql_where, $r );
-
-	$join = "INNER JOIN $wpdb->postmeta ON ( $wpdb->posts.ID = $wpdb->postmeta.post_id AND $wpdb->postmeta.meta_key = '$meta_key' )";
-	$join = apply_filters( 'getarchives_join', $join, $r );
-
-	$output = '';
-
-	$last_changed = wp_cache_get_last_changed( 'posts' );
-
-	$limit = $r['limit'];
-
-	if ( 'monthly' === $r['type'] ) {
-		$query = "SELECT YEAR(meta_value) AS `year`, MONTH(meta_value) AS `month`, count(ID) as posts FROM $wpdb->posts $join $where GROUP BY YEAR(meta_value), MONTH(meta_value) ORDER BY meta_value $order $limit";
-		$key = md5( $query );
-		$key = "wp_get_archives:$key:$last_changed";
-		if ( ! $results = wp_cache_get( $key, 'posts' ) ) {
-			$results = $wpdb->get_results( $query );
-			wp_cache_set( $key, $results, 'posts' );
-		}
-		if ( $results ) {
-			$after = $r['after'];
-			foreach ( (array) $results as $result ) {
-				$url = get_month_link( $result->year, $result->month );
-				if ( 'post' !== $r['post_type'] ) {
-					$url = add_query_arg( 'post_type', $r['post_type'], $url );
-				}
-				/* translators: 1: month name, 2: 4-digit year */
-				$text = sprintf( __( '%1$s %2$d' ), $wp_locale->get_month( $result->month ), $result->year );
-				if ( $r['show_post_count'] ) {
-					$r['after'] = '&nbsp;(' . $result->posts . ')' . $after;
-				}
-				$output .= get_archives_link( $url, $text, $r['format'], $r['before'], $r['after'] );
-			}
-		}
-	} elseif ( 'yearly' === $r['type'] ) {
-		$query = "SELECT YEAR(meta_value) AS `year`, count(ID) as posts FROM $wpdb->posts $join $where GROUP BY YEAR(meta_value) ORDER BY meta_value $order $limit";
-		$key = md5( $query );
-		$key = "wp_get_archives:$key:$last_changed";
-		if ( ! $results = wp_cache_get( $key, 'posts' ) ) {
-			$results = $wpdb->get_results( $query );
-			wp_cache_set( $key, $results, 'posts' );
-		}
-		if ( $results ) {
-			$after = $r['after'];
-			foreach ( (array) $results as $result ) {
-				$url = get_year_link( $result->year );
-				if ( 'post' !== $r['post_type'] ) {
-					$url = add_query_arg( 'post_type', $r['post_type'], $url );
-				}
-				$text = sprintf( '%d', $result->year );
-				if ( $r['show_post_count'] ) {
-					$r['after'] = '&nbsp;(' . $result->posts . ')' . $after;
-				}
-				$output .= get_archives_link( $url, $text, $r['format'], $r['before'], $r['after'] );
-			}
-		}
-	}
-	if ( $r['echo'] ) {
-		echo $output;
-	} else {
-		return $output;
-	}
 }
