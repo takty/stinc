@@ -104,14 +104,14 @@ class Image {
 			if ( ! empty( $tsr ) ) return $tsr;
 			$size = empty( $size ) ? 'large' : $size[0];
 		}
-		$ts = self::get_thumbnail_src( $size, $post_id, $meta_key );
+		$ts = get_thumbnail_src( $size, $post_id, $meta_key );
 		if ( empty( $ts ) ) return '';
 		$src = esc_attr( $ts );
 		return " style=\"background-image: url('$src')\"";
 	}
 
 	public function get_the_thumbnail_image( $size = 'large', $post_id = false, $meta_key = false ) {
-		$tid = self::get_thumbnail_id( $post_id, $meta_key );
+		$tid = get_thumbnail_id( $post_id, $meta_key );
 		if ( $tid === false ) return '';
 		$ais = wp_get_attachment_image_src( $tid, $size );
 		if ( $ais === false ) return '';
@@ -120,7 +120,7 @@ class Image {
 	}
 
 	public function get_the_thumbnail_figure( $size = 'large', $post_id = false, $meta_key = false ) {
-		$tid = self::get_thumbnail_id( $post_id, $meta_key );
+		$tid = get_thumbnail_id( $post_id, $meta_key );
 		if ( $tid === false ) return '';
 		$ais = wp_get_attachment_image_src( $tid, $size );
 		if ( $ais === false ) return '';
@@ -145,11 +145,11 @@ class Image {
 
 	private function _get_res_style( $sizes = [ 'medium', 'large' ], $post_id = false, $meta_key = false ) {
 		if ( empty( $sizes ) || count( $sizes ) === 1 ) return '';
-		$tid = self::get_thumbnail_id( $post_id, $meta_key );
+		$tid = get_thumbnail_id( $post_id, $meta_key );
 		if ( $tid === false ) return '';
 
-		$as0 = self::get_attachment_src( $sizes[0], $tid );
-		$as1 = self::get_attachment_src( $sizes[1], $tid );
+		$as0 = get_attachment_src( $sizes[0], $tid );
+		$as1 = get_attachment_src( $sizes[1], $tid );
 		if ( empty( $as0 ) || empty( $as1 ) ) return '';
 
 		$id = '' . ( $this->_res_styles_id++ );
