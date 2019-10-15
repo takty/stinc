@@ -216,10 +216,10 @@ function get_the_ogp_image( $logo_src = '', $meta_key = false, $alt_image_src = 
 	if ( $alt_image_src !== false ) return $alt_image_src;
 	if ( ! is_singular() ) return $logo_src;
 	global $post;
-	$src = \st\Image::get_thumbnail_src( 'large', $post->ID, $meta_key );
+	$src = \st\get_thumbnail_src( 'large', $post->ID, $meta_key );
 	if ( ! empty( $src ) ) return $src;
 
-	$ais = \st\Image::get_first_image_src( 'large' );
+	$ais = \st\get_first_image_src( 'large' );
 	if ( ! empty( $ais ) ) return $ais;
 	return $logo_src;
 }
