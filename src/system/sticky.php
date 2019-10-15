@@ -5,7 +5,7 @@ namespace st\sticky;
  * Sticky for Custom Post Types
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-12
+ * @version 2019-10-15
  *
  */
 
@@ -54,13 +54,13 @@ function _set_action_post_submitbox_misc_actions() {
 
 function _set_action_post_class() {
 	global $_post_types;
-	add_action( 'post_class', function ( $classes, $class, $post_id ) use ( &$_post_types ) {
+	add_filter( 'post_class', function ( $classes, $class, $post_id ) use ( &$_post_types ) {
 		if ( is_admin() ) return $classes;
 		if ( ! in_array( get_post_type( $post_id ), $_post_types, true ) ) return $classes;
 		$is_sticky = get_post_meta( $post_id, PMK_STICKY, true );
 		if ( $is_sticky ) $classes[] = 'sticky';
 		return $classes;
-	} );
+	}, 10, 3 );
 }
 
 function _add_action_save_post( $post_type ) {
