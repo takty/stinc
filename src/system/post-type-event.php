@@ -136,14 +136,14 @@ function get_date_tags( $post_id, $raw = false, $format = "<span>%year%</span><s
 
 		if ( ! empty( $date_end ) ) {
 			$today_end = _compare_date( $today, explode( '-', $date_end ) );
-			if      ( $today_bgn === '<' ) $lic = ' upcoming';
-			else if ( $today_end === '>' ) $lic = ' finished';
-			else                           $lic = ' ongoing';
+			if      ( $today_bgn === '<' ) $lic = 'upcoming';
+			else if ( $today_end === '>' ) $lic = 'finished';
+			else                           $lic = 'ongoing';
 		} else {
 			switch ( $today_bgn ) {
-			case '=': $lic = ' ongoing';  break;
-			case '>': $lic = ' finished'; break;
-			case '<': $lic = ' upcoming'; break;
+			case '=': $lic = 'ongoing';  break;
+			case '>': $lic = 'finished'; break;
+			case '<': $lic = 'upcoming'; break;
 			}
 		}
 	}
