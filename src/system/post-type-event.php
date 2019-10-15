@@ -125,34 +125,66 @@ function insert_date_sortable_columns( $pos = false, $scs = [] ) {
 // -----------------------------------------------------------------------------
 
 
-function get_date_tags( $post_id, $raw = false, $format = "<span>%year%</span><span>%month%</span><span>%day%</span>", $base_format = false ) {
-	$date_bgn = get_post_meta( $post_id, PMK_DATE_BGN, true );
-	$date_end = get_post_meta( $post_id, PMK_DATE_END, true );
-	$lic = '';
+function get_duration_tag( $post_id, $base_format, $main_date, $fmt_ymd, $fmt_md, $fmt_d ) {
+	$ml  = \st\Multilang::get_instance();
+	$dur = get_duration( $post_id );
+	extract( $dur );
 
-	if ( ! empty( $date_bgn ) ) {
+	$bgn = false;
+	$end = false;
+	if ( $bgn_nums && $end_nums ) {
+		if ( $main_date === 'begin' ) {
+			$bgn = _make_date_tags( $bgn_raw, $fmt_ymd, $base_format );
+			if ( $bgn_nums[0] !== $end_nums[0] ) {
+				$end = _make_date_tags( $end_raw, $fmt_ymd, $base_format );
+			} else if ( $bgn_nums[1] !== $end_nums[1] ) {
+				$end = _make_date_tags( $end_raw, $fmt_md, $base_format );
+			} else if ( $bgn_nums[2] !== $end_nums[2] ) {
+				$end = _make_date_tags( $end_raw, $fmt_d, $base_format );
+			}
+		} else if ( $main_date === 'end' ) {
+			$end = _make_date_tags( $end_raw, $fmt_ymd, $base_format );
+			if ( $bgn_nums[0] !== $end_nums[0] ) {
+				$bgn = _make_date_tags( $bgn_raw, $fmt_ymd, $base_format );
+			} else if ( $bgn_nums[1] !== $end_nums[1] ) {
+				$bgn = _make_date_tags( $bgn_raw, $fmt_md, $base_format );
+			} else if ( $bgn_nums[2] !== $end_nums[2] ) {
+				$bgn = _make_date_tags( $bgn_raw, $fmt_d, $base_format );
+			}
+		}
+	} else if ( $bgn_nums ) {
+		$bgn = _make_date_tags( $bgn_raw, $fmt_ymd, $base_format );
+	} else if ( $end_nums ) {
+		$end = _make_date_tags( $end_raw, $fmt_ymd, $base_format );
+	}
+	return [ 'state' => $state, 'bgn' => $bgn, 'end' => $end ];
+}
+
+function get_duration( $post_id ) {
+	$bgn_raw = get_post_meta( $post_id, PMK_DATE_BGN, true );
+	$end_raw = get_post_meta( $post_id, PMK_DATE_END, true );
+	$bgn_nums = empty( $bgn_raw ) ? false : explode( '-', $bgn_raw );
+	$end_nums = empty( $end_raw ) ? false : explode( '-', $end_raw );
+	$state = '';
+
+	if ( ! $bgn_nums ) {
 		$today = explode( '-', date_i18n( 'Y-m-d' ) );
-		$today_bgn = _compare_date( $today, explode( '-', $date_bgn ) );
+		$today_bgn = _compare_date( $today, $bgn_nums );
 
-		if ( ! empty( $date_end ) ) {
-			$today_end = _compare_date( $today, explode( '-', $date_end ) );
-			if      ( $today_bgn === '<' ) $lic = 'upcoming';
-			else if ( $today_end === '>' ) $lic = 'finished';
-			else                           $lic = 'ongoing';
+		if ( ! $end_nums ) {
+			$today_end = _compare_date( $today, $end_nums );
+			if      ( $today_bgn === '<' ) $state = 'upcoming';
+			else if ( $today_end === '>' ) $state = 'finished';
+			else                           $state = 'ongoing';
 		} else {
 			switch ( $today_bgn ) {
-			case '=': $lic = 'ongoing';  break;
-			case '>': $lic = 'finished'; break;
-			case '<': $lic = 'upcoming'; break;
+			case '=': $state = 'ongoing';  break;
+			case '>': $state = 'finished'; break;
+			case '<': $state = 'upcoming'; break;
 			}
 		}
 	}
-	if ( $raw ) return [ $lic, $date_bgn, $date_end ];
-	return [
-		$lic,
-		_make_date_tags( $date_bgn, $format, $base_format ),
-		_make_date_tags( $date_end, $format, $base_format )
-	];
+	return compact( 'state', 'bgn_raw', 'end_raw', 'bgn_nums', 'end_nums' );
 }
 
 function _compare_date( $d1, $d2 ) {
@@ -178,5 +210,6 @@ function _make_date_tags( $date, $format, $base_format = false ) {
 	} else {
 		$ds = [ '?', '?', '?', '?' ];
 	}
-	return str_replace( [ '%year%', '%month%', '%day%', '%week%' ], $ds, $format );
+	$temp = str_replace( [ '%0', '%1', '%2', '%3' ], $ds, $format );
+	return str_replace( [ '%year%', '%month%', '%day%', '%week%' ], $ds, $temp );
 }
