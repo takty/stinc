@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-07
+ * @version 2019-10-15
  *
  */
 
@@ -47,10 +47,6 @@ function register_tag( $post_type, $slug ) {
 	] );
 	set_taxonomy_post_type_specific( [ "{$post_type}_tag" ], $post_type );
 }
-
-
-// -----------------------------------------------------------------------------
-
 
 function set_terms( $taxonomy, $slugs_to_labels, $parent_id = 0, $force_rename = false ) {
 	foreach ( $slugs_to_labels as $slug => $label ) {
@@ -162,47 +158,6 @@ function set_taxonomy_exclusive( $taxonomy_s ) {
 	}, 10, 6 );
 }
 
-
-// Count Posts with Terms ------------------------------------------------------
-
-
-function count_term_from_posts( $posts, $taxonomy, $term_slug ) {
-	$post_sets = [];
-	foreach ( $posts as $p ) {
-		$terms = wp_get_object_terms( $p->ID, $taxonomy, [ 'fields' => 'slugs' ] );
-		foreach ( $terms as $t ) {
-			if ( ! isset( $post_sets[ $t ] ) ) $post_sets[ $t ] = [];
-			$post_sets[ $t ][ $p->ID ] = 1;
-		}
-	}
-	$root = get_term_by( 'slug', $term_slug, $taxonomy );
-	_count_term( $taxonomy, $root, $post_sets );
-
-	$counts = [];
-	foreach ( array_keys( $post_sets ) as $slug ) {
-		$count = count( $post_sets[ $slug ] );
-		if ( $count > 0 ) $counts[ $slug ] = $count;
-	}
-	return $counts;
-}
-
-function _count_term( $taxonomy, $term, &$post_sets ) {
-	$set = [];
-	$child = get_terms( $taxonomy, [ 'hide_empty' => false, 'parent' => $term->term_id ] );
-	foreach ( $child as $c ) {
-		_count_term( $taxonomy, $c, $post_sets );
-		if ( isset( $post_sets[ $c->slug ] ) ) {
-			$set = array_merge( $set, $post_sets[ $c->slug ] );
-		}
-	}
-	if ( ! isset( $post_sets[ $term->slug ] ) ) $post_sets[ $term->slug ] = [];
-	$post_sets[ $term->slug ] = array_merge( $post_sets[ $term->slug ], $set );
-}
-
-
-// Limit Archive Links by Terms ------------------------------------------------
-
-
 function limit_archive_links_by_terms( $post_type ) {
 	add_filter( 'getarchives_join', function ( $join, $r ) use ( $post_type ) {
 		if ( $r['post_type'] !== $post_type ) return $join;
@@ -219,96 +174,6 @@ function limit_archive_links_by_terms( $post_type ) {
 		}
 		return $where;
 	}, 10, 2 );
-}
-
-
-// Utilities -------------------------------------------------------------------
-
-
-function get_term_root( $term, $root_id ) {
-	$cur = $term->term_id;
-	$ret = [$term, $term];
-
-	while ( $cur !== 0 && $cur !== $root_id ) {
-		if ( $term->parent === 0 || $term->parent === $root_id ) break;
-		$term = get_term( $term->parent, $term->taxonomy );
-		$cur = $term->term_id;
-		$ret[1] = $ret[0];
-		$ret[0] = $term;
-	}
-	return $ret;
-}
-
-function term_description( $term_id = 0, $taxonomy ) {
-	if ( ! $term_id && ( is_tax() || is_tag() || is_category() ) ) {
-		$t = get_queried_object();
-		$term_id  = $t->term_id;
-		$taxonomy = $t->taxonomy;
-	}
-	return \term_description( $term_id, $taxonomy );
-}
-
-function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_link = true ) {
-	$ts = get_terms( $taxonomy );
-	if ( is_wp_error( $ts ) ) return $ts;
-	if ( empty( $ts ) ) return false;
-
-	global $wp_query;
-	$term = $wp_query->queried_object;
-	if ( ! ( $term instanceof WP_Term ) && ! ( is_object( $term ) && property_exists( $term, 'term_id' ) ) ) {
-		$term = null;
-	}
-
-	$links = [];
-	foreach ( $ts as $t ) {
-		$current = ( $term && $term->term_id === $t->term_id ) ? 'current ' : '';
-		if ( $add_link ) {
-			$link = get_term_link( $t, $taxonomy );
-			if ( is_wp_error( $link ) ) return $link;
-			$links[] = '<a href="' . esc_url( $link ) . '" rel="tag" class="' . $current . $taxonomy . '-' . $t->slug . '">' . esc_html( $t->name ) . '</a>';
-		} else {
-			$links[] = '<span class="' . $current . $taxonomy . '-' . $t->slug . '">' . esc_html( $t->name ) . '</span>';
-		}
-	}
-	$term_links = apply_filters( "term_links-{$taxonomy}", $links );
-	return $before . join( $sep, $term_links ) . $after;
-}
-
-function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true ) {
-	$ts = get_the_terms( $post_id, $taxonomy );
-	if ( is_wp_error( $ts ) ) return $ts;
-	if ( empty( $ts ) ) return false;
-
-	$links = [];
-	foreach ( $ts as $t ) {
-		if ( $add_link ) {
-			$link = get_term_link( $t, $taxonomy );
-			if ( is_wp_error( $link ) ) return $link;
-			$links[] = '<a href="' . esc_url( $link ) . '" rel="tag" class="' . $taxonomy . '-' . $t->slug . '">' . esc_html( $t->name ) . '</a>';
-		} else {
-			$links[] = '<span class="' . $taxonomy . '-' . $t->slug . '">' . esc_html( $t->name ) . '</span>';
-		}
-	}
-	$term_links = apply_filters( "term_links-{$taxonomy}", $links );
-	return $before . join( $sep, $term_links ) . $after;
-}
-
-function get_the_term_names( $post_id, $taxonomy ) {
-	$ts = get_the_terms( $post_id, $taxonomy );
-	if ( ! is_array( $ts ) ) return [];
-
-	$tns = [];
-	foreach ( $ts as $t ) $tns[] = $t->name;
-	return $tns;
-}
-
-function get_terms( $id, $taxonomy, $before = '', $sep = '', $after = '' ) {
-	$terms = get_the_terms( $id, $taxonomy );
-	if ( is_wp_error( $terms ) ) return $terms;
-	if ( empty( $terms ) ) return false;
-
-	$names = array_map( function ( $t ) { return $t->name; }, $terms );
-	return $before . implode( $sep, $names ) . $after;
 }
 
 
@@ -373,4 +238,55 @@ function remove_term_description( $taxonomy ) {
 		unset( $sortable[ 'description' ] );
 		return $sortable;
 	});
+}
+
+
+// Utilities -------------------------------------------------------------------
+
+
+function get_term_root( $term, $root_id ) {
+	$cur = $term->term_id;
+	$ret = [$term, $term];
+
+	while ( $cur !== 0 && $cur !== $root_id ) {
+		if ( $term->parent === 0 || $term->parent === $root_id ) break;
+		$term = get_term( $term->parent, $term->taxonomy );
+		$cur = $term->term_id;
+		$ret[1] = $ret[0];
+		$ret[0] = $term;
+	}
+	return $ret;
+}
+
+function count_term_from_posts( $posts, $taxonomy, $term_slug ) {
+	$post_sets = [];
+	foreach ( $posts as $p ) {
+		$terms = wp_get_object_terms( $p->ID, $taxonomy, [ 'fields' => 'slugs' ] );
+		foreach ( $terms as $t ) {
+			if ( ! isset( $post_sets[ $t ] ) ) $post_sets[ $t ] = [];
+			$post_sets[ $t ][ $p->ID ] = 1;
+		}
+	}
+	$root = get_term_by( 'slug', $term_slug, $taxonomy );
+	_count_term( $taxonomy, $root, $post_sets );
+
+	$counts = [];
+	foreach ( array_keys( $post_sets ) as $slug ) {
+		$count = count( $post_sets[ $slug ] );
+		if ( $count > 0 ) $counts[ $slug ] = $count;
+	}
+	return $counts;
+}
+
+function _count_term( $taxonomy, $term, &$post_sets ) {
+	$set = [];
+	$child = get_terms( $taxonomy, [ 'hide_empty' => false, 'parent' => $term->term_id ] );
+	foreach ( $child as $c ) {
+		_count_term( $taxonomy, $c, $post_sets );
+		if ( isset( $post_sets[ $c->slug ] ) ) {
+			$set = array_merge( $set, $post_sets[ $c->slug ] );
+		}
+	}
+	if ( ! isset( $post_sets[ $term->slug ] ) ) $post_sets[ $term->slug ] = [];
+	$post_sets[ $term->slug ] = array_merge( $post_sets[ $term->slug ], $set );
 }

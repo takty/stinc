@@ -5,9 +5,69 @@ namespace st;
  * Custom Template Tags for Responsive Images
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-15
  *
  */
+
+
+function get_thumbnail_src( $size = 'large', $post_id = false, $meta_key = false ) {
+	$tid = get_thumbnail_id( $post_id, $meta_key );
+	if ( $tid === false ) return '';
+	return get_attachment_src( $size, $tid );
+}
+
+function get_attachment_src( $size = 'large', $aid ) {
+	$ais = wp_get_attachment_image_src( $aid, $size );
+	return $ais === false ? '' : $ais[0];
+}
+
+function get_first_image_src( $size = 'large' ) {
+	$fis = _scrape_first_image_src();
+	if ( $fis === false ) return '';
+	$aid = get_attachment_id( $fis );
+	if ( $aid === false ) return '';
+	return get_attachment_src( $size, $aid );
+}
+
+function get_thumbnail_id( $post_id = false, $meta_key = false ) {
+	global $post;
+	if ( $post_id === false ) {
+		if ( ! $post ) return false;
+		$post_id = $post->ID;
+	}
+	if ( $meta_key === false ) {
+		if ( ! has_post_thumbnail( $post_id ) ) return false;
+		return get_post_thumbnail_id( $post_id );
+	}
+	$pm = get_post_meta( $post_id, $meta_key, true );
+	return empty( $pm ) ? false : $pm;
+}
+
+function get_attachment_id( $url ) {
+	global $wpdb;
+	preg_match( '/([^\/]+?)(-e\d+)?(-\d+x\d+)?(\.\w+)?$/', $url, $matches );
+	$guid = str_replace( $matches[0], $matches[1] . $matches[4], $url );
+	$sql = "SELECT ID FROM {$wpdb->posts} WHERE guid = %s";
+	$v = $wpdb->get_var( $wpdb->prepare( $sql, $guid ) );
+	return $v === null ? false : intval( $v );
+}
+
+function get_first_image_id() {
+	$fis = get_first_image_src();
+	if ( $fis === false ) return false;
+	$aid = get_attachment_id( $fis );
+	if ( $aid === false ) return false;
+	return $aid;
+}
+
+function _scrape_first_image_src() {
+	if ( ! is_singular() ) return false;
+	global $post;
+	preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $ms );
+	if ( empty( $ms[1][0] ) ) return false;
+	$src = $ms[1][0];
+	return $src;
+}
 
 
 class Image {
@@ -25,77 +85,6 @@ class Image {
 	private $_res_styles_id = 0;
 
 	private function __construct() {}
-
-
-	// -------------------------------------------------------------------------
-
-
-	static public function get_thumbnail_src( $size = 'large', $post_id = false, $meta_key = false ) {
-		$tid = self::get_thumbnail_id( $post_id, $meta_key );
-		if ( $tid === false ) return '';
-		return self::get_attachment_src( $size, $tid );
-	}
-
-	static public function get_attachment_src( $size = 'large', $aid ) {
-		$ais = wp_get_attachment_image_src( $aid, $size );
-		return $ais === false ? '' : $ais[0];
-	}
-
-	static public function get_first_image_src( $size = 'large' ) {
-		$fis = self::_scrape_first_image_src();
-		if ( $fis === false ) return '';
-		$aid = self::get_attachment_id( $fis );
-		if ( $aid === false ) return '';
-		return self::get_attachment_src( $size, $aid );
-	}
-
-
-	// -------------------------------------------------------------------------
-
-
-	static public function get_thumbnail_id( $post_id = false, $meta_key = false ) {
-		global $post;
-		if ( $post_id === false ) {
-			if ( ! $post ) return false;
-			$post_id = $post->ID;
-		}
-		if ( $meta_key === false ) {
-			if ( ! has_post_thumbnail( $post_id ) ) return false;
-			return get_post_thumbnail_id( $post_id );
-		}
-		$pm = get_post_meta( $post_id, $meta_key, true );
-		return empty( $pm ) ? false : $pm;
-	}
-
-	static public function get_attachment_id( $url ) {
-		global $wpdb;
-		preg_match( '/([^\/]+?)(-e\d+)?(-\d+x\d+)?(\.\w+)?$/', $url, $matches );
-		$guid = str_replace( $matches[0], $matches[1] . $matches[4], $url );
-		$sql = "SELECT ID FROM {$wpdb->posts} WHERE guid = %s";
-		$v = $wpdb->get_var( $wpdb->prepare( $sql, $guid ) );
-		return $v === null ? false : intval( $v );
-	}
-
-	static public function get_first_image_id() {
-		$fis = self::get_first_image_src();
-		if ( $fis === false ) return false;
-		$aid = self::get_attachment_id( $fis );
-		if ( $aid === false ) return false;
-		return $aid;
-	}
-
-	static private function _scrape_first_image_src() {
-		if ( ! is_singular() ) return false;
-		global $post;
-		preg_match_all( '/<img.+src=[\'"]([^\'"]+)[\'"].*>/i', $post->post_content, $ms );
-		if ( empty( $ms[1][0] ) ) return false;
-		$src = $ms[1][0];
-		return $src;
-	}
-
-
-	// -------------------------------------------------------------------------
-
 
 	public function the_thumbnail_style( $size = 'large', $post_id = false, $meta_key = false ) {
 		echo $this->get_the_thumbnail_style( $size, $post_id, $meta_key );
@@ -178,4 +167,43 @@ class Image {
 		$this->_res_styles[] = "@media ($query) {*[data-$da='$id'] {background-image: url('$src');}}";
 	}
 
+}
+
+
+// -------------------------------------------------------------------------
+
+
+function the_thumbnail_style( $size = 'large', $post_id = false, $meta_key = false ) {
+	$img = Image::get_instance();
+	echo $img->get_the_thumbnail_style( $size, $post_id, $meta_key );
+}
+
+function the_thumbnail_image( $size = 'large', $post_id = false, $meta_key = false ) {
+	$img = Image::get_instance();
+	echo $img->get_the_thumbnail_image( $size, $post_id, $meta_key );
+}
+
+function the_thumbnail_figure( $size = 'large', $post_id = false, $meta_key = false ) {
+	$img = Image::get_instance();
+	echo $img->get_the_thumbnail_figure( $size, $post_id, $meta_key );
+}
+
+function get_the_thumbnail_style( $size = 'large', $post_id = false, $meta_key = false ) {
+	$img = Image::get_instance();
+	return $img->get_the_thumbnail_style( $size, $post_id, $meta_key );
+}
+
+function get_the_thumbnail_image( $size = 'large', $post_id = false, $meta_key = false ) {
+	$img = Image::get_instance();
+	return $img->get_the_thumbnail_image( $size, $post_id, $meta_key );
+}
+
+function get_the_thumbnail_figure( $size = 'large', $post_id = false, $meta_key = false ) {
+	$img = Image::get_instance();
+	return $img->get_the_thumbnail_figure( $size, $post_id, $meta_key );
+}
+
+function output_responsive_styles() {
+	$img = Image::get_instance();
+	$img->output_responsive_styles();
 }
