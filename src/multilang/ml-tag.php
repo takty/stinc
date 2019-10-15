@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Multi-Language Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-05
+ * @version 2019-10-15
  *
  */
 
@@ -28,7 +27,15 @@ class Multilang_Tag {
 	public function __construct( $core, $lang_to_names, $taxonomy_name, $taxonomy = self::DEFAULT_TAXONOMY ) {
 		$this->_core = $core;
 		$this->_taxonomy = $taxonomy;
-		\st\taxonomy\register_without_post_type( $taxonomy, $taxonomy_name );
+		register_taxonomy( $taxonomy, null, [
+			'hierarchical'      => true,
+			'label'             => $taxonomy_name,
+			'public'            => true,
+			'show_ui'           => true,
+			'rewrite'           => false,
+			'sort'              => true,
+			'show_admin_column' => true
+		] );
 		\st\taxonomy\set_terms( $taxonomy, $lang_to_names );
 
 		add_filter( 'get_next_post_where',     [ $this, '_cb_get_adjacent_post_where' ], 10, 5 );
