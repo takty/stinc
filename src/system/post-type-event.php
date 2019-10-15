@@ -5,13 +5,13 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-11
+ * @version 2019-10-15
  *
  */
 
 
 require_once __DIR__ . '/post-type.php';
-require_once __DIR__ . '/../admin/list_table_column.php';
+require_once __DIR__ . '/../admin/list-table-column.php';
 require_once __DIR__ . '/../admin/util.php';
 require_once __DIR__ . '/../metabox/duration-picker.php';
 

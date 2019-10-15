@@ -5,13 +5,13 @@ namespace st\news;
  * News Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-15
  *
  */
 
 
 require_once __DIR__ . '/post_type.php';
-require_once __DIR__ . '/../admin/list_table_column.php';
+require_once __DIR__ . '/../admin/list-table-column.php';
 
 
 function register_post_type( $post_type = 'news', $slug = false, $labels = [], $args = [] ) {
