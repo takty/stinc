@@ -25,7 +25,7 @@ function make_custom_post_type_sticky( $post_type_s ) {
 	foreach ( $post_types as $pt ) {
 		_add_action_save_post( $pt );
 	}
-	array_merge( $_post_types, $post_types );
+	foreach ( $post_types as $pt ) $_post_types[] = $pt;
 }
 
 
