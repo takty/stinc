@@ -72,14 +72,14 @@ function add_post_type_list_shortcode( $post_type, $taxonomy, $year_date = '\st\
 		], $atts );
 
 		$terms = empty( $atts['term'] ) ? false : explode( ',', $atts['term'] );
-		$items = _get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $year_date );
+		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $year_date );
 		if ( empty( $items ) ) return '';
 
-		return _echo_list( $atts, $items, $post_type );
+		return echo_list( $atts, $items, $post_type );
 	} );
 }
 
-function _get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $year_date ) {
+function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $year_date ) {
 	$ml = \st\Multilang::get_instance();
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
@@ -109,11 +109,11 @@ function _get_item_list( $post_type, $taxonomy = false, $term_slug = false, $lat
 	return $items;
 }
 
-function _echo_list( $atts, $items, $pt ) {
+function echo_list( $atts, $items, $pt ) {
 	$ml = \st\Multilang::get_instance();
 	ob_start();
 	if ( $atts['heading'] !== false ) {
-		$tag = _get_item_list_heading( $atts['heading'] );
+		$tag = get_item_list_heading( $atts['heading'] );
 		$t = get_term_by( 'slug', $atts['term'], $atts['taxonomy'] );
 		if ( $t !== false ) {
 			echo "<$tag>" . esc_html( $ml->get_term_name( $t ) ) . "</$tag>";
@@ -128,7 +128,7 @@ function _echo_list( $atts, $items, $pt ) {
 			$ac[ $year ][] = $it;
 		}
 
-		$subtag = _get_item_list_heading( $atts['year-heading'] );
+		$subtag = get_item_list_heading( $atts['year-heading'] );
 		foreach ( $ac as $year => $items ) {
 			if ( $subtag !== false ) {
 				$year = $items[0]['year'];
@@ -137,15 +137,15 @@ function _echo_list( $atts, $items, $pt ) {
 					echo "<$subtag>" . esc_html( date_format( $date, $ml->get_date_format( 'year' ) ) ) . "</$subtag>";
 				}
 			}
-			_echo_item_list( $items, $atts['style'], $pt );
+			echo_item_list( $items, $atts['style'], $pt );
 		}
 	} else {
-		_echo_item_list( $items, $atts['style'], $pt );
+		echo_item_list( $items, $atts['style'], $pt );
 	}
 	return ob_get_clean();
 }
 
-function _get_item_list_heading( $tag ) {
+function get_item_list_heading( $tag ) {
 	if ( is_numeric( $tag ) ) {
 		$l = intval( $tag );
 		if ( 3 <= $l && $l <= 6 ) return "h$l";
@@ -154,7 +154,7 @@ function _get_item_list_heading( $tag ) {
 	}
 }
 
-function _echo_item_list( $items, $style = '', $pt = '' ) {
+function echo_item_list( $items, $style = '', $pt = '' ) {
 	if ( $style === 'full' ) {
 		$posts = array_map( function ( $it ) { return $it['p']; }, $items );
 ?>
