@@ -83,7 +83,7 @@ function _get_item_list( $post_type, $taxonomy = false, $term_slug = false, $lat
 	$ml = \st\Multilang::get_instance();
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
-		$ps = get_latest_news( intval( $latest_count ), $term_slug );
+		$ps = get_latest_posts( $post_type, intval( $latest_count ), $term_slug );
 	} else {
 		$tag = $ml->get_tax_query();
 		$args =  [
