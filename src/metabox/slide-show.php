@@ -11,7 +11,7 @@ namespace st;
 
 
 require_once __DIR__ . '/../system/field.php';
-require_once __DIR__ . '/../tag/text.php';
+require_once __DIR__ . '/../util/text.php';
 require_once __DIR__ . '/../util/url.php';
 
 
