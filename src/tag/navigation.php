@@ -243,11 +243,11 @@ function get_the_post_navigation( $args = [] ) {
 // -----------------------------------------------------------------------------
 
 
-function the_page_navigation( $args = [] ) {
-	echo get_the_page_navigation( $args );
+function the_child_page_navigation( $args = [] ) {
+	echo get_the_child_page_navigation( $args );
 }
 
-function get_the_page_navigation( $args = [] ) {
+function get_the_child_page_navigation( $args = [] ) {
 	$ps = get_child_pages();
 	if ( isset( $args['hide_page_with_thumbnail'] ) && $args['hide_page_with_thumbnail'] ) {
 		$ps = array_values( array_filter( $ps, function ( $p ) {
@@ -255,13 +255,48 @@ function get_the_page_navigation( $args = [] ) {
 		} ) );
 	}
 	if ( count( $ps ) === 0 ) return;
+
+	ob_start();
 ?>
-			<nav class="navigation page-navigation">
-				<ul class="nav-links">
+	<nav class="navigation child-page-navigation">
+		<div class="nav-links">
+			<ul class="child-page-nav">
+				<li class="child-page-nav-link parent current"><span><?php the_title() ?></span></li>
+				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'child-page-nav-link' ); ?>
+			</ul>
+		</div>
+	</nav>
 <?php
-	foreach ( $ps as $p ) the_post_list_item( $p, 'child-page-nav-link' );
+	return ob_get_clean();
+}
+
+function the_sibling_page_navigation( $args = [] ) {
+	echo get_the_sibling_page_navigation( $args );
+}
+
+function get_the_sibling_page_navigation( $args = [] ) {
+	$ps = get_sibling_pages();
+	if ( isset( $args['hide_page_with_thumbnail'] ) && $args['hide_page_with_thumbnail'] ) {
+		$ps = array_values( array_filter( $ps, function ( $p ) {
+			return ! has_post_thumbnail( $p->ID );
+		} ) );
+	}
+	if ( count( $ps ) === 0 ) return;
+
+	global $post;
+	$pid = $post->post_parent;
+	$e_href = esc_attr( get_permalink( $pid ) );
+	$e_title = esc_html( get_the_title( $pid ) );
+	ob_start();
 ?>
-				</ul>
-			</nav>
-	<?php
+	<nav class="navigation sibling-page-navigation">
+		<div class="nav-links">
+			<ul class="sibling-page-nav">
+				<li><a class="sibling-page-nav-link parent" href="<?php echo $e_href ?>"><?php echo $e_title ?></a></li>
+				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'sibling-page-nav-link' ); ?>
+			</ul>
+		</div>
+	</nav>
+<?php
+	return ob_get_clean();
 }

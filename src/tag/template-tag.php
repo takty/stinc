@@ -97,24 +97,22 @@ function the_post_list_item( $post, $link_class = '', $item_class = '', $current
 	}
 }
 
-function the_child_page_list( $before = '<ul>', $after = '</ul>', $link_class = '', $dummy_item_num = 0 ) {
+function the_child_page_list( $before = '<ul>', $after = '</ul>', $link_class = '' ) {
 	$ps = get_child_pages();
 	if ( count( $ps ) === 0 ) return;
 
 	echo $before;
 	foreach ( $ps as $p ) the_post_list_item( $p, $link_class );
-	for ( $i = 0; $i < $dummy_item_num; $i += 1 ) echo "<li></li>";
 	echo $after;
 }
 
-function the_sibling_page_list( $before = '<ul>', $after = '</ul>', $link_class = '', $dummy_item_num = 0 ) {
+function the_sibling_page_list( $before = '<ul>', $after = '</ul>', $link_class = '' ) {
 	$ps = get_sibling_pages();
 	if ( count( $ps ) === 0 ) return;
 	global $post;
 
 	echo $before;
 	foreach ( $ps as $p ) the_post_list_item( $p, $link_class, '', $post->ID === $p->ID ? 'current' : false );
-	for ( $i = 0; $i < $dummy_item_num; $i += 1 ) echo "<li></li>";
 	echo $after;
 }
 
