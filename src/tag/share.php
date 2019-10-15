@@ -5,14 +5,14 @@ namespace st;
  * Share
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-15
  *
  */
 
 
 require_once __DIR__ . '/image.php';
-require_once __DIR__ . '/../text.php';
-require_once __DIR__ . '/../url.php';
+require_once __DIR__ . '/../util/text.php';
+require_once __DIR__ . '/../util/url.php';
 
 
 // Google Analytics ------------------------------------------------------------

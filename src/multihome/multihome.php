@@ -6,12 +6,12 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-10-26
+ * @version 2019-10-15
  *
  */
 
 
-require_once __DIR__ . '/../tag/url.php';
+require_once __DIR__ . '/../util/url.php';
 require_once __DIR__ . '/mh-tag.php';
 
 
