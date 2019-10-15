@@ -26,6 +26,7 @@ class Multilang {
 	static public function initialize( $site_langs, $default_lang = false, $query_var = Multilang_Core::DEFAULT_QUERY_VAR ) {
 		if ( self::$_instance !== null ) throw new \Exception( 'Multilang has been already initialized.' );
 		self::$_instance = new Multilang( $site_langs, $default_lang, $query_var );
+		return self::$_instance;
 	}
 	static public function get_instance() {
 		if ( self::$_instance === null ) throw new \Exception( 'Call Multilang::initialize before get_instance.' );
