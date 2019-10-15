@@ -1,13 +1,14 @@
 /**
+ *
  * Editor Commands for TinyMCE
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-08-27
+ * @version 2019-10-09
  *
  */
 
 
-(function() {
+(function () {
 	function insert(ed, str) {
 		ed.execCommand('mceInsertContent', false, { content: str, merge: true, paste: true });
 	}
@@ -24,17 +25,17 @@
 			});
 			ed.addButton('column_2', {
 				title: '2段組',
-				cmd:   'column_2',
+				cmd  : 'column_2',
 				image: url + '/img/icon-column-2.png'
 			});
 			ed.addButton('column_3', {
 				title: '3段組',
-				cmd:   'column_3',
+				cmd  : 'column_3',
 				image: url + '/img/icon-column-3.png'
 			});
 			ed.addButton('column_4', {
 				title: '4段組',
-				cmd:   'column_4',
+				cmd  : 'column_4',
 				image: url + '/img/icon-column-4.png'
 			});
 		}

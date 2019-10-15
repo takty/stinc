@@ -6,12 +6,12 @@ namespace st;
  * Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-10
+ * @version 2019-10-15
  *
  */
 
 
-require_once __DIR__ . '/../tag/url.php';
+require_once __DIR__ . '/../util/url.php';
 require_once __DIR__ . '/ml-core.php';
 require_once __DIR__ . '/ml-post.php';
 require_once __DIR__ . '/ml-tag.php';
@@ -26,6 +26,7 @@ class Multilang {
 	static public function initialize( $site_langs, $default_lang = false, $query_var = Multilang_Core::DEFAULT_QUERY_VAR ) {
 		if ( self::$_instance !== null ) throw new \Exception( 'Multilang has been already initialized.' );
 		self::$_instance = new Multilang( $site_langs, $default_lang, $query_var );
+		return self::$_instance;
 	}
 	static public function get_instance() {
 		if ( self::$_instance === null ) throw new \Exception( 'Call Multilang::initialize before get_instance.' );

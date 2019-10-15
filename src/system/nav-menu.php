@@ -1,17 +1,16 @@
 <?php
 namespace st;
-
 /**
  *
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-15
  *
  */
 
 
-require_once __DIR__ . '/../tag/url.php';
+require_once __DIR__ . '/../util/url.php';
 
 
 class NavMenu {

@@ -5,35 +5,13 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-07
+ * @version 2019-10-08
  *
  */
 
 
-function remove_separator_in_title_and_description() {
-	add_filter( 'bloginfo', function ( $output, $show ) {
-		if ( $show === 'description' || $show === 'name' || $show === '' ) {
-			return implode( ' ', \st\separate_line( $output ) );
-		}
-		return $output;
-	}, 10, 2 );
-	add_filter( 'document_title_parts', function ( $title ) {
-		$title['title'] = implode( ' ', \st\separate_line( $title['title'] ) );
-		return $title;
-	} );
-}
-
-
-// -----------------------------------------------------------------------------
-
-
 function mb_trim( $str ) {
 	return preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str );
-}
-
-function the_mb_excerpt( $count = 160 ) {
-	$text = get_the_excerpt();
-	echo esc_html( mb_trim( mb_strimwidth( $text, 0, $count ) ) ) . '...';
 }
 
 
@@ -84,22 +62,20 @@ function separate_line( $str, $mode = 'raw', $filter = 'esc_html' ) {
 	}
 }
 
-function esc_html_br( $str ) {
+function esc_text_with_br( $str, $filter = 'esc_html' ) {
 	$ls = preg_split( "/<\s*br\s*\/?>/iu", $str );
 	if ( count( $ls ) === 1 ) {
-		return esc_html( $str );
-	} else {
-		return implode( '<br>', array_map( 'esc_html', $ls ) );
+		return call_user_func( $filter, $str );
 	}
+	return implode( '<br>', array_map( $filter, $ls ) );
 }
 
-function esc_html_br_to_span( $str ) {
+function esc_text_with_br_to_span( $str, $filter = 'esc_html' ) {
 	$ls = preg_split( "/<\s*br\s*\/?>/iu", $str );
 	if ( count( $ls ) === 1 ) {
-		return esc_html( $str );
-	} else {
-		return '<span>' . implode( '</span><span>', array_map( 'esc_html', $ls ) ) . '</span>';
+		return call_user_func( $filter, $str );
 	}
+	return '<span>' . implode( '</span><span>', array_map( $filter, $ls ) ) . '</span>';
 }
 
 function separate_small( $str ) {

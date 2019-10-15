@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Multi-Language Site with Single Site (Taxonomy)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-21
+ * @version 2019-10-15
  *
  */
 
@@ -51,6 +50,10 @@ class Multilang_Taxonomy {
 		}
 	}
 
+
+	// -------------------------------------------------------------------------
+
+
 	public function get_term_name( $term, $singular = false, $lang = false ) {
 		if ( $lang === false ) $lang = $this->_core->get_site_lang();
 		if ( $lang === $this->_core->get_default_site_lang() ) {
@@ -90,61 +93,71 @@ class Multilang_Taxonomy {
 	}
 
 	public function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_link = true, $args = [] ) {
-		$ts = empty( $args ) ? get_terms( $taxonomy ) : get_terms( $taxonomy, $args );
-		if ( is_wp_error( $ts ) ) return $ts;
-		if ( empty( $ts ) ) return false;
+		return \st\get_term_list( $taxonomy, $before, $sep, $after, $add_link, $args );
+		// $ts = empty( $args ) ? get_terms( $taxonomy ) : get_terms( $taxonomy, $args );
+		// if ( is_wp_error( $ts ) ) return $ts;
+		// if ( empty( $ts ) ) return false;
 
-		global $wp_query;
-		$term = $wp_query->queried_object;
-		if ( ! ( $term instanceof WP_Term ) && ! ( is_object( $term ) && property_exists( $term, 'term_id' ) ) ) {
-			$term = null;
-		}
+		// global $wp_query;
+		// $term = $wp_query->queried_object;
+		// if ( ! ( $term instanceof WP_Term ) && ! ( is_object( $term ) && property_exists( $term, 'term_id' ) ) ) {
+		// 	$term = null;
+		// }
 
-		$links = [];
-		foreach ( $ts as $t ) {
-			$current = ( $term && $term->term_id === $t->term_id ) ? 'current ' : '';
-			if ( $add_link ) {
-				$link = get_term_link( $t, $taxonomy );
-				if ( is_wp_error( $link ) ) return $link;
-				$links[] = '<a href="' . esc_url( $link ) . '" rel="tag" class="' . $current . $taxonomy . '-' . $t->slug . '">' . esc_html( $this->get_term_name( $t ) ) . '</a>';
-			} else {
-				$links[] = '<span class="' . $current . $taxonomy . '-' . $t->slug . '">' . esc_html( $this->get_term_name( $t ) ) . '</span>';
-			}
-		}
-		$term_links = apply_filters( "term_links-{$taxonomy}", $links );
-		return $before . join( $sep, $term_links ) . $after;
+		// $links = [];
+		// foreach ( $ts as $t ) {
+		// 	$current = ( $term && $term->term_id === $t->term_id ) ? 'current ' : '';
+		// 	$_name = esc_html( $this->get_term_name( $t ) );
+		// 	if ( $add_link ) {
+		// 		$link = get_term_link( $t, $taxonomy );
+		// 		if ( is_wp_error( $link ) ) return $link;
+		// 		$_link = esc_url( $link );
+		// 		$links[] = "<a href=\"$_link\" rel=\"tag\" class=\"$current$taxonomy-{$t->slug}\">$_name</a>";
+		// 	} else {
+		// 		$links[] = "<span class=\"$current$taxonomy-{$t->slug}\">$_name</span>";
+		// 	}
+		// }
+		// $term_links = apply_filters( "term_links-{$taxonomy}", $links );
+		// return $before . join( $sep, $term_links ) . $after;
 	}
 
 	public function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true ) {
-		$ts = get_the_terms( $post_id, $taxonomy );
-		if ( is_wp_error( $ts ) ) return $ts;
-		if ( empty( $ts ) ) return false;
+		return \st\get_the_term_list( $post_id, $taxonomy, $before, $sep, $after, $add_link );
+		// $ts = get_the_terms( $post_id, $taxonomy );
+		// if ( is_wp_error( $ts ) ) return $ts;
+		// if ( empty( $ts ) ) return false;
 
-		$links = [];
-		foreach ( $ts as $t ) {
-			if ( $add_link ) {
-				$link = get_term_link( $t, $taxonomy );
-				if ( is_wp_error( $link ) ) return $link;
-				$links[] = '<a href="' . esc_url( $link ) . '" rel="tag" class="' . $taxonomy . '-' . $t->slug . '">' . esc_html( $this->get_term_name( $t ) ) . '</a>';
-			} else {
-				$links[] = '<span class="' . $taxonomy . '-' . $t->slug . '">' . esc_html( $this->get_term_name( $t ) ) . '</span>';
-			}
-		}
-		$term_links = apply_filters( "term_links-{$taxonomy}", $links );
-		return $before . join( $sep, $term_links ) . $after;
+		// $links = [];
+		// foreach ( $ts as $t ) {
+		// 	if ( $add_link ) {
+		// 		$link = get_term_link( $t, $taxonomy );
+		// 		if ( is_wp_error( $link ) ) return $link;
+		// 		$links[] = '<a href="' . esc_url( $link ) . '" rel="tag" class="' . $taxonomy . '-' . $t->slug . '">' . esc_html( $this->get_term_name( $t ) ) . '</a>';
+		// 	} else {
+		// 		$links[] = '<span class="' . $taxonomy . '-' . $t->slug . '">' . esc_html( $this->get_term_name( $t ) ) . '</span>';
+		// 	}
+		// }
+		// $term_links = apply_filters( "term_links-{$taxonomy}", $links );
+		// return $before . join( $sep, $term_links ) . $after;
+	}
+
+	public function get_term_names( $taxonomy, $singular = false, $lang = false, $args = [] ) {
+		return \st\get_term_names( $taxonomy, $singular, $lang, $args );
 	}
 
 	public function get_the_term_names( $post_id = 0, $taxonomy, $singular = false, $lang = false  ) {
-		$ts = get_the_terms( $post_id, $taxonomy );
-		if ( ! is_array( $ts ) ) return [];
+		return \st\get_the_term_names( $post_id, $taxonomy, $singular, $lang );
+		// $ts = get_the_terms( $post_id, $taxonomy );
+		// if ( ! is_array( $ts ) ) return [];
 
-		$tns = [];
-		foreach ( $ts as $t ) $tns[] = $this->get_term_name( $t, $singular, $lang );
-		return $tns;
+		// return array_map( function ( $t ) use ( $singular, $lang ) {
+		// 	return $this->get_term_name( $t, $singular, $lang );
+		// }, $ts );
 	}
 
 
 	// Private Functions -------------------------------------------------------
+
 
 	public function _cb_single_term_title() {  // PRIVATE
 		$term = get_queried_object();

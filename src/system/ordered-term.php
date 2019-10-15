@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * Ordered Term (Adding Order Field (Term-Meta) to Taxonomies)
+ * Ordered Term (Adding Order Field (Term Meta) to Taxonomies)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
  * @version 2019-01-16
