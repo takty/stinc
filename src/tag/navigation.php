@@ -5,7 +5,7 @@ namespace st;
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-12
+ * @version 2019-10-15
  *
  */
 
@@ -225,7 +225,7 @@ function get_the_post_navigation( $args = [] ) {
 	if ( ! $prev && ! $next && ! $list ) return '';
 
 	$temp = '';
-	switch ( $args['link-list-pos'] ) {
+	switch ( $args['link_list_pos'] ) {
 		case 'start':
 			$temp = $list . $prev . $next;
 			break;
