@@ -5,7 +5,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-15
  *
  */
 
@@ -13,7 +13,7 @@ namespace st\field;
 add_action( 'admin_enqueue_scripts', function () {
 	$url_to = \st\get_file_uri( __DIR__ );
 	$url_to = untrailingslashit( $url_to );
-	wp_register_script( 'picker-media', $url_to . '/../admin/asset/lib/picker-media.min.js', [], 1.0, true );
+	wp_register_script( 'picker-media', $url_to . '/../metabox/asset/lib/picker-media.min.js', [], 1.0, true );
 	wp_register_script( 'stinc-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
 	wp_register_style( 'stinc-field', $url_to . '/asset/field.min.css' );
 } );

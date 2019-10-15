@@ -66,7 +66,7 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 }
 
 function _set_duration_picker( $post_type, $opts, $labels ) {
-	if ( \st\page_template_admin\is_post_type( $post_type ) ) {
+	if ( \st\is_post_type( $post_type ) ) {
 		add_action( 'admin_print_scripts', function () { \st\DurationPicker::enqueue_script(); } );
 	}
 	add_action( 'admin_menu', function () use ( $post_type, $labels, $opts ) {

@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom Editor
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-15
  *
  */
 
@@ -116,9 +116,9 @@ function enable_to_show_slug() {
 }
 
 function enable_menu_order_column() {
-	add_action( 'load-edit.php' , '\st\_check_post_type_support' );
+	add_action( 'load-edit.php' , '\st\basic\_check_post_type_support' );
 	if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
-		add_action( 'admin_init', '\st\_check_post_type_support' );
+		add_action( 'admin_init', '\st\basic\_check_post_type_support' );
 	}
 }
 
