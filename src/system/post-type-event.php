@@ -23,8 +23,8 @@ const PMK_DATE_END = '_date_end';
 function register_post_type( $post_type = 'event', $slug = false, $opts = [], $labels = [], $args = [] ) {
 	$opts = array_merge( [
 		'is_autofill_enabled'   => false,
-		'order_by_type'         => 'begin',
-		'date_replaced_by_type' => false
+		'order_by_date'         => 'begin',
+		'date_replaced_by_date' => false
 	], $opts );
 	$labels = array_merge( [
 		'name'               => 'Events',
@@ -48,13 +48,13 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 	\register_post_type( $post_type, $args );
 	\st\post_type\add_rewrite_rules( $post_type, $slug, 'date' );
 
-	$pmk_o = $opts['order_by_type'] === 'begin' ? PMK_DATE_BGN : ( $opts['order_by_type'] === 'end' ? PMK_DATE_END : false );
+	$pmk_o = $opts['order_by_date'] === 'begin' ? PMK_DATE_BGN : ( $opts['order_by_date'] === 'end' ? PMK_DATE_END : false );
 	if ( $pmk_o ) {
 		\st\post_type\make_custom_date_sortable( $post_type, 'date', $pmk_o );
 		\st\post_type\enable_custom_date_adjacent_post_link( $post_type, $pmk_o );
 	}
 
-	$pmk_d = $opts['date_replaced_by_type'] === 'begin' ? PMK_DATE_BGN : ( $opts['date_replaced_by_type'] === 'end' ? PMK_DATE_END : false );
+	$pmk_d = $opts['date_replaced_by_date'] === 'begin' ? PMK_DATE_BGN : ( $opts['date_replaced_by_date'] === 'end' ? PMK_DATE_END : false );
 	if ( $pmk_d ) {
 		add_filter( 'get_the_date', function ( $the_date, $d, $post ) use ( $post_type, $pmk_d ) {
 			if ( $post->post_type !== $post_type ) return $the_date;
