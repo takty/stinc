@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-16
  *
  */
 
@@ -17,11 +17,11 @@ function add_page_navigation_shortcode() {
 	add_action( 'init', function () {
 
 		add_shortcode( 'child-page-nav', function () {
-			return get_the_child_page_navigation();
+			return \st\get_the_child_page_navigation();
 		} );
 
 		add_shortcode( 'sibling-page-nav', function () {
-			return get_the_sibling_page_navigation();
+			return \st\get_the_sibling_page_navigation();
 		} );
 
 	} );
