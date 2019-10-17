@@ -13,15 +13,16 @@ namespace st\rich_editor;
 require_once __DIR__ . '/../system/field.php';
 
 
-function add_rich_editor_meta_box( $key, $label, $screen, $settings = [] ) {
+function add_rich_editor_meta_box( $key, $label, $screen, $context = 'advanced', $opts = [] ) {
+	$priority = isset( $opts['priority'] ) ? $opts['priority'] : 'default';
 	add_meta_box(
 		$key . '_mb', $label,
-		function ( $post ) use ( $key, $settings ) {
+		function ( $post ) use ( $key, $opts ) {
 			wp_nonce_field( $key, "{$key}_nonce" );
 			$value = get_post_meta( $post->ID, $key, true );
-			wp_editor( $value, $key, $settings );
+			wp_editor( $value, $key, $opts );
 		},
-		$screen
+		$screen, $context, $priority
 	);
 }
 
