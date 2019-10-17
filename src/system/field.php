@@ -30,7 +30,7 @@ add_action( 'admin_enqueue_scripts', function () {
 function get_post_meta_date( $post_id, $key ) {
 	$ml = \st\Multilang::get_instance();
 
-	$val = mb_trim( get_post_meta( $post_id, $key, true ) );
+	$val = \st\mb_trim( get_post_meta( $post_id, $key, true ) );
 	$val = mysql2date( $ml->get_date_format(), $val );
 
 	return $val;
