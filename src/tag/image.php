@@ -98,13 +98,13 @@ class Image {
 		echo $this->get_the_thumbnail_figure( $size, $post_id, $meta_key );
 	}
 
-	public function get_the_thumbnail_style( $size = 'large', $post_id = false, $meta_key = false ) {
-		if ( is_array( $size ) ) {
-			$tsr = $this->_get_res_style( $size, $post_id, $meta_key );
+	public function get_the_thumbnail_style( $size_s = 'large', $post_id = false, $meta_key = false ) {
+		if ( is_array( $size_s ) ) {
+			$tsr = $this->_get_res_style( $size_s, $post_id, $meta_key );
 			if ( ! empty( $tsr ) ) return $tsr;
-			$size = empty( $size ) ? 'large' : $size[0];
+			$size_s = empty( $size_s ) ? 'large' : $size_s[0];
 		}
-		$ts = get_thumbnail_src( $size, $post_id, $meta_key );
+		$ts = get_thumbnail_src( $size_s, $post_id, $meta_key );
 		if ( empty( $ts ) ) return '';
 		$src = esc_attr( $ts );
 		return " style=\"background-image: url('$src')\"";
