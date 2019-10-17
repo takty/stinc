@@ -5,12 +5,12 @@ namespace st\page_template_admin;
  * Page Template Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-17
  *
  */
 
 
-require_once __DIR__ . '/util.php';
+require_once __DIR__ . '/misc.php';
 
 
 function initialize() {
