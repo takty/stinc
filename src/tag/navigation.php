@@ -5,7 +5,7 @@ namespace st;
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-16
+ * @version 2019-10-17
  *
  */
 
@@ -237,6 +237,140 @@ function get_the_post_navigation( $args = [] ) {
 			break;
 	}
 	return _navigation_markup( $temp, 'post-navigation', $args['screen_reader_text'] );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function the_posts_pagination( $args = [] ) {
+	echo get_the_posts_pagination( $args );
+}
+
+function get_the_posts_pagination( $args = [] ) {
+	if ( $GLOBALS['wp_query']->max_num_pages < 2 ) return '';
+
+	$args = wp_parse_args( $args, [
+		'mid_size'           => 1,
+		'prev_text'          => _x( 'Previous', 'previous set of posts' ),
+		'next_text'          => _x( 'Next', 'next set of posts' ),
+		'screen_reader_text' => __( 'Posts navigation' ),
+	] );
+	if ( isset( $args['type'] ) && 'array' == $args['type'] ) $args['type'] = 'plain';
+	$links = paginate_links( $args );
+	if ( $links ) {
+		return _navigation_markup( $links, 'pagination', $args['screen_reader_text'] );
+	}
+	return '';
+}
+
+function paginate_links( $args = [] ) {
+	global $wp_query, $wp_rewrite;
+
+	$pagenum_link = html_entity_decode( get_pagenum_link() );
+	$url_parts    = explode( '?', $pagenum_link );
+	$total        = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
+	$current      = get_query_var( 'paged' ) ? intval( get_query_var( 'paged' ) ) : 1;
+	$pagenum_link = trailingslashit( $url_parts[0] ) . '%_%';
+	$format       = $wp_rewrite->using_index_permalinks() && ! strpos( $pagenum_link, 'index.php' ) ? 'index.php/': '';
+	$format      .= $wp_rewrite->using_permalinks() ? user_trailingslashit( $wp_rewrite->pagination_base . '/%#%', 'paged' ) : '?paged=%#%';
+
+	$defaults = [
+		'base'               => $pagenum_link,
+		'format'             => $format,
+		'total'              => $total,
+		'current'            => $current,
+		'aria_current'       => 'page',
+		'show_all'           => false,
+		'prev_next'          => true,
+		'prev_text'          => __( '&laquo; Previous' ),
+		'next_text'          => __( 'Next &raquo;' ),
+		'end_size'           => 1,
+		'mid_size'           => 2,
+		'type'               => 'plain',
+		'add_args'           => [], // array of query args to add
+		'add_fragment'       => '',
+		'before_page_number' => '',
+		'after_page_number'  => '',
+	];
+	$args = wp_parse_args( $args, $defaults );
+	if ( ! is_array( $args['add_args'] ) ) $args['add_args'] = [];
+
+	if ( isset( $url_parts[1] ) ) {
+		$format       = explode( '?', str_replace( '%_%', $args['format'], $args['base'] ) );
+		$format_query = isset( $format[1] ) ? $format[1] : '';
+		wp_parse_str( $format_query, $format_args );
+		wp_parse_str( $url_parts[1], $url_query_args );
+		foreach ( $format_args as $format_arg => $format_arg_value ) {
+			unset( $url_query_args[ $format_arg ] );
+		}
+		$args['add_args'] = array_merge( $args['add_args'], urlencode_deep( $url_query_args ) );
+	}
+
+	$total = (int) $args['total'];
+	if ( $total < 2 ) return;
+	$current  = (int) $args['current'];
+	$end_size = (int) $args['end_size'];
+	if ( $end_size < 1 ) $end_size = 1;
+	$mid_size = (int) $args['mid_size'];
+	if ( $mid_size < 0 ) $mid_size = 2;
+	$add_args = $args['add_args'];
+
+	$pages = [];
+	$prev = '';
+	$next = '';
+	$dots = false;
+
+	if ( $args['prev_next'] ) {
+		$link = '';
+		if ( 1 < $current ) {
+			$link = str_replace( '%_%', $current <= 2 ? '' : $args['format'], $args['base'] );
+			$link = str_replace( '%#%', $current - 1, $link );
+			if ( $add_args ) $link = add_query_arg( $add_args, $link );
+			$link .= $args['add_fragment'];
+			$link = esc_url( apply_filters( 'paginate_links', $link ) );
+		}
+		if ( $link ) {
+			$prev = '<div class="nav-previous"><a href="' . $link . '">' . $args['prev_text'] . '</a></div>';
+		} else {
+			$prev = '<div class="nav-previous disabled"><span>' . $args['prev_text'] . '</span></div>';
+		}
+	}
+	for ( $n = 1; $n <= $total; $n += 1 ) {
+		if ( $n == $current ) {
+			$pages[] = '<li class="page-number current"><span aria-current="' . esc_attr( $args['aria_current'] ) . '">' . $args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number'] . '</span></li>';
+			$dots = true;
+		} else {
+			if ( $args['show_all'] || ( $n <= $end_size || ( $current && $n >= $current - $mid_size && $n <= $current + $mid_size ) || $n > $total - $end_size ) ) {
+				$link = str_replace( '%_%', 1 == $n ? '' : $args['format'], $args['base'] );
+				$link = str_replace( '%#%', $n, $link );
+				if ( $add_args ) $link = add_query_arg( $add_args, $link );
+				$link .= $args['add_fragment'];
+				$pages[] = '<li class="page-number"><a href="' . esc_url( apply_filters( 'paginate_links', $link ) ) . '">' . $args['before_page_number'] . number_format_i18n( $n ) . $args['after_page_number'] . '</a></li>';
+				$dots = true;
+			} else if ( $dots && ! $args['show_all'] ) {
+				$pages[] = '<li class="dots"><span>' . __( '&hellip;' ) . '</span></li>';
+				$dots = false;
+			}
+		}
+	}
+	if ( $args['prev_next'] ) {
+		$link = '';
+		if ( $current < $total ) {
+			$link = str_replace( '%_%', $args['format'], $args['base'] );
+			$link = str_replace( '%#%', $current + 1, $link );
+			if ( $add_args ) $link = add_query_arg( $add_args, $link );
+			$link .= $args['add_fragment'];
+			$link = esc_url( apply_filters( 'paginate_links', $link ) );
+		}
+		if ( $link ) {
+			$next = '<div class="nav-next"><a href="' . $link . '">' . $args['next_text'] . '</a></div>';
+		} else {
+			$next = '<div class="nav-next disabled"><span>' . $args['next_text'] . '</span></div>';
+		}
+	}
+	$r = join( '', $pages );
+	return $prev . '<div class="nav-page-numbers"><ul class="page-numbers">' . $r . '</ul></div>' . $next;
 }
 
 
