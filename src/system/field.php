@@ -5,7 +5,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-17
  *
  */
 
@@ -154,13 +154,13 @@ function output_rich_editor_row( $label, $key, $val, $settings = [] ) {
 <?php
 }
 
-function output_checkbox_row( $label, $key, $chekced = false ) {
+function output_checkbox_row( $label, $key, $checked = false ) {
 	wp_enqueue_style( 'stinc-field' );
 ?>
 	<div class="stinc-field-single">
 		<label>
 			<span><?php echo esc_html( $label ) ?></span>
-			<span class="checkbox"><input <?php name_id( $key ) ?> type="checkbox" <?php echo $chekced ? 'checked' : '' ?>></span>
+			<span class="checkbox"><input <?php name_id( $key ) ?> type="checkbox" <?php echo $checked ? 'checked' : '' ?>></span>
 		</label>
 	</div>
 <?php
