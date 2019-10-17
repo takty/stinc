@@ -5,11 +5,12 @@ namespace st;
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-17
  *
  */
 
 
+require_once __DIR__ . '/../admin/misc.php';
 require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../util/url.php';
 
@@ -20,14 +21,13 @@ class DurationPicker {
 
 	const CLS_TABLE = self::NS . '-table';
 
-	static private $_instance   = [];
-	static private $_locale     = 'en';
-	static private $_label_year = '';
+	static private $_instance       = [];
+	static private $_locale         = 'en';
+	static private $_label_year     = '';
 	static private $_is_echo_script = false;
 
 	static public function get_instance( $key = false ) {
-		$lang_c = explode( '_', get_user_locale() );
-		self::$_locale = $lang_c[0];
+		self::$_locale = \st\get_user_lang();
 
 		if ( $key === false ) return reset( self::$_instance );
 		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
@@ -38,11 +38,13 @@ class DurationPicker {
 		if ( is_admin() ) {
 			if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
 			$url_to = untrailingslashit( $url_to );
-			wp_enqueue_script( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.js' );
-			wp_enqueue_style ( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.css' );
+
+			wp_enqueue_script( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.js', ['flatpickr.l10n.ja'] );
 			wp_enqueue_script( 'flatpickr.l10n.ja', $url_to . '/asset/lib/flatpickr.l10n.ja.min.js' );
+			wp_enqueue_style ( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.css' );
+
+			wp_enqueue_script( self::NS, $url_to . '/asset/duration-picker.min.js', ['flatpickr'] );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/duration-picker.min.css' );
-			wp_enqueue_script( self::NS, $url_to . '/asset/duration-picker.min.js' );
 		}
 	}
 

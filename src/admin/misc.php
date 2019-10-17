@@ -2,12 +2,21 @@
 namespace st;
 /**
  *
- * Utilities for Admin
+ * Miscellaneous for Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-17
  *
  */
+
+
+function get_user_lang() {
+	$lang_c = explode( '_', get_user_locale() );
+	return $lang_c[0];
+}
+
+
+// -----------------------------------------------------------------------------
 
 
 function get_post_id() {

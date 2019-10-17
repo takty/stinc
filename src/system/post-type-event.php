@@ -5,14 +5,14 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-17
  *
  */
 
 
 require_once __DIR__ . '/post-type.php';
 require_once __DIR__ . '/../admin/list-table-column.php';
-require_once __DIR__ . '/../admin/util.php';
+require_once __DIR__ . '/../admin/misc.php';
 require_once __DIR__ . '/../metabox/duration-picker.php';
 
 
@@ -71,13 +71,13 @@ function _set_duration_picker( $post_type, $opts, $labels ) {
 	}
 	add_action( 'admin_menu', function () use ( $post_type, $labels, $opts ) {
 		\st\DurationPicker::set_year_label( $labels['year_label'] );
-		$dp = new \st\DurationPicker( '' );
+		$dp = \st\DurationPicker::get_instance( '' );
 		$dp->set_duration_labels( $labels['period_begin_label'], $labels['period_end_label'] );
 		$dp->set_autofill_enabled( $opts['is_autofill_enabled'] );
 		$dp->add_meta_box( $labels['period_label'], $post_type, 'side' );
 	} );
 	add_action( 'save_post', function ( $post_id ) {
-		$dp = new \st\DurationPicker( '' );
+		$dp = \st\DurationPicker::get_instance( '' );
 		$dp->save_meta_box( $post_id );
 	} );
 }
