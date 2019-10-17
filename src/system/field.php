@@ -13,9 +13,14 @@ namespace st\field;
 add_action( 'admin_enqueue_scripts', function () {
 	$url_to = \st\get_file_uri( __DIR__ );
 	$url_to = untrailingslashit( $url_to );
-	wp_register_script( 'picker-media', $url_to . '/../metabox/asset/lib/picker-media.min.js', [], 1.0, true );
-	wp_register_script( 'stinc-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0, true );
-	wp_register_style( 'stinc-field', $url_to . '/asset/field.min.css' );
+
+	wp_register_script( 'picker-media',      $url_to . '/../metabox/asset/lib/picker-media.min.js', [], 1.0 );
+	wp_register_script( 'flatpickr',         $url_to . '/../metabox/asset/lib/flatpickr.min.js', [], 1.0 );
+	wp_register_script( 'flatpickr.l10n.ja', $url_to . '/../metabox/asset/lib/flatpickr.l10n.ja.min.js', 1.0 );
+	wp_register_style ( 'flatpickr',         $url_to . '/../metabox/asset/lib/flatpickr.min.css' );
+
+	wp_register_script( 'stinc-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0 );
+	wp_register_style ( 'stinc-field', $url_to . '/asset/field.min.css' );
 } );
 
 
@@ -368,6 +373,7 @@ function add_post_meta_media_picker( $post_id, $key, $label, $settings = [] ) {
 }
 
 function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) {
+	wp_enqueue_script( 'picker-media' );
 	wp_enqueue_script( 'stinc-field' );
 	wp_enqueue_style( 'stinc-field' );
 
@@ -395,4 +401,35 @@ function output_media_picker_row( $label, $key, $media_id = 0, $settings = [] ) 
 			<script>window.addEventListener('load', function () { stinc_field_media_picker_initialize_admin('<?php echo $key ?>'); });</script>
 		</div>
 	<?php
+}
+
+
+// Date Picker -----------------------------------------------------------------
+
+
+function add_post_meta_date_picker( $post_id, $key, $label, $settings = [] ) {
+	$val = get_post_meta( $post_id, $key, true );
+	output_date_picker_row( $label, $key, $val, $settings );
+}
+
+function output_date_picker_row( $label, $key, $val, $settings = [] ) {
+	wp_enqueue_script( 'flatpickr' );
+	wp_enqueue_script( 'flatpickr.l10n.ja' );
+	wp_enqueue_style( 'flatpickr' );
+	wp_enqueue_style( 'stinc-field' );
+
+	$_lang = \st\get_user_lang();
+	$_val  = isset( $val ) ? esc_attr( $val ) : '';
+?>
+	<div class="stinc-field-single">
+		<label>
+			<span><?php echo esc_html( $label ) ?></span>
+			<span class="flatpickr input-group" id="<?php echo $key ?>_row">
+				<input type="text" <?php name_id( $key ) ?> size="12" value="<?php echo $_val; ?>" data-input />
+				<a class="button" title="clear" data-clear>X</a>
+			</span>
+		</label>
+		<script>flatpickr('#<?php echo $key ?>_row', { locale: '<?php echo $_lang ?>', wrap: true });</script>
+	</div>
+<?php
 }
