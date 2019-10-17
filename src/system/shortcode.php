@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-16
+ * @version 2019-10-17
  *
  */
 
@@ -59,8 +59,8 @@ function add_instagram_shortcode() {
 // -----------------------------------------------------------------------------
 
 
-function add_post_type_list_shortcode( $post_type, $taxonomy, $year_date = '\st\shortcode\get_item_year_date_news' ) {
-	add_shortcode( $post_type . '-list', function ( $atts ) {
+function add_post_type_list_shortcode( $post_type, $taxonomy = false, $year_date = '\st\shortcode\get_item_year_date_news' ) {
+	add_shortcode( $post_type . '-list', function ( $atts ) use ( $post_type, $taxonomy, $year_date ) {
 		$ml = \st\Multilang::get_instance();
 		$atts = shortcode_atts( [
 			'term'         => '',
