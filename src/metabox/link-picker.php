@@ -5,7 +5,7 @@ namespace st;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-17
  *
  */
 
@@ -69,6 +69,7 @@ class LinkPicker {
 	private $_max_count              = false;
 	private $_is_link_target_allowed = false;
 	private $_post_type_str          = null;
+	private $_label_message          = '';
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -137,8 +138,13 @@ class LinkPicker {
 	// -------------------------------------------------------------------------
 
 
-	public function add_meta_box( $label, $screen, $context = 'advanced' ) {
-		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
+	public function add_meta_box( $label_s, $screen, $context = 'advanced' ) {
+		$title = $label_s;
+		if ( is_array( $label_s ) ) {
+			$title = isset( $label_s['title'] ) ? $label_s['title'] : '';
+			$this->_label_message = isset( $label_s['message'] ) ? $label_s['message'] : '';
+		}
+		\add_meta_box( "{$this->_key}_mb", $title, [ $this, '_cb_output_html' ], $screen, $context );
 	}
 
 	public function save_meta_box( $post_id ) {
@@ -164,7 +170,10 @@ class LinkPicker {
 		$this->_output_row( [], self::CLS_ITEM_TEMP );
 		foreach ( $its as $it ) $this->_output_row( $it, self::CLS_ITEM );
 ?>
-				<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Link', 'default' ) ?></a></div>
+				<div class="<?php echo self::CLS_ADD_ROW ?>">
+					<div><?php echo esc_html( $this->_label_message ) ?></div>
+					<a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Link', 'default' ) ?></a>
+				</div>
 			</div>
 			<script>window.addEventListener('load', function () {
 				st_link_picker_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_internal_only ? 'true' : 'false' ?>, <?php echo $this->_max_count ? $this->_max_count : 'false' ?>, <?php echo $this->_is_link_target_allowed ? 'true' : 'false' ?>, <?php echo $this->_post_type_str ? $this->_post_type_str : 'null' ?>);
@@ -269,11 +278,11 @@ function set_max_count( $key, $count ) { return \st\LinkPicker::get_instance( $k
 function set_link_target_allowed( $key, $enabled ) { return \st\LinkPicker::get_instance( $key )->set_link_target_allowed( $enabled ); }
 function set_post_type( $key, $post_type ) { return \st\LinkPicker::get_instance( $key )->set_post_type( $post_type ); }
 
-function add_meta_box( $key, $label, $screen, $context = 'advanced', $opts = [] ) {
+function add_meta_box( $key, $label_s, $screen, $context = 'advanced', $opts = [] ) {
 	if ( isset( $opts['is_internal_only'] ) ) set_internal_only( $key, $opts['is_internal_only'] );
 	if ( isset( $opts['max_count'] ) ) set_max_count( $key, $opts['max_count'] );
 	if ( isset( $opts['is_link_target_allowed'] ) ) set_link_target_allowed( $key, $opts['is_link_target_allowed'] );
 	if ( isset( $opts['post_type'] ) ) set_post_type( $key, $opts['post_type'] );
-	\st\LinkPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
+	\st\LinkPicker::get_instance( $key )->add_meta_box( $label_s, $screen, $context );
 }
 function save_meta_box( $post_id, $key ) { \st\LinkPicker::get_instance( $key )->save_meta_box( $post_id ); }

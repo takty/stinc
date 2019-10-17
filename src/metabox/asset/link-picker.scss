@@ -3,7 +3,7 @@
  * Link Picker (SCSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-21
+ * @version 2019-10-17
  *
  */
 
@@ -12,8 +12,13 @@ $breakpoint-single-wrap: 20rem;
 
 
 .st-link-picker-add-row {
-	text-align: right;
 	margin-top: 0.5em;
+
+	display        : flex;
+	align-items    : flex-start;
+	justify-content: space-between;
+
+	> * + .st-link-picker-add { margin-left: 1em; }
 
 	.st-link-picker-item + & { margin-top: 1.5em; }
 }
