@@ -5,7 +5,7 @@ namespace st\rich_editor;
  * Rich Editor Metabox
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-17
  *
  */
 
@@ -29,7 +29,7 @@ function save_rich_editor_meta_box( $post_id, $key ) {
 	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
 	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
 
-	save_post_meta_with_wp_filter( $post_id, $key, 'content_save_pre' );
+	\st\field\save_post_meta_with_wp_filter( $post_id, $key, 'content_save_pre' );
 }
 
 function add_title_content_meta_box( $key, $sub_key_title, $sub_key_content, $label, $screen ) {
@@ -60,6 +60,6 @@ function save_title_content_meta_box( $post_id, $key, $sub_key_title, $sub_key_c
 	if ( ! isset( $_POST["{$key}_nonce"] ) ) return;
 	if ( ! wp_verify_nonce( $_POST["{$key}_nonce"], $key ) ) return;
 
-	save_post_meta_with_wp_filter( $post_id, $sub_key_title,     'title_save_pre' );
-	save_post_meta_with_wp_filter( $post_id, $sub_key_content, 'content_save_pre' );
+	\st\field\save_post_meta_with_wp_filter( $post_id, $sub_key_title,     'title_save_pre' );
+	\st\field\save_post_meta_with_wp_filter( $post_id, $sub_key_content, 'content_save_pre' );
 }
