@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2019-10-18
  *
  */
 
@@ -14,6 +14,7 @@ require_once __DIR__ . '/post-type.php';
 require_once __DIR__ . '/../admin/list-table-column.php';
 require_once __DIR__ . '/../admin/misc.php';
 require_once __DIR__ . '/../metabox/duration-picker.php';
+require_once __DIR__ . '/../util/date.php';
 
 
 const PMK_DATE_BGN = '_date_bgn';
@@ -168,11 +169,11 @@ function get_duration( $post_id ) {
 	$state = '';
 
 	if ( ! $bgn_nums ) {
-		$today = explode( '-', date_i18n( 'Y-m-d' ) );
-		$today_bgn = _compare_date( $today, $bgn_nums );
+		$today = \st\create_date_array_of_today();
+		$today_bgn = \st\compare_date_arrays( $today, $bgn_nums );
 
 		if ( ! $end_nums ) {
-			$today_end = _compare_date( $today, $end_nums );
+			$today_end = \st\compare_date_arrays( $today, $end_nums );
 			if      ( $today_bgn === '<' ) $state = 'upcoming';
 			else if ( $today_end === '>' ) $state = 'finished';
 			else                           $state = 'ongoing';
@@ -187,15 +188,7 @@ function get_duration( $post_id ) {
 	return compact( 'state', 'bgn_raw', 'end_raw', 'bgn_nums', 'end_nums' );
 }
 
-function _compare_date( $d1, $d2 ) {
-	if ( $d1[0] === $d2[0] && $d1[1] === $d2[1] && $d1[2] === $d2[2] ) return '=';
-	if ( $d1[0]  >  $d2[0] )                                           return '>';
-	if ( $d1[0] === $d2[0] && $d1[1]  >  $d2[1] )                      return '>';
-	if ( $d1[0] === $d2[0] && $d1[1] === $d2[1] && $d1[2]  >  $d2[2] ) return '>';
-	return '<';
-}
-
-function _make_date_tags( $date, $format, $base_format = false ) {
+function _make_date_tags( $date_str, $format, $base_format = false ) {
 	if ( $base_format === false ) {
 		$base_format = "Y\tM\tj";
 		if ( class_exists( '\st\Multilang' ) ) {
@@ -204,8 +197,8 @@ function _make_date_tags( $date, $format, $base_format = false ) {
 			if ( strpos( $f, 'm' ) !== false || strpos( $f, 'n' ) !== false ) $base_format = "Y\tn\tj";
 		}
 	}
-	if ( ! empty( $date ) ) {
-		$date = date_create_from_format( 'Y-m-d', $date );
+	if ( ! empty( $date_str ) ) {
+		$date = \st\create_date_from_date_string( $date_str );
 		$ds = explode( "\t", date_format( $date, $base_format ) );
 	} else {
 		$ds = [ '?', '?', '?', '?' ];

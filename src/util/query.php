@@ -5,7 +5,7 @@ namespace st;
  * Query
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-11
+ * @version 2019-10-18
  *
  */
 
@@ -73,9 +73,9 @@ function append_mh_tag_query( $args = [] ) {
 	return $args;
 }
 
-function append_upcoming_post_query( $month_offset = 0, $day_offset = 0, $year_offset = 1, $args = [] ) {
-	$today  = date_i18n( 'Y-m-d' );
-	$limit  = date_i18n( 'Y-m-d', mktime( 0, 0, 0, date( 'm' ) + $month_offset, date( 'd' ) + $day_offset, date( 'Y' ) + $year_offset ) );
+function append_upcoming_post_query( $offset_year = 1, $offset_month = 0, $offset_day = 0, $args = [] ) {
+	$today  = \st\create_date_string_of_today();
+	$limit  = \st\create_date_string_of_today( $offset_year, $offset_month, $offset_day );
 
 	if ( ! isset( $args['meta_query'] ) ) $args['meta_query'] = [];
 	$args['meta_query']['relation'] = 'AND';
