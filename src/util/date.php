@@ -14,7 +14,7 @@ const DATE_STRING_FORMAT = 'Y-m-d';
 
 
 function create_date_from_date_string( $date_str ) {
-	return date_create_from_format( DATE_STRING_FORMAT, $date );
+	return date_create_from_format( DATE_STRING_FORMAT, $date_str );
 }
 
 function create_date_string_from_date( $date ) {
