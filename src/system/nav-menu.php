@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-18
  *
  */
 
@@ -16,13 +16,11 @@ require_once __DIR__ . '/../util/url.php';
 class NavMenu {
 
 	const CLS_HOME          = 'home';
-	const CLS_OPENED        = 'opened';
 	const CLS_CURRENT       = 'current';
-	const CLS_ANCESTOR      = 'ancestor';
-	const CLS_MENU_PARENT   = 'menu-parent';  // Same as CLS_OPENED
+	const CLS_MENU_PARENT   = 'menu-parent';
 	const CLS_MENU_ANCESTOR = 'menu-ancestor';
 	const CLS_PAGE_PARENT   = 'page-parent';
-	const CLS_PAGE_ANCESTOR = 'page-ancestor';  // Same as CLS_ANCESTOR
+	const CLS_PAGE_ANCESTOR = 'page-ancestor';
 
 	const CACHE_EXPIRATION  = 60 * 60 * 24;  // One day
 
@@ -187,9 +185,7 @@ class NavMenu {
 			$id = $mi->ID;
 			if ( empty( $this->_pid_to_menu[ $id ] ) ) continue;
 			$a = $this->_id_to_attr[ $id ];
-			if ( in_array( self::CLS_OPENED, $a, true ) ) return $id;
 			if ( in_array( self::CLS_MENU_PARENT, $a, true ) ) return $id;
-			if ( in_array( self::CLS_ANCESTOR, $a, true ) ) return $id;
 			if ( in_array( self::CLS_PAGE_PARENT, $a, true ) ) return $id;
 		}
 		return false;
@@ -404,7 +400,6 @@ class NavMenu {
 			if ( $this->_is_current( $mi ) )  $cs[] = self::CLS_CURRENT;
 
 			if ( $this->_is_menu_parent( $mi ) ) {
-				$cs[] = self::CLS_OPENED;
 				$cs[] = self::CLS_MENU_PARENT;
 			}
 			if ( $this->_is_menu_ancestor( $mi ) ) {
@@ -414,7 +409,6 @@ class NavMenu {
 				$cs[] = self::CLS_PAGE_PARENT;
 			}
 			if ( $this->_is_page_ancestor( $mi ) ) {
-				$cs[] = self::CLS_ANCESTOR;
 				$cs[] = self::CLS_PAGE_ANCESTOR;
 			}
 			$ret[ $mi->ID ] = $cs;
