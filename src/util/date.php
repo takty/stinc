@@ -61,7 +61,7 @@ function compare_today_with_date_string( $date_str ) {
 	$ds = create_date_array_from_date_string( $date_str );
 	if ( ! $ds  ) return false;
 	$ts = explode( '-', date_i18n( DATE_STRING_FORMAT ) );
-	return _compare_date( $ts, $ds );
+	return compare_date_arrays( $ts, $ds );
 }
 
 function compare_date_arrays( $d1, $d2 ) {
