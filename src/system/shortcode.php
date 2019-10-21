@@ -16,12 +16,14 @@ require_once __DIR__ . '/../tag/navigation.php';
 function add_page_navigation_shortcode() {
 	add_action( 'init', function () {
 
-		add_shortcode( 'child-page-nav', function () {
-			return \st\get_the_child_page_navigation();
+		add_shortcode( 'child-page-nav', function ( $as ) {
+			$as = shortcode_atts( [ 'style' => false ], $as );
+			return \st\get_the_child_page_navigation( [ 'class' => $as['style'] ] );
 		} );
 
-		add_shortcode( 'sibling-page-nav', function () {
-			return \st\get_the_sibling_page_navigation();
+		add_shortcode( 'sibling-page-nav', function ( $as ) {
+			$as = shortcode_atts( [ 'style' => false ], $as );
+			return \st\get_the_sibling_page_navigation( [ 'class' => $as['style'] ] );
 		} );
 
 	} );

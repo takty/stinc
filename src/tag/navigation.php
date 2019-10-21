@@ -5,7 +5,7 @@ namespace st;
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2019-10-21
  *
  */
 
@@ -389,10 +389,11 @@ function get_the_child_page_navigation( $args = [] ) {
 		} ) );
 	}
 	if ( count( $ps ) === 0 ) return;
+	$cls = isset( $args['class'] ) ? ( ' ' . esc_attr( $args['class'] ) ) : '';
 
 	ob_start();
 ?>
-	<nav class="navigation child-page-navigation">
+	<nav class="navigation child-page-navigation<?php echo $cls ?>">
 		<div class="nav-links">
 			<ul class="child-page-nav">
 				<li class="child-page-nav-link parent current"><span><?php the_title() ?></span></li>
@@ -416,6 +417,7 @@ function get_the_sibling_page_navigation( $args = [] ) {
 		} ) );
 	}
 	if ( count( $ps ) === 0 ) return;
+	$cls = isset( $args['class'] ) ? ( ' ' . esc_attr( $args['class'] ) ) : '';
 
 	global $post;
 	$pid = $post->post_parent;
@@ -424,7 +426,7 @@ function get_the_sibling_page_navigation( $args = [] ) {
 
 	ob_start();
 ?>
-	<nav class="navigation sibling-page-navigation">
+	<nav class="navigation sibling-page-navigation<?php echo $cls ?>">
 		<div class="nav-links">
 			<ul class="sibling-page-nav">
 				<li><a class="sibling-page-nav-link parent" href="<?php echo $e_href ?>"><?php echo $e_title ?></a></li>
