@@ -394,10 +394,10 @@ function get_the_child_page_navigation( $args = [] ) {
 	ob_start();
 ?>
 	<nav class="navigation child-page-navigation<?php echo $cls ?>">
-		<div class="nav-links">
-			<ul class="child-page-nav">
-				<li class="child-page-nav-link parent current"><span><?php the_title() ?></span></li>
-				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'child-page-nav-link' ); ?>
+		<div class="nav-parent current"><span><?php the_title() ?></span></div>
+		<div class="nav-children">
+			<ul class="nav-link-list">
+				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'nav-link' ); ?>
 			</ul>
 		</div>
 	</nav>
@@ -427,10 +427,10 @@ function get_the_sibling_page_navigation( $args = [] ) {
 	ob_start();
 ?>
 	<nav class="navigation sibling-page-navigation<?php echo $cls ?>">
-		<div class="nav-links">
-			<ul class="sibling-page-nav">
-				<li><a class="sibling-page-nav-link parent" href="<?php echo $e_href ?>"><?php echo $e_title ?></a></li>
-				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'sibling-page-nav-link', '', $post->ID === $p->ID ? 'current' : false ); ?>
+		<div class="nav-parent"><a class="nav-link" href="<?php echo $e_href ?>"><?php echo $e_title ?></a></div>
+		<div class="nav-siblings">
+			<ul class="nav-link-list">
+				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'nav-link', '', $post->ID === $p->ID ? 'current' : false ); ?>
 			</ul>
 		</div>
 	</nav>
