@@ -102,7 +102,7 @@ function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $late
 	$items = [];
 	foreach ( $ps as $p ) {
 		$title = esc_html( $p->post_title );
-		$cats  = $ml->get_the_term_names( $p->ID, TAX_CAT );
+		$cats  = $ml->get_the_term_names( $p->ID, $taxonomy );
 		$url   = esc_attr( get_the_permalink( $p->ID ) );
 		list( $year, $date ) = call_user_func( $year_date, $p->ID );
 		$type  = $post_type;
