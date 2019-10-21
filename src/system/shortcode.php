@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2019-10-21
  *
  */
 
@@ -83,7 +83,7 @@ function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $late
 	$ml = \st\Multilang::get_instance();
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
-		$ps = get_latest_posts( $post_type, intval( $latest_count ), $term_slug );
+		$ps = \st\get_latest_posts( $post_type, intval( $latest_count ), $term_slug );
 	} else {
 		$tag = $ml->get_tax_query();
 		$args =  [
