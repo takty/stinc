@@ -5,13 +5,15 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2019-10-21
  *
  */
 
 
 require_once __DIR__ . '/../util/text.php';
 require_once __DIR__ . '/../util/url.php';
+require_once __DIR__ . '/../util/query.php';
+require_once __DIR__ . '/loop.php';
 
 
 function is_content_empty( $str = false ) {
@@ -225,4 +227,20 @@ function get_the_term_names( $post_id = 0, $taxonomy, $singular = false, $lang =
 	return array_map( function ( $t ) use ( $singular, $lang ) {
 		return get_term_name( $t, $singular, $lang );
 	}, $ts );
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function expand_post_entries( $slug, $name, $key ) {
+	$ids = _get_section_post_ids( $key );
+	$ps = \st\get_pages_by_ids( $ids );
+	\st\the_loop_posts_with_custom_page_template( $slug, $name, $ps );
+}
+
+function _get_section_post_ids( $key ) {
+	global $post;
+	$sps = \st\link_picker\get_items( $key, $post->ID );
+	return array_map( function ( $e ) { return isset( $e['post_id'] ) ? intval( $e['post_id'] ) : 0; }, $sps );
 }
