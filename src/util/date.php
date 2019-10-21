@@ -5,7 +5,7 @@ namespace st;
  * Date
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-18
+ * @version 2019-10-21
  *
  */
 
@@ -49,7 +49,7 @@ function create_date_string_of_today( $offset_year = 0, $offset_month = 0, $offs
 }
 
 function create_date_array_of_today( $offset_year = 0, $offset_month = 0, $offset_day = 0 ) {
-	$date_string = create_date_string_of_today( $offset_year, $offset_month, $offset_day );
+	$date_str = create_date_string_of_today( $offset_year, $offset_month, $offset_day );
 	return 	explode( '-', $date_str );
 }
 
