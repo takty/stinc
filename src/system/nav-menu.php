@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-18
+ * @version 2019-10-23
  *
  */
 
@@ -22,7 +22,7 @@ class NavMenu {
 	const CLS_PAGE_PARENT   = 'page-parent';
 	const CLS_PAGE_ANCESTOR = 'page-ancestor';
 
-	const CACHE_EXPIRATION  = 60 * 60 * 24;  // One day
+	const CACHE_EXPIRATION  = DAY_IN_SECONDS;
 
 	static protected $_is_cache_enabled = false;
 	static protected $_is_current_archive_enabled = true;

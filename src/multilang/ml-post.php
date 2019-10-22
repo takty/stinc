@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-18
+ * @version 2019-10-23
  *
  */
 
@@ -96,12 +95,12 @@ class Multilang_Post {
 		$title_name = $this->_key_title . $lang;
 		$title_ph = apply_filters( 'enter_title_here', __( 'Enter title here' ), $post );
 		wp_nonce_field( "post_$lang", "post_{$lang}_nonce" );
-	?>
-	<div class="st-multilang-title" id="titlewrap_<?=$lang?>">
-		<input name="<?=$title_name?>" id="title_<?=$lang?>" type="text" size="30" value="<?=$title?>"
-			placeholder="<?=$title_ph?>" spellcheck="true" autocomplete="off">
+?>
+	<div class="st-multilang-title" id="titlewrap_<?php echo $lang ?>">
+		<input name="<?php echo $title_name ?>" id="title_<?php echo $lang ?>" type="text" size="30" value="<?php echo $title ?>"
+			placeholder="<?php echo $title_ph ?>" spellcheck="true" autocomplete="off">
 	</div>
-	<?php
+<?php
 		$content = get_post_meta( $post->ID, $this->_key_content . $lang, true );
 		wp_editor( $content, $this->_key_content . $lang );
 	}
