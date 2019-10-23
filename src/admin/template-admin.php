@@ -5,7 +5,7 @@ namespace st\page_template_admin;
  * Page Template Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2019-10-23
  *
  */
 

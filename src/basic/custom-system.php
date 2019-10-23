@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom System
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-10-23
  *
  */
 
@@ -47,7 +47,7 @@ function enable_default_image_sizes( $add_medium_small = true ) {
 		foreach ( $sizes as $idx => $s ) {
 			$ns[ $idx ] = $s;
 			if ( $idx === 'thumbnail' ) {
-				$ns[ 'small' ] = ($is_ja ? '小' : 'Small');
+				$ns[ 'small' ] = ( $is_ja ? '小' : 'Small' );
 				if ( $add_medium_small ) $ns[ 'medium-small' ] = ( $is_ja ? 'やや小' : 'Medium Small' );
 			}
 			if ( $idx === 'medium' ) $ns[ 'medium_large' ] = ( $is_ja ? 'やや大' : 'Medium Large' );

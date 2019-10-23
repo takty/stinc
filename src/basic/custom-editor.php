@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom Editor
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-23
  *
  */
 
@@ -130,7 +130,7 @@ function _check_post_type_support() {
 	} elseif ( in_array( $_REQUEST['post_type'], array_keys( $all_post_types ), true ) ) {
 		$post_type = $_REQUEST['post_type'];
 	} else {
-		wp_die( __('Invalid post type') );
+		wp_die( esc_html__('Invalid post type') );
 	}
 	if ( ! post_type_supports( $post_type, 'page-attributes' ) ) return;
 
@@ -149,7 +149,7 @@ function _check_post_type_support() {
 	add_action( "manage_{$post_type}_posts_custom_column", function ( $name, $post_id ) {
 		if ( $name === 'order' ) {
 			$post = get_post( (int) $post_id );
-			echo $post->menu_order;
+			echo intval( $post->menu_order );
 		}
 	}, 10, 2 );
 	add_action( 'admin_print_styles-edit.php', function () {
