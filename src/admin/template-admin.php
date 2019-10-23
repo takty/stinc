@@ -39,7 +39,7 @@ function _load_page_template_admin( $post_id, $path, $post_fix ) {
 	if ( file_exists( $path ) ) {
 		require_once $path;
 		if ( function_exists( 'setup_template_admin' ) ) {
-			setup_page_template_admin( $post_id );
+			setup_template_admin( $post_id );
 			return true;
 		}
 	}
