@@ -1,5 +1,5 @@
 <?php
-namespace st\page_template_admin;
+namespace st\template_admin;
 /**
  *
  * Page Template Admin
