@@ -2,7 +2,7 @@
 namespace st\template_admin;
 /**
  *
- * Page Template Admin
+ * Template Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
  * @version 2019-10-23
@@ -38,7 +38,7 @@ function _load_page_template_admin( $post_id, $path, $post_fix ) {
 	$path = get_parent_theme_file_path( $path );
 	if ( file_exists( $path ) ) {
 		require_once $path;
-		if ( function_exists( 'setup_page_template_admin' ) ) {
+		if ( function_exists( 'setup_template_admin' ) ) {
 			setup_page_template_admin( $post_id );
 			return true;
 		}
