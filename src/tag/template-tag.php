@@ -16,6 +16,9 @@ require_once __DIR__ . '/../util/query.php';
 require_once __DIR__ . '/loop.php';
 
 
+const TMK_NAME_S = '_name_s';
+
+
 function has_content( $str = false ) {
 	if ( $str === false ) $str = get_the_content();
 	$str = strip_tags( $str, '<img><hr><br>' );
@@ -180,6 +183,10 @@ function get_term_name( $term, $singular = false, $lang = false ) {
 	if ( class_exists( '\st\Multilang' ) ) {
 		$ml = \st\Multilang::get_instance();
 		return $ml->get_term_name( $term, $singular, $lang );
+	}
+	if ( $singular ) {
+		$name_s = get_term_meta( $term->term_id, TMK_NAME_S, true );
+		if ( ! empty( $name_s ) ) return $name_s;
 	}
 	return $term->name;
 }

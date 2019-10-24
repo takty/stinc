@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-24
  *
  */
 
@@ -238,6 +238,36 @@ function remove_term_description( $taxonomy ) {
 		unset( $sortable[ 'description' ] );
 		return $sortable;
 	});
+}
+
+
+// Singular Name ---------------------------------------------------------------
+
+
+function enable_singular_name( $taxonomy ) {
+	add_action( "{$taxonomy}_edit_form_fields", '_cb_term_edit_form_fields', 10, 2 );
+	add_action( 'edited_' . $taxonomy, '_cb_edited_term', 10, 2 );
+}
+
+function _cb_term_edit_form_fields( $term, $taxonomy ) {
+	$_label = esc_html_x( 'Name', 'term name', 'default' );
+	$id     = \st\TMK_NAME_S;
+	$name   = \st\TMK_NAME_S;
+	$_val   = esc_attr( get_term_meta( $term->term_id, \st\TMK_NAME_S, true ) );
+?>
+	<tr class="form-field">
+		<th><label for="<?php echo $id ?>"><?php echo $_label ?> (Singular Form)</label></th>
+		<td><input type="text" name="<?php echo $name ?>" id="<?php echo $id ?>" size="40" value="<?php echo $_val ?>" /></td>
+	</tr>
+<?php
+}
+
+function _cb_edited_term( $term_id, $taxonomy ) {
+	if ( isset( $_POST[ \st\TMK_NAME_S ] ) ) {
+		$val = isset( $_POST[ \st\TMK_NAME_S ] );
+		if ( empty( $val ) ) return delete_term_meta( $term_id, \st\TMK_NAME_S );
+		return update_term_meta( $term_id, \st\TMK_NAME_S, $val );
+	}
 }
 
 
