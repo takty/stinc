@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-22
+ * @version 2019-10-24
  *
  */
 
@@ -40,6 +40,28 @@ function get_post_title( $short = 8, $long = 32, $mode = 'segment_small', $filte
 	if ( $len <= $short )  $option = ' data-length="short"';
 	$title = \st\separate_line( $title, $mode, $filter );
 	return compact( 'title', 'option' );
+}
+
+function get_post_type_name( $post_type, $singular_name = false ) {
+	if ( class_exists( '\st\Multilang' ) ) {
+		$ml = \st\Multilang::get_instance();
+		return $ml->get_post_type_name( $post_type, $singular_name );
+	}
+	$obj = get_post_type_object( $post_type );
+	return $singular_name ? $obj->labels->singular_name : $obj->labels->name;
+}
+
+function get_site_title( $raw = false ) {
+	if ( class_exists( '\st\Multilang' ) ) {
+		$ml = \st\Multilang::get_instance();
+		return $ml->get_site_title( $raw );
+	}
+	$ret = [];
+	$bn = htmlspecialchars_decode( get_option( 'blogname' ) );
+	$bd = htmlspecialchars_decode( get_option( 'blogdescription' ) );
+	$ret['name']        = $raw ? $bn : \st\separate_line( $bn, 'segment' );
+	$ret['description'] = $raw ? $bd : \st\separate_line( $bd, 'segment' );
+	return $ret;
 }
 
 
