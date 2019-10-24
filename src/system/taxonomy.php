@@ -245,8 +245,8 @@ function remove_term_description( $taxonomy ) {
 
 
 function enable_singular_name( $taxonomy ) {
-	add_action( "{$taxonomy}_edit_form_fields", '_cb_term_edit_form_fields', 10, 2 );
-	add_action( 'edited_' . $taxonomy, '_cb_edited_term', 10, 2 );
+	add_action( "{$taxonomy}_edit_form_fields", '\st\taxonomy\_cb_term_edit_form_fields', 10, 2 );
+	add_action( 'edited_' . $taxonomy, '\st\taxonomy\_cb_edited_term', 10, 2 );
 }
 
 function _cb_term_edit_form_fields( $term, $taxonomy ) {
