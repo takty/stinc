@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Title)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-24
  *
  */
 
@@ -85,23 +85,23 @@ class Multilang_Title {
 		$this->_is_taxonomy_name_filtered = true;
 	}
 
-	public function get_post_type_name( $post_type, $lang = false, $singular_name = false ) {
+	public function get_post_type_name( $post_type, $singular = false, $lang = false ) {
 		if ( $lang === false ) {
 			$lang = $this->_core->get_site_lang();
 		}
-		$name = $this->_get_post_type_name( $post_type, $lang, $singular_name );
+		$name = $this->_get_post_type_name( $post_type, $lang, $singular );
 		if ( $name !== false ) return $name;
 
 		if ( $lang === $this->_default_trans_lang ) {
 			$obj = get_post_type_object( $post_type );
-			return $singular_name ? $obj->labels->singular_name : $obj->labels->name;
+			return $singular ? $obj->labels->singular_name : $obj->labels->name;
 		}
 		$lang = $this->_default_trans_lang;
-		$name = $this->_get_post_type_name( $post_type, $lang, $singular_name );
+		$name = $this->_get_post_type_name( $post_type, $lang, $singular );
 		if ( $name !== false ) return $name;
 
 		$obj = get_post_type_object( $post_type );
-		return $singular_name ? $obj->labels->singular_name : $obj->labels->name;
+		return $singular ? $obj->labels->singular_name : $obj->labels->name;
 	}
 
 	public function get_site_title( $raw = false ) {
@@ -243,10 +243,10 @@ class Multilang_Title {
 		return $title;
 	}
 
-	private function _get_post_type_name( $post_type, $lang, $singular_name = false ) {
+	private function _get_post_type_name( $post_type, $lang, $singular = false ) {
 		if ( isset( $this->_post_type_name_dic[ $lang ] ) ) {
 			$dic = $this->_post_type_name_dic[ $lang ];
-			if ( isset( $dic[ $post_type ] ) ) return $dic[ $post_type ][ $singular_name ? 1 : 0 ];
+			if ( isset( $dic[ $post_type ] ) ) return $dic[ $post_type ][ $singular ? 1 : 0 ];
 		}
 		return false;
 	}
