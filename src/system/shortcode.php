@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-21
+ * @version 2019-10-26
  *
  */
 
@@ -101,7 +101,7 @@ function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $late
 
 	$items = [];
 	foreach ( $ps as $p ) {
-		$title = esc_html( $p->post_title );
+		$title = esc_html( get_the_title( $p->ID ) );
 		$cats  = $ml->get_the_term_names( $p->ID, $taxonomy );
 		$url   = esc_attr( get_the_permalink( $p->ID ) );
 		list( $year, $date ) = call_user_func( $year_date, $p->ID );
