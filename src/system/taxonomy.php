@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-24
+ * @version 2019-10-28
  *
  */
 
@@ -83,7 +83,7 @@ function set_taxonomy_post_type_specific( $taxonomies, $post_type ) {
 				break;
 			}
 		}
-	} );
+	}, 9 );
 }
 
 function set_taxonomy_default_term( $post_types, $taxonomy, $default_term_slug ) {
