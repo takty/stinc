@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-24
+ * @version 2019-10-30
  *
  */
 
@@ -212,24 +212,26 @@ function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_li
 	global $wp_query;
 	$cur = $wp_query->queried_object;
 	if ( ! ( $cur instanceof WP_Term ) && ! ( is_object( $cur ) && property_exists( $cur, 'term_id' ) ) ) {
-		$cur = null;
+		$cur = false;
 	}
-	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, $cur );
+	$singular = isset( $args['singular'] ) ? $args['singular']  : false;
+	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, $cur, $singular );
 }
 
-function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true ) {
+function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true, $args = [] ) {
 	$ts = get_the_terms( $post_id, $taxonomy );
 	if ( is_wp_error( $ts ) ) return $ts;
 	if ( empty( $ts ) ) return false;
 
-	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link );
+	$singular = isset( $args['singular'] ) ? $args['singular']  : false;
+	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular );
 }
 
-function _create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false ) {
+function _create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false, $singular = false ) {
 	$links = [];
 	foreach ( $terms as $t ) {
 		$current = ( $current_term && $current_term->term_id === $t->term_id ) ? 'current ' : '';
-		$_name = esc_html( get_term_name($t) );
+		$_name = esc_html( get_term_name( $t, $singular ) );
 		if ( $add_link ) {
 			$link = get_term_link( $t, $taxonomy );
 			if ( is_wp_error( $link ) ) return $link;

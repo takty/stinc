@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-24
+ * @version 2019-10-30
  *
  */
 
@@ -157,9 +157,9 @@ class Multilang {
 		return $this->_taxonomy->get_term_list( $taxonomy, $before, $sep, $after, $add_link, $args );
 	}
 
-	public function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true ) {
+	public function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true, $args = [] ) {
 		if ( $this->_taxonomy === null ) $this->initialize_taxonomy();
-		return $this->_taxonomy->get_the_term_list( $post_id, $taxonomy, $before, $sep, $after, $add_link );
+		return $this->_taxonomy->get_the_term_list( $post_id, $taxonomy, $before, $sep, $after, $add_link, $args );
 	}
 
 	public function get_the_term_names( $post_id = 0, $taxonomy, $singular = false, $lang = false ) {
