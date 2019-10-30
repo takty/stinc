@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-28
+ * @version 2019-10-30
  *
  */
 
@@ -22,30 +22,30 @@ function register( $post_type, $slug, $label, $hierarchical = true, $show_ui = t
 	] );
 }
 
-function register_category( $post_type, $slug ) {
-	register_taxonomy( "{$post_type}_category", $post_type, [
-		'label'             => __('Categories'),
-		'rewrite'           => [ 'with_front' => false, 'slug' => "{$slug}/category" ],
+function register_category( $post_type, $slug, $suffix = 'category', $label = false ) {
+	register_taxonomy( "{$post_type}_$suffix", $post_type, [
+		'label'             => $label ? $label : __('Categories'),
+		'rewrite'           => [ 'with_front' => false, 'slug' => "$slug/$suffix" ],
 		'hierarchical'      => true,
 		'public'            => true,
 		'show_ui'           => true,
 		'sort'              => true,
 		'show_admin_column' => true
 	] );
-	set_taxonomy_post_type_specific( [ "{$post_type}_category" ], $post_type );
+	set_taxonomy_post_type_specific( [ "{$post_type}_$suffix" ], $post_type );
 }
 
-function register_tag( $post_type, $slug ) {
-	register_taxonomy( "{$post_type}_tag", $post_type, [
-		'label'             => __('Tags'),
-		'rewrite'           => [ 'with_front' => false, 'slug' => "{$slug}/tag" ],
+function register_tag( $post_type, $slug, $suffix = 'tag', $label = false ) {
+	register_taxonomy( "{$post_type}_$suffix", $post_type, [
+		'label'             => $label ? $label : __('Tags'),
+		'rewrite'           => [ 'with_front' => false, 'slug' => "$slug/$suffix" ],
 		'hierarchical'      => false,
 		'public'            => true,
 		'show_ui'           => true,
 		'sort'              => true,
 		'show_admin_column' => true
 	] );
-	set_taxonomy_post_type_specific( [ "{$post_type}_tag" ], $post_type );
+	set_taxonomy_post_type_specific( [ "{$post_type}_$suffix" ], $post_type );
 }
 
 function set_terms( $taxonomy, $slugs_to_labels, $parent_id = 0, $force_rename = false ) {
