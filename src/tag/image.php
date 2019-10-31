@@ -211,6 +211,5 @@ function get_the_thumbnail_figure( $size = 'large', $post_id = false, $meta_key 
 }
 
 function output_responsive_styles() {
-	$img = Image::get_instance();
-	$img->output_responsive_styles();
+	if ( WP_DEBUG ) trigger_error( 'You do not need to call \\st\\output_responsive_styles() or \\st\\Image#output_responsive_styles().', E_WARNING );
 }
