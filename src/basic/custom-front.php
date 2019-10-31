@@ -93,3 +93,26 @@ function add_current_to_archive_link() {
 		return $link_html;
 	}, 99 );
 }
+
+
+// -----------------------------------------------------------------------------
+
+
+function enable_hidden_anchors_of_archives_link_option() {
+	static $urls = [];
+	add_filter( 'get_archives_link', function ( $link_html, $url, $text, $format, $before, $after ) use ( &$urls ) {
+		if ( $format === 'option' ) {
+			if ( empty( $urls ) ) {
+				add_action( 'wp_footer', function () use ( &$urls ) {
+					echo '<div style="display:none;"><!-- archive links of option values -->';
+					foreach ( $urls as $url ) echo '<a href="' . esc_attr( $url ) . '"></a>';
+					echo '</div>';
+				} );
+			}
+			if ( preg_match( "/<option value=['\"]([^']+)['\"]>[^<]+<\/option>/", $link_html, $m ) ) {
+				$urls[] = $m[1];
+			}
+		}
+		return $link_html;
+	}, 99, 6 );
+}
