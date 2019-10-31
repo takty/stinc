@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom Front
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-12
+ * @version 2019-10-31
  *
  */
 
@@ -70,18 +70,18 @@ function add_current_to_archive_link() {
 			switch ( $m[1] ) {
 			case 'option ':
 				$search  = '<option';
-				$replace = '<option selected  = "selected"';
-				$regex   = "/^\t<option value = '([^']+)'>[^<]+<\/option>/";
+				$replace = '<option selected="selected"';
+				$regex   = "/^\t<option value='([^']+)'>[^<]+<\/option>/";
 				break;
 			case 'li>':
-				$search = '<li>';
+				$search  = '<li>';
 				$replace = '<li class="current">';
-				$regex = "/^\t<li><a href='([^']+)' title='[^']+'>[^<]+<\/a><\/li>/";
+				$regex   = "/^\t<li><a href='([^']+)' title='[^']+'>[^<]+<\/a><\/li>/";
 				break;
 			default:
-				$search = '';
+				$search  = '';
 				$replace = '';
-				$regex = '';
+				$regex   = '';
 			}
 		}
 		if ( $regex && preg_match( $regex, $link_html, $m ) ) {
