@@ -5,7 +5,7 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2019-10-31
  *
  */
 
@@ -87,4 +87,21 @@ function get_first_and_second_slug( $url ) {
 function get_last_slug( $url ) {
 	$url_ps = explode( '/', untrailingslashit( $url ) );
 	return $url_ps[ count( $url_ps ) - 1 ];
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function abs_url( $base, $rel ) {
+	if ( parse_url( $rel, PHP_URL_SCHEME ) != '' ) return $rel;
+	$base = trailingslashit( $base );
+	if ( $rel[0] === '#' || $rel[0] === '?' ) return $base . $rel;
+	extract( parse_url( $base ) );
+	$path = preg_replace( '#/[^/]*$#', '', $path );
+	if ( $rel[0] === '/' ) $path = '';
+	$abs = "$host$path/$rel";
+	$re = [ '#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#' ];
+	for ( $n = 1; $n > 0; $abs = preg_replace( $re, '/', $abs, -1, $n ) ) {}
+	return $scheme . '://' . $abs;
 }

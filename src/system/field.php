@@ -5,22 +5,21 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2019-10-31
  *
  */
 
 
 add_action( 'admin_enqueue_scripts', function () {
 	$url_to = \st\get_file_uri( __DIR__ );
-	$url_to = untrailingslashit( $url_to );
 
-	wp_register_script( 'picker-media',      $url_to . '/../metabox/asset/lib/picker-media.min.js', [], 1.0 );
-	wp_register_script( 'flatpickr',         $url_to . '/../metabox/asset/lib/flatpickr.min.js', [], 1.0 );
-	wp_register_script( 'flatpickr.l10n.ja', $url_to . '/../metabox/asset/lib/flatpickr.l10n.ja.min.js', 1.0 );
-	wp_register_style ( 'flatpickr',         $url_to . '/../metabox/asset/lib/flatpickr.min.css' );
+	wp_register_script( 'picker-media',      \st\abs_url( $url_to, './../metabox/asset/lib/picker-media.min.js' ), [], 1.0 );
+	wp_register_script( 'flatpickr',         \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.min.js' ), [], 1.0 );
+	wp_register_script( 'flatpickr.l10n.ja', \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.l10n.ja.min.js' ), 1.0 );
+	wp_register_style ( 'flatpickr',         \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.min.css' ) );
 
-	wp_register_script( 'stinc-field', $url_to . '/asset/field.min.js', ['picker-media'], 1.0 );
-	wp_register_style ( 'stinc-field', $url_to . '/asset/field.min.css' );
+	wp_register_script( 'stinc-field', \st\abs_url( $url_to, './asset/field.min.js' ), ['picker-media'], 1.0 );
+	wp_register_style ( 'stinc-field', \st\abs_url( $url_to, './asset/field.min.css' ) );
 } );
 
 

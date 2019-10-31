@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-31
  *
  */
 
@@ -47,13 +47,12 @@ class BackgroundImage {
 
 	static public function enqueue_script( $url_to = false ) {
 		if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
-		$url_to = untrailingslashit( $url_to );
 		if ( is_admin() ) {
-			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
-			wp_enqueue_script( self::NS, $url_to . '/asset/background-image.min.js', [ 'picker-media', 'jquery-ui-sortable' ] );
-			wp_enqueue_style(  self::NS, $url_to . '/asset/background-image.min.css' );
+			wp_enqueue_script( 'picker-media', \st\abs_url( $url_to, './asset/lib/picker-media.min.js' ), [], 1.0, true );
+			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './asset/background-image.min.js' ), [ 'picker-media', 'jquery-ui-sortable' ] );
+			wp_enqueue_style(  self::NS, \st\abs_url( $url_to, './asset/background-image.min.css' ) );
 		} else {
-			wp_enqueue_script( self::NS, $url_to . '/../../stomp/background-image/background-image.min.js', '', 1.0 );
+			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './../../stomp/background-image/background-image.min.js' ), '', 1.0 );
 		}
 	}
 
