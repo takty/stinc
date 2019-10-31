@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags for Responsive Images
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2019-10-31
  *
  */
 
@@ -81,8 +81,9 @@ class Image {
 		return self::$_instance;
 	}
 
-	private $_res_styles = [];
-	private $_res_styles_id = 0;
+	private $_res_styles      = [];
+	private $_res_styles_id   = 0;
+	private $_is_action_added = false;
 
 	private function __construct() {}
 
@@ -137,10 +138,7 @@ class Image {
 
 
 	public function output_responsive_styles() {
-		if ( empty( $this->_res_styles ) ) return;
-		echo '<style>';
-		foreach ( $this->_res_styles as $line ) echo $line;
-		echo '</style>';
+		if ( WP_DEBUG ) trigger_error( 'You do not need to call \\st\\output_responsive_styles() or \\st\\Image#output_responsive_styles().', E_WARNING );
 	}
 
 	private function _get_res_style( $sizes = [ 'medium', 'large' ], $post_id = false, $meta_key = false ) {
@@ -165,6 +163,15 @@ class Image {
 		$da = self::DATA_ATTR;
 		$src = esc_attr( $src );
 		$this->_res_styles[] = "@media ($query) {*[data-$da='$id'] {background-image: url('$src');}}";
+
+		if ( ! $this->_is_action_added ) {
+			add_action( 'wp_footer', [ $this, '_cb_output_responsive_styles' ], 1, 1 );
+			$this->_is_action_added = true;
+		}
+	}
+
+	public function _cb_output_responsive_styles() {
+		echo '<style>' . implode( '', $this->_res_styles ) . '</style>';
 	}
 
 }
