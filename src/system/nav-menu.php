@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-23
+ * @version 2019-11-06
  *
  */
 
@@ -277,6 +277,14 @@ class NavMenu {
 			}
 		}
 		return compact( 'before', 'after' );
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
+	public function get_self_attributes( $id ) {
+		return $this->_id_to_attr[ $id ];
 	}
 
 
