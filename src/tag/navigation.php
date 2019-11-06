@@ -5,7 +5,7 @@ namespace st;
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-21
+ * @version 2019-11-07
  *
  */
 
@@ -421,13 +421,16 @@ function get_the_sibling_page_navigation( $args = [] ) {
 
 	global $post;
 	$pid = $post->post_parent;
-	$e_href = esc_attr( get_permalink( $pid ) );
-	$e_title = esc_html( get_the_title( $pid ) );
-
+	if ( $pid ) {
+		$e_href  = esc_attr( get_permalink( $pid ) );
+		$e_title = esc_html( get_the_title( $pid ) );
+	}
 	ob_start();
 ?>
 	<nav class="navigation sibling-page-navigation<?php echo $cls ?>">
+<?php if ( $pid ) : ?>
 		<div class="nav-parent"><a class="nav-link" href="<?php echo $e_href ?>"><?php echo $e_title ?></a></div>
+<?php endif; ?>
 		<div class="nav-siblings">
 			<ul class="nav-link-list">
 				<?php foreach ( $ps as $p ) the_post_list_item( $p, 'nav-link', '', $post->ID === $p->ID ? 'current' : false ); ?>
