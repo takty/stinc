@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-06
+ * @version 2019-11-09
  *
  */
 
@@ -258,10 +258,15 @@ class NavMenu {
 		$li_attr = $li_id . $li_cls;
 		$obj_id  = intval( $mi->object_id );
 		$title   = $filter( $mi->title, $mi );
+		$cont    = esc_html( trim( $mi->post_content ) );
 		$after   = '</li>';
 
 		if ( $mi->url === '#' ) {
-			$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label>";
+			if ( empty( $cont ) ) {
+				$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label>";
+			} else {
+				$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title<div class=\"description\">$cont</div></label>";
+			}
 		} else {
 			if ( $this->_expanded_page_ids === false || ! in_array( $obj_id, $this->_expanded_page_ids, true ) ) {
 				$href = esc_url( $mi->url );
@@ -269,7 +274,6 @@ class NavMenu {
 				$href = esc_url( "#post-$obj_id" );
 			}
 			$target = esc_attr( $mi->target );
-			$cont = esc_html( trim( $mi->post_content ) );
 			if ( empty( $cont ) ) {
 				$before = "<li$li_attr><a href=\"$href\" target=\"$target\">$title</a>";
 			} else {
