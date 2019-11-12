@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-05-16
+ * @version 2019-11-12
  *
  */
 
@@ -132,7 +132,7 @@ function st_link_picker_initialize_admin(key, is_internal_only = false, max_coun
 		setLinkPicker(sel, false, false, {
 			isInternalOnly     : is_internal_only,
 			isLinkTargetAllowed: is_link_target_allowed,
-			parentGen          : 2,
+			parentGen          : 3,
 			title              : STR_SEL,
 			postType           : post_type
 		});
