@@ -39,7 +39,7 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 		'public'        => true,
 		'show_ui'       => true,
 		'menu_position' => 5,
-		'menu_icon'     => 'dashicons-calendar',
+		'menu_icon'     => 'dashicons-calendar-alt',
 		'supports'      => [ 'title', 'editor', 'revisions', 'thumbnail' ],
 		'has_archive'   => true,
 		'rewrite'       => false,
