@@ -13,7 +13,8 @@ namespace st\list_table_column;
 function insert_default_columns( $pos = false, $cs = [] ) {
 	$ns = [ 'cb', 'title', 'date' ];
 	if ( $pos === false ) return array_merge( $cs, $ns );
-	return array_splice( $cs, $pos, 0, $ns );
+	array_splice( $cs, $pos, 0, $ns );
+	return $cs;
 }
 
 function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = false, $cs = [] ) {
@@ -21,7 +22,8 @@ function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = 
 	if ( $add_cat ) $ns[] = ['name' => "{$post_type}_category", 'width' => '10%'];
 	if ( $add_tag ) $ns[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
 	if ( $pos === false ) return array_merge( $cs, $ns );
-	return array_splice( $cs, $pos, 0, $ns );
+	array_splice( $cs, $pos, 0, $ns );
+	return $cs;
 }
 
 function insert_ml_tag_columns( $post_type, $pos = false, $cs ) {
@@ -32,7 +34,8 @@ function insert_ml_tag_columns( $post_type, $pos = false, $cs ) {
 
 	$ns = [ [ 'name' => $ml->get_taxonomy(), 'width' => '10%' ] ];
 	if ( $pos === false ) return array_merge( $cs, $ns );
-	return array_splice( $cs, $pos, 0, $ns );
+	array_splice( $cs, $pos, 0, $ns );
+	return $cs;
 }
 
 function insert_mh_tag_columns( $post_type, $pos = false, $cs ) {
@@ -43,7 +46,8 @@ function insert_mh_tag_columns( $post_type, $pos = false, $cs ) {
 
 	$ns = [ [ 'name' => $mh->get_taxonomy(), 'width' => '10%' ] ];
 	if ( $pos === false ) return array_merge( $cs, $ns );
-	return array_splice( $cs, $pos, 0, $ns );
+	array_splice( $cs, $pos, 0, $ns );
+	return $cs;
 }
 
 

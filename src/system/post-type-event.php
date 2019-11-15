@@ -108,7 +108,8 @@ function insert_date_columns( $post_type, $pos = false, $cs = [] ) {
 		[ 'name' => PMK_DATE_END, 'label' => $label_end, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ]
 	];
 	if ( $pos === false ) return array_merge( $cs, $ns );
-	return array_splice( $cs, $pos, 0, $ns );
+	array_splice( $cs, $pos, 0, $ns );
+	return $cs;
 }
 
 function _echo_date_val( $val ) {
@@ -119,7 +120,8 @@ function _echo_date_val( $val ) {
 function insert_date_sortable_columns( $pos = false, $scs = [] ) {
 	$ns = [ PMK_DATE_BGN, PMK_DATE_END ];
 	if ( $pos === false ) return array_merge( $scs, $ns );
-	return array_splice( $scs, $pos, 0, $ns );
+	array_splice( $scs, $pos, 0, $ns );
+	return $scs;
 }
 
 
