@@ -29,6 +29,7 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 	], $opts );
 	$labels = array_merge( [
 		'name'               => 'Events',
+		'singular_name'      => 'Event',
 		'period_label'       => '',
 		'period_begin_label' => 'Begin',
 		'period_end_label'   => 'End',
