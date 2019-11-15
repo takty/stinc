@@ -101,8 +101,8 @@ function set_admin_columns( $post_type, $add_cat, $add_tag ) {
 
 function insert_date_columns( $post_type, $pos = false, $cs = [] ) {
 	$pto = get_post_type_object( $post_type );
-	$label_bgn = isset( $pto['labels']['period_begin_label'] ) ? $pto['labels']['period_begin_label'] : 'Begin';
-	$label_end = isset( $pto['labels']['period_end_label'] ) ? $pto['labels']['period_end_label'] : 'End';
+	$label_bgn = isset( $pto->labels->period_begin_label ) ? $pto->labels->period_begin_label : 'Begin';
+	$label_end = isset( $pto->labels->period_end_label   ) ? $pto->labels->period_end_label   : 'End';
 	$ns = [
 		[ 'name' => PMK_DATE_BGN, 'label' => $label_bgn, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ],
 		[ 'name' => PMK_DATE_END, 'label' => $label_end, 'width' => '15%', 'value' => '\st\event\_echo_date_val' ]
