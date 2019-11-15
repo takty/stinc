@@ -5,22 +5,22 @@ namespace st\list_table_column;
  * List Table Columns
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-11-15
  *
  */
 
 
 function insert_default_columns( $pos = false, $cs = [] ) {
 	$ns = [ 'cb', 'title', 'date' ];
-	if ( $pos === false ) return array_marge( $cs, $ns );
+	if ( $pos === false ) return array_merge( $cs, $ns );
 	return array_splice( $cs, $pos, 0, $ns );
 }
 
 function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = false, $cs = [] ) {
 	$ns = [];
-	if ( $add_cat ) $cs[] = ['name' => "{$post_type}_category", 'width' => '10%'];
-	if ( $add_tag ) $cs[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
-	if ( $pos === false ) return array_marge( $cs, $ns );
+	if ( $add_cat ) $ns[] = ['name' => "{$post_type}_category", 'width' => '10%'];
+	if ( $add_tag ) $ns[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
+	if ( $pos === false ) return array_merge( $cs, $ns );
 	return array_splice( $cs, $pos, 0, $ns );
 }
 
@@ -31,7 +31,7 @@ function insert_ml_tag_columns( $post_type, $pos = false, $cs ) {
 	if ( ! $ml->has_tag( $post_type ) ) return $cs;
 
 	$ns = [ [ 'name' => $ml->get_taxonomy(), 'width' => '10%' ] ];
-	if ( $pos === false ) return array_marge( $cs, $ns );
+	if ( $pos === false ) return array_merge( $cs, $ns );
 	return array_splice( $cs, $pos, 0, $ns );
 }
 
@@ -42,7 +42,7 @@ function insert_mh_tag_columns( $post_type, $pos = false, $cs ) {
 	if ( ! $mh->has_tag( $post_type ) ) return $cs;
 
 	$ns = [ [ 'name' => $mh->get_taxonomy(), 'width' => '10%' ] ];
-	if ( $pos === false ) return array_marge( $cs, $ns );
+	if ( $pos === false ) return array_merge( $cs, $ns );
 	return array_splice( $cs, $pos, 0, $ns );
 }
 
