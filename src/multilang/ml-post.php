@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-23
+ * @version 2019-11-15
  *
  */
 
@@ -81,7 +81,7 @@ class Multilang_Post {
 			$self = $this;
 			foreach ( $this->_core->get_site_langs( false ) as $lang ) {
 				add_meta_box(
-					"post_$lang", "$post_type_name ($lang)",
+					"post_$lang", "$post_type_name [$lang]",
 					function () use ( $self, $lang ) { $self->_output_html( $lang ); },
 					$post_type, 'advanced', 'high'
 				);

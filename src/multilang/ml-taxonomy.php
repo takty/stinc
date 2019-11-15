@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Taxonomy)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-30
+ * @version 2019-11-15
  *
  */
 
@@ -165,7 +165,7 @@ class Multilang_Taxonomy {
 			</tr>
 <?php
 			if ( $has_desc ) {
-				$label_desc = $label_desc_base . " ($lang)";
+				$label_desc = $label_desc_base . " [$lang]";
 				$desc_id    = $this->_key_term_desc . $lang;
 				$desc_name  = $this->_key_term_desc . "array[$desc_id]";
 				$desc_val   = isset( $t_meta[$desc_id] ) ? esc_html( $t_meta[$desc_id][0] ) : '';
