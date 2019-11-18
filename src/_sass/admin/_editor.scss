@@ -3,7 +3,7 @@
  * Editor Style
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-09
+ * @version 2019-11-18
  *
  * @import 'stile/sass/basic';
  * @import 'stile/sass/content';
@@ -181,10 +181,10 @@ $stile-size-unit: 0.9rem !default;  // Variable in stile
 }
 
 @mixin stinc-editor-class {
-	div.frame {
-		background-color: $stile-block-color-background;
-		padding         : base-vr(2);
-		line-height     : base-vr(2);
+	div.frame,
+	div.frame-alt {
+		padding    : base-vr(2);
+		line-height: base-vr(2);
 
 		@include stinc-editor-child-margin;
 
@@ -193,6 +193,14 @@ $stile-size-unit: 0.9rem !default;  // Variable in stile
 			display: block;
 			clear  : both;
 		}
+	}
+
+	div.frame {
+		background-color: $stile-block-color-background;
+	}
+
+	div.frame-alt {
+		background-color: adjust-hue($stile-block-color-background, 180deg);
 	}
 
 	div.clear {
