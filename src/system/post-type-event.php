@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-15
+ * @version 2019-11-18
  *
  */
 
@@ -29,7 +29,6 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 	], $opts );
 	$labels = array_merge( [
 		'name'               => 'Events',
-		'singular_name'      => 'Event',
 		'period_label'       => '',
 		'period_begin_label' => 'Begin',
 		'period_end_label'   => 'End',
