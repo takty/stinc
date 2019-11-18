@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom Admin Bar
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2019-11-18
  *
  */
 
@@ -46,20 +46,18 @@ function remove_post_menu_when_empty() {
 		if ( $key === 'auto-draft' ) continue;
 		$sum += $val;
 	}
-	if ( $sum === 0 ) {
-		add_action( 'admin_menu', function () {
-			remove_menu_page( 'edit.php' );
-		} );
-		add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
-			$wp_admin_bar->remove_menu( 'new-post' );
-		}, 100 );
-		add_action( 'admin_enqueue_scripts', function () {
-			echo '<style>#wp-admin-bar-new-content > a {pointer-events:none;user-select:none;}</style>';
-		} );
-		if ( is_user_logged_in() && ! is_admin() ) {
-			add_action( 'wp_enqueue_scripts', function () {
-				echo '<style>#wp-admin-bar-new-content > a {pointer-events:none;user-select:none;}</style>';
-			} );
-		}
-	}
+	if ( $sum === 0 ) _remove_post_type_post();
+}
+
+function _remove_post_type_post() {
+	unregister_taxonomy_for_object_type( 'category', 'post' );
+	unregister_taxonomy_for_object_type( 'post_tag', 'post' );
+	global $wp_post_types;
+	$wp_post_types['post']->public             = false;
+	$wp_post_types['post']->publicly_queryable = false;
+	$wp_post_types['post']->show_in_admin_bar  = false;
+	$wp_post_types['post']->show_in_menu       = false;
+	$wp_post_types['post']->show_in_nav_menus  = false;
+	$wp_post_types['post']->show_in_rest       = false;
+	$wp_post_types['post']->show_ui            = false;
 }
