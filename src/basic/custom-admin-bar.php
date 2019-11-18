@@ -46,10 +46,14 @@ function remove_post_menu_when_empty() {
 		if ( $key === 'auto-draft' ) continue;
 		$sum += $val;
 	}
-	if ( $sum === 0 ) _remove_post_type_post();
+	if ( $sum === 0 ) {
+		_hide_post_type_post();
+		_hide_taxonomy( 'category' );
+		_hide_taxonomy( 'post_tag' );
+	}
 }
 
-function _remove_post_type_post() {
+function _hide_post_type_post() {
 	unregister_taxonomy_for_object_type( 'category', 'post' );
 	unregister_taxonomy_for_object_type( 'post_tag', 'post' );
 	global $wp_post_types;
@@ -60,4 +64,18 @@ function _remove_post_type_post() {
 	$wp_post_types['post']->show_in_nav_menus  = false;
 	$wp_post_types['post']->show_in_rest       = false;
 	$wp_post_types['post']->show_ui            = false;
+}
+
+function _hide_taxonomy( $tax ) {
+	$tax = get_taxonomy( $tax );
+	if ( ! empty( $tax->object_type ) ) return;
+	$tax->public             = false;
+	$tax->publicly_queryable = false;
+	$tax->show_admin_column  = false;
+	$tax->show_in_menu       = false;
+	$tax->show_in_nav_menus  = false;
+	$tax->show_in_quick_edit = false;
+	$tax->show_in_rest       = false;
+	$tax->show_tagcloud      = false;
+	$tax->show_ui            = false;
 }
