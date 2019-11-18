@@ -5,46 +5,61 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-30
+ * @version 2019-11-18
  *
  */
 
 
-function register( $post_type, $slug, $label, $hierarchical = true, $show_ui = true ) {
-	register_taxonomy( "{$post_type}_{$slug}", $post_type, [
+function register( $post_type, $slug, $label_s, $hierarchical = true, $show_ui = true ) {
+	$args = [
 		'hierarchical'      => $hierarchical,
-		'label'             => $label,
 		'public'            => true,
 		'show_ui'           => $show_ui,
 		'rewrite'           => [ 'with_front' => false, 'slug' => "{$post_type}/{$slug}" ],
 		'sort'              => true,
 		'show_admin_column' => true
-	] );
+	];
+	if ( is_array( $label_s ) ) {
+		$args['labels'] = $label_s;
+	} else {
+		$args['label'] = $label_s;
+	}
+	register_taxonomy( "{$post_type}_{$slug}", $post_type, $args );
 }
 
-function register_category( $post_type, $slug, $suffix = 'category', $label = false ) {
-	register_taxonomy( "{$post_type}_$suffix", $post_type, [
-		'label'             => $label ? $label : __('Categories'),
+function register_category( $post_type, $slug, $suffix = 'category', $label_s = false ) {
+	$args = [
 		'rewrite'           => [ 'with_front' => false, 'slug' => "$slug/$suffix" ],
 		'hierarchical'      => true,
 		'public'            => true,
 		'show_ui'           => true,
 		'sort'              => true,
 		'show_admin_column' => true
-	] );
+	];
+	if ( is_array( $label_s ) ) {
+		$args['labels'] = $label_s;
+	} else {
+		$args['label'] = $label_s ? $label_s : __( 'Categories' );
+	}
+	register_taxonomy( "{$post_type}_$suffix", $post_type, $args );
 	set_taxonomy_post_type_specific( [ "{$post_type}_$suffix" ], $post_type );
 }
 
-function register_tag( $post_type, $slug, $suffix = 'tag', $label = false ) {
-	register_taxonomy( "{$post_type}_$suffix", $post_type, [
-		'label'             => $label ? $label : __('Tags'),
+function register_tag( $post_type, $slug, $suffix = 'tag', $label_s = false ) {
+	$args = [
 		'rewrite'           => [ 'with_front' => false, 'slug' => "$slug/$suffix" ],
 		'hierarchical'      => false,
 		'public'            => true,
 		'show_ui'           => true,
 		'sort'              => true,
 		'show_admin_column' => true
-	] );
+	];
+	if ( is_array( $label_s ) ) {
+		$args['labels'] = $label_s;
+	} else {
+		$args['label'] = $label_s ? $label_s : __( 'Tags' );
+	}
+	register_taxonomy( "{$post_type}_$suffix", $post_type, $args );
 	set_taxonomy_post_type_specific( [ "{$post_type}_$suffix" ], $post_type );
 }
 
