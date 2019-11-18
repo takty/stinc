@@ -5,7 +5,7 @@ namespace st\list_table_column;
  * List Table Columns
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-15
+ * @version 2019-11-18
  *
  */
 
@@ -19,8 +19,16 @@ function insert_default_columns( $pos = false, $cs = [] ) {
 
 function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = false, $cs = [] ) {
 	$ns = [];
-	if ( $add_cat ) $ns[] = ['name' => "{$post_type}_category", 'width' => '10%'];
-	if ( $add_tag ) $ns[] = ['name' => "{$post_type}_tag",      'width' => '10%'];
+	if ( $add_cat ) {
+		$n = [ 'name' => "{$post_type}_category", 'width' => '10%' ];
+		if ( is_string( $add_cat ) ) $n['label'] = $add_cat;
+		$ns[] = $n;
+	}
+	if ( $add_tag ) {
+		$n = [ 'name' => "{$post_type}_tag",      'width' => '10%' ];
+		if ( is_string( $add_cat ) ) $n['label'] = $add_tag;
+		$ns[] = $n;
+	}
 	if ( $pos === false ) return array_merge( $cs, $ns );
 	array_splice( $cs, $pos, 0, $ns );
 	return $cs;
