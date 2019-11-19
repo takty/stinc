@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-20
+ * @version 2019-11-20
  *
  */
 
@@ -127,8 +127,8 @@ const setLinkPicker = (function () {
 
 		wpLink.init();
 		wpLink.lastSearch = '';
-		$('#search-results > ul').empty();
-		$('#most-recent-results > ul').empty();
+		jQuery('#search-results > ul').empty();
+		jQuery('#most-recent-results > ul').empty();
 
 		if (isPostTypeSpecInitialized) return;
 		isPostTypeSpecInitialized = true;
@@ -137,7 +137,7 @@ const setLinkPicker = (function () {
 			beforeSend: function (jqXHR, d) {
 				if (!d.data) return true;
 				if (!postTypeSpec) return true;
-				$.each(d.data.split('&'), function (i, p) {
+				jQuery.each(d.data.split('&'), function (i, p) {
 					const kv = p.split('=');
 					if (kv[0] === 'action' && kv[1] === 'wp-link-ajax') {
 						d.data += '&link_picker_pt=' + postTypeSpec;
