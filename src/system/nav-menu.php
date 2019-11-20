@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-09
+ * @version 2019-11-20
  *
  */
 
@@ -60,6 +60,7 @@ class NavMenu {
 	protected $_is_page;
 	protected $_expanded_page_ids = false;
 	protected $_cur_objs = false;
+	protected $_menu_id = false;
 
 	protected $_pid_to_menu;
 	protected $_pid_to_children_state;
@@ -111,6 +112,10 @@ class NavMenu {
 
 	public function set_expanded_page_ids( $ids ) {
 		$this->_expanded_page_ids = $ids;
+	}
+
+	public function get_menu_id() {
+		return $this->_menu_id;
 	}
 
 
@@ -301,6 +306,7 @@ class NavMenu {
 
 		$menu = wp_get_nav_menu_object( $ls[ $menu_name ] );
 		if ( $menu === false ) return [];
+		$this->_menu_id = $menu->term_id;
 		$ret = [];
 		if ( self::$_is_cache_enabled ) {
 			$ret = self::get_nav_menu_items( $menu->term_id );
