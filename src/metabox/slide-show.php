@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-31
+ * @version 2019-11-27
  *
  */
 
@@ -181,14 +181,15 @@ class SlideShow {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
+		$_urls    = [];
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it );
-			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it );
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it, $_urls );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it, $_urls );
 		}
 ?>
 				</ul>
@@ -197,12 +198,15 @@ class SlideShow {
 			</div>
 			<div class="<?php echo self::CLS_RIVETS ?>"></div>
 			<script>st_slide_show_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
+			<div style="display:none;" hidden><!-- image urls for static page generation -->
+				<?php foreach ( $_urls as $_url ) echo '<a href="' . $_url . '" hidden></a>'; ?>
+			</div>
 		</section>
 <?php
 		return true;
 	}
 
-	private function _echo_slide_item_img( $it ) {
+	private function _echo_slide_item_img( $it, &$_urls ) {
 		$imgs   = $it['images'];
 		$imgs_s = isset( $it['images_sub'] ) ? $it['images_sub'] : false;
 		$data = [];
@@ -210,7 +214,7 @@ class SlideShow {
 		if ( $this->_is_dual && $imgs_s !== false ) {
 			self::_set_attrs( $data, 'img-sub', $imgs_s );
 		}
-		self::_set_attrs( $data, 'img', $imgs );
+		self::_set_attrs( $data, 'img', $imgs, $_urls );
 		$attr = '';
 		foreach ( $data as $key => $val ) {
 			$attr .= " data-$key=\"$val\"";
@@ -219,16 +223,20 @@ class SlideShow {
 		echo "<li$attr>$cont</li>";
 	}
 
-	private function _echo_slide_item_video( $it ) {
-		$attr = " data-video=\"{$it['video']}\"";
+	private function _echo_slide_item_video( $it, &$_urls ) {
+		$_url = esc_url( $it['video'] );
+		$_urls[] = $_url;
+		$attr = " data-video=\"$_url\"";
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
 		echo "<li$attr>$cont</li>";
 	}
 
-	static private function _set_attrs( &$data, $key, $imgs ) {
+	static private function _set_attrs( &$data, $key, $imgs, &$_urls ) {
+		$_urls[] = esc_url( $imgs[0] );
 		if ( 2 <= count( $imgs ) ) {
 			$data["$key-phone"] = esc_url( $imgs[0] );
 			$data[ $key ]       = esc_url( $imgs[1] );
+			$_urls[] = esc_url( $imgs[1] );
 		} else {
 			$data[ $key ] = esc_url( $imgs[0] );
 		}

@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-31
+ * @version 2019-11-27
  *
  */
 
@@ -121,30 +121,36 @@ class BackgroundImage {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
+		$_urls    = [];
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( isset( $it['images'] ) ) $this->_echo_image_item( $it );
+			if ( isset( $it['images'] ) ) $this->_echo_image_item( $it, $_urls );
 		}
 ?>
 				</ul>
 			</div>
 			<script>st_background_image_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
+			<div style="display:none;" hidden><!-- image urls for static page generation -->
+				<?php foreach ( $_urls as $_url ) echo '<a href="' . $_url . '" hidden></a>'; ?>
+			</div>
 		</section>
 <?php
 		return true;
 	}
 
-	private function _echo_image_item( $it ) {
+	private function _echo_image_item( $it, &$_urls ) {
 		$imgs = $it['images'];
 
+		$_urls[] = esc_url( $imgs[0] );
 		if ( 2 <= count( $imgs ) ) {
 			$_img0 = esc_url( $imgs[0] );
 			$_img1 = esc_url( $imgs[1] );
 			echo "<li data-img=\"$_img1\" data-img-phone=\"$_img0\"></li>";
+			$_urls[] = esc_url( $imgs[1] );
 		} else {
 			$_img = esc_url( $imgs[0] );
 			echo "<li data-img=\"$_img\"></li>";
