@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-27
+ * @version 2019-11-29
  *
  */
 
@@ -42,7 +42,7 @@ class BackgroundImage {
 	static public function get_instance( $key = false ) {
 		if ( $key === false ) return reset( self::$_instance );
 		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
-		return new SlideShow( $key );
+		return new BackgroundImage( $key );
 	}
 
 	static public function enqueue_script( $url_to = false ) {
@@ -264,7 +264,7 @@ class BackgroundImage {
 // -----------------------------------------------------------------------------
 
 
-namespace st\echo_background_image;
+namespace st\background_image;
 
 function initialize( $key ) { return new \st\BackgroundImage( $key ); }
 function enqueue_script( $url_to = false ) { \st\BackgroundImage::enqueue_script( $url_to ); }
