@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-29
+ * @version 2019-12-05
  *
  */
 
@@ -274,7 +274,7 @@ function set_duration_time( $key, $sec ) { return \st\BackgroundImage::get_insta
 function set_transition_time( $key, $sec ) { return \st\BackgroundImage::get_instance( $key )->set_transition_time( $sec ); }
 function set_zoom_rate( $key, $rate ) { return \st\BackgroundImage::get_instance( $key )->set_zoom_rate( $rate ); }
 function set_random_timing_enabled( $key, $enabled ) { return \st\BackgroundImage::get_instance( $key )->set_random_timing_enabled( $enabled ); }
-function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\BackgroundImage::get_instance( $key )->echo_background_image( $post_id, $size, $cls ); }
+function echo_background_image( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\BackgroundImage::get_instance( $key )->echo_background_image( $post_id, $size, $cls ); }
 
 function add_meta_box( $key, $label, $screen, $context = 'side' ) { \st\BackgroundImage::get_instance( $key )->add_meta_box( $label, $screen, $context ); }
 function save_meta_box( $post_id, $key ) { \st\BackgroundImage::get_instance( $key )->save_meta_box( $post_id ); }
