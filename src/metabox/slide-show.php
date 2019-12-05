@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-27
+ * @version 2019-12-05
  *
  */
 
@@ -90,7 +90,7 @@ class SlideShow {
 	private $_is_side_slide_visible = false;
 	private $_is_picture_scroll     = false;
 	private $_is_dual               = false;
-	private $_is_video_enablde      = false;
+	private $_is_video_enabled      = false;
 	private $_is_shuffled           = false;
 
 	public function __construct( $key ) {
@@ -145,7 +145,7 @@ class SlideShow {
 	}
 
 	public function set_video_enabled( $enabled ) {
-		$this->_is_video_enablde = $enabled;
+		$this->_is_video_enabled = $enabled;
 		return $this;
 	}
 
@@ -310,7 +310,7 @@ class SlideShow {
 ?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>">
 <?php
-		if ( $this->_is_video_enablde ) {
+		if ( $this->_is_video_enabled ) {
 ?>
 					<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_VIDEO ?> button"><?php _e( 'Add Video', 'default' ) ?></a>
 <?php
