@@ -15,7 +15,7 @@ require_once __DIR__ . '/../util/text.php';
 require_once __DIR__ . '/../util/url.php';
 
 
-if ( is_admin() && ! function_exists( 'check_simply_static_active' ) ) {
+if ( is_admin() && ! function_exists( '\st\check_simply_static_active' ) ) {
 	function check_simply_static_active() {
 		$is_active = false;
 		$ps = get_plugins();
@@ -27,7 +27,7 @@ if ( is_admin() && ! function_exists( 'check_simply_static_active' ) ) {
 		}
 		set_option( 'is_simply_static_active', $is_active );
 	}
-	add_action( 'plugin_loaded', 'check_simply_static_active' );
+	add_action( 'init', '\st\check_simply_static_active' );
 }
 
 
