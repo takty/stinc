@@ -25,7 +25,7 @@ if ( is_admin() && ! function_exists( '\st\check_simply_static_active' ) ) {
 				break;
 			}
 		}
-		set_option( 'is_simply_static_active', $is_active );
+		update_option( 'is_simply_static_active', $is_active );
 	}
 	add_action( 'init', '\st\check_simply_static_active' );
 }
