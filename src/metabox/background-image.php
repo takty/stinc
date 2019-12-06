@@ -16,6 +16,9 @@ require_once __DIR__ . '/../util/url.php';
 
 if ( is_admin() && ! function_exists( '\st\check_simply_static_active' ) ) {
 	function check_simply_static_active() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 		$is_active = false;
 		$ps = get_plugins();
 		foreach ( $ps as $path => $plugin ) {
@@ -74,14 +77,6 @@ class BackgroundImage {
 
 	static private function is_simply_static_active() {
 		if ( self::$_is_ss_active === null ) {
-			// $ps = get_plugins();
-			// foreach ( $ps as $path => $plugin ) {
-			// 	if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
-			// 		self::$_is_ss_active = true;
-			// 		break;
-			// 	}
-			// }
-			// self::$_is_ss_active = false;
 			self::$_is_ss_active = get_option( 'is_simply_static_active', false );
 		}
 		return self::$_is_ss_active;
@@ -185,13 +180,13 @@ class BackgroundImage {
 			$attr = " data-img=\"$_img1\" data-img-phone=\"$_img0\"";
 			$_urls[] = esc_url( $imgs[1] );
 			if ( self::is_simply_static_active() ) {  // for fallback
-				$attr .= " style=\"data-img:url($_img1);data-img-phone:url($_img0);\"";
+				$attr = " style=\"data-img:url($_img1);data-img-phone:url($_img0);\"";
 			}
 		} else {
 			$_img = esc_url( $imgs[0] );
 			$attr = " data-img=\"$_img\"";
 			if ( self::is_simply_static_active() ) {  // for fallback
-				$attr .= " style=\"data-img:url($_img);\"";
+				$attr = " style=\"data-img:url($_img);\"";
 			}
 		}
 		echo "<li$attr></li>";

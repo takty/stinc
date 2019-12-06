@@ -17,6 +17,9 @@ require_once __DIR__ . '/../util/url.php';
 
 if ( is_admin() && ! function_exists( '\st\check_simply_static_active' ) ) {
 	function check_simply_static_active() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 		$is_active = false;
 		$ps = get_plugins();
 		foreach ( $ps as $path => $plugin ) {
@@ -96,14 +99,6 @@ class SlideShow {
 
 	static private function is_simply_static_active() {
 		if ( self::$_is_ss_active === null ) {
-			// $ps = get_plugins();
-			// foreach ( $ps as $path => $plugin ) {
-			// 	if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
-			// 		self::$_is_ss_active = true;
-			// 		break;
-			// 	}
-			// }
-			// self::$_is_ss_active = false;
 			self::$_is_ss_active = get_option( 'is_simply_static_active', false );
 		}
 		return self::$_is_ss_active;
@@ -260,7 +255,7 @@ class SlideShow {
 			foreach ( $data as $key => $val ) {
 				$style .= "data-$key:url($val);";
 			}
-			$attr .= ($style . '"');
+			$attr = ($style . '"');
 		}
 		echo "<li$attr>$cont</li>";
 	}
@@ -273,7 +268,7 @@ class SlideShow {
 
 		if ( self::is_simply_static_active() ) {  // for fallback
 			$style = " style=\"data-video:url($_url);\"";
-			$attr .= $style;
+			$attr = $style;
 		}
 		echo "<li$attr>$cont</li>";
 	}
