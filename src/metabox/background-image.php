@@ -14,6 +14,22 @@ require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../util/url.php';
 
 
+if ( is_admin() && ! function_exists( 'check_simply_static_active' ) ) {
+	function check_simply_static_active() {
+		$is_active = false;
+		$ps = get_plugins();
+		foreach ( $ps as $path => $plugin ) {
+			if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
+				$is_active = true;
+				break;
+			}
+		}
+		set_option( 'is_simply_static_active', $is_active );
+	}
+	add_action( 'plugin_loaded', check_simply_static_active );
+}
+
+
 class BackgroundImage {
 
 	const NS = 'st-background-image';
@@ -58,14 +74,15 @@ class BackgroundImage {
 
 	static private function is_simply_static_active() {
 		if ( self::$_is_ss_active === null ) {
-			$ps = get_plugins();
-			foreach ( $ps as $path => $plugin ) {
-				if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
-					self::$_is_ss_active = true;
-					break;
-				}
-			}
-			self::$_is_ss_active = false;
+			// $ps = get_plugins();
+			// foreach ( $ps as $path => $plugin ) {
+			// 	if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
+			// 		self::$_is_ss_active = true;
+			// 		break;
+			// 	}
+			// }
+			// self::$_is_ss_active = false;
+			self::$_is_ss_active = get_option( 'is_simply_static_active', false );
 		}
 		return self::$_is_ss_active;
 	}
