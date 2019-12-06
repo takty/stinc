@@ -27,7 +27,7 @@ if ( is_admin() && ! function_exists( 'check_simply_static_active' ) ) {
 		}
 		set_option( 'is_simply_static_active', $is_active );
 	}
-	add_action( 'plugin_loaded', check_simply_static_active );
+	add_action( 'plugin_loaded', 'check_simply_static_active' );
 }
 
 
