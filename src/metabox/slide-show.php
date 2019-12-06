@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-05
+ * @version 2019-12-06
  *
  */
 
@@ -13,6 +13,25 @@ namespace st;
 require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../util/text.php';
 require_once __DIR__ . '/../util/url.php';
+
+
+if ( is_admin() && ! function_exists( '\st\check_simply_static_active' ) ) {
+	function check_simply_static_active() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$is_active = false;
+		$ps = get_plugins();
+		foreach ( $ps as $path => $plugin ) {
+			if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
+				$is_active = true;
+				break;
+			}
+		}
+		update_option( 'is_simply_static_active', $is_active );
+	}
+	add_action( 'init', '\st\check_simply_static_active' );
+}
 
 
 class SlideShow {
@@ -58,6 +77,7 @@ class SlideShow {
 	const TYPE_VIDEO = 'video';
 
 	static private $_instance = [];
+	static private $_is_ss_active = null;
 
 	static public function get_instance( $key = false ) {
 		if ( $key === false ) return reset( self::$_instance );
@@ -75,6 +95,13 @@ class SlideShow {
 		} else {
 			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './../../stomp/slide-show/slide-show.min.js' ), '', 1.0 );
 		}
+	}
+
+	static private function is_simply_static_active() {
+		if ( self::$_is_ss_active === null ) {
+			self::$_is_ss_active = get_option( 'is_simply_static_active', false );
+		}
+		return self::$_is_ss_active;
 	}
 
 	private $_key;
@@ -181,15 +208,14 @@ class SlideShow {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
-		$_urls    = [];
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it, $_urls );
-			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it, $_urls );
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it );
 		}
 ?>
 				</ul>
@@ -198,15 +224,12 @@ class SlideShow {
 			</div>
 			<div class="<?php echo self::CLS_RIVETS ?>"></div>
 			<script>st_slide_show_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
-			<div style="display:none;" hidden><!-- image urls for static page generation -->
-				<?php foreach ( $_urls as $_url ) echo '<a href="' . $_url . '" hidden></a>'; ?>
-			</div>
 		</section>
 <?php
 		return true;
 	}
 
-	private function _echo_slide_item_img( $it, &$_urls ) {
+	private function _echo_slide_item_img( $it ) {
 		$imgs   = $it['images'];
 		$imgs_s = isset( $it['images_sub'] ) ? $it['images_sub'] : false;
 		$data = [];
@@ -214,29 +237,39 @@ class SlideShow {
 		if ( $this->_is_dual && $imgs_s !== false ) {
 			self::_set_attrs( $data, 'img-sub', $imgs_s );
 		}
-		self::_set_attrs( $data, 'img', $imgs, $_urls );
+		self::_set_attrs( $data, 'img', $imgs );
 		$attr = '';
 		foreach ( $data as $key => $val ) {
 			$attr .= " data-$key=\"$val\"";
 		}
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
+
+		if ( self::is_simply_static_active() ) {  // for fallback
+			$style = ' style="';
+			foreach ( $data as $key => $val ) {
+				$style .= "data-$key:url($val);";
+			}
+			$attr = ($style . '"');
+		}
 		echo "<li$attr>$cont</li>";
 	}
 
-	private function _echo_slide_item_video( $it, &$_urls ) {
+	private function _echo_slide_item_video( $it ) {
 		$_url = esc_url( $it['video'] );
-		$_urls[] = $_url;
 		$attr = " data-video=\"$_url\"";
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
+
+		if ( self::is_simply_static_active() ) {  // for fallback
+			$style = " style=\"data-video:url($_url);\"";
+			$attr = $style;
+		}
 		echo "<li$attr>$cont</li>";
 	}
 
-	static private function _set_attrs( &$data, $key, $imgs, &$_urls ) {
-		$_urls[] = esc_url( $imgs[0] );
+	static private function _set_attrs( &$data, $key, $imgs ) {
 		if ( 2 <= count( $imgs ) ) {
 			$data["$key-phone"] = esc_url( $imgs[0] );
 			$data[ $key ]       = esc_url( $imgs[1] );
-			$_urls[] = esc_url( $imgs[1] );
 		} else {
 			$data[ $key ] = esc_url( $imgs[0] );
 		}

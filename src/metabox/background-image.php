@@ -5,13 +5,32 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-05
+ * @version 2019-12-06
  *
  */
 
 
 require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../util/url.php';
+
+
+if ( is_admin() && ! function_exists( '\st\check_simply_static_active' ) ) {
+	function check_simply_static_active() {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		$is_active = false;
+		$ps = get_plugins();
+		foreach ( $ps as $path => $plugin ) {
+			if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
+				$is_active = true;
+				break;
+			}
+		}
+		update_option( 'is_simply_static_active', $is_active );
+	}
+	add_action( 'init', '\st\check_simply_static_active' );
+}
 
 
 class BackgroundImage {
@@ -54,6 +73,13 @@ class BackgroundImage {
 		} else {
 			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './../../stomp/background-image/background-image.min.js' ), '', 1.0 );
 		}
+	}
+
+	static private function is_simply_static_active() {
+		if ( self::$_is_ss_active === null ) {
+			self::$_is_ss_active = get_option( 'is_simply_static_active', false );
+		}
+		return self::$_is_ss_active;
 	}
 
 	private $_key;
@@ -121,40 +147,41 @@ class BackgroundImage {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
-		$_urls    = [];
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( isset( $it['images'] ) ) $this->_echo_image_item( $it, $_urls );
+			if ( isset( $it['images'] ) ) $this->_echo_image_item( $it );
 		}
 ?>
 				</ul>
 			</div>
 			<script>st_background_image_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
-			<div style="display:none;" hidden><!-- image urls for static page generation -->
-				<?php foreach ( $_urls as $_url ) echo '<a href="' . $_url . '" hidden></a>'; ?>
-			</div>
 		</section>
 <?php
 		return true;
 	}
 
-	private function _echo_image_item( $it, &$_urls ) {
+	private function _echo_image_item( $it ) {
 		$imgs = $it['images'];
 
-		$_urls[] = esc_url( $imgs[0] );
 		if ( 2 <= count( $imgs ) ) {
 			$_img0 = esc_url( $imgs[0] );
 			$_img1 = esc_url( $imgs[1] );
-			echo "<li data-img=\"$_img1\" data-img-phone=\"$_img0\"></li>";
-			$_urls[] = esc_url( $imgs[1] );
+			$attr = " data-img=\"$_img1\" data-img-phone=\"$_img0\"";
+			if ( self::is_simply_static_active() ) {  // for fallback
+				$attr = " style=\"data-img:url($_img1);data-img-phone:url($_img0);\"";
+			}
 		} else {
 			$_img = esc_url( $imgs[0] );
-			echo "<li data-img=\"$_img\"></li>";
+			$attr = " data-img=\"$_img\"";
+			if ( self::is_simply_static_active() ) {  // for fallback
+				$attr = " style=\"data-img:url($_img);\"";
+			}
 		}
+		echo "<li$attr></li>";
 	}
 
 
