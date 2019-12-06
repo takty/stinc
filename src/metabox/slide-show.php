@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-05
+ * @version 2019-12-06
  *
  */
 
@@ -58,6 +58,7 @@ class SlideShow {
 	const TYPE_VIDEO = 'video';
 
 	static private $_instance = [];
+	static private $_is_ss_active = null;
 
 	static public function get_instance( $key = false ) {
 		if ( $key === false ) return reset( self::$_instance );
@@ -75,6 +76,20 @@ class SlideShow {
 		} else {
 			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './../../stomp/slide-show/slide-show.min.js' ), '', 1.0 );
 		}
+	}
+
+	static private function is_simply_static_active() {
+		if ( self::$_is_ss_active === null ) {
+			$ps = get_plugins();
+			foreach ( $ps as $path => $plugin ) {
+				if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
+					self::$_is_ss_active = true;
+					break;
+				}
+			}
+			self::$_is_ss_active = false;
+		}
+		return self::$_is_ss_active;
 	}
 
 	private $_key;
@@ -198,9 +213,11 @@ class SlideShow {
 			</div>
 			<div class="<?php echo self::CLS_RIVETS ?>"></div>
 			<script>st_slide_show_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
+<?php if ( self::is_simply_static_active() ) : ?>
 			<div style="display:none;" hidden><!-- image urls for static page generation -->
 				<?php foreach ( $_urls as $_url ) echo '<a href="' . $_url . '" hidden></a>'; ?>
 			</div>
+<?php endif; ?>
 		</section>
 <?php
 		return true;
@@ -220,6 +237,14 @@ class SlideShow {
 			$attr .= " data-$key=\"$val\"";
 		}
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
+
+		if ( self::is_simply_static_active() ) {  // for fallback
+			$style = ' style="';
+			foreach ( $data as $key => $val ) {
+				$style .= "data-$key:url($val);";
+			}
+			$attr .= ($style . '"');
+		}
 		echo "<li$attr>$cont</li>";
 	}
 
@@ -228,6 +253,11 @@ class SlideShow {
 		$_urls[] = $_url;
 		$attr = " data-video=\"$_url\"";
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
+
+		if ( self::is_simply_static_active() ) {  // for fallback
+			$style = " style=\"data-video:url($_url);\"";
+			$attr .= $style;
+		}
 		echo "<li$attr>$cont</li>";
 	}
 

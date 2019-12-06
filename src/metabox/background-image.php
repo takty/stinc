@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-05
+ * @version 2019-12-06
  *
  */
 
@@ -54,6 +54,20 @@ class BackgroundImage {
 		} else {
 			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './../../stomp/background-image/background-image.min.js' ), '', 1.0 );
 		}
+	}
+
+	static private function is_simply_static_active() {
+		if ( self::$_is_ss_active === null ) {
+			$ps = get_plugins();
+			foreach ( $ps as $path => $plugin ) {
+				if ( is_plugin_active( $path ) && $plugin['Name'] === 'Simply Static' ) {
+					self::$_is_ss_active = true;
+					break;
+				}
+			}
+			self::$_is_ss_active = false;
+		}
+		return self::$_is_ss_active;
 	}
 
 	private $_key;
@@ -134,9 +148,11 @@ class BackgroundImage {
 				</ul>
 			</div>
 			<script>st_background_image_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
+<?php if ( self::is_simply_static_active() ) : ?>
 			<div style="display:none;" hidden><!-- image urls for static page generation -->
 				<?php foreach ( $_urls as $_url ) echo '<a href="' . $_url . '" hidden></a>'; ?>
 			</div>
+<?php endif; ?>
 		</section>
 <?php
 		return true;
@@ -149,12 +165,19 @@ class BackgroundImage {
 		if ( 2 <= count( $imgs ) ) {
 			$_img0 = esc_url( $imgs[0] );
 			$_img1 = esc_url( $imgs[1] );
-			echo "<li data-img=\"$_img1\" data-img-phone=\"$_img0\"></li>";
+			$attr = " data-img=\"$_img1\" data-img-phone=\"$_img0\"";
 			$_urls[] = esc_url( $imgs[1] );
+			if ( self::is_simply_static_active() ) {  // for fallback
+				$attr .= " style=\"data-img:url($_img1);data-img-phone:url($_img0);\"";
+			}
 		} else {
 			$_img = esc_url( $imgs[0] );
-			echo "<li data-img=\"$_img\"></li>";
+			$attr = " data-img=\"$_img\"";
+			if ( self::is_simply_static_active() ) {  // for fallback
+				$attr .= " style=\"data-img:url($_img);\"";
+			}
 		}
+		echo "<li$attr></li>";
 	}
 
 
