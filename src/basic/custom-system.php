@@ -5,7 +5,7 @@ namespace st\basic;
  * Custom System
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-23
+ * @version 2019-12-17
  *
  */
 
@@ -70,4 +70,25 @@ function _cb_loader_src_timestamp( $src ) {
 	$resource_file = realpath( $resource_file );
 	$src = add_query_arg( 'fver', date( 'Ymdhis', filemtime( $resource_file ) ), $src );
 	return $src;
+}
+
+function add_html_to_page_url() {
+	global $wp_rewrite;
+    $wp_rewrite->use_trailing_slashes = false;
+    $wp_rewrite->page_structure = $wp_rewrite->root . '%pagename%.html';
+
+	add_filter( 'home_url', function ( $url, $path, $orig_scheme, $blog_id ) {
+		if ( empty( $path ) || $path === '/' ) return $url;
+		$pu = parse_url( $url );
+		if ( ! isset( $pu['path'] ) ) return $url;
+
+		$p = get_page_by_path( $path );
+		if ( $p === null ) return $url;
+
+		$path = rtrim( $pu['path'], '/' );
+		if ( substr( $path, - strlen( '.html' ) ) !== '.html' ) {
+			$pu['path'] = "$path.html";
+		}
+		return \st\serialize_url( $pu );
+	}, 10, 4 );
 }

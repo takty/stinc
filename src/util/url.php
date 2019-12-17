@@ -5,7 +5,7 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-31
+ * @version 2019-12-17
  *
  */
 
@@ -104,4 +104,17 @@ function abs_url( $base, $rel ) {
 	$re = [ '#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#' ];
 	for ( $n = 1; $n > 0; $abs = preg_replace( $re, '/', $abs, -1, $n ) ) {}
 	return $scheme . '://' . $abs;
+}
+
+function serialize_url( $pu ) {
+	$scheme = isset( $pu['scheme'] )   ? $pu['scheme'] . '://' : '';
+	$host   = isset( $pu['host'] )     ? $pu['host']           : '';
+	$port   = isset( $pu['port'] )     ? ':' . $pu['port']     : '';
+	$user   = isset( $pu['user'] )     ? $pu['user']           : '';
+	$pass   = isset( $pu['pass'] )     ? ':' . $pu['pass']     : '';
+	$pass   = ( $user || $pass )       ? "$pass@"              : '';
+	$path   = isset( $pu['path'] )     ? $pu['path']           : '';
+	$query  = isset( $pu['query'] )    ? '?' . $pu['query']    : '';
+	$frag   = isset( $pu['fragment'] ) ? '#' . $pu['fragment'] : '';
+	return "$scheme$user$pass$host$port$path$query$frag";
 }
