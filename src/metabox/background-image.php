@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-06
+ * @version 2019-12-19
  *
  */
 
@@ -86,10 +86,11 @@ class BackgroundImage {
 	private $_id;
 
 	private $_effect_type      = 'fade'; // 'slide' or 'scroll' or 'fade'
-	private $_zoom_rate        = 1;
 	private $_duration_time    = 8; // [second]
 	private $_transition_time  = 1; // [second]
 	private $_is_random_timing = true;
+	private $_zoom_rate        = 1;
+
 	private $_is_shuffled      = false;
 
 	public function __construct( $key ) {
@@ -113,13 +114,13 @@ class BackgroundImage {
 		return $this;
 	}
 
-	public function set_zoom_rate( $rate ) {
-		$this->_zoom_rate = $rate;
+	public function set_random_timing_enabled( $enabled ) {
+		$this->_is_random_timing = $enabled;
 		return $this;
 	}
 
-	public function set_random_timing_enabled( $enabled ) {
-		$this->_is_random_timing = $enabled;
+	public function set_zoom_rate( $rate ) {
+		$this->_zoom_rate = $rate;
 		return $this;
 	}
 
@@ -130,11 +131,11 @@ class BackgroundImage {
 
 	private function _create_option_str() {
 		$opts = [
+			'effect_type'      => $this->_effect_type,
 			'duration_time'    => $this->_duration_time,
 			'transition_time'  => $this->_transition_time,
+			'is_random_timing' => $this->_is_random_timing,
 			'zoom_rate'        => $this->_zoom_rate,
-			'effect_type'      => $this->_effect_type,
-			'is_random_timing' => $this->_is_random_timing
 		];
 		return json_encode( $opts );
 	}

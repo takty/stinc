@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-06
+ * @version 2019-12-19
  *
  */
 
@@ -108,14 +108,16 @@ class SlideShow {
 	private $_id;
 
 	private $_effect_type           = 'slide'; // 'scroll' or 'fade'
-	private $_caption_type          = 'subtitle'; // 'line' or 'circle'
-	private $_zoom_rate             = 1;
 	private $_duration_time         = 8; // [second]
 	private $_transition_time       = 1; // [second]
 	private $_background_opacity    = 0.33;
+	private $_is_picture_scroll     = false;
+	private $_is_random_timing      = false;
 	private $_is_background_visible = true;
 	private $_is_side_slide_visible = false;
-	private $_is_picture_scroll     = false;
+	private $_zoom_rate             = 1;
+
+	private $_caption_type          = 'subtitle'; // 'line' or 'circle'
 	private $_is_dual               = false;
 	private $_is_video_enabled      = false;
 	private $_is_shuffled           = false;
@@ -124,6 +126,11 @@ class SlideShow {
 		$this->_key = $key;
 		$this->_id  = $key;
 		self::$_instance[ $key ] = $this;
+	}
+
+	public function set_effect_type( $type ) {
+		$this->_effect_type = $type;
+		return $this;
 	}
 
 	public function set_duration_time( $sec ) {
@@ -136,18 +143,18 @@ class SlideShow {
 		return $this;
 	}
 
-	public function set_zoom_rate( $rate ) {
-		$this->_zoom_rate = $rate;
-		return $this;
-	}
-
-	public function set_effect_type( $type ) {
-		$this->_effect_type = $type;
-		return $this;
-	}
-
 	public function set_background_opacity( $opacity ) {
 		$this->_background_opacity = $opacity;
+		return $this;
+	}
+
+	public function set_picture_scroll_enabled( $enabled ) {
+		$this->_is_picture_scroll = $enabled;
+		return $this;
+	}
+
+	public function set_random_timing_enabled( $enabled ) {
+		$this->_is_random_timing = $enabled;
 		return $this;
 	}
 
@@ -161,8 +168,13 @@ class SlideShow {
 		return $this;
 	}
 
-	public function set_picture_scroll( $enabled ) {
-		$this->_is_picture_scroll = $enabled;
+	public function set_zoom_rate( $rate ) {
+		$this->_zoom_rate = $rate;
+		return $this;
+	}
+
+	public function set_caption_type( $type ) {
+		$this->_caption_type = $type;
 		return $this;
 	}
 
@@ -181,21 +193,17 @@ class SlideShow {
 		return $this;
 	}
 
-	public function set_caption_type( $type ) {
-		$this->_caption_type = $type;
-		return $this;
-	}
-
 	private function _create_option_str() {
 		$opts = [
+			'effect_type'           => $this->_effect_type,
 			'duration_time'         => $this->_duration_time,
 			'transition_time'       => $this->_transition_time,
-			'zoom_rate'             => $this->_zoom_rate,
-			'effect_type'           => $this->_effect_type,
 			'background_opacity'    => $this->_background_opacity,
+			'is_picture_scroll'     => $this->_is_picture_scroll,
+			'is_random_timing'      => $this->_is_random_timing,
 			'is_background_visible' => $this->_is_background_visible,
 			'is_side_slide_visible' => $this->_is_side_slide_visible,
-			'is_picture_scroll'     => $this->_is_picture_scroll,
+			'zoom_rate'             => $this->_zoom_rate,
 		];
 		return json_encode( $opts );
 	}
