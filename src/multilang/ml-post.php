@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-15
+ * @version 2019-12-18
  *
  */
 
@@ -127,7 +127,8 @@ class Multilang_Post {
 		$basic_title = \wptexturize( $basic_title );
 		$basic_title = \convert_chars( $basic_title );
 		$basic_title = \trim( $basic_title );
-		return preg_replace( '/' . preg_quote( $basic_title, '/' ) . '/', $t, $title );
+		if ( empty( $basic_title ) ) return "$title $t";
+		return preg_replace( '/' . preg_quote( $basic_title, '/' ) . '/u', $t, $title );
 	}
 
 	public function _cb_the_content( $content ) {  // Private
