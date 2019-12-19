@@ -56,7 +56,8 @@ class BackgroundImage {
 	const CLS_TN_IMG    = self::NS . '-thumbnail-img';
 	const CLS_MEDIA     = self::NS . '-media';
 
-	static private $_instance = [];
+	static private $_instance     = [];
+	static private $_is_ss_active = null;
 
 	static public function get_instance( $key = false ) {
 		if ( $key === false ) return reset( self::$_instance );

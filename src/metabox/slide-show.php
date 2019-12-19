@@ -76,7 +76,7 @@ class SlideShow {
 	const TYPE_IMAGE = 'image';
 	const TYPE_VIDEO = 'video';
 
-	static private $_instance = [];
+	static private $_instance     = [];
 	static private $_is_ss_active = null;
 
 	static public function get_instance( $key = false ) {
