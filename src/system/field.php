@@ -5,7 +5,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-31
+ * @version 2019-12-26
  *
  */
 
@@ -38,9 +38,9 @@ function get_post_meta_date( $post_id, $key ) {
 function get_post_meta_lines( $post_id, $key ) {
 	$ml = \st\Multilang::get_instance();
 
-	$val  = mb_trim( get_post_meta( $post_id, $key, true ) );
+	$val  = \st\mb_trim( get_post_meta( $post_id, $key, true ) );
 	$vals = explode( "\n", $val );
-	$vals = array_map( 'mb_trim', $vals );
+	$vals = array_map( '\st\mb_trim', $vals );
 	$vals = array_filter( $vals, function ( $e ) { return ! empty( $e ); } );
 	$vals = array_values( $vals );
 
