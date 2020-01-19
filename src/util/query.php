@@ -5,7 +5,7 @@ namespace st;
  * Query
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-18
+ * @version 2020-01-20
  *
  */
 
@@ -149,7 +149,7 @@ function get_custom_sticky_and_latest_posts( $post_type, $post_per_page = 6, $ml
 	$sticky = get_custom_sticky_posts( $post_type, $ml_tag, $args );
 	$latest = get_latest_posts( $post_type, $post_per_page, $ml_tag, $args );
 
-	return merge_sticky_and_latest( $sticky, $latest, $$post_per_page );
+	return merge_sticky_and_latest( $sticky, $latest, $post_per_page );
 }
 
 
