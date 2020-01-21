@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-19
+ * @version 2020-01-21
  *
  */
 
@@ -90,9 +90,11 @@ class BackgroundImage {
 	private $_duration_time    = 8; // [second]
 	private $_transition_time  = 1; // [second]
 	private $_is_random_timing = true;
+	private $_is_autoplay      = true;
 	private $_zoom_rate        = 1;
-
+	
 	private $_is_shuffled      = false;
+	private $_is_script_output = true;
 
 	public function __construct( $key ) {
 		$this->_key = $key;
@@ -120,6 +122,11 @@ class BackgroundImage {
 		return $this;
 	}
 
+	public function set_autoplay_enabled( $enabled ) {
+		$this->_is_autoplay = $enabled;
+		return $this;
+	}
+
 	public function set_zoom_rate( $rate ) {
 		$this->_zoom_rate = $rate;
 		return $this;
@@ -130,12 +137,18 @@ class BackgroundImage {
 		return $this;
 	}
 
+	public function set_script_output( $enabled ) {
+		$this->_is_script_output = $enabled;
+		return $this;
+	}
+
 	private function _create_option_str() {
 		$opts = [
 			'effect_type'      => $this->_effect_type,
 			'duration_time'    => $this->_duration_time,
 			'transition_time'  => $this->_transition_time,
 			'is_random_timing' => $this->_is_random_timing,
+			'is_autoplay'      => $this->_is_autoplay,
 			'zoom_rate'        => $this->_zoom_rate,
 		];
 		return json_encode( $opts );
@@ -160,7 +173,9 @@ class BackgroundImage {
 ?>
 				</ul>
 			</div>
+<?php if ( $this->_is_script_output ) : ?>
 			<script>st_background_image_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
+<?php endif; ?>
 		</section>
 <?php
 		return true;
