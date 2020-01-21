@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-26
+ * @version 2020-01-21
  *
  */
 
@@ -223,22 +223,45 @@ function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after
 	if ( is_wp_error( $ts ) ) return $ts;
 	if ( empty( $ts ) ) return false;
 
-	$singular = isset( $args['singular'] ) ? $args['singular']  : false;
+	$singular = isset( $args['singular'] ) ? $args['singular'] : false;
+	if ( isset( $args['is_root_inserted'] ) && ( $args['is_root_inserted'] === true ) ) {
+		$ts = _insert_root( $ts );
+	}
 	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular );
+}
+
+function _insert_root( $terms ) {
+	$new_ts = [];
+	$added = [];
+	foreach ( $terms as $t ) {
+		if ( $t->parent !== 0 ) {
+			list( $p ) = \st\taxonomy\get_term_root( $t, 0 );
+			if ( ! isset( $added[ $p->term_id ] ) ) {
+				$new_ts[] = $p;
+				$added[ $p->term_id ] = true;
+			}
+		}
+		$new_ts[] = $t;
+	}
+	return $new_ts;
 }
 
 function _create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false, $singular = false ) {
 	$links = [];
 	foreach ( $terms as $t ) {
-		$current = ( $current_term && $current_term->term_id === $t->term_id ) ? 'current ' : '';
+		$cs = [ "$taxonomy-{$t->slug}" ];
+		if ( $t->parent === 0 ) $cs[] = 'root';
+		if ( $current_term && $current_term->term_id === $t->term_id ) $cs[] = 'current';
+		$cs_str = implode( ' ', $cs );
+
 		$_name = esc_html( get_term_name( $t, $singular ) );
 		if ( $add_link ) {
 			$link = get_term_link( $t, $taxonomy );
 			if ( is_wp_error( $link ) ) return $link;
 			$_link = esc_url( $link );
-			$links[] = "<a href=\"$_link\" rel=\"tag\" class=\"$current$taxonomy-{$t->slug}\">$_name</a>";
+			$links[] = "<a href=\"$_link\" rel=\"tag\" class=\"$cs_str\">$_name</a>";
 		} else {
-			$links[] = "<span class=\"$current$taxonomy-{$t->slug}\">$_name</span>";
+			$links[] = "<span class=\"$cs_str\">$_name</span>";
 		}
 	}
 	$term_links = apply_filters( "term_links-{$taxonomy}", $links );
