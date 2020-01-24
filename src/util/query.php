@@ -5,7 +5,7 @@ namespace st;
  * Query
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-20
+ * @version 2020-01-24
  *
  */
 
@@ -55,6 +55,9 @@ function append_ml_tag_query( $args = [] ) {
 	if ( ! class_exists( '\st\Multilang' ) ) return $args;
 
 	$ml = \st\Multilang::get_instance();
+	if ( isset( $args['post_type'] ) && ! is_array( $args['post_type'] ) ) {
+		if ( ! $ml->has_tag( $args['post_type'] ) ) return $args;
+	}
 	if ( ! $ml->has_tag() ) return $args;
 
 	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
@@ -66,6 +69,9 @@ function append_mh_tag_query( $args = [] ) {
 	if ( ! class_exists( '\st\Multihome' ) ) return $args;
 
 	$mh = \st\Multihome::get_instance();
+	if ( isset( $args['post_type'] ) && ! is_array( $args['post_type'] ) ) {
+		if ( ! $mh->has_tag( $args['post_type'] ) ) return $args;
+	}
 	if ( ! $mh->has_tag() ) return $args;
 
 	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
