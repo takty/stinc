@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-26
+ * @version 2020-01-24
  *
  */
 
@@ -83,18 +83,15 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $year_date
 
 function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $year_date ) {
 	$ml = \st\Multilang::get_instance();
+	$args = [];
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
-		$ps = \st\get_latest_posts( $post_type, intval( $latest_count ), $term_slug );
+		if ( $term_slug ) $args = \st\append_tax_query( $taxonomy, $term_slug, $args );
+		$ps = \st\get_latest_posts( $post_type, intval( $latest_count ), true, $args );
 	} else {
-		$tag = $ml->get_tax_query();
-		$args =  [
-			'post_type'      => $post_type,
-			'posts_per_page' => -1,
-			'post_status'    => 'publish',
-			'tax_query'      => [ $tag ],
-		];
-		if ( $term_slug ) $args['tax_query'][] = \st\taxonomy\make_tax_query( $taxonomy, $term_slug );
+		$args = \st\append_post_type_query( $post_type, -1 );
+		$args = \st\append_ml_tag_query( $args );
+		if ( $term_slug ) $args = \st\append_tax_query( $taxonomy, $term_slug, $args );
 		$ps = get_posts( $args );
 	}
 	if ( count( $ps ) === 0 ) return [];
