@@ -5,7 +5,7 @@ namespace st;
  * Share
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2020-01-31
  *
  */
 
@@ -13,6 +13,7 @@ namespace st;
 require_once __DIR__ . '/image.php';
 require_once __DIR__ . '/../util/text.php';
 require_once __DIR__ . '/../util/url.php';
+require_once __DIR__ . '/../admin/ss-support.php';
 
 
 // Google Analytics ------------------------------------------------------------
@@ -130,7 +131,12 @@ function the_ogp_site_name() {
 function the_ogp_image( $logo_src, $image_meta_key, $alt_image_src ) {
 	$src = get_the_ogp_image( $logo_src, $image_meta_key, $alt_image_src );
 	if ( empty( $src ) ) return;
-	echo '<meta property="og:image" content="' . esc_attr( $src ) . "\">\n";
+	$_src = esc_attr( $src );
+	if ( get_option( 'is_simply_static_active', false ) ) {
+		echo "<meta property=\"og:image\" content=\"$_src\" style=\"background-image: url('$_src');\">\n";
+	} else {
+		echo "<meta property=\"og:image\" content=\"$_src\">\n";
+	}
 }
 
 function get_the_ogp_url() {
