@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-18
+ * @version 2020-02-04
  *
  */
 
@@ -101,9 +101,10 @@ function set_taxonomy_post_type_specific( $taxonomies, $post_type ) {
 	}, 9 );
 }
 
-function set_taxonomy_default_term( $post_types, $taxonomy, $default_term_slug ) {
-	foreach( $post_types as $post_type ) {
-		add_action( "save_post_$post_type", function ( $post_id, $post ) use ( $post_types, $taxonomy, $default_term_slug ) {
+function set_taxonomy_default_term( $post_type_s, $taxonomy, $default_term_slug ) {
+	if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
+	foreach( $post_type_s as $post_type ) {
+		add_action( "save_post_$post_type", function ( $post_id, $post ) use ( $post_type_s, $taxonomy, $default_term_slug ) {
 			$ts = wp_get_object_terms( $post_id, $taxonomy );
 			if ( is_wp_error( $ts ) || ! empty( $ts ) ) return;
 			wp_set_object_terms( $post_id, $default_term_slug, $taxonomy );
@@ -259,9 +260,12 @@ function remove_term_description( $taxonomy ) {
 // Singular Name ---------------------------------------------------------------
 
 
-function enable_singular_name( $taxonomy ) {
-	add_action( "{$taxonomy}_edit_form_fields", '\st\taxonomy\_cb_term_edit_form_fields', 10, 2 );
-	add_action( 'edited_' . $taxonomy, '\st\taxonomy\_cb_edited_term', 10, 2 );
+function enable_singular_name( $taxonomy_s ) {
+	if ( ! is_array( $taxonomy_s ) ) $taxonomy_s = [ $taxonomy_s ];
+	foreach ( $taxonomy_s as $taxonomy ) {
+		add_action( "{$taxonomy}_edit_form_fields", '\st\taxonomy\_cb_term_edit_form_fields', 10, 2 );
+		add_action( 'edited_' . $taxonomy, '\st\taxonomy\_cb_edited_term', 10, 2 );
+	}
 }
 
 function _cb_term_edit_form_fields( $term, $taxonomy ) {
