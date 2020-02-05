@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-04
+ * @version 2020-02-05
  *
  */
 
@@ -129,7 +129,6 @@ function insert_date_sortable_columns( $pos = false, $scs = [] ) {
 
 
 function get_duration_tag( $post_id, $base_format, $main_date, $fmt_ymd, $fmt_md, $fmt_d ) {
-	$ml  = \st\Multilang::get_instance();
 	$dur = get_duration( $post_id );
 	extract( $dur );
 
