@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-21
+ * @version 2020-02-05
  *
  */
 
@@ -215,7 +215,7 @@ function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_li
 		$cur = false;
 	}
 	$singular = isset( $args['singular'] ) ? $args['singular']  : false;
-	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, $cur, $singular );
+	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, $cur, $singular );
 }
 
 function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true, $args = [] ) {
@@ -227,7 +227,7 @@ function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after
 	if ( isset( $args['is_root_inserted'] ) && ( $args['is_root_inserted'] === true ) ) {
 		$ts = _insert_root( $ts );
 	}
-	return _create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular );
+	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular );
 }
 
 function _insert_root( $terms ) {
@@ -246,7 +246,7 @@ function _insert_root( $terms ) {
 	return $new_ts;
 }
 
-function _create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false, $singular = false ) {
+function create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false, $singular = false ) {
 	$links = [];
 	foreach ( $terms as $t ) {
 		$cs = [ "$taxonomy-{$t->slug}" ];
