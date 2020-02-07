@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-24
+ * @version 2020-02-07
  *
  */
 
@@ -61,9 +61,15 @@ function add_instagram_shortcode() {
 // -----------------------------------------------------------------------------
 
 
-function add_post_type_list_shortcode( $post_type, $taxonomy = false, $year_date = '\st\shortcode\get_item_year_date_news' ) {
-	add_shortcode( $post_type . '-list', function ( $atts ) use ( $post_type, $taxonomy, $year_date ) {
-		$ml = \st\Multilang::get_instance();
+function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = [] ) {
+	if ( ! is_array( $args ) ) {  // for backword compatibility
+		$args = [ 'year_date_function' => $args ];
+	}
+	$args = array_merge( [
+		'year_date_function' => '\st\shortcode\get_item_year_date_news',
+		'year_format'        => false,
+	], $args );
+	add_shortcode( $post_type . '-list', function ( $atts ) use ( $post_type, $taxonomy, $args ) {
 		$atts = shortcode_atts( [
 			'term'         => '',
 			'taxonomy'     => $taxonomy,
@@ -74,15 +80,14 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $year_date
 		], $atts );
 
 		$terms = empty( $atts['term'] ) ? false : explode( ',', $atts['term'] );
-		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $year_date );
+		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $args['year_date_function'] );
 		if ( empty( $items ) ) return '';
 
-		return echo_list( $atts, $items, $post_type );
+		return echo_list( $atts, $items, $post_type, $args['year_format'] );
 	} );
 }
 
 function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $year_date ) {
-	$ml = \st\Multilang::get_instance();
 	$args = [];
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
@@ -99,7 +104,7 @@ function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $late
 	$items = [];
 	foreach ( $ps as $p ) {
 		$title = esc_html( get_the_title( $p->ID ) );
-		$cats  = $ml->get_the_term_names( $p->ID, $taxonomy );
+		$cats  = \st\get_the_term_names( $p->ID, $taxonomy );
 		$url   = esc_attr( get_the_permalink( $p->ID ) );
 		list( $year, $date ) = call_user_func( $year_date, $p->ID );
 		$type  = $post_type;
@@ -108,14 +113,13 @@ function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $late
 	return $items;
 }
 
-function echo_list( $atts, $items, $pt ) {
-	$ml = \st\Multilang::get_instance();
+function echo_list( $atts, $items, $pt, $year_format = false ) {
 	ob_start();
 	if ( $atts['heading'] !== false ) {
 		$tag = get_item_list_heading( $atts['heading'] );
 		$t = get_term_by( 'slug', $atts['term'], $atts['taxonomy'] );
 		if ( $t !== false ) {
-			echo "<$tag>" . esc_html( $ml->get_term_name( $t ) ) . "</$tag>";
+			echo "<$tag>" . esc_html( \st\get_term_name( $t ) ) . "</$tag>";
 		}
 	}
 	if ( $atts['year-heading'] ) {
@@ -128,12 +132,21 @@ function echo_list( $atts, $items, $pt ) {
 		}
 
 		$subtag = get_item_list_heading( $atts['year-heading'] );
+
+		if ( $year_format === false ) {
+			if ( class_exists( '\st\Multilang' ) ) {
+				$year_format = \st\Multilang::get_instance()->get_date_format( 'year' );
+			} else {
+				$year_format = _x( 'Y', 'yearly archives date format' );
+			}
+		}
+
 		foreach ( $ac as $year => $items ) {
 			if ( $subtag !== false ) {
 				$year = $items[0]['year'];
 				if ( $year !== false ) {
 					$date = date_create_from_format( 'Y', $year );
-					echo "<$subtag>" . esc_html( date_format( $date, $ml->get_date_format( 'year' ) ) ) . "</$subtag>";
+					echo "<$subtag>" . esc_html( date_format( $date, $year_format ) ) . "</$subtag>";
 				}
 			}
 			echo_item_list( $items, $atts['style'], $pt );
