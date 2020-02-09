@@ -1,6 +1,5 @@
 <?php
 namespace st;
-
 /**
  *
  * Multi-Home Site with Single Site (Tag)
