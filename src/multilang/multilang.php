@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-30
+ * @version 2020-02-10
  *
  */
 
@@ -218,7 +218,7 @@ class Multilang {
 	}
 
 	public function set_blog_title_filter_suppressed( $suppressed ) {  // for Multihome
-		if ( $this->_text === null ) $this->initialize_text();
+		if ( $this->_title === null ) $this->initialize_title();
 		$this->_title->set_blog_title_filter_suppressed( $suppressed );
 	}
 
