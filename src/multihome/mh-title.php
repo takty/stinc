@@ -17,7 +17,6 @@ class Multihome_Title {
 
 	private $_core;
 	private $_ml;
-	// private $_default_home;
 
 	public function __construct( $core, $ml ) {
 		$this->_core = $core;
@@ -117,13 +116,14 @@ class Multihome_Title {
 		$langs = $this->_ml->get_site_langs();
 		if ( empty( $langs ) ) $langs = [ '' ];
 
-		$homes = $this->get_site_homes();
+		$homes = $this->_core->get_site_homes();
 		if ( empty( $homes ) ) return;
+		$home_to_title = $this->_core->get_home_to_title();
 
 		add_settings_section( 'st-multihome-section', __('Sites'), function () {}, 'general' );
 
 		foreach ( $homes as $home ) {
-			$title = $this->_core->get_site_title( $home );
+			$title = $home_to_title[ $home ];
 			foreach ( $langs as $lang ) {
 				$lang_key = empty( $lang ) ? '' : "_$lang";
 				$lang_str = empty( $lang ) ? '' : " [$lang]";
@@ -131,8 +131,8 @@ class Multihome_Title {
 				$key_bd = "blogdescription{$lang_key}_$home";
 				register_setting( 'general', $key_bn );
 				register_setting( 'general', $key_bd );
-				add_settings_field( $key_bn, "$title<br>" . __('Site Title') . $lang_str, function () use ( $key_bn ) { Multihome::output_input( $key_bn ); }, 'general', 'st-multihome-section' );
-				add_settings_field( $key_bd, "$title<br>" . __('Tagline') . $lang_str,    function () use ( $key_bd ) { Multihome::output_input( $key_bd ); }, 'general', 'st-multihome-section' );
+				add_settings_field( $key_bn, "$title<br>" . __('Site Title') . $lang_str, function () use ( $key_bn ) { Multihome_Title::output_input( $key_bn ); }, 'general', 'st-multihome-section' );
+				add_settings_field( $key_bd, "$title<br>" . __('Tagline') . $lang_str,    function () use ( $key_bd ) { Multihome_Title::output_input( $key_bd ); }, 'general', 'st-multihome-section' );
 			}
 		}
 	}

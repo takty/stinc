@@ -37,6 +37,7 @@ class Multihome {
 			$this->_ml->set_blog_title_filter_suppressed( true );
 		}
 		$this->_core = new Multihome_Core( $query_var, $this->_ml );
+		$this->_title = new Multihome_Title( $this->_core, $this->_ml );
 	}
 
 
@@ -79,27 +80,19 @@ class Multihome {
 	// Title -------------------------------------------------------------------
 
 
-	public function initialize_title( $default_lang = false ) {
-		$this->_title = new Multihome_Title( $this, $this->_ml );
-	}
-
 	public function get_site_title( $raw = false ) {
-		if ( $this->_title === null ) $this->initialize_title();
 		return $this->_title->get_site_title( $raw );
 	}
 
 	public function get_bloginfo( $show, $filter = 'raw', $lang = false, $home = false ) {
-		if ( $this->_title === null ) $this->initialize_title();
 		return $this->_title->get_bloginfo( $show, $filter, $lang, $home );
 	}
 
 	public function get_site_name( $lang = false, $home = false ) {
-		if ( $this->_title === null ) $this->initialize_title();
 		return $this->_title->get_site_name( $lang, $home );
 	}
 
 	public function get_site_description( $lang = false, $home = false ) {
-		if ( $this->_title === null ) $this->initialize_title();
 		return $this->_title->get_site_description( $lang, $home );
 	}
 

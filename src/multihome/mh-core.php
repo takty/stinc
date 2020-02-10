@@ -35,6 +35,14 @@ class Multihome_Core {
 		$this->_ml = $ml;
 	}
 
+	public function set_tag( $tag ) {
+		$this->_tag = $tag;
+	}
+
+	public function get_home_to_title() {
+		return $this->_home_to_title;
+	}
+
 	public function add_home( $id, $slug, $title, $is_default = false ) {
 		$this->_home_to_title[ $id ]  = $title;
 		$this->_home_to_slug[ $id ]   = $slug;
@@ -45,10 +53,6 @@ class Multihome_Core {
 
 	public function set_root_default_home( $enabled ) {
 		$this->_is_root_default_home = $enabled;
-	}
-
-	public function set_tag( $tag ) {
-		$this->_tag = $tag;
 	}
 
 	public function initialize() {
@@ -119,11 +123,6 @@ class Multihome_Core {
 	public function get_site_slug( $home = false ) {
 		if ( $home === false ) $home = $this->get_site_home();
 		return $this->_home_to_slug[ $home ];
-	}
-
-	public function get_site_title( $home ) {
-		if ( $home === false ) $home = $this->get_site_home();
-		return $this->_home_to_title[ $home ];
 	}
 
 
