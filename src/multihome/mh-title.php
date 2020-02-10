@@ -123,7 +123,7 @@ class Multihome_Title {
 		add_settings_section( 'st-multihome-section', __('Sites'), function () {}, 'general' );
 
 		foreach ( $homes as $home ) {
-			$title = $this->_home_to_title[ $home ];
+			$title = $this->_core->get_site_title( $home );
 			foreach ( $langs as $lang ) {
 				$lang_key = empty( $lang ) ? '' : "_$lang";
 				$lang_str = empty( $lang ) ? '' : " [$lang]";

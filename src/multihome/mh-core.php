@@ -121,6 +121,11 @@ class Multihome_Core {
 		return $this->_home_to_slug[ $home ];
 	}
 
+	public function get_site_title( $home ) {
+		if ( $home === false ) $home = $this->get_site_home();
+		return $this->_home_to_title[ $home ];
+	}
+
 
 	// Private Functions -------------------------------------------------------
 
