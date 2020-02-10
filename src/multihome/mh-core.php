@@ -33,7 +33,6 @@ class Multihome_Core {
 	public function __construct( $query_var = self::DEFAULT_QUERY_VAR, $ml ) {
 		$this->_query_var = $query_var;
 		$this->_ml = $ml;
-		$this->initialize();
 	}
 
 	public function add_home( $id, $slug, $title, $is_default = false ) {
@@ -53,22 +52,19 @@ class Multihome_Core {
 	}
 
 	public function initialize() {
-		add_filter( 'query_vars',           [ $this, '_cb_query_vars' ] );
-		add_action( 'template_redirect',    [ $this, '_cb_template_redirect' ] );
-
 		if ( is_admin() ) {
 			global $wp;
 			$wp->add_query_var( self::ADMIN_QUERY_VAR );
 
-			add_action( 'admin_menu',     [ $this, '_cb_admin_menu' ] );
-
 			add_filter( 'post_link',      [ $this, '_cb_insert_home_to_url' ], 10, 2 );
 			add_filter( 'post_type_link', [ $this, '_cb_insert_home_to_url' ], 10, 2 );
-		} else {
-			add_filter( 'body_class', [ $this, '_cb_body_class' ] );
 
-			add_filter( 'do_parse_request',       [ $this, '_cb_do_parse_request' ], 10, 3 );
-			add_filter( 'request',                [ $this, '_cb_request' ] );
+			add_action( 'admin_menu',     [ $this, '_cb_admin_menu' ] );
+		} else {
+			add_filter( 'query_vars',        [ $this, '_cb_query_vars' ] );
+			add_filter( 'do_parse_request',  [ $this, '_cb_do_parse_request' ], 10, 3 );
+			add_filter( 'request',           [ $this, '_cb_request' ] );
+			add_action( 'template_redirect', [ $this, '_cb_template_redirect' ] );
 
 			add_filter( 'post_link',              [ $this, '_cb_insert_home_to_url' ] );
 			add_filter( 'post_type_link',         [ $this, '_cb_insert_home_to_url' ] );
@@ -80,6 +76,8 @@ class Multihome_Core {
 			add_filter( 'day_link',               [ $this, '_cb_insert_home_to_url' ] );
 			add_filter( 'search_link',            [ $this, '_cb_insert_home_to_url' ] );
 			add_filter( 'feed_link',              [ $this, '_cb_insert_home_to_url' ] );
+
+			add_filter( 'body_class', [ $this, '_cb_body_class' ] );
 		}
 		if ( is_admin_bar_showing() ) {
 			add_action( 'admin_bar_menu', [ $this, '_cb_admin_bar_menu' ] );
@@ -130,56 +128,6 @@ class Multihome_Core {
 	public function _cb_query_vars( $vars ) {  // Private
 		$vars[] = $this->_query_var;
 		return $vars;
-	}
-
-	public function _cb_template_redirect() {  // Private
-		if ( empty( $this->_default_home ) ) return;
-
-		global $wp_query;
-		$home = '';
-		if ( ! empty( $wp_query->query_vars[ $this->_query_var ] ) ) {
-			$home = $wp_query->query_vars[ $this->_query_var ];
-		}
-
-		$url      = \st\get_current_uri();
-		$home_url = $this->_ml->home_url();
-		$new_url  = '';
-
-		if ( $this->_is_root_default_home ) {
-			$new_url = str_replace( $home_url . '/' . $this->_default_home, $home_url, $url );
-		} else if ( empty( $home ) ) {
-			$new_url = str_replace( $home_url , $home_url . '/' . $this->_default_home, $url );
-		}
-		if ( $url !== $new_url ) exit( wp_redirect( $new_url ) );
-	}
-
-	public function _cb_insert_home_to_url( $link, $post = false ) {  // Private
-		$fs = \st\get_first_slug( $link );
-		$lang = false;
-		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes(), true ) ) {
-			$link = str_replace( "$fs/", '', $link );
-		} else if ( in_array( $fs, $this->_ml->get_site_langs(), true ) ) {
-			$lang = $fs;
-		}
-		if ( is_admin() && is_a( $post, 'WP_Post' ) && $this->_tag && $this->_tag->has_tag( $post->post_type ) ) {
-			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
-			if ( is_array( $ts ) ) {
-				$sh = $this->_home_to_slug[ $ts[0]->slug ];
-			} else {
-				$sh = $this->_home_to_slug[ $this->_default_home ];
-			}
-		} else {
-			$sh = $this->get_site_home();
-		}
-		if ( $this->_is_root_default_home && $sh === $this->_default_home ) {
-			$home_url = $this->_ml->home_url();
-			if ( $lang ) {
-				$link = str_replace( "$home_url/$lang", "$home_url/$lang/$sh", $link );
-			} else {
-				$link = str_replace( $home_url, "$home_url/$sh", $link );
-			}
-		}
-		return $link;
 	}
 
 	public function _cb_do_parse_request( $bool, $wp, $extra_query_vars ) {  // Private
@@ -276,9 +224,90 @@ class Multihome_Core {
 	public function _cb_request( $query_vars ) {  // Private
 		if ( ! empty( $this->_request_home ) ) {
 			$query_vars[ $this->_query_var ] = $this->_request_home;
+
+			if ( $this->_is_root_default_home && $this->_request_home === $this->_default_home ) {
+				$pagename = isset( $query_vars['pagename'] ) ? $query_vars['pagename'] : '';
+
+				$lang = $this->_ml->get_default_site_lang();
+				if ( ! empty( $pagename ) ) {
+					$ps = explode( '/', $pagename );
+					$langs = $this->_ml->get_site_langs();
+					if ( 0 < count( $ps ) && in_array( $ps[0], $langs, true ) ) $lang = $ps[0];
+					$pagename = str_replace( "$lang/", '', "$pagename/" );
+					$pagename = rtrim( $pagename, '/' );
+				}
+				$pn = $lang . '/' . $this->_default_home;
+				if ( ! empty( $pagename ) ) {
+					$pn .= '/' . $pagename;
+				}
+				if ( get_page_by_path( $pn ) !== null ) $query_vars['pagename'] = $pn;
+			}
 		}
 		return $query_vars;
 	}
+
+	public function _cb_template_redirect() {  // Private
+		if ( empty( $this->_default_home ) ) return;
+
+		global $wp_query;
+		$home = '';
+		if ( ! empty( $wp_query->query_vars[ $this->_query_var ] ) ) {
+			$home = $wp_query->query_vars[ $this->_query_var ];
+		}
+
+		$url      = \st\get_current_uri();
+		$new_url  = $url;
+		$home_url = $this->_ml->home_url();
+
+		if ( $this->_is_root_default_home ) {
+			$new_url = str_replace( $home_url . '/' . $this->_default_home, $home_url, $url );
+		} else if ( empty( $home ) ) {
+			$new_url = str_replace( $home_url , $home_url . '/' . $this->_default_home, $url );
+		}
+		if ( $url !== $new_url ) exit( wp_redirect( $new_url ) );
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
+	public function _cb_insert_home_to_url( $link, $post = false ) {  // Private
+		$fs = \st\get_first_slug( $link );
+		$lang = false;
+		if ( ! empty( $fs ) && in_array( $fs, $this->get_site_homes(), true ) ) {
+			$link = str_replace( "$fs/", '', $link );
+		} else if ( in_array( $fs, $this->_ml->get_site_langs(), true ) ) {
+			$lang = $fs;
+		}
+		if ( is_admin() && is_a( $post, 'WP_Post' ) && $this->_tag && $this->_tag->has_tag( $post->post_type ) ) {
+			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
+			if ( is_array( $ts ) ) {
+				$sh = $this->_home_to_slug[ $ts[0]->slug ];
+			} else {
+				$sh = $this->_home_to_slug[ $this->_default_home ];
+			}
+		} else {
+			$sh = $this->get_site_home();
+		}
+		if ( $this->_is_root_default_home && $sh === $this->_default_home ) {
+			$home_url = $this->_ml->home_url();
+			if ( $lang ) {
+				$link = str_replace( "$home_url/$lang", "$home_url/$lang/$sh", $link );
+			} else {
+				$link = str_replace( $home_url, "$home_url/$sh", $link );
+			}
+		}
+		return $link;
+	}
+
+	public function _cb_body_class( $classes ) {  // Private
+		$classes[] = self::BODY_CLASS_BASE . $this->get_site_home();
+		return $classes;
+	}
+
+
+	// -------------------------------------------------------------------------
+
 
 	public function _cb_admin_menu() {  // Private
 		$menu_slug = 'edit.php?post_type=page&' . self::ADMIN_QUERY_VAR . '=';
@@ -312,11 +341,6 @@ class Multihome_Core {
 				] );
 			}
 		}
-	}
-
-	public function _cb_body_class( $classes ) {  // Private
-		$classes[] = self::BODY_CLASS_BASE . $this->get_site_home();
-		return $classes;
 	}
 
 }
