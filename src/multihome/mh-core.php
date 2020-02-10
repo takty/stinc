@@ -42,8 +42,8 @@ class Multihome_Core {
 	}
 
 	public function add_home( $slug, $title, $is_default = false ) {
-		$this->_home_to_title[ $id ] = $title;
-		$this->_site_homes[]         = $slug;
+		$this->_home_to_title[ $slug ] = $title;
+		$this->_site_homes[]           = $slug;
 
 		if ( $is_default ) $this->_default_home = $id;
 	}
