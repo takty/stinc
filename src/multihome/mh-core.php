@@ -45,7 +45,7 @@ class Multihome_Core {
 		$this->_home_to_title[ $slug ] = $title;
 		$this->_site_homes[]           = $slug;
 
-		if ( $is_default ) $this->_default_home = $id;
+		if ( $is_default ) $this->_default_home = $slug;
 	}
 
 	public function set_root_default_home( $enabled ) {
