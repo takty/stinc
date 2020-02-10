@@ -48,8 +48,8 @@ class Multihome {
 		$this->_core->initialize();
 	}
 
-	public function add_home( $id, $slug, $title, $is_default = false ) {
-		$this->_core->add_home( $id, $slug, $title, $is_default );
+	public function add_home( $slug, $title, $is_default = false ) {
+		$this->_core->add_home( $slug, $title, $is_default );
 	}
 
 	public function set_root_default_home( $enabled ) {

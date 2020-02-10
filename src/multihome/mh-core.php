@@ -20,13 +20,11 @@ class Multihome_Core {
 	private $_tag = null;
 	
 	private $_query_var;
+	private $_site_homes = [];
 	private $_default_home  = '';
-
-	private $_is_root_default_home = false;
-
+	
 	private $_home_to_title = [];
-	private $_home_to_slug  = [];
-	private $_slug_to_home  = [];
+	private $_is_root_default_home = false;
 
 	private $_request_home = '';
 
@@ -43,10 +41,9 @@ class Multihome_Core {
 		return $this->_home_to_title;
 	}
 
-	public function add_home( $id, $slug, $title, $is_default = false ) {
-		$this->_home_to_title[ $id ]  = $title;
-		$this->_home_to_slug[ $id ]   = $slug;
-		$this->_slug_to_home[ $slug ] = $id;
+	public function add_home( $slug, $title, $is_default = false ) {
+		$this->_home_to_title[ $id ] = $title;
+		$this->_site_homes[]         = $slug;
 
 		if ( $is_default ) $this->_default_home = $id;
 	}
@@ -97,22 +94,20 @@ class Multihome_Core {
 	}
 
 	public function get_site_homes( $with_default = true ) {
-		$homes = array_keys( $this->_home_to_slug );
 		if ( $with_default || empty( $this->_default_home ) ) {
-			return $homes;
+			return $this->_site_homes;
 		}
-		$temp = array_diff( $homes, [ $this->_default_home ] );
+		$temp = array_diff( $this->_site_homes, [ $this->_default_home ] );
 		return array_values( $temp );
 	}
 
 	public function home_url( $path = '', $scheme = null, $site_lang = false ) {
 		$home = $this->get_site_home();
-		$slug = $this->_home_to_slug[ $home ];
 		if ( $path !== '' ) $path = '/' . ltrim( $path, '/' );
 		if ( $this->_is_root_default_home && $home === $this->_default_home ) {
 			return $this->_ml->home_url( $path, $scheme, $site_lang );
 		} else {
-			return $this->_ml->home_url( $slug . $path, $scheme, $site_lang );
+			return $this->_ml->home_url( $home . $path, $scheme, $site_lang );
 		}
 	}
 
@@ -122,7 +117,7 @@ class Multihome_Core {
 
 	public function get_site_slug( $home = false ) {
 		if ( $home === false ) $home = $this->get_site_home();
-		return $this->_home_to_slug[ $home ];
+		return $home;
 	}
 
 
@@ -286,9 +281,9 @@ class Multihome_Core {
 		if ( is_admin() && is_a( $post, 'WP_Post' ) && $this->_tag && $this->_tag->has_tag( $post->post_type ) ) {
 			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
 			if ( is_array( $ts ) ) {
-				$sh = $this->_home_to_slug[ $ts[0]->slug ];
+				$sh = $ts[0]->slug;
 			} else {
-				$sh = $this->_home_to_slug[ $this->_default_home ];
+				$sh = $this->_default_home;
 			}
 		} else {
 			$sh = $this->get_site_home();
@@ -318,9 +313,8 @@ class Multihome_Core {
 		$site_langs = $this->_ml->get_site_langs();
 
 		foreach ( $this->_home_to_title as $home => $title ) {
-			$slug = $this->_home_to_slug[ $home ];
 			foreach ( $site_langs as $sl ) {
-				$page = get_page_by_path( "$sl/$slug" );
+				$page = get_page_by_path( "$sl/$home" );
 				if ( $page === null ) continue;
 
 				add_pages_page( '', "$title [$sl]", 'edit_pages', $menu_slug . $page->ID );
@@ -332,16 +326,15 @@ class Multihome_Core {
 		$site_langs = $this->_ml->get_site_langs();
 
 		foreach ( $this->_home_to_title as $home => $title ) {
-			$slug = $this->_home_to_slug[ $home ];
 			foreach ( $site_langs as $sl ) {
-				$page = get_page_by_path( "$sl/$slug" );
+				$page = get_page_by_path( "$sl/$home" );
 				if ( $page === null ) continue;
 
 				$wp_admin_bar->add_menu( [
-					'id'     => "view-site-$sl-$slug",
+					'id'     => "view-site-$sl-$home",
 					'parent' => 'site-name',
 					'title'  => "$title [$sl]",
-					'href'   => home_url( "$sl/$slug" )
+					'href'   => home_url( "$sl/$home" )
 				] );
 			}
 		}
