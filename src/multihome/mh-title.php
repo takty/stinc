@@ -5,7 +5,7 @@ namespace st;
  * Multi-Home Site with Single Site (Title)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-08
+ * @version 2020-02-10
  *
  */
 
@@ -16,10 +16,12 @@ require_once __DIR__ . '/../util/text.php';
 class Multihome_Title {
 
 	private $_core;
+	private $_ml;
 	// private $_default_home;
 
-	public function __construct( $core ) {
+	public function __construct( $core, $ml ) {
 		$this->_core = $core;
+		$this->_ml   = $ml;
 
 		add_filter( 'document_title_parts', [ $this, '_cb_document_title_parts' ] );
 
@@ -29,8 +31,8 @@ class Multihome_Title {
 	}
 
 	public function get_site_title( $raw = false ) {
-		$ret = $this->_core->_ml->get_site_title( $raw );
-		foreach ( $this->_core->_ml->get_site_langs() as $lang ) {
+		$ret = $this->_ml->get_site_title( $raw );
+		foreach ( $this->_ml->get_site_langs() as $lang ) {
 			foreach ( $this->_core->get_site_homes() as $home ) {
 				$bn = htmlspecialchars_decode( $this->get_site_name( $lang, $home ) );
 				$bd = htmlspecialchars_decode( $this->get_site_description( $lang, $home ) );
@@ -38,13 +40,13 @@ class Multihome_Title {
 				$ret[ "description_{$lang}_$home" ] = $raw ? $bd : \st\separate_line( $bd, 'segment' );
 			}
 		}
-		$curl = $this->_core->_ml->get_site_lang();
+		$curl = $this->_ml->get_site_lang();
 		$curh = $this->_core->get_site_home();
 		$has_ml_mh_name = ! empty( strip_tags( $ret[ "name_{$curl}_$curh" ] ) );
 		$has_ml_mh_desc = ! empty( strip_tags( $ret[ "name_{$curl}_$curh" ] ) );
 		$ret['name']        = $has_ml_mh_name ? $ret[ "name_{$curl}_$curh" ]        : $ret[ "name_{$curl}" ];
 		$ret['description'] = $has_ml_mh_desc ? $ret[ "description_{$curl}_$curh" ] : $ret[ "description_{$curl}" ];
-		$sls = $this->_core->_ml->get_site_langs( false );
+		$sls = $this->_ml->get_site_langs( false );
 		if ( ! empty( $sls ) ) {
 			$ret['name_sub']        = $ret[ "name_$sls[0]_$curh" ];
 			$ret['description_sub'] = $ret[ "description_$sls[0]_$curh" ];
@@ -67,20 +69,20 @@ class Multihome_Title {
 	}
 
 	public function get_site_name( $lang = false, $home = false ) {
-		if ( $lang === false ) $lang = $this->_core->_ml->get_site_lang();
+		if ( $lang === false ) $lang = $this->_ml->get_site_lang();
 		if ( $home === false ) $home = $this->_core->get_site_home();
 
 		$ret = get_option( "blogname_{$lang}_$home" );
-		if ( empty( $ret ) ) return $this->_core->_ml->get_site_name( $lang );
+		if ( empty( $ret ) ) return $this->_ml->get_site_name( $lang );
 		return $ret;
 	}
 
 	public function get_site_description( $lang = false, $home = false ) {
-		if ( $lang === false ) $lang = $this->_core->_ml->get_site_lang();
+		if ( $lang === false ) $lang = $this->_ml->get_site_lang();
 		if ( $home === false ) $home = $this->_core->get_site_home();
 
 		$ret = get_option( "blogdescription_{$lang}_$home" );
-		if ( empty( $ret ) ) return $this->_core->_ml->get_site_description( $lang );
+		if ( empty( $ret ) ) return $this->_ml->get_site_description( $lang );
 		return $ret;
 	}
 
@@ -93,7 +95,7 @@ class Multihome_Title {
 		if ( ( $paged >= 2 || $page >= 2 ) && ! is_404() ) {
 			$title['page'] = max( $paged, $page );
 		}
-		if ( $this->is_front_page() ) {
+		if ( $this->_core->is_front_page() ) {
 			$title['tagline'] = '';
 			$title['site'] = '';
 			$title['title'] = $this->get_bloginfo( 'name', 'display' );

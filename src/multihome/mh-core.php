@@ -5,12 +5,12 @@ namespace st;
  * Multi-Home Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-09
+ * @version 2020-02-10
  *
  */
 
 
-class Multilang_Core {
+class Multihome_Core {
 
 	const DEFAULT_QUERY_VAR = 'site_home';
 	const ADMIN_QUERY_VAR   = 'sub_tree';
@@ -183,7 +183,8 @@ class Multilang_Core {
 	}
 
 	public function _cb_do_parse_request( $bool, $wp, $extra_query_vars ) {  // Private
-		list( $requested_path, $requested_file ) = $this->_get_request();
+		$req = $this->_get_request();
+		extract( $req );  // $requested_path, $requested_file
 
 		$ps = explode( '/', $requested_path );
 		$langs = $this->_ml->get_site_langs();

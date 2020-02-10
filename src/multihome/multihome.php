@@ -5,7 +5,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-09
+ * @version 2020-02-10
  *
  */
 
@@ -43,6 +43,10 @@ class Multihome {
 	// Core --------------------------------------------------------------------
 
 
+	public function initialize_core() {
+		$this->_core->initialize();
+	}
+
 	public function add_home( $id, $slug, $title, $is_default = false ) {
 		$this->_core->add_home( $id, $slug, $title, $is_default );
 	}
@@ -76,7 +80,7 @@ class Multihome {
 
 
 	public function initialize_title( $default_lang = false ) {
-		$this->_title = new Multilang_Title( $this );
+		$this->_title = new Multihome_Title( $this, $this->_ml );
 	}
 
 	public function get_site_title( $raw = false ) {
