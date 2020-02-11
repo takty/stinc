@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-05
+ * @version 2020-02-11
  *
  */
 
@@ -215,7 +215,8 @@ function get_term_list( $taxonomy, $before = '', $sep = '', $after = '', $add_li
 		$cur = false;
 	}
 	$singular = isset( $args['singular'] ) ? $args['singular']  : false;
-	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, $cur, $singular );
+	$filter = isset( $args['filter'] ) ? $args['filter'] : 'esc_html';
+	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, $cur, $singular, $filter );
 }
 
 function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true, $args = [] ) {
@@ -227,7 +228,8 @@ function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after
 	if ( isset( $args['is_root_inserted'] ) && ( $args['is_root_inserted'] === true ) ) {
 		$ts = _insert_root( $ts );
 	}
-	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular );
+	$filter = isset( $args['filter'] ) ? $args['filter'] : 'esc_html';
+	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular, $filter );
 }
 
 function _insert_root( $terms ) {
@@ -246,7 +248,7 @@ function _insert_root( $terms ) {
 	return $new_ts;
 }
 
-function create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false, $singular = false ) {
+function create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, $current_term = false, $singular = false, $filter = 'esc_html' ) {
 	$links = [];
 	foreach ( $terms as $t ) {
 		$cs = [ "$taxonomy-{$t->slug}" ];
@@ -254,7 +256,7 @@ function create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, 
 		if ( $current_term && $current_term->term_id === $t->term_id ) $cs[] = 'current';
 		$cs_str = implode( ' ', $cs );
 
-		$_name = esc_html( get_term_name( $t, $singular ) );
+		$_name = $filter( get_term_name( $t, $singular ) );
 		if ( $add_link ) {
 			$link = get_term_link( $t, $taxonomy );
 			if ( is_wp_error( $link ) ) return $link;
