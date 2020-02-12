@@ -5,7 +5,7 @@ namespace st;
  * Multi-Home Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-10
+ * @version 2020-02-12
  *
  */
 
@@ -63,10 +63,11 @@ class Multihome_Core {
 
 			add_action( 'admin_menu',     [ $this, '_cb_admin_menu' ] );
 		} else {
-			add_filter( 'query_vars',        [ $this, '_cb_query_vars' ] );
-			add_filter( 'do_parse_request',  [ $this, '_cb_do_parse_request' ], 10, 3 );
-			add_filter( 'request',           [ $this, '_cb_request' ] );
-			add_action( 'template_redirect', [ $this, '_cb_template_redirect' ] );
+			add_filter( 'query_vars',         [ $this, '_cb_query_vars' ] );
+			add_filter( 'do_parse_request',   [ $this, '_cb_do_parse_request' ], 10, 3 );
+			add_filter( 'request',            [ $this, '_cb_request' ] );
+			add_action( 'template_redirect',  [ $this, '_cb_template_redirect' ] );
+			add_filter( 'redirect_canonical', [ $this, '_cb_redirect_canonical' ], 10, 2 );
 
 			add_filter( 'post_link',              [ $this, '_cb_insert_home_to_url' ] );
 			add_filter( 'post_type_link',         [ $this, '_cb_insert_home_to_url' ] );
@@ -134,18 +135,8 @@ class Multihome_Core {
 		$req = $this->_get_request();
 		extract( $req );  // $requested_path, $requested_file
 
-		$ps = explode( '/', $requested_path );
-		$langs = $this->_ml->get_site_langs();
-		$homes = $this->get_site_homes();
-
-		$home_slug = '';
-		if ( 1 < count( $ps ) && in_array( $ps[0], $langs, true ) && in_array( $ps[1], $homes, true ) ) {
-			$home_slug = $ps[1];
-		} else if ( 0 < count( $ps ) && in_array( $ps[0], $homes, true ) ) {
-			$home_slug = $ps[0];
-		} else if ( $this->_is_root_default_home ) {
-			$home_slug = $this->_default_home;
-		} 
+		$pu = $this->_explode_query( $requested_path );
+		$home_slug = $pu['home'];
 
 		if ( ! empty( $home_slug ) ) {
 			$this->_request_home = $home_slug;
@@ -178,8 +169,6 @@ class Multihome_Core {
 
 		$request_match = $requested_path;
 		foreach ( (array) $rewrite as $match => $query ) {
-			// if ( preg_match( '/site_lang=\$matches\[([0-9]+)\]/', $query ) ) continue;  // tentative
-
 			if ( ! empty( $requested_file ) && strpos( $match, $requested_file ) === 0 && $requested_file != $requested_path ) {
 				$request_match = $requested_file . '/' . $requested_path;
 			}
@@ -224,29 +213,52 @@ class Multihome_Core {
 		return compact( 'requested_path', 'requested_file' );
 	}
 
-	public function _cb_request( $query_vars ) {  // Private
-		if ( ! empty( $this->_request_home ) ) {
-			$query_vars[ $this->_query_var ] = $this->_request_home;
+	private function _explode_query( $url ) {
+		$raw_home = \home_url();
+		$path = str_replace( $raw_home, '', $url );
 
-			if ( $this->_is_root_default_home && $this->_request_home === $this->_default_home ) {
-				$pagename = isset( $query_vars['pagename'] ) ? $query_vars['pagename'] : '';
-				$lang = $this->_ml->get_default_site_lang();
-				$pn = '';
-				if ( ! empty( $pagename ) ) {
-					$ps = explode( '/', $pagename );
-					$langs = $this->_ml->get_site_langs();
-					if ( 0 < count( $ps ) && in_array( $ps[0], $langs, true ) ) $lang = $ps[0];
-					$pagename = str_replace( "$lang/", '', "$pagename/" );
-					$pagename = rtrim( $pagename, '/' );
-				}
-				if ( $this->_is_request_page ) {
-					$pn = $lang . '/' . $this->_default_home;
-				}
-				if ( ! empty( $pagename ) ) {
-					$pn .= '/' . $pagename;
-				}
-				if ( get_page_by_path( $pn ) !== null ) $query_vars['pagename'] = $pn;
+		$ps = explode( '/', $path );
+		$langs = $this->_ml->get_site_langs();
+		$homes = $this->get_site_homes();
+
+		$raw_lang = '';
+		if ( 0 < count( $ps ) && in_array( $ps[0], $langs, true ) ) {
+			$raw_lang = $ps[0];
+		}
+		$lang = empty( $raw_lang ) ? $this->_ml->get_default_site_lang() : $raw_lang;
+
+		$s = '';
+		if ( empty( $raw_lang ) ) {
+			if ( 0 < count( $ps ) ) $s = $ps[0];
+		} else {
+			if ( 1 < count( $ps ) ) $s = $ps[1];
+		}
+		$raw_home = '';
+		if ( in_array( $s, $homes, true ) ) $raw_home = $s;
+		$home = $raw_home;
+		if ( empty( $home ) && $this->_is_root_default_home ) $home = $this->_default_home;
+
+		return compact( 'lang', 'raw_lang', 'home', 'raw_home' );
+	}
+
+	public function _cb_request( $query_vars ) {  // Private
+		if ( empty( $this->_request_home ) ) return $query_vars;
+		$query_vars[ $this->_query_var ] = $this->_request_home;
+
+		if ( $this->_is_request_page && $this->_is_root_default_home && $this->_request_home === $this->_default_home ) {
+			$lang     = $this->_ml->get_default_site_lang();
+			$pn       = $lang . '/' . $this->_default_home;
+			$pagename = isset( $query_vars['pagename'] ) ? $query_vars['pagename'] : '';
+
+			if ( ! empty( $pagename ) ) {
+				$ps = explode( '/', $pagename );
+				$langs = $this->_ml->get_site_langs();
+				if ( 0 < count( $ps ) && in_array( $ps[0], $langs, true ) ) $lang = $ps[0];
+				$pagename = str_replace( "$lang/", '', "$pagename/" );
+				$pagename = rtrim( $pagename, '/' );
+				$pn .= '/' . $pagename;
 			}
+			if ( get_page_by_path( $pn ) !== null ) $query_vars['pagename'] = $pn;
 		}
 		return $query_vars;
 	}
@@ -272,6 +284,11 @@ class Multihome_Core {
 		if ( $url !== $new_url ) exit( wp_redirect( $new_url ) );
 	}
 
+	public function _cb_redirect_canonical( $redirect_url, $requested_url ) {
+		if ( $this->_is_request_page ) return $redirect_url;
+		return false;
+	}
+
 
 	// -------------------------------------------------------------------------
 
@@ -287,20 +304,23 @@ class Multihome_Core {
 		if ( is_admin() && is_a( $post, 'WP_Post' ) && $this->_tag && $this->_tag->has_tag( $post->post_type ) ) {
 			$ts = get_the_terms( $post->ID, $this->_tag->get_taxonomy() );
 			if ( is_array( $ts ) ) {
-				$sh = $ts[0]->slug;
+				$slugs = array_map( function ( $t ) { return $t->slug; }, $ts );
+				if ( in_array( $this->_default_home, $slugs, true ) ) {
+					$sh = $this->_default_home;
+				} else {
+					$sh = $ts[0]->slug;
+				}
 			} else {
 				$sh = $this->_default_home;
 			}
 		} else {
 			$sh = $this->get_site_home();
 		}
+		$home_url = $this->_ml->home_url( '', null, $lang );
 		if ( $this->_is_root_default_home && $sh === $this->_default_home ) {
-			$home_url = $this->_ml->home_url();
-			if ( $lang ) {
-				$link = str_replace( "$home_url/$lang", "$home_url/$lang/$sh", $link );
-			} else {
-				$link = str_replace( $home_url, "$home_url/$sh", $link );
-			}
+			$link = str_replace( "$home_url/$sh", $home_url, $link );
+		} else {
+			$link = str_replace( $home_url, "$home_url/$sh", $link );
 		}
 		return $link;
 	}
