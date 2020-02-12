@@ -5,7 +5,7 @@ namespace st;
  * Multi-Home Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-12
+ * @version 2020-02-13
  *
  */
 
@@ -135,8 +135,8 @@ class Multihome_Core {
 		$req = $this->_get_request();
 		extract( $req );  // $requested_path, $requested_file
 
-		$pu = $this->_explode_query( $requested_path );
-		$home_slug = $pu['home'];
+		$eq = $this->_explode_query( $requested_path );
+		$home_slug = $eq['home'];
 
 		if ( ! empty( $home_slug ) ) {
 			$this->_request_home = $home_slug;
@@ -246,21 +246,25 @@ class Multihome_Core {
 		$query_vars[ $this->_query_var ] = $this->_request_home;
 
 		if ( $this->_is_request_page && $this->_is_root_default_home && $this->_request_home === $this->_default_home ) {
-			$lang     = $this->_ml->get_default_site_lang();
-			$pn       = $lang . '/' . $this->_default_home;
-			$pagename = isset( $query_vars['pagename'] ) ? $query_vars['pagename'] : '';
-
-			if ( ! empty( $pagename ) ) {
-				$ps = explode( '/', $pagename );
-				$langs = $this->_ml->get_site_langs();
-				if ( 0 < count( $ps ) && in_array( $ps[0], $langs, true ) ) $lang = $ps[0];
-				$pagename = str_replace( "$lang/", '', "$pagename/" );
-				$pagename = rtrim( $pagename, '/' );
-				$pn .= '/' . $pagename;
-			}
-			if ( get_page_by_path( $pn ) !== null ) $query_vars['pagename'] = $pn;
+			$pn = isset( $query_vars['pagename'] ) ? $query_vars['pagename'] : '';
+			$res_pn = $this->_restore_omitted_pagename( $pn );
+			if ( $res_pn !== null ) $query_vars['pagename'] = $res_pn;
 		}
 		return $query_vars;
+	}
+
+	private function _restore_omitted_pagename( $pagename ) {
+		$eq = $this->_explode_query( $pagename );
+		$cur_base = trim( $eq['raw_lang'] . '/' . $eq['raw_home'], '/' );
+		$base     = trim( $eq['lang'] . '/' . $eq['home'], '/' );
+
+		if ( empty( $cur_base ) ) {
+			$res_pn = $base . '/' . $pagename;
+		} else {
+			$res_pn = str_replace( $cur_base, $base, $pagename );
+		}
+		if ( get_page_by_path( $res_pn ) === null ) return null;
+		return $res_pn;
 	}
 
 	public function _cb_template_redirect() {  // Private
@@ -271,7 +275,6 @@ class Multihome_Core {
 		if ( ! empty( $wp_query->query_vars[ $this->_query_var ] ) ) {
 			$home = $wp_query->query_vars[ $this->_query_var ];
 		}
-
 		$url      = \st\get_current_uri( true );
 		$new_url  = $url;
 		$home_url = $this->_ml->home_url();
@@ -284,7 +287,7 @@ class Multihome_Core {
 		if ( $url !== $new_url ) exit( wp_redirect( $new_url ) );
 	}
 
-	public function _cb_redirect_canonical( $redirect_url, $requested_url ) {
+	public function _cb_redirect_canonical( $redirect_url, $requested_url ) {  // Private
 		if ( $this->_is_request_page ) return $redirect_url;
 		return false;
 	}
