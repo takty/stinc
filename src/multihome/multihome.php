@@ -5,7 +5,7 @@ namespace st;
  * Multi-Home Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-10
+ * @version 2020-02-12
  *
  */
 
@@ -100,8 +100,8 @@ class Multihome {
 	// Tag ---------------------------------------------------------------------
 
 
-	public function initialize_tag( $taxonomy = Multihome_Tag::DEFAULT_TAXONOMY ) {
-		$this->_tag = new Multihome_Tag( $this, $taxonomy );
+	public function initialize_tag( $home_to_names, $taxonomy_name, $taxonomy = Multihome_Tag::DEFAULT_TAXONOMY ) {
+		$this->_tag = new Multihome_Tag( $this, $home_to_names, $taxonomy_name, $taxonomy );
 		$this->_core->set_tag( $this->_tag );
 	}
 
