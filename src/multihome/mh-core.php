@@ -26,7 +26,8 @@ class Multihome_Core {
 	private $_home_to_title = [];
 	private $_is_root_default_home = false;
 
-	private $_request_home = '';
+	private $_request_home    = '';
+	private $_is_request_page = false;
 
 	public function __construct( $query_var = self::DEFAULT_QUERY_VAR, $ml ) {
 		$this->_query_var = $query_var;
@@ -142,22 +143,25 @@ class Multihome_Core {
 			$home_slug = $ps[1];
 		} else if ( 0 < count( $ps ) && in_array( $ps[0], $homes, true ) ) {
 			$home_slug = $ps[0];
-		}
+		} else if ( $this->_is_root_default_home ) {
+			$home_slug = $this->_default_home;
+		} 
 
-		if ( empty( $home_slug ) ) {
-			if ( $this->_is_root_default_home ) $this->_request_home = $this->_default_home;
-		} else {
+		if ( ! empty( $home_slug ) ) {
 			$this->_request_home = $home_slug;
 
 			// Here, $requested_path is trimed by '/' in _get_request().
 			$new_path = trim( str_replace( "/$home_slug/", '/', "/$requested_path/" ), '/' );
 
 			if ( $this->_is_page_request( $requested_path, $requested_file ) ) {
+				$this->_is_request_page = true;
 				if ( ! $this->_is_page_request( $new_path, $requested_file ) ) {
+					$this->_is_request_page = false;
 					$_SERVER['REQUEST_URI_ORIG'] = $_SERVER['REQUEST_URI'];
 					$_SERVER['REQUEST_URI'] = rtrim( str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] ), '/' );
 				}
 			} else {
+				$this->_is_request_page = false;
 				$_SERVER['REQUEST_URI_ORIG'] = $_SERVER['REQUEST_URI'];
 				$_SERVER['REQUEST_URI'] = rtrim( str_replace( $requested_path, $new_path, $_SERVER['REQUEST_URI'] ), '/' );
 			}
@@ -226,8 +230,8 @@ class Multihome_Core {
 
 			if ( $this->_is_root_default_home && $this->_request_home === $this->_default_home ) {
 				$pagename = isset( $query_vars['pagename'] ) ? $query_vars['pagename'] : '';
-
 				$lang = $this->_ml->get_default_site_lang();
+				$pn = '';
 				if ( ! empty( $pagename ) ) {
 					$ps = explode( '/', $pagename );
 					$langs = $this->_ml->get_site_langs();
@@ -235,7 +239,9 @@ class Multihome_Core {
 					$pagename = str_replace( "$lang/", '', "$pagename/" );
 					$pagename = rtrim( $pagename, '/' );
 				}
-				$pn = $lang . '/' . $this->_default_home;
+				if ( $this->_is_request_page ) {
+					$pn = $lang . '/' . $this->_default_home;
+				}
 				if ( ! empty( $pagename ) ) {
 					$pn .= '/' . $pagename;
 				}
@@ -254,7 +260,7 @@ class Multihome_Core {
 			$home = $wp_query->query_vars[ $this->_query_var ];
 		}
 
-		$url      = \st\get_current_uri();
+		$url      = \st\get_current_uri( true );
 		$new_url  = $url;
 		$home_url = $this->_ml->home_url();
 
