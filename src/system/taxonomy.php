@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-04
+ * @version 2020-02-12
  *
  */
 
@@ -237,23 +237,29 @@ function get_term_content( $term, $key ) {
 	return str_replace( ']]>', ']]&gt;', $c );
 }
 
-function remove_term_description( $taxonomy ) {
-	add_action('admin_head', function () use ( $taxonomy ) {
+function remove_term_description( $taxonomy_s ) {
+	if ( ! is_array( $taxonomy_s ) ) $taxonomy_s = [ $taxonomy_s ];
+
+	add_action('admin_head', function () use ( $taxonomy_s ) {
 		global $current_screen;
-		if ( $current_screen->id === "edit-$taxonomy" ) {
+		if ( strpos( $current_screen->id, 'edit-' ) !== 0 ) return;
+		$id_tax = substr( $current_screen->id, 5 );
+		if ( in_array( $id_tax, $taxonomy_s, true ) ) {
 ?>
 			<script>jQuery(function($) {$('.term-description-wrap').remove();});</script>
 <?php
 		}
 	}, 99 );
-	add_filter( "manage_edit-{$taxonomy}_columns", function ( $columns ) {
-		unset( $columns[ 'description' ] );
-		return $columns;
-	});
-	add_filter( "manage_edit-{$taxonomy}_sortable_columns", function ( $sortable ) {
-		unset( $sortable[ 'description' ] );
-		return $sortable;
-	});
+	foreach ( $taxonomy_s as $taxonomy ) {
+		add_filter( "manage_edit-{$taxonomy}_columns", function ( $columns ) {
+			unset( $columns[ 'description' ] );
+			return $columns;
+		});
+		add_filter( "manage_edit-{$taxonomy}_sortable_columns", function ( $sortable ) {
+			unset( $sortable[ 'description' ] );
+			return $sortable;
+		});
+	}
 }
 
 
