@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-20
+ * @version 2020-02-13
  *
  */
 
@@ -258,6 +258,9 @@ class NavMenu {
 				$cls .= $opt_cls;
 			}
 		}
+		$is_sep = ( $mi->url === '#' ) && mb_ereg_match( '-+', $mi->title );
+		if ( $is_sep ) $cls .= 'separator';
+
 		$li_cls  = empty( $cls ) ? '' : " class=\"$cls\"";
 		$li_id   = " id=\"menu-item-{$mi->ID}\"";
 		$li_attr = $li_id . $li_cls;
@@ -266,7 +269,9 @@ class NavMenu {
 		$cont    = esc_html( trim( $mi->post_content ) );
 		$after   = '</li>';
 
-		if ( $mi->url === '#' ) {
+		if ( $is_sep ) {
+			$before = "<li$li_attr><div></div>";
+		} else if ( $mi->url === '#' ) {
 			if ( empty( $cont ) ) {
 				$before = "<li$li_attr><label for=\"panel-{$mi->ID}-ctrl\">$title</label>";
 			} else {
