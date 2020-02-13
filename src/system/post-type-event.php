@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-05
+ * @version 2020-02-13
  *
  */
 
@@ -169,11 +169,11 @@ function get_duration( $post_id ) {
 	$end_nums = empty( $end_raw ) ? false : explode( '-', $end_raw );
 	$state = '';
 
-	if ( ! $bgn_nums ) {
+	if ( $bgn_nums !== false ) {
 		$today = \st\create_date_array_of_today();
 		$today_bgn = \st\compare_date_arrays( $today, $bgn_nums );
 
-		if ( ! $end_nums ) {
+		if ( $end_nums !== false ) {
 			$today_end = \st\compare_date_arrays( $today, $end_nums );
 			if      ( $today_bgn === '<' ) $state = 'upcoming';
 			else if ( $today_end === '>' ) $state = 'finished';
