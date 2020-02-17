@@ -373,7 +373,7 @@ class SlideShow {
 		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
 		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
 
-		if ( strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
@@ -416,13 +416,13 @@ class SlideShow {
 		$_style   = empty( $_img )    ? '' : " style=\"background-image:url($_img)\"";
 		$_style_s = empty( $_img_s )  ? '' : " style=\"background-image:url($_img_s)\"";
 
-		$_title   = isset( $it['title'] )        ? esc_attr( $it['title'] )    : '';
+		$_title   = isset( $it['title'] )        ? esc_attr( $it['title'] )        : '';
 		$_title_s = isset( $it['title_sub'] )    ? esc_attr( $it['title_sub'] )    : '';
-		$_fn      = isset( $it['filename'] )     ? esc_attr( $it['filename'] ) : '';
+		$_fn      = isset( $it['filename'] )     ? esc_attr( $it['filename'] )     : '';
 		$_fn_s    = isset( $it['filename_sub'] ) ? esc_attr( $it['filename_sub'] ) : '';
 
-		if ( strlen( $_title )   < strlen( $_fn )   && strpos( $_fn, $_title )     === 0 ) $_title = '';
-		if ( strlen( $_title_s ) < strlen( $_fn_s ) && strpos( $_fn_s, $_title_s ) === 0 ) $_title_s = '';
+		if ( ! empty( $_title )   && strlen( $_title )   < strlen( $_fn )   && strpos( $_fn, $_title )     === 0 ) $_title = '';
+		if ( ! empty( $_title_s ) && strlen( $_title_s ) < strlen( $_fn_s ) && strpos( $_fn_s, $_title_s ) === 0 ) $_title_s = '';
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
@@ -474,7 +474,7 @@ class SlideShow {
 		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
 		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
 
-		if ( strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
