@@ -393,8 +393,8 @@ class SlideShow {
 						<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
 					</a>
 					<div class="<?php echo self::CLS_TN_NAME ?>">
-						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
-						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+						<div class="<?php echo self::CLS_TITLE ?>" title="<?php echo $_title ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>" title="<?php echo $_fn ?>"><?php echo $_fn ?></div>
 					</div>
 				</div>
 			</div>
@@ -438,8 +438,8 @@ class SlideShow {
 							<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
 						</a>
 						<div class="<?php echo self::CLS_TN_NAME ?>">
-							<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
-							<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+							<div class="<?php echo self::CLS_TITLE ?>" title="<?php echo $_title ?>"><?php echo $_title ?></div>
+							<div class="<?php echo self::CLS_FILENAME ?>" title="<?php echo $_fn ?>"><?php echo $_fn ?></div>
 						</div>
 					</div>
 					<div class="<?php echo self::CLS_TN ?>">
@@ -447,8 +447,8 @@ class SlideShow {
 							<div class="<?php echo self::CLS_TN_IMG_SUB ?>"<?php echo $_style_s ?>></div>
 						</a>
 						<div class="<?php echo self::CLS_TN_NAME_SUB ?>">
-							<div class="<?php echo self::CLS_TITLE_SUB ?>"><?php echo $_title_s ?></div>
-							<div class="<?php echo self::CLS_FILENAME_SUB ?>"><?php echo $_fn_s ?></div>
+							<div class="<?php echo self::CLS_TITLE_SUB ?>" title="<?php echo $_title_s ?>"><?php echo $_title_s ?></div>
+							<div class="<?php echo self::CLS_FILENAME_SUB ?>" title="<?php echo $_fn_s ?>"><?php echo $_fn_s ?></div>
 						</div>
 					</div>
 				</div>
@@ -489,8 +489,8 @@ class SlideShow {
 						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>">
 					</a>
 					<div class="<?php echo self::CLS_TN_NAME ?>">
-						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
-						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+						<div class="<?php echo self::CLS_TITLE ?>" title="<?php echo $_title ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>" title="<?php echo $_fn ?>"><?php echo $_fn ?></div>
 					</div>
 				</div>
 			</div>

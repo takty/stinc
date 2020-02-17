@@ -104,13 +104,16 @@
 }
 
 .st-slide-show-thumbnail {
-	margin-top: 2px;
+	margin-top  : 2px;
 	padding-left: 8px;
-	width: 100%;
-	max-width: 160px;
+	width       : 100%;
+	max-width   : 160px;
 
-	> a {
-		display: block;
+	position: relative;
+
+	.st-slide-show-select-img, 
+	.st-slide-show-select-img-sub {
+		display : block;
 		position: relative;
 
 		border-color: #ccc;
@@ -160,7 +163,7 @@
 	}
 	.st-slide-show-thumbnail-name {
 		position: absolute;
-		left    : 0;
+		left    : 8px;
 		right   : 0;
 		bottom  : 0;
 
