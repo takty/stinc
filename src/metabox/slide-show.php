@@ -556,9 +556,9 @@ class SlideShow {
 				}
 			} else if ( $it['type'] === self::TYPE_VIDEO ) {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
+				$am = $this->_get_image_meta( $it['media'] );
+				if ( $am ) $it = array_merge( $it, $am );
 			}
-			$am = $this->_get_image_meta( $aid, $pf );
-			if ( $am ) $it = array_merge( $it, $am );
 		}
 		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
 		return $its;
@@ -582,6 +582,8 @@ class SlideShow {
 				$it["image$pf" ] = $img[0];
 			}
 		}
+		$am = $this->_get_image_meta( $aid, $pf );
+		if ( $am ) $it = array_merge( $it, $am );
 	}
 
 	private function _get_image_meta( $aid, $pf = '' ) {
