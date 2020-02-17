@@ -389,12 +389,12 @@ class SlideShow {
 					</div>
 				</div>
 				<div class="<?php echo self::CLS_TN ?>">
-					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
 						<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
 					</a>
 					<div class="<?php echo self::CLS_TN_NAME ?>">
-						<div class="<?php echo self::CLS_TITLE ?>" title="<?php echo $_title ?>"><?php echo $_title ?></div>
-						<div class="<?php echo self::CLS_FILENAME ?>" title="<?php echo $_fn ?>"><?php echo $_fn ?></div>
+						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
 					</div>
 				</div>
 			</div>
@@ -434,21 +434,21 @@ class SlideShow {
 				</div>
 				<div class="st-slide-show-thumbnail-wrap">
 					<div class="<?php echo self::CLS_TN ?>">
-						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>">
+						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
 							<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
 						</a>
 						<div class="<?php echo self::CLS_TN_NAME ?>">
-							<div class="<?php echo self::CLS_TITLE ?>" title="<?php echo $_title ?>"><?php echo $_title ?></div>
-							<div class="<?php echo self::CLS_FILENAME ?>" title="<?php echo $_fn ?>"><?php echo $_fn ?></div>
+							<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+							<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
 						</div>
 					</div>
 					<div class="<?php echo self::CLS_TN ?>">
-						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG_SUB ?>">
+						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG_SUB ?>" title="<?php echo "$_title_s&#x0A;$_fn_s" ?>">
 							<div class="<?php echo self::CLS_TN_IMG_SUB ?>"<?php echo $_style_s ?>></div>
 						</a>
 						<div class="<?php echo self::CLS_TN_NAME_SUB ?>">
-							<div class="<?php echo self::CLS_TITLE_SUB ?>" title="<?php echo $_title_s ?>"><?php echo $_title_s ?></div>
-							<div class="<?php echo self::CLS_FILENAME_SUB ?>" title="<?php echo $_fn_s ?>"><?php echo $_fn_s ?></div>
+							<div class="<?php echo self::CLS_TITLE_SUB ?>"><?php echo $_title_s ?></div>
+							<div class="<?php echo self::CLS_FILENAME_SUB ?>"><?php echo $_fn_s ?></div>
 						</div>
 					</div>
 				</div>
@@ -485,12 +485,12 @@ class SlideShow {
 					</div>
 				</div>
 				<div class="<?php echo self::CLS_TN ?>">
-					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
 						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>">
 					</a>
 					<div class="<?php echo self::CLS_TN_NAME ?>">
-						<div class="<?php echo self::CLS_TITLE ?>" title="<?php echo $_title ?>"><?php echo $_title ?></div>
-						<div class="<?php echo self::CLS_FILENAME ?>" title="<?php echo $_fn ?>"><?php echo $_fn ?></div>
+						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
 					</div>
 				</div>
 			</div>

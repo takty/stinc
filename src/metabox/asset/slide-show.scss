@@ -161,9 +161,10 @@
 			background-position: center center;
 		}
 	}
-	.st-slide-show-thumbnail-name {
+	.st-slide-show-thumbnail-name,
+	.st-slide-show-thumbnail-name-sub {
 		position: absolute;
-		left    : 8px;
+		left    : 10px;
 		right   : 0;
 		bottom  : 0;
 
