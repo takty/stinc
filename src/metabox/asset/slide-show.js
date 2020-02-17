@@ -23,38 +23,38 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 	const CLS_SEL_URL         = NS + '-select-url';
 	const CLS_SEL_IMG         = NS + '-select-img';
 	const CLS_SEL_IMG_SUB     = NS + '-select-img-sub';
+	const CLS_SEL_VIDEO       = NS + '-select-video';
 	const CLS_TN_IMG          = NS + '-thumbnail-img';
 	const CLS_TN_IMG_SUB      = NS + '-thumbnail-img-sub';
 	const CLS_ADD_ROW         = NS + '-add-row';
 	const CLS_ADD_IMG         = NS + '-add-img';
 	const CLS_ADD_VIDEO       = NS + '-add-video';
 
-	const CLS_URL             = NS + '-url';
-	const CLS_TYPE            = NS + '-type';
-	const CLS_CAP             = NS + '-caption';
-	const CLS_SEL_VIDEO       = NS + '-select-video';
-	const CLS_MEDIA           = NS + '-media';
-	const CLS_MEDIA_SUB       = NS + '-media-sub';
-	const CLS_TITLE           = NS + '-title';
-	const CLS_TITLE_SUB       = NS + '-title-sub';
-	const CLS_FILENAME        = NS + '-filename';
-	const CLS_FILENAME_SUB    = NS + '-filename-sub';
+	const CLS_URL          = NS + '-url';
+	const CLS_TYPE         = NS + '-type';
+	const CLS_CAP          = NS + '-caption';
+	const CLS_MEDIA        = NS + '-media';
+	const CLS_MEDIA_SUB    = NS + '-media-sub';
+	const CLS_TITLE        = NS + '-title';
+	const CLS_TITLE_SUB    = NS + '-title-sub';
+	const CLS_FILENAME     = NS + '-filename';
+	const CLS_FILENAME_SUB = NS + '-filename-sub';
 
 	const STR_ADD = document.getElementsByClassName(CLS_ADD_IMG)[0].innerText;
 	const STR_SEL = document.getElementsByClassName(CLS_SEL_URL)[0].innerText;
 
-	const id     = key;
-	const count  = document.getElementById(id);
-	const body   = document.querySelector('#' + id + ' + div');
+	const id    = key;
+	const count = document.getElementById(id);
+	const body  = document.querySelector('#' + id + ' + div');
 
-	const tbl      = body.getElementsByClassName(CLS_TABLE)[0];
-	const items    = tbl.getElementsByClassName(CLS_ITEM);
-	const tempImg = tbl.getElementsByClassName(CLS_ITEM_TEMP_IMG)[0];
+	const tbl       = body.getElementsByClassName(CLS_TABLE)[0];
+	const items     = tbl.getElementsByClassName(CLS_ITEM);
+	const tempImg   = tbl.getElementsByClassName(CLS_ITEM_TEMP_IMG)[0];
 	const tempVideo = tbl.getElementsByClassName(CLS_ITEM_TEMP_VIDEO)[0];
-	const addRow   = tbl.getElementsByClassName(CLS_ADD_ROW)[0];
-	const addImg   = tbl.getElementsByClassName(CLS_ADD_IMG)[0];
+	const addRow    = tbl.getElementsByClassName(CLS_ADD_ROW)[0];
+	const addImg    = tbl.getElementsByClassName(CLS_ADD_IMG)[0];
 	const addVideos = tbl.getElementsByClassName(CLS_ADD_VIDEO);
-	const addVideo = addVideos.length ? addVideos[0] : null;
+	const addVideo  = addVideos.length ? addVideos[0] : null;
 
 	if (count.tagName !== 'INPUT') console.error('The key or id conflicts.');
 
@@ -133,19 +133,8 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 
 	function add_new_item_image(f) {
 		const it = tempImg.cloneNode(true);
-
-		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
-		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
 		it.getElementsByClassName(CLS_TN_IMG)[0].style.backgroundImage = "url('" + f.url + "')";
-		if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
-			it.getElementsByClassName(CLS_TITLE)[0].innerText    = '';
-			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
-			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.filename);
-		} else {
-			it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
-			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
-			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
-		}
+		set_new_item(it, f);
 
 		it.classList.remove(CLS_ITEM_TEMP_IMG);
 		it.classList.add(CLS_ITEM);
@@ -155,24 +144,27 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 
 	function add_new_item_video(f) {
 		const it = tempVideo.cloneNode(true);
-
-		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
-		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
-		it.getElementsByClassName(CLS_TN_IMG)[0].src         = f.url;
-		if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
-			it.getElementsByClassName(CLS_TITLE)[0].innerText    = '';
-			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
-			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.filename);
-		} else {
-			it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
-			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
-			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
-		}
+		it.getElementsByClassName(CLS_TN_IMG)[0].src = f.url;
+		set_new_item(it, f);
 
 		it.classList.remove(CLS_ITEM_TEMP_VIDEO);
 		it.classList.add(CLS_ITEM);
 		tbl.insertBefore(it, addRow);
 		assign_event_listener(it);
+	}
+
+	function set_new_item(it, f) {
+		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
+		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
+		it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
+
+		if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+			it.getElementsByClassName(CLS_TITLE)[0].innerText = '';
+			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.filename);
+		} else {
+			it.getElementsByClassName(CLS_TITLE)[0].innerText = f.title;
+			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
+		}
 	}
 
 	function assign_event_listener(it) {
@@ -203,58 +195,42 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 			setMediaPicker(sel_img, false, function (target, f) {
 				const idi = sel_img.dataset.idi;
 				document.getElementById(idi + '_caption').value      = f.caption;
-				document.getElementById(idi + '_media').value        = f.id;
 				document.getElementById(idi + '_thumbnail').style.backgroundImage = 'url(' + f.url + ')';
-				if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
-					document.getElementById(idi + '_title').innerText    = '';
-					document.getElementById(idi + '_filename').innerText = f.filename;
-					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.filename);
-				} else {
-					document.getElementById(idi + '_title').innerText    = f.title;
-					document.getElementById(idi + '_filename').innerText = f.filename;
-					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.title + '\n' + f.filename);
-				}
+				set_item(idi, f);
 			}, { multiple: false, type: 'image', title: STR_SEL });
 
 			if (is_dual) {
 				const sel_img_sub = it.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
 				setMediaPicker(sel_img_sub, false, function (target, f) {
 					const idi = sel_img_sub.dataset.idi;
-					document.getElementById(idi + '_media_sub').value        = f.id;
 					document.getElementById(idi + '_thumbnail_sub').style.backgroundImage = 'url(' + f.url + ')';
-					if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
-						document.getElementById(idi + '_title_sub').innerText    = '';
-						document.getElementById(idi + '_filename_sub').innerText = f.filename;
-						document.getElementById(idi + '_thumbnail_sub').parentElement.setAttribute('title', f.filename);
-					} else {
-						document.getElementById(idi + '_title_sub').innerText    = f.title;
-						document.getElementById(idi + '_filename_sub').innerText = f.filename;
-						document.getElementById(idi + '_thumbnail_sub').parentElement.setAttribute('title', f.title + '\n' + f.filename);
-					}
+					set_item(idi, f, '_sub');
 				}, { multiple: false, type: 'image', title: STR_SEL });
 			}
 		} else {
 			const sel_video = it.getElementsByClassName(CLS_SEL_VIDEO)[0];
 			setMediaPicker(sel_video, false, function (target, f) {
 				const idi = sel_video.dataset.idi;
-				document.getElementById(idi + '_caption').value      = f.caption;
-				document.getElementById(idi + '_media').value        = f.id;
-				document.getElementById(idi + '_thumbnail').src      = f.url;
-				if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
-					document.getElementById(idi + '_title').innerText    = '';
-					document.getElementById(idi + '_filename').innerText = f.filename;
-					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.filename);
-				} else {
-					document.getElementById(idi + '_title').innerText    = f.title;
-					document.getElementById(idi + '_filename').innerText = f.filename;
-					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.title + '\n' + f.filename);
-				}
+				document.getElementById(idi + '_caption').value = f.caption;
+				document.getElementById(idi + '_thumbnail').src = f.url;
+				set_item(idi, f);
 			}, { multiple: false, type: 'video', title: STR_SEL });
 			const v = sel_video.getElementsByTagName('video')[0];
-			v.loop = true;
+			v.loop  = true;
 			v.muted = true;
 			sel_video.addEventListener('mouseenter', () => { v.play(); });
 			sel_video.addEventListener('mouseleave', () => { v.pause(); });
+		}
+	}
+
+	function set_item(idi, f, pf = '') {
+		document.getElementById(idi + '_media'    + pf).value     = f.id;
+		document.getElementById(idi + '_filename' + pf).innerText = f.filename;
+
+		if (0 < f.title.length && f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+			document.getElementById(idi + '_title' + pf).innerText = '';
+		} else {
+			document.getElementById(idi + '_title' + pf).innerText = f.title;
 		}
 	}
 

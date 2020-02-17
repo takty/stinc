@@ -111,8 +111,7 @@
 
 	position: relative;
 
-	.st-slide-show-select-img, 
-	.st-slide-show-select-img-sub {
+	> a {
 		display : block;
 		position: relative;
 
@@ -123,28 +122,29 @@
 		border-width : 1px;
 		border-style : solid;
 		border-radius: 3px;
+		overflow     : hidden;
 		white-space  : nowrap;
 		box-sizing   : border-box;
-
+	
 		&:hover {
 			background-color: #fafafa;
-			border-color: #999;
+			border-color    : #999;
 		}
 		&:active {
 			background-color: #eee;
-			border-color: #999;
-			box-shadow: inset 0 2px 5px -3px rgba(#000, 0.5);
-			transform: translateY(1px);
+			border-color    : #999;
+			box-shadow      : inset 0 2px 5px -3px rgba(#000, 0.5);
+			transform       : translateY(1px);
 		}
 		&::before {
-			content: '';
-			display: block;
+			content    : '';
+			display    : block;
 			padding-top: 56.25%;  // 16:9
 		}
 
 		> video {
-			position: absolute;
-			top: 50%;
+			position : absolute;
+			top      : 50%;
 			transform: translate(0, -50%);
 		}
 		> div {

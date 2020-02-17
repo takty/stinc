@@ -546,23 +546,25 @@ class SlideShow {
 			$it['image'] = '';
 			if ( $it['type'] === self::TYPE_IMAGE ) {
 				if ( ! empty( $it['media'] ) ) {
-					$this->_get_images( $it, intval( $it['media'] ), $size, 'image', 'images', 'title', 'filename' );
+					$this->_get_images( $it, intval( $it['media'] ), $size );
 				}
 				if ( $this->_is_dual ) {
 					$it['image_sub'] = '';
 					if ( ! empty( $it['media_sub'] ) ) {
-						$this->_get_images( $it, intval( $it['media_sub'] ), $size, 'image_sub', 'images_sub', 'title_sub', 'filename_sub' );
+						$this->_get_images( $it, intval( $it['media_sub'] ), $size, '_sub' );
 					}
 				}
 			} else if ( $it['type'] === self::TYPE_VIDEO ) {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
 			}
+			$am = $this->_get_image_meta( $aid, $pf );
+			if ( $am ) $it = array_merge( $it, $am );
 		}
 		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
 		return $its;
 	}
 
-	private function _get_images( &$it, $aid, $size, $key, $key_s, $key_title, $key_filename ) {
+	private function _get_images( &$it, $aid, $size, $pf = '' ) {
 		if ( is_array( $size ) ) {
 			$imgs = [];
 			foreach ( $size as $sz ) {
@@ -570,26 +572,24 @@ class SlideShow {
 				if ( $img ) $imgs[] = $img[0];
 			}
 			if ( ! empty( $imgs ) ) {
-				$it[ $key_s ] = $imgs;
-				$it[ $key   ] = $imgs[ count( $imgs ) - 1 ];
+				$it["images$pf"] = $imgs;
+				$it["image$pf" ] = $imgs[ count( $imgs ) - 1 ];
 			}
 		} else {
 			$img = wp_get_attachment_image_src( $aid, $size );
 			if ( $img ) {
-				$it[ $key_s ] = [ $img[0] ];
-				$it[ $key   ] = $img[0];
+				$it["images$pf"] = [ $img[0] ];
+				$it["image$pf" ] = $img[0];
 			}
 		}
-		$am = $this->_get_image_meta( $aid, $key_title, $key_filename );
-		if ( $am ) $it = array_merge( $it, $am );
 	}
 
-	private function _get_image_meta( $aid, $key_title, $key_filename ) {
+	private function _get_image_meta( $aid, $pf = '' ) {
 		$p = get_post( $aid );
 		if ( $p === null ) return null;
 		$t  = $p->post_title;
 		$fn = basename( $p->guid );
-		return [ $key_title => $t, $key_filename => $fn ];
+		return [ "title$pf" => $t, "filename$pf" => $fn ];
 	}
 
 }
@@ -603,16 +603,20 @@ namespace st\slide_show;
 function initialize( $key ) { return new \st\SlideShow( $key ); }
 function enqueue_script( $url_to = false ) { \st\SlideShow::enqueue_script( $url_to ); }
 
-function set_duration_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_duration_time( $sec ); }
-function set_transition_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
-function set_zoom_rate( $key, $rate ) { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
-function set_effect_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }
-function set_background_opacity( $key, $opacity ) { return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity ); }
-function set_background_visible( $key, $visible ) { return \st\SlideShow::get_instance( $key )->set_background_visible( $visible ); }
-function set_side_slide_visible( $key, $visible ) { return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible ); }
-function set_picture_scroll( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll( $enabled ); }
-function set_dual_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
-function set_caption_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
+function set_effect_type( $key, $type )               { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }
+function set_duration_time( $key, $sec )              { return \st\SlideShow::get_instance( $key )->set_duration_time( $sec ); }
+function set_transition_time( $key, $sec )            { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
+function set_background_opacity( $key, $opacity )     { return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity ); }
+function set_picture_scroll_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll_enabled( $enabled ); }
+function set_random_timing_enabled( $key, $enabled )  { return \st\SlideShow::get_instance( $key )->set_random_timing_enabled( $enabled ); }
+function set_background_visible( $key, $visible )     { return \st\SlideShow::get_instance( $key )->set_background_visible( $visible ); }
+function set_side_slide_visible( $key, $visible )     { return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible ); }
+function set_zoom_rate( $key, $rate )                 { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
+function set_caption_type( $key, $type )              { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
+function set_dual_enabled( $key, $enabled )           { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
+function set_video_enabled( $key, $enabled )          { return \st\SlideShow::get_instance( $key )->set_video_enabled( $enabled ); }
+function set_shuffled( $key, $enabled )               { return \st\SlideShow::get_instance( $key )->set_shuffled( $enabled ); }
+
 function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $cls ); }
 function echo_slide_items( $key, $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance( $key )->echo_slide_items( $post_id, $size ); }
 
