@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-31
+ * @version 2020-02-17
  *
  */
 
@@ -49,11 +49,17 @@ class SlideShow {
 	const CLS_TN              = self::NS . '-thumbnail';
 	const CLS_TN_IMG          = self::NS . '-thumbnail-img';
 	const CLS_TN_IMG_SUB      = self::NS . '-thumbnail-img-sub';
+	const CLS_TN_NAME         = self::NS . '-thumbnail-name';
+	const CLS_TN_NAME_SUB     = self::NS . '-thumbnail-name-sub';
 
+	const CLS_URL             = self::NS . '-url';
+	const CLS_TYPE            = self::NS . '-type';
 	const CLS_MEDIA           = self::NS . '-media';
 	const CLS_MEDIA_SUB       = self::NS . '-media-sub';
-	const CLS_TYPE            = self::NS . '-type';
-	const CLS_URL             = self::NS . '-url';
+	const CLS_TITLE           = self::NS . '-title';
+	const CLS_TITLE_SUB       = self::NS . '-title-sub';
+	const CLS_FILENAME        = self::NS . '-filename';
+	const CLS_FILENAME_SUB    = self::NS . '-filename-sub';
 
 	const TYPE_IMAGE = 'image';
 	const TYPE_VIDEO = 'video';
@@ -363,6 +369,11 @@ class SlideShow {
 		$_img   = isset( $it['image'] )   ? esc_url( $it['image'] )    : '';
 		$_media = isset( $it['media'] )   ? esc_attr( $it['media'] )   : '';
 		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
+
+		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
+
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
@@ -380,7 +391,13 @@ class SlideShow {
 					</div>
 				</div>
 				<div class="<?php echo self::CLS_TN ?>">
-					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
+						<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
+					</a>
+					<div class="<?php echo self::CLS_TN_NAME ?>">
+						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+					</div>
 				</div>
 			</div>
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
@@ -398,7 +415,15 @@ class SlideShow {
 		$_media_s = isset( $it['media_sub'] ) ? esc_attr( $it['media_sub'] ) : '';
 		$_style   = empty( $_img )    ? '' : " style=\"background-image:url($_img)\"";
 		$_style_s = empty( $_img_s )  ? '' : " style=\"background-image:url($_img_s)\"";
-	?>
+
+		$_title   = isset( $it['title'] )        ? esc_attr( $it['title'] )        : '';
+		$_title_s = isset( $it['title_sub'] )    ? esc_attr( $it['title_sub'] )    : '';
+		$_fn      = isset( $it['filename'] )     ? esc_attr( $it['filename'] )     : '';
+		$_fn_s    = isset( $it['filename_sub'] ) ? esc_attr( $it['filename_sub'] ) : '';
+
+		if ( ! empty( $_title )   && strlen( $_title )   < strlen( $_fn )   && strpos( $_fn, $_title )     === 0 ) $_title = '';
+		if ( ! empty( $_title_s ) && strlen( $_title_s ) < strlen( $_fn_s ) && strpos( $_fn_s, $_title_s ) === 0 ) $_title_s = '';
+?>
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
@@ -414,10 +439,22 @@ class SlideShow {
 				</div>
 				<div class="st-slide-show-thumbnail-wrap">
 					<div class="<?php echo self::CLS_TN ?>">
-						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
+						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
+							<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
+						</a>
+						<div class="<?php echo self::CLS_TN_NAME ?>">
+							<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+							<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+						</div>
 					</div>
 					<div class="<?php echo self::CLS_TN ?>">
-						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG_SUB ?>"><div class="<?php echo self::CLS_TN_IMG_SUB ?>"<?php echo $_style_s ?>></div></a>
+						<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG_SUB ?>" title="<?php echo "$_title_s&#x0A;$_fn_s" ?>">
+							<div class="<?php echo self::CLS_TN_IMG_SUB ?>"<?php echo $_style_s ?>></div>
+						</a>
+						<div class="<?php echo self::CLS_TN_NAME_SUB ?>">
+							<div class="<?php echo self::CLS_TITLE_SUB ?>"><?php echo $_title_s ?></div>
+							<div class="<?php echo self::CLS_FILENAME_SUB ?>"><?php echo $_fn_s ?></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -433,6 +470,11 @@ class SlideShow {
 		$_url   = isset( $it['url'] )     ? esc_attr( $it['url'] )     : '';
 		$_media = isset( $it['media'] )   ? esc_attr( $it['media'] )   : '';
 		$_video = isset( $it['video'] )   ? esc_url( $it['video'] )    : '';
+
+		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
+
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
@@ -450,9 +492,13 @@ class SlideShow {
 					</div>
 				</div>
 				<div class="<?php echo self::CLS_TN ?>">
-					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
 						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>">
 					</a>
+					<div class="<?php echo self::CLS_TN_NAME ?>">
+						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+					</div>
 				</div>
 			</div>
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
@@ -500,23 +546,25 @@ class SlideShow {
 			$it['image'] = '';
 			if ( $it['type'] === self::TYPE_IMAGE ) {
 				if ( ! empty( $it['media'] ) ) {
-					$this->_get_images( $it, intval( $it['media'] ), $size, 'image', 'images' );
+					$this->_get_images( $it, intval( $it['media'] ), $size );
 				}
 				if ( $this->_is_dual ) {
 					$it['image_sub'] = '';
 					if ( ! empty( $it['media_sub'] ) ) {
-						$this->_get_images( $it, intval( $it['media_sub'] ), $size, 'image_sub', 'images_sub' );
+						$this->_get_images( $it, intval( $it['media_sub'] ), $size, '_sub' );
 					}
 				}
 			} else if ( $it['type'] === self::TYPE_VIDEO ) {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
+				$am = $this->_get_image_meta( $it['media'] );
+				if ( $am ) $it = array_merge( $it, $am );
 			}
 		}
 		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
 		return $its;
 	}
 
-	private function _get_images( &$it, $aid, $size, $key, $key_s ) {
+	private function _get_images( &$it, $aid, $size, $pf = '' ) {
 		if ( is_array( $size ) ) {
 			$imgs = [];
 			foreach ( $size as $sz ) {
@@ -524,16 +572,26 @@ class SlideShow {
 				if ( $img ) $imgs[] = $img[0];
 			}
 			if ( ! empty( $imgs ) ) {
-				$it[ $key_s ] = $imgs;
-				$it[ $key   ] = $imgs[ count( $imgs ) - 1 ];
+				$it["images$pf"] = $imgs;
+				$it["image$pf" ] = $imgs[ count( $imgs ) - 1 ];
 			}
 		} else {
 			$img = wp_get_attachment_image_src( $aid, $size );
 			if ( $img ) {
-				$it[ $key_s ] = [ $img[0] ];
-				$it[ $key   ] = $img[0];
+				$it["images$pf"] = [ $img[0] ];
+				$it["image$pf" ] = $img[0];
 			}
 		}
+		$am = $this->_get_image_meta( $aid, $pf );
+		if ( $am ) $it = array_merge( $it, $am );
+	}
+
+	private function _get_image_meta( $aid, $pf = '' ) {
+		$p = get_post( $aid );
+		if ( $p === null ) return null;
+		$t  = $p->post_title;
+		$fn = basename( $p->guid );
+		return [ "title$pf" => $t, "filename$pf" => $fn ];
 	}
 
 }
@@ -547,16 +605,20 @@ namespace st\slide_show;
 function initialize( $key ) { return new \st\SlideShow( $key ); }
 function enqueue_script( $url_to = false ) { \st\SlideShow::enqueue_script( $url_to ); }
 
-function set_duration_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_duration_time( $sec ); }
-function set_transition_time( $key, $sec ) { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
-function set_zoom_rate( $key, $rate ) { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
-function set_effect_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }
-function set_background_opacity( $key, $opacity ) { return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity ); }
-function set_background_visible( $key, $visible ) { return \st\SlideShow::get_instance( $key )->set_background_visible( $visible ); }
-function set_side_slide_visible( $key, $visible ) { return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible ); }
-function set_picture_scroll( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll( $enabled ); }
-function set_dual_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
-function set_caption_type( $key, $type ) { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
+function set_effect_type( $key, $type )               { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }
+function set_duration_time( $key, $sec )              { return \st\SlideShow::get_instance( $key )->set_duration_time( $sec ); }
+function set_transition_time( $key, $sec )            { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
+function set_background_opacity( $key, $opacity )     { return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity ); }
+function set_picture_scroll_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll_enabled( $enabled ); }
+function set_random_timing_enabled( $key, $enabled )  { return \st\SlideShow::get_instance( $key )->set_random_timing_enabled( $enabled ); }
+function set_background_visible( $key, $visible )     { return \st\SlideShow::get_instance( $key )->set_background_visible( $visible ); }
+function set_side_slide_visible( $key, $visible )     { return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible ); }
+function set_zoom_rate( $key, $rate )                 { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
+function set_caption_type( $key, $type )              { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
+function set_dual_enabled( $key, $enabled )           { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
+function set_video_enabled( $key, $enabled )          { return \st\SlideShow::get_instance( $key )->set_video_enabled( $enabled ); }
+function set_shuffled( $key, $enabled )               { return \st\SlideShow::get_instance( $key )->set_shuffled( $enabled ); }
+
 function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $cls ); }
 function echo_slide_items( $key, $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance( $key )->echo_slide_items( $post_id, $size ); }
 

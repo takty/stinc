@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-31
+ * @version 2020-02-17
  *
  */
 
@@ -24,19 +24,30 @@ class BackgroundImage {
 	const CLS_SLIDES = self::NS . '-slides';
 
 	// Admin
-	const CLS_BODY      = self::NS . '-body';
-	const CLS_TABLE     = self::NS . '-table';
-	const CLS_ITEM      = self::NS . '-item';
-	const CLS_ITEM_TEMP = self::NS . '-item-template';
-	const CLS_HANDLE    = self::NS . '-handle';
-	const CLS_ADD_ROW   = self::NS . '-add-row';
-	const CLS_ADD       = self::NS . '-add';
-	const CLS_DEL_LAB   = self::NS . '-delete-label';
-	const CLS_DEL       = self::NS . '-delete';
-	const CLS_SEL_IMG   = self::NS . '-select-img';
-	const CLS_TN        = self::NS . '-thumbnail';
-	const CLS_TN_IMG    = self::NS . '-thumbnail-img';
-	const CLS_MEDIA     = self::NS . '-media';
+	const CLS_BODY            = self::NS . '-body';
+	const CLS_TABLE           = self::NS . '-table';
+	const CLS_ITEM            = self::NS . '-item';
+	const CLS_ITEM_TEMP_IMG   = self::NS . '-item-template-img';
+	const CLS_ITEM_TEMP_VIDEO = self::NS . '-item-template-video';
+	const CLS_HANDLE          = self::NS . '-handle';
+	const CLS_ADD_ROW         = self::NS . '-add-row';
+	const CLS_ADD_IMG         = self::NS . '-add-img';
+	const CLS_ADD_VIDEO       = self::NS . '-add-video';
+	const CLS_DEL_LAB         = self::NS . '-delete-label';
+	const CLS_DEL             = self::NS . '-delete';
+	const CLS_SEL_IMG         = self::NS . '-select-img';
+	const CLS_SEL_VIDEO       = self::NS . '-select-video';
+	const CLS_TN              = self::NS . '-thumbnail';
+	const CLS_TN_IMG          = self::NS . '-thumbnail-img';
+	const CLS_TN_NAME         = self::NS . '-thumbnail-name';
+
+	const CLS_TYPE            = self::NS . '-type';
+	const CLS_MEDIA           = self::NS . '-media';
+	const CLS_TITLE           = self::NS . '-title';
+	const CLS_FILENAME        = self::NS . '-filename';
+
+	const TYPE_IMAGE = 'image';
+	const TYPE_VIDEO = 'video';
 
 	static private $_instance     = [];
 	static private $_is_ss_active = null;
@@ -75,6 +86,7 @@ class BackgroundImage {
 	private $_is_autoplay      = true;
 	private $_zoom_rate        = 1;
 	
+	private $_is_video_enabled = false;
 	private $_is_shuffled      = false;
 	private $_is_script_output = true;
 
@@ -114,6 +126,11 @@ class BackgroundImage {
 		return $this;
 	}
 
+	public function set_video_enabled( $enabled ) {
+		$this->_is_video_enabled = $enabled;
+		return $this;
+	}
+
 	public function set_shuffled( $enabled ) {
 		$this->_is_shuffled = $enabled;
 		return $this;
@@ -150,7 +167,8 @@ class BackgroundImage {
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( isset( $it['images'] ) ) $this->_echo_image_item( $it );
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it );
 		}
 ?>
 				</ul>
@@ -163,7 +181,7 @@ class BackgroundImage {
 		return true;
 	}
 
-	private function _echo_image_item( $it ) {
+	private function _echo_slide_item_img( $it ) {
 		$imgs = $it['images'];
 
 		if ( 2 <= count( $imgs ) ) {
@@ -179,6 +197,16 @@ class BackgroundImage {
 			if ( self::is_simply_static_active() ) {  // for fallback
 				$attr = " style=\"data-img:url($_img);\"";
 			}
+		}
+		echo "<li$attr></li>";
+	}
+
+	private function _echo_slide_item_video( $it ) {
+		$_url = esc_url( $it['video'] );
+		$attr = " data-video=\"$_url\"";
+
+		if ( self::is_simply_static_active() ) {  // for fallback
+			$attr = " style=\"data-video:url($_url);\"";
 		}
 		echo "<li$attr></li>";
 	}
@@ -209,11 +237,24 @@ class BackgroundImage {
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
 <?php
-		$this->_output_row( [], self::CLS_ITEM_TEMP );
-		foreach ( $its as $it ) $this->_output_row( $it, self::CLS_ITEM );
+		$this->_output_row_image( [], self::CLS_ITEM_TEMP_IMG );
+		$this->_output_row_video( [], self::CLS_ITEM_TEMP_VIDEO );
+		foreach ( $its as $it ) {
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_output_row_image( $it, self::CLS_ITEM );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_output_row_video( $it, self::CLS_ITEM );
+		}
 ?>
 			</div>
-			<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ) ?></a></div>
+			<div class="<?php echo self::CLS_ADD_ROW ?>">
+<?php
+		if ( $this->_is_video_enabled ) {
+?>
+				<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_VIDEO ?> button"><?php _e( 'Add Video', 'default' ) ?></a>
+<?php
+		}
+?>
+				<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_IMG ?> button"><?php _e( 'Add Media', 'default' ) ?></a>
+			</div>
 			<script>window.addEventListener('load', function () {
 				st_background_image_initialize_admin('<?php echo $this->_id ?>');
 			});</script>
@@ -221,22 +262,65 @@ class BackgroundImage {
 <?php
 	}
 
-	private function _output_row( $it, $cls ) {
+	private function _output_row_image( $it, $cls ) {
 		$_img   = isset( $it['image'] ) ? esc_url( $it['image'] )  : '';
 		$_media = isset( $it['media'] ) ? esc_attr( $it['media'] ) : '';
 		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
+
+		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
+
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
-				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br /><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br><input type="checkbox" class="<?php echo self::CLS_DEL ?>" /></label>
 			</div>
 			<div>
 				<div class="<?php echo self::CLS_TN ?>">
-					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>"><div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div></a>
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_IMG ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
+						<div class="<?php echo self::CLS_TN_IMG ?>"<?php echo $_style ?>></div>
+					</a>
+					<div class="<?php echo self::CLS_TN_NAME ?>">
+						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+					</div>
 				</div>
 			</div>
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>" />
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image">
+		</div>
+<?php
+	}
+
+	private function _output_row_video( $it, $cls ) {
+		$_video = isset( $it['video'] )   ? esc_url( $it['video'] )    : '';
+		$_media = isset( $it['media'] )   ? esc_attr( $it['media'] )   : '';
+
+		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
+
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
+?>
+		<div class="<?php echo $cls ?>">
+			<div>
+				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
+				<label class="widget-control-remove <?php echo self::CLS_DEL_LAB ?>"><?php _e( 'Remove', 'default' ) ?><br><input type="checkbox" class="<?php echo self::CLS_DEL ?>"></label>
+			</div>
+			<div>
+				<div class="<?php echo self::CLS_TN ?>">
+					<a href="javascript:void(0);" class="frame <?php echo self::CLS_SEL_VIDEO ?>" title="<?php echo "$_title&#x0A;$_fn" ?>">
+						<video class="<?php echo self::CLS_TN_IMG ?>" src="<?php echo $_video ?>">
+					</a>
+					<div class="<?php echo self::CLS_TN_NAME ?>">
+						<div class="<?php echo self::CLS_TITLE ?>"><?php echo $_title ?></div>
+						<div class="<?php echo self::CLS_FILENAME ?>"><?php echo $_fn ?></div>
+					</div>
+				</div>
+			</div>
+			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
+			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="video">
 		</div>
 <?php
 	}
@@ -246,42 +330,62 @@ class BackgroundImage {
 
 
 	private function _save_items( $post_id ) {
-		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, [ 'media', 'delete' ] );
-
+		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, [ 'media', 'type', 'delete' ] );
 		$its = array_filter( $its, function ( $it ) { return ! $it['delete']; } );
 		$its = array_values( $its );
 
-		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, [ 'media' ] );
+		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, [ 'media', 'type' ] );
 	}
 
 	private function _get_items( $post_id, $size = 'medium' ) {
-		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, [ 'media' ] );
+		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, [ 'media', 'type' ] );
 
 		foreach ( $its as &$it ) {
+			if ( empty( $it['type'] ) ) $it['type'] = self::TYPE_IMAGE;
 			$it['image'] = '';
 			if ( empty( $it['media'] ) ) continue;
 			$aid = intval( $it['media'] );
 
-			if ( is_array( $size ) ) {
-				$imgs = [];
-				foreach ( $size as $sz ) {
-					$img = wp_get_attachment_image_src( $aid, $sz );
-					if ( $img ) $imgs[] = $img[0];
-				}
-				if ( ! empty( $imgs ) ) {
-					$it['images'] = $imgs;
-					$it['image' ] = $imgs[ count( $imgs ) - 1 ];
-				}
-			} else {
-				$img = wp_get_attachment_image_src( $aid, $size );
-				if ( $img ) {
-					$it['images'] = [ $img[0] ];
-					$it['image' ] = $img[0];
-				}
+			if ( $it['type'] === self::TYPE_IMAGE ) {
+				$this->_get_images( $it, $aid, $size );
+			} else if ( $it['type'] === self::TYPE_VIDEO ) {
+				$it['video'] = wp_get_attachment_url( $aid );
 			}
+			$am = $this->_get_image_meta( $aid );
+			if ( $am ) $it = array_merge( $it, $am );
 		}
 		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
 		return $its;
+	}
+
+	private function _get_images( &$it, $aid, $size, $pf = '' ) {
+		if ( is_array( $size ) ) {
+			$imgs = [];
+			foreach ( $size as $sz ) {
+				$img = wp_get_attachment_image_src( $aid, $sz );
+				if ( $img ) $imgs[] = $img[0];
+			}
+			if ( ! empty( $imgs ) ) {
+				$it["images$pf"] = $imgs;
+				$it["image$pf" ] = $imgs[ count( $imgs ) - 1 ];
+			}
+		} else {
+			$img = wp_get_attachment_image_src( $aid, $size );
+			if ( $img ) {
+				$it["images$pf"] = [ $img[0] ];
+				$it["image$pf" ] = $img[0];
+			}
+		}
+		$am = $this->_get_image_meta( $aid, $pf );
+		if ( $am ) $it = array_merge( $it, $am );
+	}
+
+	private function _get_image_meta( $aid, $pf = '' ) {
+		$p = get_post( $aid );
+		if ( $p === null ) return null;
+		$t  = $p->post_title;
+		$fn = basename( $p->guid );
+		return [ "title$pf" => $t, "filename$pf" => $fn ];
 	}
 
 }
@@ -295,11 +399,16 @@ namespace st\background_image;
 function initialize( $key ) { return new \st\BackgroundImage( $key ); }
 function enqueue_script( $url_to = false ) { \st\BackgroundImage::enqueue_script( $url_to ); }
 
-function set_effect_type( $key, $type ) { return \st\BackgroundImage::get_instance( $key )->set_effect_type( $type ); }
-function set_duration_time( $key, $sec ) { return \st\BackgroundImage::get_instance( $key )->set_duration_time( $sec ); }
-function set_transition_time( $key, $sec ) { return \st\BackgroundImage::get_instance( $key )->set_transition_time( $sec ); }
-function set_zoom_rate( $key, $rate ) { return \st\BackgroundImage::get_instance( $key )->set_zoom_rate( $rate ); }
+function set_effect_type( $key, $type )              { return \st\BackgroundImage::get_instance( $key )->set_effect_type( $type ); }
+function set_duration_time( $key, $sec )             { return \st\BackgroundImage::get_instance( $key )->set_duration_time( $sec ); }
+function set_transition_time( $key, $sec )           { return \st\BackgroundImage::get_instance( $key )->set_transition_time( $sec ); }
 function set_random_timing_enabled( $key, $enabled ) { return \st\BackgroundImage::get_instance( $key )->set_random_timing_enabled( $enabled ); }
+function set_autoplay_enabled( $key, $enabled )      { return \st\BackgroundImage::get_instance( $key )->set_autoplay_enabled( $enabled ); }
+function set_zoom_rate( $key, $rate )                { return \st\BackgroundImage::get_instance( $key )->set_zoom_rate( $rate ); }
+function set_video_enabled( $key, $enabled )         { return \st\BackgroundImage::get_instance( $key )->set_video_enabled( $enabled ); }
+function set_shuffled( $key, $enabled )              { return \st\BackgroundImage::get_instance( $key )->set_shuffled( $enabled ); }
+function set_script_output( $key, $enabled )         { return \st\BackgroundImage::get_instance( $key )->set_script_output( $enabled ); }
+
 function echo_background_image( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\BackgroundImage::get_instance( $key )->echo_background_image( $post_id, $size, $cls ); }
 
 function add_meta_box( $key, $label, $screen, $context = 'side' ) { \st\BackgroundImage::get_instance( $key )->add_meta_box( $label, $screen, $context ); }
