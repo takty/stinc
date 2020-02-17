@@ -3,7 +3,7 @@
  * Slide Show Admin (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-12-04
+ * @version 2020-02-17
  *
  */
 
@@ -29,12 +29,16 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 	const CLS_ADD_IMG         = NS + '-add-img';
 	const CLS_ADD_VIDEO       = NS + '-add-video';
 
-	const CLS_MEDIA           = NS + '-media';
-	const CLS_MEDIA_SUB       = NS + '-media-sub';
-	const CLS_TYPE            = NS + '-type';
 	const CLS_URL             = NS + '-url';
+	const CLS_TYPE            = NS + '-type';
 	const CLS_CAP             = NS + '-caption';
 	const CLS_SEL_VIDEO       = NS + '-select-video';
+	const CLS_MEDIA           = NS + '-media';
+	const CLS_MEDIA_SUB       = NS + '-media-sub';
+	const CLS_TITLE           = NS + '-title';
+	const CLS_TITLE_SUB       = NS + '-title-sub';
+	const CLS_FILENAME        = NS + '-filename';
+	const CLS_FILENAME_SUB    = NS + '-filename-sub';
 
 	const STR_ADD = document.getElementsByClassName(CLS_ADD_IMG)[0].innerText;
 	const STR_SEL = document.getElementsByClassName(CLS_SEL_URL)[0].innerText;
@@ -91,17 +95,21 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 	function set_item_id(i, it) {
 		const idi = id + '_' + i;
 		it.id = idi;
-		set_id_name_by_class(it, CLS_MEDIA,  idi + '_media');
-		set_id_name_by_class(it, CLS_TYPE,   idi + '_type');
-		set_id_name_by_class(it, CLS_URL,    idi + '_url');
-		set_id_name_by_class(it, CLS_DEL,    idi + '_delete');
-		set_id_name_by_class(it, CLS_CAP,    idi + '_caption');
-		set_id_name_by_class(it, CLS_TN_IMG, idi + '_thumbnail', true);
+		set_id_name_by_class(it, CLS_MEDIA,    idi + '_media');
+		set_id_name_by_class(it, CLS_TITLE,    idi + '_title');
+		set_id_name_by_class(it, CLS_FILENAME, idi + '_filename');
+		set_id_name_by_class(it, CLS_TYPE,     idi + '_type');
+		set_id_name_by_class(it, CLS_URL,      idi + '_url');
+		set_id_name_by_class(it, CLS_DEL,      idi + '_delete');
+		set_id_name_by_class(it, CLS_CAP,      idi + '_caption');
+		set_id_name_by_class(it, CLS_TN_IMG,   idi + '_thumbnail', true);
 		set_idi(it, [CLS_SEL_URL, CLS_SEL_IMG, CLS_URL_OPENER, CLS_SEL_VIDEO], idi);
 
 		if (is_dual) {
-			set_id_name_by_class(it, CLS_MEDIA_SUB,  idi + '_media_sub');
-			set_id_name_by_class(it, CLS_TN_IMG_SUB, idi + '_thumbnail_sub', true);
+			set_id_name_by_class(it, CLS_MEDIA_SUB,    idi + '_media_sub');
+			set_id_name_by_class(it, CLS_TITLE_SUB,    idi + '_title_sub');
+			set_id_name_by_class(it, CLS_FILENAME_SUB, idi + '_filename_sub');
+			set_id_name_by_class(it, CLS_TN_IMG_SUB,   idi + '_thumbnail_sub', true);
 			set_idi(it, [CLS_SEL_IMG_SUB], idi);
 		}
 	}
@@ -126,8 +134,10 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 	function add_new_item_image(f) {
 		const it = tempImg.cloneNode(true);
 
-		it.getElementsByClassName(CLS_CAP)[0].value   = f.caption;
-		it.getElementsByClassName(CLS_MEDIA)[0].value = f.id;
+		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
+		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
+		it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
+		it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
 		it.getElementsByClassName(CLS_TN_IMG)[0].style.backgroundImage = "url('" + f.url + "')";
 
 		it.classList.remove(CLS_ITEM_TEMP_IMG);
@@ -139,9 +149,11 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 	function add_new_item_video(f) {
 		const it = tempVideo.cloneNode(true);
 
-		it.getElementsByClassName(CLS_CAP)[0].value   = f.caption;
-		it.getElementsByClassName(CLS_MEDIA)[0].value = f.id;
-		it.getElementsByClassName(CLS_TN_IMG)[0].src = f.url;
+		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
+		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
+		it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
+		it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
+		it.getElementsByClassName(CLS_TN_IMG)[0].src         = f.url;
 
 		it.classList.remove(CLS_ITEM_TEMP_VIDEO);
 		it.classList.add(CLS_ITEM);
@@ -176,8 +188,10 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 			const sel_img = it.getElementsByClassName(CLS_SEL_IMG)[0];
 			setMediaPicker(sel_img, false, function (target, f) {
 				const idi = sel_img.dataset.idi;
-				document.getElementById(idi + '_caption').value = f.caption;
-				document.getElementById(idi + '_media').value = f.id;
+				document.getElementById(idi + '_caption').value      = f.caption;
+				document.getElementById(idi + '_media').value        = f.id;
+				document.getElementById(idi + '_title').innerText    = f.title;
+				document.getElementById(idi + '_filename').innerText = f.filename;
 				document.getElementById(idi + '_thumbnail').style.backgroundImage = 'url(' + f.url + ')';
 			}, { multiple: false, type: 'image', title: STR_SEL });
 
@@ -185,7 +199,9 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 				const sel_img_sub = it.getElementsByClassName(CLS_SEL_IMG_SUB)[0];
 				setMediaPicker(sel_img_sub, false, function (target, f) {
 					const idi = sel_img_sub.dataset.idi;
-					document.getElementById(idi + '_media_sub').value = f.id;
+					document.getElementById(idi + '_media_sub').value        = f.id;
+					document.getElementById(idi + '_title_sub').innerText    = f.title;
+					document.getElementById(idi + '_filename_sub').innerText = f.filename;
 					document.getElementById(idi + '_thumbnail_sub').style.backgroundImage = 'url(' + f.url + ')';
 				}, { multiple: false, type: 'image', title: STR_SEL });
 			}
@@ -193,9 +209,11 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 			const sel_video = it.getElementsByClassName(CLS_SEL_VIDEO)[0];
 			setMediaPicker(sel_video, false, function (target, f) {
 				const idi = sel_video.dataset.idi;
-				document.getElementById(idi + '_caption').value = f.caption;
-				document.getElementById(idi + '_media').value = f.id;
-				document.getElementById(idi + '_thumbnail').src = f.url;
+				document.getElementById(idi + '_caption').value      = f.caption;
+				document.getElementById(idi + '_media').value        = f.id;
+				document.getElementById(idi + '_title').innerText    = f.title;
+				document.getElementById(idi + '_filename').innerText = f.filename;
+				document.getElementById(idi + '_thumbnail').src      = f.url;
 			}, { multiple: false, type: 'video', title: STR_SEL });
 			const v = sel_video.getElementsByTagName('video')[0];
 			v.loop = true;
