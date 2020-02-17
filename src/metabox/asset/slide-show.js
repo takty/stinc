@@ -136,10 +136,16 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 
 		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
 		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
-		it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
-		it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
 		it.getElementsByClassName(CLS_TN_IMG)[0].style.backgroundImage = "url('" + f.url + "')";
-		it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
+		if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+			it.getElementsByClassName(CLS_TITLE)[0].innerText    = '';
+			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
+			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.filename);
+		} else {
+			it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
+			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
+			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
+		}
 
 		it.classList.remove(CLS_ITEM_TEMP_IMG);
 		it.classList.add(CLS_ITEM);
@@ -152,10 +158,16 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 
 		it.getElementsByClassName(CLS_CAP)[0].value          = f.caption;
 		it.getElementsByClassName(CLS_MEDIA)[0].value        = f.id;
-		it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
-		it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
 		it.getElementsByClassName(CLS_TN_IMG)[0].src         = f.url;
-		it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
+		if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+			it.getElementsByClassName(CLS_TITLE)[0].innerText    = '';
+			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
+			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.filename);
+		} else {
+			it.getElementsByClassName(CLS_TITLE)[0].innerText    = f.title;
+			it.getElementsByClassName(CLS_FILENAME)[0].innerText = f.filename;
+			it.getElementsByClassName(CLS_TN_IMG)[0].parentElement.setAttribute('title', f.title + '\n' + f.filename);
+		}
 
 		it.classList.remove(CLS_ITEM_TEMP_VIDEO);
 		it.classList.add(CLS_ITEM);
@@ -192,10 +204,16 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 				const idi = sel_img.dataset.idi;
 				document.getElementById(idi + '_caption').value      = f.caption;
 				document.getElementById(idi + '_media').value        = f.id;
-				document.getElementById(idi + '_title').innerText    = f.title;
-				document.getElementById(idi + '_filename').innerText = f.filename;
 				document.getElementById(idi + '_thumbnail').style.backgroundImage = 'url(' + f.url + ')';
-				document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.title + '\n' + f.filename);
+				if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+					document.getElementById(idi + '_title').innerText    = '';
+					document.getElementById(idi + '_filename').innerText = f.filename;
+					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.filename);
+				} else {
+					document.getElementById(idi + '_title').innerText    = f.title;
+					document.getElementById(idi + '_filename').innerText = f.filename;
+					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.title + '\n' + f.filename);
+				}
 			}, { multiple: false, type: 'image', title: STR_SEL });
 
 			if (is_dual) {
@@ -203,10 +221,16 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 				setMediaPicker(sel_img_sub, false, function (target, f) {
 					const idi = sel_img_sub.dataset.idi;
 					document.getElementById(idi + '_media_sub').value        = f.id;
-					document.getElementById(idi + '_title_sub').innerText    = f.title;
-					document.getElementById(idi + '_filename_sub').innerText = f.filename;
 					document.getElementById(idi + '_thumbnail_sub').style.backgroundImage = 'url(' + f.url + ')';
-					document.getElementById(idi + '_thumbnail_sub').parentElement.setAttribute('title', f.title + '\n' + f.filename);
+					if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+						document.getElementById(idi + '_title_sub').innerText    = '';
+						document.getElementById(idi + '_filename_sub').innerText = f.filename;
+						document.getElementById(idi + '_thumbnail_sub').parentElement.setAttribute('title', f.filename);
+					} else {
+						document.getElementById(idi + '_title_sub').innerText    = f.title;
+						document.getElementById(idi + '_filename_sub').innerText = f.filename;
+						document.getElementById(idi + '_thumbnail_sub').parentElement.setAttribute('title', f.title + '\n' + f.filename);
+					}
 				}, { multiple: false, type: 'image', title: STR_SEL });
 			}
 		} else {
@@ -215,10 +239,16 @@ function st_slide_show_initialize_admin(key, is_dual = false) {
 				const idi = sel_video.dataset.idi;
 				document.getElementById(idi + '_caption').value      = f.caption;
 				document.getElementById(idi + '_media').value        = f.id;
-				document.getElementById(idi + '_title').innerText    = f.title;
-				document.getElementById(idi + '_filename').innerText = f.filename;
 				document.getElementById(idi + '_thumbnail').src      = f.url;
-				document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.title + '\n' + f.filename);
+				if (f.title.length < f.filename.length && f.filename.indexOf(f.title) === 0) {
+					document.getElementById(idi + '_title').innerText    = '';
+					document.getElementById(idi + '_filename').innerText = f.filename;
+					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.filename);
+				} else {
+					document.getElementById(idi + '_title').innerText    = f.title;
+					document.getElementById(idi + '_filename').innerText = f.filename;
+					document.getElementById(idi + '_thumbnail').parentElement.setAttribute('title', f.title + '\n' + f.filename);
+				}
 			}, { multiple: false, type: 'video', title: STR_SEL });
 			const v = sel_video.getElementsByTagName('video')[0];
 			v.loop = true;
