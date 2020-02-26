@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-11
+ * @version 2020-02-26
  *
  */
 
@@ -79,7 +79,7 @@ function get_the_sub_title( $meta_key, $post_id = false ) {
 	global $post;
 	if ( $post_id === false ) $post_id = $post->ID;
 	$title = get_post_meta( $post_id, $meta_key, true );
-	$title = \st\esc_html_br( $title );
+	$title = \st\esc_text_with_br( $title );
 	return $title;
 }
 
