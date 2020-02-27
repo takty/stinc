@@ -5,7 +5,7 @@ namespace st;
  * Custom Option Page
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-21
+ * @version 2020-02-27
  *
  */
 
@@ -30,10 +30,10 @@ class CustomOptionPage {
 
 	public function add_plugin_page() {
 		add_options_page(
-			$this->page_title, 
-			$this->menu_title, 
-			'manage_options', 
-			$this->menu_slug, 
+			$this->page_title,
+			$this->menu_title,
+			'manage_options',
+			$this->menu_slug,
 			[ $this, 'create_admin_page' ]
 		);
 	}
@@ -45,9 +45,9 @@ class CustomOptionPage {
 			<h2><?php echo $this->page_title ?></h2>
 			<form method="post" action="options.php">
 <?php
-				settings_fields( $this->option_key );   
+				settings_fields( $this->option_key );
 				do_settings_sections( $this->menu_slug );
-				submit_button(); 
+				submit_button();
 ?>
 			</form>
 		</div>
@@ -75,7 +75,7 @@ class CustomOptionPage {
 							case 'text'    : $this->callback_input( $key, $opts['type'] ); break;
 							case 'textarea': $this->callback_textarea( $key );             break;
 						}
-					}, 
+					},
 					$this->menu_slug, $sid
 				);
 			}
@@ -87,9 +87,12 @@ class CustomOptionPage {
 
 		foreach ( $this->sections as $sid => $cont ) {
 			foreach ( $cont['fields'] as $key => $opts ) {
+				if ( ! isset( $input[ $key ] ) ) continue;
 				$filter = $opts['filter'];
-				if ( isset( $input[ $key ] ) ) {
+				if ( $filter ) {
 					$new_input[ $key ] = $filter( $input[ $key ] );
+				} else {
+					$new_input[ $key ] = $input[ $key ];
 				}
 			}
 		}
