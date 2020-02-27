@@ -5,7 +5,7 @@ namespace st\rich_editor;
  * Rich Editor Metabox
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
+ * @version 2020-02-27
  *
  */
 
@@ -39,7 +39,7 @@ function add_title_content_meta_box( $key, $sub_key_title, $sub_key_content, $la
 		function ( $post ) use ( $key, $sub_key_title, $sub_key_content ) {
 			wp_nonce_field( $key, "{$key}_nonce" );
 			wp_enqueue_style( 'stinc-field' );
-			$title_placeholder = apply_filters( 'enter_title_here', __( 'Enter title here' ), $post );
+			$title_placeholder = apply_filters( 'enter_title_here', __( 'Add title' ), $post );
 			$title   = get_post_meta( $post->ID, $sub_key_title, true );
 			$content = get_post_meta( $post->ID, $sub_key_content, true );
 		?>
