@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Post)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-18
+ * @version 2020-02-27
  *
  */
 
@@ -93,7 +93,7 @@ class Multilang_Post {
 		global $post;
 		$title = esc_attr( get_post_meta( $post->ID, $this->_key_title . $lang, true ) );
 		$title_name = $this->_key_title . $lang;
-		$title_ph = apply_filters( 'enter_title_here', __( 'Enter title here' ), $post );
+		$title_ph = apply_filters( 'enter_title_here', __( 'Add title' ), $post );
 		wp_nonce_field( "post_$lang", "post_{$lang}_nonce" );
 ?>
 	<div class="st-multilang-title" id="titlewrap_<?php echo $lang ?>">
