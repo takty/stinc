@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-07
+ * @version 2020-03-02
  *
  */
 
@@ -77,22 +77,28 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 			'heading'      => false,
 			'year-heading' => false,
 			'latest'       => false,
+			'sticky'       => false,
 		], $atts );
 
 		$terms = empty( $atts['term'] ) ? false : explode( ',', $atts['term'] );
-		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $args['year_date_function'] );
+		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'] );
 		if ( empty( $items ) ) return '';
 
 		return echo_list( $atts, $items, $post_type, $args['year_format'] );
 	} );
 }
 
-function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $year_date ) {
+function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $sticky = false, $year_date ) {
 	$args = [];
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
+		$latest_count = intval( $latest_count );
 		if ( $term_slug ) $args = \st\append_tax_query( $taxonomy, $term_slug, $args );
-		$ps = \st\get_latest_posts( $post_type, intval( $latest_count ), true, $args );
+		if ( $sticky ) {
+			$ps = \st\get_custom_sticky_and_latest_posts( $post_type, $latest_count, true, $args );
+		} else {
+			$ps = \st\get_latest_posts( $post_type, $latest_count, true, $args );
+		}
 	} else {
 		$args = \st\append_post_type_query( $post_type, -1 );
 		$args = \st\append_ml_tag_query( $args );
