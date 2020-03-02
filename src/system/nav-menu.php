@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-13
+ * @version 2020-03-02
  *
  */
 
@@ -21,6 +21,7 @@ class NavMenu {
 	const CLS_MENU_ANCESTOR = 'menu-ancestor';
 	const CLS_PAGE_PARENT   = 'page-parent';
 	const CLS_PAGE_ANCESTOR = 'page-ancestor';
+	const CLS_MP_ANCESTOR   = 'menu-ancestor-page-ancestor';
 
 	const CACHE_EXPIRATION  = DAY_IN_SECONDS;
 
@@ -106,8 +107,8 @@ class NavMenu {
 		$mis = $this->_get_all_items( $menu_name );
 		$this->_pid_to_menu = $this->_get_menus( $mis );
 		$this->_pid_to_children_state = $this->_get_children_state( $this->_pid_to_menu );
-		$this->_ancestor_ids = $this->_get_menu_ancestors( $mis );
-		$this->_id_to_attr = $this->_get_attributes( $mis );
+		list( $this->_ancestor_ids, $id2pid ) = $this->_get_menu_ancestors( $mis );
+		$this->_id_to_attr = $this->_get_attributes( $mis, $id2pid );
 	}
 
 	public function set_expanded_page_ids( $ids ) {
@@ -410,11 +411,12 @@ class NavMenu {
 				$id = $id2pid[ $id ];
 			}
 		}
-		return $ret;
+		return [ $ret, $id2pid ];
 	}
 
-	protected function _get_attributes( $mis ) {
+	protected function _get_attributes( $mis, $id2pid ) {
 		$ret = [];
+		$pas = [];
 		foreach ( $mis as $mi ) {
 			$cs = [];
 
@@ -433,8 +435,17 @@ class NavMenu {
 			}
 			if ( $this->_is_page_ancestor( $mi ) ) {
 				$cs[] = self::CLS_PAGE_ANCESTOR;
+				$pas[] = $mi;
 			}
 			$ret[ $mi->ID ] = $cs;
+		}
+		foreach ( $pas as $pa ) {
+			$id = $id2pid[ $pa->ID ];
+			while ( $id !== 0 ) {
+				$ret[ $id ][] = self::CLS_MP_ANCESTOR;
+				if ( ! isset( $id2pid[ $id ] ) ) break;
+				$id = $id2pid[ $id ];
+			}
 		}
 		return $ret;
 	}
