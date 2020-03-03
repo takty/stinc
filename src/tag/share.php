@@ -5,7 +5,7 @@ namespace st;
  * Share
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-31
+ * @version 2020-03-03
  *
  */
 
@@ -132,10 +132,10 @@ function the_ogp_image( $logo_src, $image_meta_key, $alt_image_src ) {
 	$src = get_the_ogp_image( $logo_src, $image_meta_key, $alt_image_src );
 	if ( empty( $src ) ) return;
 	$_src = esc_attr( $src );
+	echo "<meta property=\"og:image\" content=\"$_src\">\n";
+
 	if ( get_option( 'is_simply_static_active', false ) ) {
-		echo "<meta property=\"og:image\" content=\"$_src\" style=\"background-image: url('$_src');\">\n";
-	} else {
-		echo "<meta property=\"og:image\" content=\"$_src\">\n";
+		add_action( 'wp_footer', function () use ( $_src ) { echo "<style>#og:image{background-image:url(\"$_src\");}</style>"; }, 1, 1 );
 	}
 }
 
