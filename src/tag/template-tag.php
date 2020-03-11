@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-26
+ * @version 2020-03-12
  *
  */
 
@@ -253,6 +253,7 @@ function create_term_list( $terms, $taxonomy, $before, $sep, $after, $add_link, 
 	foreach ( $terms as $t ) {
 		$cs = [ "$taxonomy-{$t->slug}" ];
 		if ( $t->parent === 0 ) $cs[] = 'root';
+		if ( $t->count  === 0 ) $cs[] = 'empty';
 		if ( $current_term && $current_term->term_id === $t->term_id ) $cs[] = 'current';
 		$cs_str = implode( ' ', $cs );
 
