@@ -5,7 +5,7 @@ namespace st\basic;
  * Basic Customization
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2020-03-16
  *
  */
 
@@ -17,6 +17,7 @@ require_once __DIR__ . '/basic/anti-spam.php';
 require_once __DIR__ . '/basic/custom-admin-bar.php';
 require_once __DIR__ . '/basic/custom-editor.php';
 require_once __DIR__ . '/basic/custom-front.php';
+require_once __DIR__ . '/basic/custom-pdf-thumbnail.php';
 require_once __DIR__ . '/basic/custom-system.php';
 
 require_once __DIR__ . '/basic/default-option.php';
