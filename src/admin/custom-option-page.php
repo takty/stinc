@@ -5,7 +5,7 @@ namespace st;
  * Custom Option Page
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-27
+ * @version 2020-03-18
  *
  */
 
@@ -17,25 +17,37 @@ class CustomOptionPage {
 	private $menu_slug;
 	private $option_key;
 	private $sections;
+	private $as_menu_page;
 
-	public function __construct( $page_title, $menu_title, $menu_slug, $option_key, $sections ) {
-		$this->page_title = $page_title;
-		$this->menu_title = $menu_title;
-		$this->menu_slug  = $menu_slug;
-		$this->option_key = $option_key;
-		$this->sections   = $sections;
+	public function __construct( $page_title, $menu_title, $menu_slug, $option_key, $sections, $as_menu_page = false ) {
+		$this->page_title   = $page_title;
+		$this->menu_title   = $menu_title;
+		$this->menu_slug    = $menu_slug;
+		$this->option_key   = $option_key;
+		$this->sections     = $sections;
+		$this->as_menu_page = $as_menu_page;
 		add_action( 'admin_menu', [ $this, 'add_plugin_page' ] );
 		add_action( 'admin_init', [ $this, 'page_init' ] );
 	}
 
 	public function add_plugin_page() {
-		add_options_page(
-			$this->page_title,
-			$this->menu_title,
-			'manage_options',
-			$this->menu_slug,
-			[ $this, 'create_admin_page' ]
-		);
+		if ( $this->as_menu_page ) {
+			add_menu_page(
+				$this->page_title,
+				$this->menu_title,
+				'edit_pages',
+				$this->menu_slug,
+				[ $this, 'create_admin_page' ]
+			);
+		} else {
+			add_options_page(
+				$this->page_title,
+				$this->menu_title,
+				'manage_options',
+				$this->menu_slug,
+				[ $this, 'create_admin_page' ]
+			);
+		}
 	}
 
 	public function create_admin_page() {
@@ -71,9 +83,11 @@ class CustomOptionPage {
 				add_settings_field(
 					$key, $opts['label'],
 					function () use ( $key, $opts ) {
+						$desc = isset( $opts['description'] ) ? $opts['description'] : '';
 						switch ( $opts['type'] ) {
-							case 'text'    : $this->callback_input( $key, $opts['type'] ); break;
-							case 'textarea': $this->callback_textarea( $key );             break;
+							case 'text'    : $this->callback_input( $key, $opts['type'], $desc ); break;
+							case 'checkbox': $this->callback_checkbox( $key, $desc );             break;
+							case 'textarea': $this->callback_textarea( $key, $desc );             break;
 						}
 					},
 					$this->menu_slug, $sid
@@ -99,16 +113,27 @@ class CustomOptionPage {
 		return $new_input;
 	}
 
-	public function callback_input( $key, $type ) {
+	public function callback_input( $key, $type, $desc = '' ) {
+		$name = $this->option_key . '[' . $key . ']';
 		printf(
-			'<input type="' . $type . '" id="' . $key . '" name="' . $this->option_key . '[' . $key . ']" value="%s" size="100"/>',
-			isset( $this->options[ $key ] ) ? esc_attr( $this->options[ $key ]) : ''
+			'<input type="' . $type . '" id="' . $key . '" name="' . $name . '" value="%s" class="regular-text" aria-describedby="' . $key . '-description">',
+			isset( $this->options[ $key ] ) ? esc_attr( $this->options[ $key ] ) : ''
+		);
+		if ( ! empty( $desc ) ) echo '<p class="description" id="' . $key . '-description">' . esc_html( $desc ) . '</p>';
+	}
+
+	public function callback_checkbox( $key, $desc = '' ) {
+		printf(
+			'<label for="' . $key . '"><input type="checkbox" id="' . $key . '" name="' . $this->option_key . '[' . $key . ']" value="1" %s> ' . esc_html( $desc ) . '</label>',
+			isset( $this->options[ $key ] ) ? 'checked' : ''
 		);
 	}
 
-	public function callback_textarea( $key ) {
+	public function callback_textarea( $key, $desc = '' ) {
+		if ( ! empty( $desc ) ) echo '<label for="' . $key . '">' . esc_html( $desc ) . '</label>';
+		$name = $this->option_key . '[' . $key . ']';
 		printf(
-			'<textarea  id="' . $key . '" name="' . $this->option_key . '[' . $key . ']" rows="10" cols="100">%s</textarea>',
+			'<p><textarea id="' . $key . '" name="' . $name . '" rows="10" class="large-text" aria-describedby="' . $key . '-description">%s</textarea></p>',
 			isset( $this->options[ $key ] ) ? esc_attr( $this->options[ $key ] ) : ''
 		);
 	}
