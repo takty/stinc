@@ -1,12 +1,11 @@
 <?php
 namespace st;
-
 /**
  *
  * Multi-Home Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-05
+ * @version 2020-02-12
  *
  */
 
@@ -22,9 +21,19 @@ class Multihome_Tag {
 	private $_taxonomies = [];
 	private $_suppress_get_terms_filter = false;
 
-	public function __construct( $core, $taxonomy = self::DEFAULT_TAXONOMY ) {
+	public function __construct( $core, $home_to_names, $taxonomy_name, $taxonomy = self::DEFAULT_TAXONOMY ) {
 		$this->_core = $core;
 		$this->_taxonomy = $taxonomy;
+		register_taxonomy( $taxonomy, null, [
+			'hierarchical'      => true,
+			'label'             => $taxonomy_name,
+			'public'            => true,
+			'show_ui'           => true,
+			'rewrite'           => false,
+			'sort'              => true,
+			'show_admin_column' => true
+		] );
+		\st\taxonomy\set_terms( $taxonomy, $home_to_names );
 
 		add_filter( 'get_next_post_join',      [ $this, '_cb_get_adjacent_post_join' ], 10, 5 );
 		add_filter( 'get_previous_post_join',  [ $this, '_cb_get_adjacent_post_join' ], 10, 5 );
