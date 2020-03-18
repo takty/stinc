@@ -125,7 +125,7 @@ class CustomOptionPage {
 	public function callback_checkbox( $key, $desc = '' ) {
 		printf(
 			'<label for="' . $key . '"><input type="checkbox" id="' . $key . '" name="' . $this->option_key . '[' . $key . ']" value="1" %s> ' . esc_html( $desc ) . '</label>',
-			isset( $this->options[ $key ] ) ? 'checked' : ''
+			( isset( $this->options[ $key ] ) && $this->options[ $key ] === '1' ) ? 'checked' : ''
 		);
 	}
 
