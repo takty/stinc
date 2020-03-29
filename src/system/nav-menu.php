@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-02
+ * @version 2020-03-29
  *
  */
 
@@ -54,6 +54,7 @@ class NavMenu {
 	protected $_cur_url;
 	protected $_cur_post_type         = false;
 	protected $_cur_tax               = false;
+	protected $_cur_term_id           = false;
 	protected $_cur_term_archive_urls = [];
 	protected $_cur_is_archive        = false;
 
@@ -76,7 +77,8 @@ class NavMenu {
 			$this->_cur_post_type = get_post_type();
 			if ( is_tax() ) {
 				$queried_object = get_queried_object();
-				$this->_cur_tax = $queried_object->taxonomy;
+				$this->_cur_tax     = $queried_object->taxonomy;
+				$this->_cur_term_id = $queried_object->term_id;
 			}
 			if ( is_single() ) {
 				$tax_names = get_object_taxonomies( $this->_cur_post_type );
@@ -390,7 +392,7 @@ class NavMenu {
 				self::$_custom_post_type_archive[ $this->_cur_post_type ] === $url_ps[ count( $url_ps ) - 1 ]
 			);
 			$is_archive = (
-				$mi->object === $this->_cur_tax ||
+				( $mi->object === $this->_cur_tax && $mi->object_id === $this->_cur_term_id ) ||
 				$mi->object === $this->_cur_post_type ||
 				( ! $this->_cur_is_archive && in_array( $mi->url, $this->_cur_term_archive_urls, true ) )
 			);
