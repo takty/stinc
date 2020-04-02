@@ -256,6 +256,8 @@ function _insert_root( $terms ) {
 	if ( ! empty( $terms ) && class_exists( '\st\OrderedTerm' ) ) {
 		$ot = \st\OrderedTerm::get_instance();
 		$ps = $ot->sort_terms( array_keys( $p_ts ), $terms[0]->taxonomy );
+	} else {
+		$ps = array_keys( $p_ts );
 	}
 	$new_ts = [];
 	foreach ( $ps as $p ) {
