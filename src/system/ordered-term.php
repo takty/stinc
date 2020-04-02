@@ -4,7 +4,7 @@
  * Ordered Term (Adding Order Field (Term Meta) to Taxonomies)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-01-16
+ * @version 2020-04-02
  *
  */
 
@@ -262,16 +262,19 @@ class OrderedTerm {
 	}
 
 	public function _cb_get_the_terms( $terms, $post_id, $taxonomy ) {
-		if ( ! in_array( $taxonomy, $this->_taxonomies, true ) ) return $terms;
+		return $this->sort_terms( $terms, $taxonomy );
+	}
+
+	public function sort_terms( $terms_or_term_ids, $taxonomy ) {
+		if ( ! in_array( $taxonomy, $this->_taxonomies, true ) ) return $terms_or_term_ids;
 		$ts = [];
-		foreach ( $terms as $t ) {
-			$idx = intval( get_term_meta( $t->term_id, $this->_key_order, true ) );
+		foreach ( $terms_or_term_ids as $t ) {
+			$term_id = is_int( $t ) ? $t : $t->term_id;
+			$idx = intval( get_term_meta( $term_id, $this->_key_order, true ) );
 			$ts[] = [ $idx, $t ];
 		}
 		usort ( $ts, function ( $a, $b ) {
-			if ( $a[0] === $b[0] ) {
-				return 0;
-			}
+			if ( $a[0] === $b[0] ) return 0;
 			return ( $a[0] < $b[0] ) ? -1 : 1;
 		} );
 		return array_map( function ( $t ) { return $t[1]; }, $ts );
