@@ -253,16 +253,18 @@ function _insert_root( $terms ) {
 			}
 		}
 	}
+	$new_ts = [];
 	if ( ! empty( $terms ) && class_exists( '\st\OrderedTerm' ) ) {
 		$ot = \st\OrderedTerm::get_instance();
 		$ps = $ot->sort_terms( array_keys( $p_ts ), $terms[0]->taxonomy );
+		foreach ( $ps as $p ) {
+			$ts = $p_ts[ $p ];
+			foreach ( $ts as $t ) $new_ts[] = $t;
+		}
 	} else {
-		$ps = array_keys( $p_ts );
-	}
-	$new_ts = [];
-	foreach ( $ps as $p ) {
-		$ts = $p_ts[ $p ];
-		foreach ( $ts as $t ) $new_ts[] = $t;
+		foreach ( $p_ts as $p => $ts ) {
+			foreach ( $ts as $t ) $new_ts[] = $t;
+		}
 	}
 	return $new_ts;
 }
