@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-12
+ * @version 2020-04-02
  *
  */
 
@@ -233,17 +233,34 @@ function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after
 }
 
 function _insert_root( $terms ) {
-	$new_ts = [];
+	$p_ts = [];
 	$added = [];
 	foreach ( $terms as $t ) {
 		if ( $t->parent !== 0 ) {
 			list( $p ) = \st\taxonomy\get_term_root( $t, 0 );
 			if ( ! isset( $added[ $p->term_id ] ) ) {
-				$new_ts[] = $p;
+				$p_ts[ $p->term_id ] = [ $p ];
 				$added[ $p->term_id ] = true;
 			}
+			if ( ! isset( $added[ $t->term_id ] ) ) {
+				$p_ts[ $p->term_id ][] = $t;
+				$added[ $t->term_id ] = true;
+			}
+		} else {
+			if ( ! isset( $added[ $t->term_id ] ) ) {
+				$p_ts[ $t->term_id ] = [ $t ];
+				$added[ $t->term_id ] = true;
+			}
 		}
-		$new_ts[] = $t;
+	}
+	if ( ! empty( $terms ) && class_exists( '\st\OrderedTerm' ) ) {
+		$ot = \st\OrderedTerm::get_instance();
+		$ps = $ot->sort_terms( array_keys( $p_ts ), $terms[0]->taxonomy );
+	}
+	$new_ts = [];
+	foreach ( $ps as $p ) {
+		$ts = $p_ts[ $p ];
+		foreach ( $ts as $t ) $new_ts[] = $t;
 	}
 	return $new_ts;
 }
