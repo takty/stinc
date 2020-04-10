@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-17
+ * @version 2020-04-10
  *
  */
 
@@ -285,13 +285,14 @@ class SlideShow {
 
 	public function echo_slide_items( $post_id = false, $size = 'medium' ) {
 		if ( $post_id === false ) $post_id = get_the_ID();
+		$dom_id = "{$this->_id}-$post_id";
 		$its = $this->_get_items( $post_id, $size );
 
 		foreach ( $its as $idx => $it ) {
-			$event = "st_slide_show_page('{$this->_id}_$post_id', {$idx});";
+			$event = "st_slide_show_page('$dom_id', $idx);";
 			if ( $it['type'] === self::TYPE_IMAGE ) {
 				$_img   = esc_url( $it['image'] );
-				$_style = "background-image: url('{$_img}');";
+				$_style = "background-image: url('$_img');";
 ?>
 				<li><a href="javascript:void(0)" onclick="<?php echo $event ?>" style="<?php echo $_style ?>"></a></li>
 <?php
