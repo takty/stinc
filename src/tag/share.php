@@ -5,7 +5,7 @@ namespace st;
  * Share
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-03
+ * @version 2020-04-10
  *
  */
 
@@ -103,11 +103,11 @@ function _get_structured_data_url() {
 // Open Graph Protocol ---------------------------------------------------------
 
 
-function the_ogp( $logo_src = '', $image_meta_key = false, $alt_image_src = false ) {
+function the_ogp( $logo_src = '', $image_meta_key = false, $alt_image_src = false, $alt_description = false ) {
 	echo '<meta property="og:type" content="' . esc_attr( is_single() ? 'article' : 'website' ) . "\">\n";
 	the_ogp_url();
 	the_ogp_title();
-	the_ogp_description();
+	the_ogp_description( $alt_description );
 	the_ogp_site_name();
 	the_ogp_image( $logo_src, $image_meta_key, $alt_image_src );
 }
@@ -120,8 +120,8 @@ function the_ogp_title() {
 	echo '<meta property="og:title" content="' . esc_attr( get_the_ogp_title() ) . "\">\n";
 }
 
-function the_ogp_description() {
-	echo '<meta property="og:description" content="' . esc_attr( get_the_ogp_description() ) . "\">\n";
+function the_ogp_description( $alt_description ) {
+	echo '<meta property="og:description" content="' . esc_attr( get_the_ogp_description( $alt_description ) ) . "\">\n";
 }
 
 function the_ogp_site_name() {
@@ -166,7 +166,8 @@ function get_the_ogp_title( $append_site_name = false ) {
 	return $title;
 }
 
-function get_the_ogp_description() {
+function get_the_ogp_description( $alt_description ) {
+	if ( $alt_description !== false ) return $alt_description;
 	$desc = '';
 	if ( _ogp_is_singular() ) {
 		if ( has_excerpt() ) {
