@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-07-02
+ * @version 2020-04-20
  *
  */
 
@@ -60,7 +60,7 @@ class Multilang_Core {
 			add_rewrite_rule( $key, $val, 'top' );
 		}
 
-		add_filter( 'tag_rewrite_rules',      [ $this, '_add_lang_rewrite_rules' ] );
+		add_filter( 'post_tag_rewrite_rules', [ $this, '_add_lang_rewrite_rules' ] );
 		add_filter( 'category_rewrite_rules', [ $this, '_add_lang_rewrite_rules' ] );
 		add_filter( 'date_rewrite_rules',     [ $this, '_add_lang_rewrite_rules' ] );
 		add_filter( 'search_rewrite_rules',   [ $this, '_add_lang_rewrite_rules' ] );
