@@ -5,7 +5,7 @@ namespace st;
  * IP Restriction (IPv4)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2020-05-15
  *
  */
 
@@ -54,6 +54,15 @@ class IpRestriction {
 				$this->_post_types[] = $ps;
 			}
 		}
+	}
+
+	public function is_ip_restricted() {
+		global $wp_query;
+		if ( $this->is_allowed() ) return false;
+		if ( ! $wp_query->queried_object_id ) return false;
+		$mk = "'" . self::PMK_IP_RESTRICTION . "'";
+		if ( false === strpos( $wp_query->request, $mk ) ) return false;
+		return true;
 	}
 
 	public function is_allowed() {
