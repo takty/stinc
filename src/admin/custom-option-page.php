@@ -5,7 +5,7 @@ namespace st;
  * Custom Option Page
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-18
+ * @version 2020-05-21
  *
  */
 
@@ -85,9 +85,9 @@ class CustomOptionPage {
 					function () use ( $key, $opts ) {
 						$desc = isset( $opts['description'] ) ? $opts['description'] : '';
 						switch ( $opts['type'] ) {
-							case 'text'    : $this->callback_input( $key, $opts['type'], $desc ); break;
 							case 'checkbox': $this->callback_checkbox( $key, $desc );             break;
 							case 'textarea': $this->callback_textarea( $key, $desc );             break;
+							default:         $this->callback_input( $key, $opts['type'], $desc ); break;
 						}
 					},
 					$this->menu_slug, $sid
