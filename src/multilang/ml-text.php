@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Text)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-21
+ * @version 2020-05-22
  *
  */
 
@@ -14,8 +14,8 @@ namespace st;
 class Multilang_Text {
 
 	private $_core;
-	private $_text_dic = [];
 	private $_text_to_lang = [];
+	private $_text_to_context_to_lang = [];
 
 	private $_date_format_dic = [];
 	private $_is_date_format_added = false;
@@ -23,15 +23,18 @@ class Multilang_Text {
 	public function __construct( $core ) {
 		$this->_core = $core;
 		add_filter( 'gettext', [ $this, '_cb_gettext' ], 10, 3 );
+		add_filter( 'gettext_with_context', [ $this, '_cb_gettext_with_context' ], 10, 4 );
 	}
 
 	public function add_text_translation( $text, $lang, $trans ) {
-		if ( ! isset( $this->_text_dic[ $lang ] ) ) $this->_text_dic[ $lang ] = [];
-		$lang_dic = &$this->_text_dic[ $lang ];
-		$lang_dic[ $text ] = $trans;
-
 		if ( ! isset( $this->_text_to_lang[ $text ] ) ) $this->_text_to_lang[ $text ] = [];
 		$this->_text_to_lang[ $text ][ $lang ] = $trans;
+	}
+
+	public function add_text_translation_with_context( $text, $context, $lang, $trans ) {
+		if ( ! isset( $this->_text_to_context_to_lang[ $text ] ) ) $this->_text_to_context_to_lang[ $text ] = [];
+		if ( ! isset( $this->_text_to_context_to_lang[ $text ][ $context ] ) ) $this->_text_to_context_to_lang[ $text ][ $context ] = [];
+		$this->_text_to_context_to_lang[ $text ][ $context ][ $lang ] = $trans;
 	}
 
 	public function add_date_format_translation( $lang_s, $year = 'Y', $month = 'Y-m', $day = 'Y-m-d' ) {
@@ -49,6 +52,17 @@ class Multilang_Text {
 			$dict = &$this->_text_to_lang[ $text ];
 			if ( $lang === false ) $lang = $this->_core->get_site_lang();
 			if ( isset( $dict[ $lang ] ) ) return $dict[ $lang ];
+		}
+		return $text;
+	}
+
+	public function translate_text_with_context( $text, $context, $lang = false ) {
+		if ( isset( $this->_text_to_context_to_lang[ $text ] ) ) {
+			if ( isset( $this->_text_to_context_to_lang[ $text ][ $context ] ) ) {
+				$dict = &$this->_text_to_context_to_lang[ $text ][ $context ];
+				if ( $lang === false ) $lang = $this->_core->get_site_lang();
+				if ( isset( $dict[ $lang ] ) ) return $dict[ $lang ];
+			}
 		}
 		return $text;
 	}
@@ -84,20 +98,37 @@ class Multilang_Text {
 	public function _cb_gettext( $translation, $text, $domain ) {
 		if ( isset( $this->_text_to_lang[ $text ] ) ) {
 			$dict = &$this->_text_to_lang[ $text ];
-			if ( is_admin() ) {
-				$lang_c = explode( '_', get_user_locale() );
-				$lang = $lang_c[0];
-			} else {
-				$lang = $this->_core->get_site_lang();
-			}
+			$lang = $this->_get_lang();
 			if ( isset( $dict[ $lang ] ) ) return $dict[ $lang ];
 			return $text;
 		}
 		return $translation;
 	}
 
+	public function _cb_gettext_with_context( $translation, $text, $context, $domain ) {
+		if ( isset( $this->_text_to_context_to_lang[ $text ] ) ) {
+			if ( isset( $this->_text_to_context_to_lang[ $text ][ $context ] ) ) {
+				$dict = &$this->_text_to_context_to_lang[ $text ][ $context ];
+				$lang = $this->_get_lang();
+				if ( isset( $dict[ $lang ] ) ) return $dict[ $lang ];
+				return $text;
+			}
+		}
+		return $translation;
+	}
+
 
 	// Private Functions -------------------------------------------------------
+
+	private function _get_lang() {
+		if ( is_admin() ) {
+			$lang_c = explode( '_', get_user_locale() );
+			$lang = $lang_c[0];
+		} else {
+			$lang = $this->_core->get_site_lang();
+		}
+		return $lang;
+	}
 
 	private function _get_date_format_lang( $type, $lang ) {
 		if ( ! isset( $this->_date_format_dic[ $lang ] ) ) return false;
