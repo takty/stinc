@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-02
+ * @version 2020-05-22
  *
  */
 
@@ -32,6 +32,73 @@ function add_page_navigation_shortcode() {
 
 // -----------------------------------------------------------------------------
 
+
+function add_youtube_shortcode() {
+	add_shortcode( 'youtube', function ( $atts ) {
+		extract( shortcode_atts( [ 'id' => '', 'width' => '', 'aspect' => '16:9' ], $atts ) );
+		if ( empty( $id ) ) return;
+		$_id = esc_attr( $id );
+		list( $defw, $defh ) = _extract_aspect_size( $aspect );
+
+		ob_start();
+		if ( ! empty( $width ) ) echo "<div style=\"max-width:{$width}px\">";
+?>
+		<iframe
+			src="https://www.youtube.com/embed/<?php echo $_id ?>"
+			width="<?php echo $defw ?>"
+			height="<?php echo $defh ?>"
+			frameborder="0"
+			allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+			allowfullscreen
+		></iframe>
+<?php
+		if ( ! empty( $width ) ) echo '</div>';
+		return ob_get_clean();
+	} );
+}
+
+function add_vimeo_shortcode() {
+	add_shortcode( 'vimeo', function ( $atts ) {
+		extract( shortcode_atts( [ 'id' => '', 'width' => '', 'aspect' => '16:9' ], $atts ) );
+		if ( empty( $id ) ) return;
+		$_id = esc_attr( $id );
+		list( $defw, $defh ) = _extract_aspect_size( $aspect );
+
+		ob_start();
+		if ( ! empty( $width ) ) echo "<div style=\"max-width:{$width}px\">";
+?>
+		<iframe
+			src="https://player.vimeo.com/video/<?php echo $_id ?>"
+			width="<?php echo $defw ?>"
+			height="<?php echo $defh ?>"
+			frameborder="0"
+			allow="autoplay; fullscreen"
+			allowfullscreen
+		></iframe>
+<?php
+		if ( ! empty( $width ) ) echo '</div>';
+		return ob_get_clean();
+	} );
+}
+
+function _extract_aspect_size( $aspect ) {
+	$aw = 16;
+	$ah = 9;
+	if ( ! empty( $aspect ) ) {
+		$as = explode( ':', $aspect );
+		if ( count( $as ) === 2 ) {
+			$w = floatval( $as[0] );
+			$h = floatval( $as[1] );
+			if ( $w !== 0 && $h !== 0 ) {
+				$aw = $w;
+				$ah = $h;
+			}
+		}
+	}
+	$defw = 1920;
+	$defh = intval( $defw * $ah / $aw );
+	return [ $defw, $defh ];
+}
 
 function add_instagram_shortcode() {
 	add_shortcode( 'instagram', function ( $atts ) {
