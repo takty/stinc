@@ -6,7 +6,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-12-26
+ * @version 2020-05-29
  *
  */
 
@@ -252,7 +252,7 @@ function add_post_meta_textarea_postfix( $post_id, $key, $postfixes, $label ) {
 function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 'text' ) {
 	wp_enqueue_style( 'stinc-field' );
 ?>
-	<div class="stile-field-group">
+	<div class="stinc-field-group">
 <?php
 	foreach ( $postfixes as $pf ) {
 		$_val = isset( $values[ $pf ] ) ? esc_attr( $values[ $pf ] ) : '';
@@ -274,7 +274,7 @@ function output_input_row_postfix( $label, $key, $postfixes, $values, $type = 't
 function output_textarea_row_postfix( $label, $key, $postfixes, $values, $rows = 2 ) {
 	wp_enqueue_style( 'stinc-field' );
 ?>
-	<div class="stile-field-group">
+	<div class="stinc-field-group">
 <?php
 	foreach ( $postfixes as $pf ) {
 		$_val = isset( $values[ $pf ] ) ? esc_textarea( $values[ $pf ] ) : '';
