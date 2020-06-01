@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-29
+ * @version 2020-06-01
  *
  */
 
@@ -22,6 +22,8 @@ class NavMenu {
 	const CLS_PAGE_PARENT   = 'page-parent';
 	const CLS_PAGE_ANCESTOR = 'page-ancestor';
 	const CLS_MP_ANCESTOR   = 'menu-ancestor-page-ancestor';
+	const CLS_SEPARATOR     = 'separator';
+	const CLS_GROUP         = 'group';
 
 	const CACHE_EXPIRATION  = DAY_IN_SECONDS;
 
@@ -257,12 +259,12 @@ class NavMenu {
 		if ( ! empty( $mi->classes ) ) {
 			$opt_cls = trim( implode( ' ', $mi->classes ) );
 			if ( ! empty( $opt_cls ) ) {
-				if ( ! empty( $cls ) ) $cls .= ' ';
-				$cls .= $opt_cls;
+				$cls .= ( empty( $cls ) ? '' : ' ' ) . $opt_cls;
 			}
 		}
 		$is_sep = ( $mi->url === '#' ) && mb_ereg_match( '-+', $mi->title );
-		if ( $is_sep ) $cls .= 'separator';
+		if ( $is_sep ) $cls .= ( empty( $cls ) ? '' : ' ' ) . self::CLS_SEPARATOR;
+		if ( ! $is_sep && $mi->url === '#' ) $cls .= ( empty( $cls ) ? '' : ' ' ) . self::CLS_GROUP;
 
 		$li_cls  = empty( $cls ) ? '' : " class=\"$cls\"";
 		$li_id   = " id=\"menu-item-{$mi->ID}\"";
