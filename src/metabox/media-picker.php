@@ -5,7 +5,7 @@ namespace st;
  * Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2020-06-04
  *
  */
 
@@ -101,7 +101,7 @@ class MediaPicker {
 		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
 		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
 		if ( empty( $_POST[ $this->_key ] ) ) return;  // Do not save before JS is executed
-		$this->_save_items( $post_id );
+		$this->save_items( $post_id );
 	}
 
 
@@ -110,7 +110,11 @@ class MediaPicker {
 
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
-		$its = $this->get_items( $post->ID );
+		$this->output_html( $post->ID );
+	}
+
+	public function output_html( $post_id = false ) {
+		$its = $this->get_items( $post_id );
 ?>
 		<input type="hidden" <?php \st\field\name_id( $this->_id ) ?> value="" />
 		<div class="<?php echo self::CLS_BODY ?>">
@@ -169,7 +173,7 @@ class MediaPicker {
 	// -------------------------------------------------------------------------
 
 
-	private function _save_items( $post_id ) {
+	public function save_items( $post_id ) {
 		$skeys = [ 'media', 'url', 'title', 'filename', 'delete' ];
 
 		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $skeys );
