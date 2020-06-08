@@ -111,7 +111,11 @@ class MediaPicker {
 
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
-		$its = $this->get_items( $post->ID );
+		$this->output_html( $post->ID );
+	}
+
+	public function output_html( $post_id = false ) {
+		$its = $this->get_items( $post_id );
 ?>
 		<input type="hidden" <?php \st\field\name_id( $this->_id ) ?> value="" />
 		<div class="<?php echo self::CLS_BODY ?>">
@@ -201,4 +205,5 @@ function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
 }
 function save_meta_box( $post_id, $key ) { \st\MediaPicker::get_instance( $key )->save_meta_box( $post_id ); }
 
+function output_html( $key, $post_id ) { \st\MediaPicker::get_instance( $key )->output_html( $post_id ); }
 function save_items( $post_id, $key ) { \st\MediaPicker::get_instance( $key )->save_items( $post_id ); }
