@@ -18,7 +18,7 @@ function append_post_type_query( $post_type, $post_per_page, $args = [] ) {
 }
 
 function append_tax_query( $taxonomy, $term_slug_s, $args = [] ) {
-	if ( is_string( $term_slug_s ) && strpos( $term_slug_s, ',' ) !== -1 ) {
+	if ( is_string( $term_slug_s ) && strpos( $term_slug_s, ',' ) !== false ) {
 		$term_slug_s = array_map( function ( $e ) { return trim( $e ); }, explode( ',', $term_slug_s ) );
 	}
 	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
