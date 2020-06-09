@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-05-22
+ * @version 2020-06-09
  *
  */
 
@@ -147,7 +147,7 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 			'sticky'       => false,
 		], $atts );
 
-		$terms = empty( $atts['term'] ) ? false : explode( ',', $atts['term'] );
+		$terms = empty( $atts['term'] ) ? false : $atts['term'];
 		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'] );
 		if ( empty( $items ) ) return '';
 
