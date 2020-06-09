@@ -5,7 +5,7 @@ namespace st;
  * Query
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-24
+ * @version 2020-06-09
  *
  */
 
@@ -18,12 +18,14 @@ function append_post_type_query( $post_type, $post_per_page, $args = [] ) {
 }
 
 function append_tax_query( $taxonomy, $term_slug_s, $args = [] ) {
-	$term_slugs = is_array( $term_slug_s ) ? implode( ',', $term_slug_s ) : $term_slug_s;
+	if ( is_string( $term_slug_s ) && strpos( $term_slug_s, ',' ) !== -1 ) {
+		$term_slug_s = array_map( function ( $e ) { return trim( $e ); }, explode( ',', $term_slug_s ) );
+	}
 	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
 	$args['tax_query'][] = [
 		'taxonomy' => $taxonomy,
 		'field'    => 'slug',
-		'terms'    => $term_slugs
+		'terms'    => $term_slug_s
 	];
 	return $args;
 }
