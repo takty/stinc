@@ -5,7 +5,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-05-29
+ * @version 2020-06-18
  *
  */
 
@@ -15,7 +15,7 @@ add_action( 'admin_enqueue_scripts', function () {
 
 	wp_register_script( 'picker-media',      \st\abs_url( $url_to, './../metabox/asset/lib/picker-media.min.js' ), [], 1.0 );
 	wp_register_script( 'flatpickr',         \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.min.js' ), [], 1.0 );
-	wp_register_script( 'flatpickr.l10n.ja', \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.l10n.ja.min.js' ), 1.0 );
+	wp_register_script( 'flatpickr.l10n.ja', \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.l10n.ja.min.js' ), [], 1.0 );
 	wp_register_style ( 'flatpickr',         \st\abs_url( $url_to, './../metabox/asset/lib/flatpickr.min.css' ) );
 
 	wp_register_script( 'stinc-field', \st\abs_url( $url_to, './asset/field.min.js' ), ['picker-media'], 1.0 );
