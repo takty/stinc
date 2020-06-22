@@ -5,7 +5,7 @@ namespace st\editor_style;
  * Editor Styles (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2020-06-22
  *
  * TinyMCE Advanced Setting:
  * {"settings":{"toolbar_1":"formatselect,bold,italic,underline,strikethrough,superscript,subscript,bullist,numlist,alignleft,aligncenter,alignright,link,unlink","toolbar_2":"undo,redo,styleselect,removeformat,forecolor,backcolor","toolbar_3":"","toolbar_4":"","toolbar_classic_block":"formatselect,bold,italic,blockquote,bullist,numlist,alignleft,aligncenter,alignright,link,forecolor,backcolor,table,wp_help","toolbar_block":"core\/bold,core\/italic,core\/link,tadv\/removeformat","toolbar_block_side":[],"panels_block":"","options":"menubar_block,menubar,merge_toolbars,advlist","plugins":"table,advlist"},"admin_settings":{"options":"hybrid_mode,classic_paragraph_block,no_autop","disabled_editors":""}}
@@ -16,7 +16,7 @@ namespace st\editor_style;
 require_once __DIR__ . '/../util/url.php';
 
 
-function initialize( $url_to = false, $row_index = 2 ) {
+function initialize( $url_to = false, $row_index = 2, $opts = [] ) {
 	if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) ) return;
 
 	if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
@@ -34,52 +34,62 @@ function initialize( $url_to = false, $row_index = 2 ) {
 		return $buttons;
 	}, 10 );
 
-	_add_style_formats();
+	_add_style_formats( $opts );
 	_add_quick_tags();
 }
 
-function _add_style_formats() {
-	add_filter( 'tiny_mce_before_init', function ( $settings ) {
+function _add_style_formats( $opts ) {
+	add_filter( 'tiny_mce_before_init', function ( $settings ) use ( $opts ) {
+		$ls = array_merge( [
+			'button'          => 'リンク・ボタン',
+			'frame'           => '囲み',
+			'frame-alt'       => '囲み・他',
+			'tab-page'        => 'タブ・ページ',
+			'pseudo-tab-page' => '擬似タブ・ページ',
+			'clear'           => 'フロート解除',
+		], isset( $opts['labels'] ) ? $opts['labels'] : [] );
+
 		$formats = [];
 		if ( isset( $settings['style_formats'] ) ) {
 			$formats = json_decode( $settings['style_formats'] );
 		}
 		$formats = array_merge( $formats, [
 			[
-				'title'    => 'リンク・ボタン',
+				'title'    => $ls['button'],
 				'selector' => 'a',
 				'classes'  => 'button'
 			],
 			[
-				'title'   => '囲み',
+				'title'   => $ls['frame'],
 				'block'   => 'div',
 				'classes' => 'frame',
 				'wrapper' => true
 			],
 			[
-				'title'   => '囲み・他',
+				'title'   => $ls['frame-alt'],
 				'block'   => 'div',
 				'classes' => 'frame-alt',
 				'wrapper' => true
 			],
 			[
-				'title'   => 'タブ・ページ',
+				'title'   => $ls['tab-page'],
 				'block'   => 'div',
 				'classes' => 'tab-page',
 				'wrapper' => true
 			],
 			[
-				'title'   => '擬似タブ・ページ',
+				'title'   => $ls['pseudo-tab-page'],
 				'block'   => 'div',
 				'classes' => 'pseudo-tab-page',
 				'wrapper' => true
 			],
 			[
-				'title'   => 'フロート解除',
+				'title'   => $ls['clear'],
 				'block'   => 'div',
 				'classes' => 'clear'
 			]
 		] );
+		if ( isset( $opts['formats'] ) ) $formats = array_merge( $formats, $opts['formats'] );
 		$settings['style_formats'] = json_encode( $formats );
 		return $settings;
 	} );
