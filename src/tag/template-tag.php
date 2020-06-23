@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-04-02
+ * @version 2020-06-24
  *
  */
 
@@ -107,7 +107,7 @@ function echo_content( $content ) {
 }
 
 function the_mb_excerpt( $count = 160 ) {
-	$orig = get_the_excerpt();
+	$orig = \st\remove_continuous_spaces( get_the_excerpt() );
 	$text = \st\mb_trim( mb_strimwidth( $orig, 0, $count ) );
 	if ( ! empty( $text ) && $orig !== $text ) $text = esc_html( $text ) . '...';
 	echo $text;

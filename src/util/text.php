@@ -5,13 +5,19 @@ namespace st;
  * Text Processing Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2020-06-24
  *
  */
 
 
 function mb_trim( $str ) {
 	return preg_replace( '/\A[\p{C}\p{Z}]++|[\p{C}\p{Z}]++\z/u', '', $str );
+}
+
+function remove_continuous_spaces( $str ) {
+	$str = preg_replace( '/　/', ' ', $str );
+	$str = preg_replace( '/\s+/', ' ', $str );
+	return $str;
 }
 
 
