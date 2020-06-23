@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-23
+ * @version 2020-06-24
  *
  */
 
@@ -215,8 +215,8 @@ class BackgroundImage {
 	}
 
 	private function _create_dummy_style( $_urls ) {
-		$style = '<style>dummy{';
-		foreach ( $_urls as $_url ) $style .= "dummy:url('$_url');";
+		$style = '<style>stinc{';
+		foreach ( $_urls as $_url ) $style .= "p:url('$_url');";
 		$style .= '}</style>';
 		return $style;
 	}
