@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
+ * @version 2020-06-23
  *
  */
 
@@ -84,6 +84,12 @@ class Multilang_Tag {
 		return $sl_term->term_id;
 	}
 
+	private function _get_tag_tt_id() {
+		$sl = $this->_core->get_site_lang();
+		$sl_term = get_term_by( 'slug', $sl, $this->_taxonomy );
+		return $sl_term->term_taxonomy_id;
+	}
+
 	public function _cb_get_adjacent_post_where( $where, $in_same_term, $excluded_terms, $taxonomy, $post ) {  // Private
 		if ( ! $in_same_term || ! in_array( $post->post_type, $this->_post_types, true ) ) return $where;
 
@@ -101,8 +107,12 @@ class Multilang_Tag {
 			$join .= " LEFT JOIN $wpdb->term_relationships AS tr ON ($wpdb->posts.ID = tr.object_id)";
 			$join .= " LEFT JOIN $wpdb->term_taxonomy AS tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id)";
 		} else if ( is_search() ) {
-			$join .= " LEFT JOIN $wpdb->term_relationships AS tr ON ($wpdb->posts.ID = tr.object_id)";
-			$join .= $wpdb->prepare( " LEFT JOIN $wpdb->term_taxonomy AS tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id AND tt.taxonomy = %s)", $this->_taxonomy );
+			$terms = get_terms( $this->_taxonomy );
+			if ( is_array( $terms ) && 0 < count( $terms ) ) {
+				$tt_ids = array_map( function ( $t ) { return $t->term_taxonomy_id; }, $terms );
+				$in = 'IN (' . implode( ', ', $tt_ids ) . ')';
+				$join .= " LEFT JOIN $wpdb->term_relationships AS tr ON ($wpdb->posts.ID = tr.object_id) AND (tr.term_taxonomy_id $in)";
+			}
 		}
 		return $join;
 	}
@@ -116,7 +126,7 @@ class Multilang_Tag {
 			$where .= $wpdb->prepare( " AND tt.term_id = %d", $this->_get_tag_id() );
 		} else if ( is_search() ) {
 			$ps = "'" . implode( "', '", $this->_post_types ) . "'";
-			$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps) OR tt.term_id = %d)", $this->_get_tag_id() );
+			$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps) OR tr.term_taxonomy_id = %d)", $this->_get_tag_tt_id() );
 		}
 		return $where;
 	}

@@ -5,7 +5,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2020-06-23
  *
  */
 
@@ -22,7 +22,8 @@ class Search {
 	// -------------------------------------------------------------------------
 
 
-	private $_is_slash_in_query_enabled = false;
+	private $_is_slash_in_query_enabled  = false;
+	private $_is_extended_search_enabled = false;
 
 	private $_meta_keys   = [];
 	private $_post_types  = [];
@@ -41,6 +42,10 @@ class Search {
 	public function set_slash_in_query_enabled( $enabled ) {
 		$this->_is_slash_in_query_enabled = $enabled;
 		$this->ensure_request_filter_added();
+	}
+
+	public function set_extended_search_enabled( $enabled ) {
+		$this->_is_extended_search_enabled = $enabled;
 	}
 
 	public function set_blank_search_page_enabled( $enabled ) {
@@ -142,6 +147,8 @@ class Search {
 		add_filter( 'posts_search', [ $this, '_cb_posts_search' ], 10, 2 );
 		add_filter( 'posts_join', [ $this, '_cb_posts_join' ], 10, 2 );
 		add_filter( 'posts_groupby', [ $this, '_cb_posts_groupby' ], 10, 2 );
+		add_filter( 'posts_search_orderby', [ $this, '_cb_posts_search_orderby' ], 10, 2 );
+		add_filter( 'posts_request', [ $this, '_cb_posts_request' ], 10, 2 );
 		$this->_posts_search_filter_added = true;
 	}
 
@@ -232,7 +239,17 @@ class Search {
 		$searchand = '';
 		$exclusion_prefix = apply_filters( 'wp_query_search_exclusion_prefix', '-' );
 
-		foreach ( $q['search_terms'] as $term ) {
+		if ( $this->_is_extended_search_enabled ) {
+			$search_terms = $this->extend_search_terms( $q['search_terms'], $exclusion_prefix );
+		} else {
+			$search_terms = $q['search_terms'];
+		}
+		foreach ( $search_terms as $term ) {
+			if ( $this->_is_extended_search_enabled && is_array( $term ) ) {
+				$search .= "$searchand(" . $this->create_extended_query( $term ) . ')';
+				$searchand = ' AND ';
+				continue;
+			}
 			$exclude = $exclusion_prefix && ( $exclusion_prefix === substr( $term, 0, 1 ) );
 			if ( $exclude ) {
 				$like_op  = 'NOT LIKE';
@@ -242,9 +259,13 @@ class Search {
 				$like_op  = 'LIKE';
 				$andor_op = 'OR';
 			}
+			if ( $n && ! $exclude ) {
+				$like                        = '%' . $wpdb->esc_like( $term ) . '%';
+				$q['search_orderby_title'][] = $wpdb->prepare( "{$wpdb->posts}.post_title LIKE %s", $like );
+			}
 			$like = $n . $wpdb->esc_like( $term ) . $n;
 			// Add post_meta
-			$search .= $wpdb->prepare( "{$searchand}(($wpdb->posts.post_title $like_op %s) $andor_op ($wpdb->posts.post_content $like_op %s) $andor_op (stinc_search.meta_value $like_op %s))", $like, $like, $like );
+			$search .= $wpdb->prepare( "{$searchand}(($wpdb->posts.post_title $like_op %s) $andor_op ({$wpdb->posts}.post_excerpt $like_op %s) $andor_op ($wpdb->posts.post_content $like_op %s) $andor_op (stinc_search.meta_value $like_op %s))", $like, $like, $like, $like );
 			$searchand = ' AND ';
 		}
 		if ( ! empty( $search ) ) {
@@ -279,9 +300,88 @@ class Search {
 		return $groupby;
 	}
 
+	public function _cb_posts_search_orderby( $orderby, $query ) {
+		global $wpdb;
+		if ( $this->_is_extended_search_enabled ) {
+			$orderby .= ( $orderby ? ', ' : '' ) . "count({$wpdb->posts}.ID) DESC";
+		}
+		return $orderby;
+	}
+
+	public function _cb_posts_request( $request, $query ) {
+		global $wpdb;
+		if ( $this->_is_extended_search_enabled && $query->is_search() && $query->is_main_query() ) {
+			$request = str_replace( '.* FROM ', ".*, count({$wpdb->posts}.ID) FROM ", $request );
+		}
+		return $request;
+	}
+
 
 	// Private Functions -------------------------------------------------------
 
+
+	private function create_extended_query( $likes ) {
+		global $wpdb;
+		$search = '';
+		$sh = '';
+		foreach ( $likes as $like ) {
+			$search .= $wpdb->prepare( "{$sh}(($wpdb->posts.post_title LIKE %s) OR ({$wpdb->posts}.post_excerpt LIKE %s) OR ($wpdb->posts.post_content LIKE %s) OR (stinc_search.meta_value LIKE %s))", $like, $like, $like, $like );
+			$sh = ' OR ';
+		}
+		return $search;
+	}
+
+	private function extend_search_terms( $terms, $exclusion_prefix ) {
+		$ret = [];
+		foreach ( $terms as $term ) {
+			$exclude = $exclusion_prefix && ( $exclusion_prefix === substr( $term, 0, 1 ) );
+			if ( $exclude ) {
+				$ret[] = $term;
+				continue;
+			}
+			$len = mb_strlen( $term );
+			if ( 4 <= $len && $len <= 10 ) {
+				$ret[] = $this->split_term( $term );
+			} else {
+				$ret[] = $term;
+			}
+		}
+		return $ret;
+	}
+
+	public function split_term( $term ) {
+		global $wpdb;
+		$bis = [];
+		$chs = preg_split( "//u", $term, -1, PREG_SPLIT_NO_EMPTY );
+		$sws = array_map( function ( $ch ) { return mb_strwidth( $ch ); }, $chs );
+
+		$temp = '';
+		foreach ( $chs as $i => $ch ) {
+			if ( $sws[ $i ] === 2 ) {
+				if ( $temp !== '' ) {
+					$bis[] = $temp;
+					$temp = '';
+				}
+				if ( isset( $chs[ $i + 1 ] ) && $sws[ $i + 1 ] === 2 ) {
+					$bis[] = $ch . $chs[ $i + 1 ];
+				}
+			} else {
+				$temp .= $ch;
+			}
+		}
+		if ( $temp !== '' ) $bis[] = $temp;
+
+		$ret = [ '%' . $wpdb->esc_like( $term ) . '%' ];
+		$I = count( $bis );
+		for ( $j = 0; $j < $I; $j += 1 ) {
+			$str = '%';
+			for ( $i = 0; $i < $I; $i += 1 ) {
+				if ( $j !== $i || 2 < mb_strlen( $bis[ $i ] ) ) $str .= $wpdb->esc_like( $bis[ $i ] ) . '%';
+			}
+			$ret[] = $str;
+		}
+		return $ret;
+    }
 
 	private function urlencode( $str ) {
 		if ( $this->_is_slash_in_query_enabled ) {
