@@ -5,7 +5,7 @@ namespace st;
  * Background Images (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-17
+ * @version 2020-06-23
  *
  */
 
@@ -85,7 +85,7 @@ class BackgroundImage {
 	private $_is_random_timing = true;
 	private $_is_autoplay      = true;
 	private $_zoom_rate        = 1;
-	
+
 	private $_is_video_enabled = false;
 	private $_is_shuffled      = false;
 	private $_is_script_output = true;
@@ -161,14 +161,15 @@ class BackgroundImage {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
+		$_urls    = [];
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it );
-			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it );
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it, $_urls );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it, $_urls );
 		}
 ?>
 				</ul>
@@ -176,12 +177,13 @@ class BackgroundImage {
 <?php if ( $this->_is_script_output ) : ?>
 			<script>st_background_image_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
 <?php endif; ?>
+			<?php if ( self::is_simply_static_active() ) echo $this->_create_dummy_style( $_urls ); ?>
 		</section>
 <?php
 		return true;
 	}
 
-	private function _echo_slide_item_img( $it ) {
+	private function _echo_slide_item_img( $it, &$_urls ) {
 		$imgs = $it['images'];
 
 		if ( 2 <= count( $imgs ) ) {
@@ -189,26 +191,34 @@ class BackgroundImage {
 			$_img1 = esc_url( $imgs[1] );
 			$attr = " data-img=\"$_img1\" data-img-phone=\"$_img0\"";
 			if ( self::is_simply_static_active() ) {  // for fallback
-				$attr = " style=\"data-img:url($_img1);data-img-phone:url($_img0);\"";
+				$_urls[] = $_img0;
+				$_urls[] = $_img1;
 			}
 		} else {
 			$_img = esc_url( $imgs[0] );
 			$attr = " data-img=\"$_img\"";
 			if ( self::is_simply_static_active() ) {  // for fallback
-				$attr = " style=\"data-img:url($_img);\"";
+				$_urls[] = $_img;
 			}
 		}
 		echo "<li$attr></li>";
 	}
 
-	private function _echo_slide_item_video( $it ) {
+	private function _echo_slide_item_video( $it, &$_urls ) {
 		$_url = esc_url( $it['video'] );
 		$attr = " data-video=\"$_url\"";
 
 		if ( self::is_simply_static_active() ) {  // for fallback
-			$attr = " style=\"data-video:url($_url);\"";
+			$_urls[] = $_url;
 		}
 		echo "<li$attr></li>";
+	}
+
+	private function _create_dummy_style( $_urls ) {
+		$style = '<style>dummy{';
+		foreach ( $_urls as $_url ) $style .= "dummy:url('$_url');";
+		$style .= '}</style>';
+		return $style;
 	}
 
 

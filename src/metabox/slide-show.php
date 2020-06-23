@@ -5,7 +5,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-04-16
+ * @version 2020-06-23
  *
  */
 
@@ -204,14 +204,15 @@ class SlideShow {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
+		$_urls    = [];
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
 				<ul class="<?php echo self::CLS_SLIDES ?>">
 <?php
 		foreach ( $its as $it ) {
-			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it );
-			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it );
+			if ( $it['type'] === self::TYPE_IMAGE ) $this->_echo_slide_item_img( $it, $_urls );
+			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_echo_slide_item_video( $it, $_urls );
 		}
 ?>
 				</ul>
@@ -220,12 +221,13 @@ class SlideShow {
 			</div>
 			<div class="<?php echo self::CLS_RIVETS ?>"></div>
 			<script>st_slide_show_initialize('<?php echo $dom_id ?>', <?php echo $opts_str ?>);</script>
+			<?php if ( self::is_simply_static_active() ) echo $this->_create_dummy_style( $_urls ); ?>
 		</section>
 <?php
 		return true;
 	}
 
-	private function _echo_slide_item_img( $it ) {
+	private function _echo_slide_item_img( $it, &$_urls ) {
 		$imgs   = $it['images'];
 		$imgs_s = isset( $it['images_sub'] ) ? $it['images_sub'] : false;
 		$data = [];
@@ -241,25 +243,29 @@ class SlideShow {
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
 
 		if ( self::is_simply_static_active() ) {  // for fallback
-			$style = ' style="';
 			foreach ( $data as $key => $val ) {
-				$style .= "data-$key:url($val);";
+				$_urls[] = $val;
 			}
-			$attr = ($style . '"');
 		}
 		echo "<li$attr>$cont</li>";
 	}
 
-	private function _echo_slide_item_video( $it ) {
+	private function _echo_slide_item_video( $it, &$_urls ) {
 		$_url = esc_url( $it['video'] );
 		$attr = " data-video=\"$_url\"";
 		$cont = $this->_create_slide_content( $it['caption'], $it['url'] );
 
 		if ( self::is_simply_static_active() ) {  // for fallback
-			$style = " style=\"data-video:url($_url);\"";
-			$attr = $style;
+			$_urls[] = $_url;
 		}
 		echo "<li$attr>$cont</li>";
+	}
+
+	private function _create_dummy_style( $_urls ) {
+		$style = '<style>dummy{';
+		foreach ( $_urls as $_url ) $style .= "dummy:url('$_url');";
+		$style .= '}</style>';
+		return $style;
 	}
 
 	static private function _set_attrs( &$data, $key, $imgs ) {
