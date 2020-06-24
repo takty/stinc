@@ -5,7 +5,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-23
+ * @version 2020-06-24
  *
  */
 
@@ -339,11 +339,15 @@ class Search {
 				$ret[] = $term;
 				continue;
 			}
-			$len = mb_strlen( $term );
-			if ( 4 <= $len && $len <= 10 ) {
-				$ret[] = $this->split_term( $term );
-			} else {
-				$ret[] = $term;
+			$sts = array_map( '\st\mb_trim', mb_split( "[「『（［｛〈《【〔〖〘〚＜」』）］｝〉》】〕〗〙〛＞、，。．？！：・]+", $term ) );
+			foreach ( $sts as $t ) {
+				if ( empty( $t ) ) continue;
+				$len = mb_strlen( $t );
+				if ( 4 <= $len && $len <= 10 ) {
+					$ret[] = $this->split_term( $t );
+				} else {
+					$ret[] = $t;
+				}
 			}
 		}
 		return $ret;
