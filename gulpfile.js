@@ -1,5 +1,18 @@
+/**
+ *
+ * Gulpfile
+ *
+ * @author Space-Time Inc.
+ * @version 2020-08-11
+ *
+ */
+
+
 /* eslint-disable no-undef */
 'use strict';
+
+const SASS_OUTPUT_STYLE = 'compressed';  // 'expanded' or 'compressed'
+
 
 const gulp = require('gulp');
 const $ = require('gulp-load-plugins')({ pattern: ['gulp-*'] });
@@ -31,7 +44,7 @@ gulp.task('sass', () => {
 			}
 		}))
 		.pipe($.sourcemaps.init())
-		.pipe($.sass({ outputStyle: 'compressed' }))
+		.pipe($.dartSass({ outputStyle: SASS_OUTPUT_STYLE }))
 		.pipe($.autoprefixer({ remove: false }))
 		.pipe($.rename({ extname: '.min.css' }))
 		.pipe($.sourcemaps.write('.'))
