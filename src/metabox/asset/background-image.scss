@@ -3,34 +3,35 @@
  * Background Images (CSS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-17
+ * @version 2020-08-11
  *
  */
 
 
 .st-background-image-table {
-	display: flex;
+	display       : flex;
 	flex-direction: row;
-	flex-wrap: wrap;
+	flex-wrap     : wrap;
 
-	margin-right: -10px;
+	margin-left: -12px;
+}
+
+.st-background-image-item,
+.st-background-image-item-placeholder {
+	box-sizing: border-box;
+	width: 254px;
+	height: 140px + 1px;
+	margin: 8px 0 8px 12px;
 }
 
 .st-background-image-item {
 	display: flex;
 	background-color: rgba(255, 255, 255, 0.75);
-	padding-top: 4px;
-	padding-bottom: 4px;
-
-	min-width: 16rem;
-	&:not(:last-child) { margin-right: 10px; }
 
 	> div:nth-child(1) {
 		display: flex;
 		flex-direction: column;
-
-		padding-top: 4px;
-		padding-bottom: 4px;
+		min-width: 32px;
 
 		.st-background-image-handle {
 			flex-grow: 1;
@@ -56,12 +57,8 @@
 		}
 	}
 	> div:nth-child(2) {
-		flex-grow: 1;
-
 		display: flex;
-		flex-wrap: wrap;
-
-		padding-left: 4px;
+		margin-left: 12px;
 	}
 }
 
@@ -74,35 +71,26 @@
 	display: none;
 }
 
-.st-background-image-item-placeholder {
-	min-width: 16rem;
-	height: 127px;
-}
-
 .st-background-image-item-deleted > div:nth-child(2) {
 	opacity: 0.5;
 	pointer-events: none;
 }
 
 .st-background-image-thumbnail {
-	padding-top   : 4px;
-	padding-bottom: 4px;
-	padding-left  : 8px;
-	width         : 100%;
-	max-width     : 210px;
+	width : 210px;
+	height: 140px;
 
 	position: relative;
 
 	> a {
-		display : block;
+		display : flex;
 		position: relative;
+		height  : 100%;
 
-		border-color    : #ccc;
+		border: 1px solid #ccc;
 		background-color: #f7f7f7;
 		box-shadow      : 0 1px 0 #ccc;
 
-		border-width : 1px;
-		border-style : solid;
 		border-radius: 3px;
 		overflow     : hidden;
 		white-space  : nowrap;
@@ -117,11 +105,6 @@
 			border-color    : #999;
 			box-shadow      : inset 0 2px 5px -3px rgba(#000, 0.5);
 			transform       : translateY(1px);
-		}
-		&::before {
-			content    : '';
-			display    : block;
-			padding-top: 56.25%;  // 16:9
 		}
 
 		> video {
@@ -145,9 +128,9 @@
 	}
 	.st-background-image-thumbnail-name {
 		position: absolute;
-		left    : 10px;
+		left    : 4px;
 		right   : 2px;
-		bottom  : 4px;
+		bottom  : 2px;
 
 		pointer-events: none;
 
@@ -155,6 +138,7 @@
 			text-overflow: ellipsis;
 			white-space  : nowrap;
 			overflow     : hidden;
+			padding      : 2px;
 
 			font-size: 0.85em;
 			color: #fff;
