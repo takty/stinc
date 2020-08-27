@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-23
+ * @version 2020-08-27
  *
  */
 
@@ -100,7 +100,7 @@ class Multilang_Tag {
 	}
 
 	public function _cb_posts_join( $join, $query ) {  // Private
-		if ( is_admin() || ! $query->is_main_query() ) return $join;
+		if ( is_admin() || ! $query->is_main_query() || empty( $this->_post_types ) ) return $join;
 
 		global $wpdb;
 		if ( in_array( $query->query_vars['post_type'], $this->_post_types, true ) ) {
@@ -118,7 +118,7 @@ class Multilang_Tag {
 	}
 
 	public function _cb_posts_where( $where, $query ) {  // Private
-		if ( is_admin() || ! $query->is_main_query() ) return $where;
+		if ( is_admin() || ! $query->is_main_query() || empty( $this->_post_types ) ) return $where;
 
 		global $wpdb;
 		if ( in_array( $query->query_vars['post_type'], $this->_post_types, true ) ) {
@@ -126,13 +126,18 @@ class Multilang_Tag {
 			$where .= $wpdb->prepare( " AND tt.term_id = %d", $this->_get_tag_id() );
 		} else if ( is_search() ) {
 			$ps = "'" . implode( "', '", $this->_post_types ) . "'";
-			$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps) OR tr.term_taxonomy_id = %d)", $this->_get_tag_tt_id() );
+			$terms = get_terms( $this->_taxonomy );
+			if ( is_array( $terms ) && 0 < count( $terms ) ) {
+				$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps) OR tr.term_taxonomy_id = %d)", $this->_get_tag_tt_id() );
+			} else {
+				$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps))" );
+			}
 		}
 		return $where;
 	}
 
 	public function _cb_posts_groupby( $groupby, $query ) {  // Private
-		if ( is_admin() || ! $query->is_main_query() ) return $groupby;
+		if ( is_admin() || ! $query->is_main_query() || empty( $this->_post_types ) ) return $groupby;
 		if ( ! is_search() ) return $groupby;
 
 		global $wpdb;
@@ -144,7 +149,7 @@ class Multilang_Tag {
 	}
 
 	public function _cb_getarchives_join( $join, $r ) {  // Private
-		if ( is_admin() || ! is_main_query() ) return $join;
+		if ( is_admin() || ! is_main_query() || empty( $this->_post_types ) ) return $join;
 		if ( ! in_array( $r['post_type'], $this->_post_types, true ) ) return $join;
 
 		global $wpdb;
@@ -154,7 +159,7 @@ class Multilang_Tag {
 	}
 
 	public function _cb_getarchives_where( $where, $r ) {  // Private
-		if ( is_admin() || ! is_main_query() ) return $where;
+		if ( is_admin() || ! is_main_query() || empty( $this->_post_types ) ) return $where;
 		if ( ! in_array( $r['post_type'], $this->_post_types, true ) ) return $where;
 
 		global $wpdb;
