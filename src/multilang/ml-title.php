@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site (Title)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-09-04
+ * @version 2020-09-15
  *
  */
 
@@ -94,6 +94,7 @@ class Multilang_Title {
 
 		if ( $lang === $this->_default_trans_lang ) {
 			$obj = get_post_type_object( $post_type );
+			if ( $obj === null ) return '';
 			return $singular ? $obj->labels->singular_name : $obj->labels->name;
 		}
 		$lang = $this->_default_trans_lang;
