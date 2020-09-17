@@ -1,15 +1,13 @@
 <?php
+namespace st;
 /**
  *
  * IP Restriction (IPv4)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-02-23
+ * @version 2020-09-17
  *
  */
-
-
-namespace st;
 
 
 require_once __DIR__ . '/field.php';
@@ -28,11 +26,14 @@ class IpRestriction {
 
 	// -------------------------------------------------------------------------
 
+
 	private $_whites = [];
 	private $_is_allowed = false;
 	private $_added_body_classes = [];
 	private $_checked = false;
 	private $_post_types = [];
+	private $_is_restricted = false;
+	private $_bypass = false;
 
 	private function __construct() {
 		if ( is_admin() ) {
@@ -55,6 +56,10 @@ class IpRestriction {
 				$this->_post_types[] = $ps;
 			}
 		}
+	}
+
+	public function is_restricted() {
+		return $this->_is_restricted;
 	}
 
 	public function is_allowed() {
@@ -87,6 +92,7 @@ class IpRestriction {
 	}
 
 	public function _cb_pre_get_posts( $query ) {
+		if ( $this->_bypass ) return;
 		if ( is_user_logged_in() || $this->is_allowed() ) return;
 
 		$pts = $query->get( 'post_type', false );
@@ -101,13 +107,22 @@ class IpRestriction {
 			}
 			if ( ! $filter ) return;
 		}
-		$meta_query = $query->get( 'meta_query', false );
-		if ( $meta_query === false ) $meta_query = [];
-		$meta_query[] = [
-			'key'     => self::PMK_IP_RESTRICTION,
-			'compare' => 'NOT EXISTS'
-		];
-		$query->set( 'meta_query', $meta_query );
+		$this->_bypass = true;
+		$ex_posts = get_posts( [
+			'post_type'      => $pts ? $pts : $this->_post_types,
+			'fields'         => 'ids',
+			'posts_per_page' => -1,
+			'meta_query'     => [ [
+				'key'     => self::PMK_IP_RESTRICTION,
+				'compare' => '=',
+				'value'   => 'on'
+			] ]
+		] );
+		$this->_bypass = false;
+		if ( ! empty( $ex_posts ) ) {
+			$query->set( 'post__not_in', $ex_posts );
+			$this->_is_restricted = true;
+		}
 	}
 
 	public function _cb_body_class( $classes ) {  // Private
