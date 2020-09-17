@@ -3,7 +3,7 @@
  * Editor Style
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-18
+ * @version 2020-09-17
  *
  * @import 'stile/sass/basic';
  * @import 'stile/sass/content';
@@ -118,6 +118,7 @@ $stile-size-unit: 0.9rem !default;  // Variable in stile
 	.column-2,
 	.column-3,
 	.column-4 {
+		pointer-events: none;
 		position: relative;
 		&::before {
 			position        : absolute;
@@ -129,6 +130,7 @@ $stile-size-unit: 0.9rem !default;  // Variable in stile
 			line-height     : 1;
 		}
 		> * {
+			pointer-events: auto;
 			padding: 1rem 0.5rem;
 			border : dotted 1px $editor-color-container;
 			@include stinc-editor-child-margin;
