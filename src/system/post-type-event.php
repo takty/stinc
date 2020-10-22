@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-13
+ * @version 2020-10-22
  *
  */
 
@@ -200,6 +200,12 @@ function _make_date_tags( $date_str, $format, $base_format = false ) {
 	}
 	if ( ! empty( $date_str ) ) {
 		$date = \st\create_date_from_date_string( $date_str );
+		if ( strpos( $base_format, 'x' ) !== false ) {
+			$yi = date_format( $date, 'w' );
+			$yobis = [ '日', '月', '火', '水', '木', '金', '土' ];
+			$yobi = $yobis[ $yi ];
+			$base_format = str_replace( 'x', $yobi, $base_format );
+		}
 		$ds = explode( "\t", date_format( $date, $base_format ) );
 	} else {
 		$ds = [ '?', '?', '?', '?' ];
