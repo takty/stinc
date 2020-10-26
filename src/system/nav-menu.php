@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-01
+ * @version 2020-10-26
  *
  */
 
@@ -273,6 +273,14 @@ class NavMenu {
 		$title   = $filter( $mi->title, $mi );
 		$cont    = esc_html( trim( $mi->post_content ) );
 		$after   = '</li>';
+
+		if ( $mi->type === 'post_type_archive' ) {
+			$obj = get_post_type_object( $mi->object );
+			if ( $obj ) {
+				$title = apply_filters( 'post_type_archive_title', $obj->labels->name, $mi->object );
+				$title = $filter( $title, $mi );
+			}
+		}
 
 		if ( $is_sep ) {
 			$before = "<li$li_attr><div></div>";
