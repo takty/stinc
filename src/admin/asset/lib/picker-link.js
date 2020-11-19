@@ -3,7 +3,7 @@
  * Link Picker (JS)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-20
+ * @version 2020-11-19
  *
  */
 
@@ -86,19 +86,19 @@ const setLinkPicker = (function () {
 		executeTimeoutFunc(scan, 100);
 		jQuery('#wp-link').find('.query-results').on('river-select', onSelect);
 
+		jQuery('#link-options').show();
+		jQuery('#wplink-link-existing-content').show();
+		jQuery('#link-options > .link-target').show();
+		const qrs = document.querySelectorAll('#link-selector .query-results');
+		for (let i = 0; i < qrs.length; i += 1) qrs[i].style.top = '';
+
 		if (isInternalOnly) {
 			jQuery('#link-options').hide();
 			jQuery('#wplink-link-existing-content').hide();
-			const qrs = document.querySelectorAll('#link-selector .query-results');
-			for (let i = 0; i < qrs.length; i += 1) {
-				qrs[i].style.top = '48px';
-			}
+			for (let i = 0; i < qrs.length; i += 1) qrs[i].style.top = '48px';
 		} else if (!isLinkTargetAllowed) {
 			jQuery('#link-options > .link-target').hide();
-			const qrs = document.querySelectorAll('#link-selector .query-results');
-			for (let i = 0; i < qrs.length; i += 1) {
-				qrs[i].style.top = '177px';
-			}
+			for (let i = 0; i < qrs.length; i += 1) qrs[i].style.top = '177px';
 		}
 	}
 
