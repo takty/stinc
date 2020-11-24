@@ -5,7 +5,7 @@ namespace st;
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-19
+ * @version 2020-11-24
  *
  */
 
@@ -370,7 +370,7 @@ function the_child_page_navigation( $args = [] ) {
 }
 
 function get_the_child_page_navigation( $args = [] ) {
-	$ps = get_child_pages();
+	$ps = get_child_pages( false, $args );
 	if ( isset( $args['hide_page_with_thumbnail'] ) && $args['hide_page_with_thumbnail'] ) {
 		$ps = array_values( array_filter( $ps, function ( $p ) {
 			return ! has_post_thumbnail( $p->ID );
@@ -398,7 +398,7 @@ function the_sibling_page_navigation( $args = [] ) {
 }
 
 function get_the_sibling_page_navigation( $args = [] ) {
-	$ps = get_sibling_pages();
+	$ps = get_sibling_pages( false, $args );
 	if ( isset( $args['hide_page_with_thumbnail'] ) && $args['hide_page_with_thumbnail'] ) {
 		$ps = array_values( array_filter( $ps, function ( $p ) {
 			return ! has_post_thumbnail( $p->ID );
