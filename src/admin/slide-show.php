@@ -6,7 +6,7 @@ namespace st;
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-07-18
+ * @version 2020-12-10
  *
  */
 
@@ -77,6 +77,13 @@ class SlideShow {
 		} else {
 			wp_enqueue_script( self::NS, $url_to . '/../../stomp/slide-show/slide-show.min.js', '', 1.0 );
 		}
+	}
+
+	static private function _get_query_frag( $url ) {
+		$pu = parse_url( $url );
+		$ret =  isset( $pu['query'] )    ? '?' . $pu['query']    : '';
+		$ret .= isset( $pu['fragment'] ) ? '#' . $pu['fragment'] : '';
+		return $ret;
 	}
 
 	private $_key;
@@ -446,25 +453,28 @@ class SlideShow {
 
 		foreach ( $its as &$it ) {
 			$pid = url_to_postid( $it['url'] );
-			if ( $pid !== 0 ) $it['url'] = $pid;
+			$it['post_id'] = ( $pid !== 0 ) ? $pid : '';
 		}
-		$skeys = [ 'media', 'caption', 'url', 'type' ];
+		$skeys = [ 'media', 'caption', 'url', 'post_id', 'type' ];
 		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $skeys );
 	}
 
 	private function _get_items( $post_id, $size = 'medium' ) {
-		$skeys = [ 'media', 'caption', 'url', 'type' ];
+		$skeys = [ 'media', 'caption', 'url', 'post_id', 'type' ];
 		if ( $this->_is_dual ) $skeys[] = 'media_sub';
 
 		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, $skeys );
 
 		foreach ( $its as &$it ) {
-			if ( isset( $it['url'] ) && is_numeric( $it['url'] ) ) {
-				$permalink = get_permalink( $it['url'] );
-				if ( $permalink !== false ) {
-					$it['post_id'] = $it['url'];
-					$it['url'] = $permalink;
+			if ( isset( $it['url'] ) && is_numeric( $it['url'] ) ) {  // for Backward Compatibility
+				$it['post_id'] = $it['url'];
+			}
+			if ( is_numeric( $it['post_id'] ) ) {
+				$permalink = get_permalink( intval( $it['post_id'] ) );
+				$qf = isset( $it['url'] ) ? self::_get_query_frag( $it['url'] ) : '';
+				if ( $permalink !== false && $it['url'] !== $permalink . $qf ) {
+					$it['url'] = $permalink . $qf;
 				}
 			}
 			if ( empty( $it['type'] ) ) $it['type'] = self::TYPE_IMAGE;

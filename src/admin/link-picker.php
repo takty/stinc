@@ -6,7 +6,7 @@ namespace st;
  * Link Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-21
+ * @version 2020-12-10
  *
  */
 
@@ -63,6 +63,13 @@ class LinkPicker {
 		}
 	}
 
+	static private function _get_query_frag( $url ) {
+		$pu = parse_url( $url );
+		$ret =  isset( $pu['query'] )    ? '?' . $pu['query']    : '';
+		$ret .= isset( $pu['fragment'] ) ? '#' . $pu['fragment'] : '';
+		return $ret;
+	}
+
 	private $_key;
 	private $_id;
 
@@ -113,8 +120,9 @@ class LinkPicker {
 			}
 			if ( empty( $it['post_id'] ) || ! is_numeric( $it['post_id'] ) ) continue;
 			$permalink = get_permalink( intval( $it['post_id'] ) );
-			if ( $permalink !== false && $it['url'] !== $permalink ) {
-				$it['url'] = $permalink;
+			$qf = isset( $it['url'] ) ? self::_get_query_frag( $it['url'] ) : '';
+			if ( $permalink !== false && $it['url'] !== $permalink . $qf ) {
+				$it['url'] = $permalink . $qf;
 			}
 		}
 		return $its;
@@ -249,6 +257,12 @@ class LinkPicker {
 				}
 			} else if ( $pid !== intval( $it['post_id'] ) ) {
 				$it['post_id'] = $pid;
+			} else {  // post_id is the same
+				$cur_url = get_permalink( intval( $it['post_id'] ) );
+				$qf = self::_get_query_frag( $it['url'] );
+				if ( $it['url'] !== $cur_url . $qf ) {  // But url is different
+					$it['url'] = $cur_url . $qf;
+				}
 			}
 		}
 	}
