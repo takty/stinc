@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-09
+ * @version 2020-12-18
  *
  */
 
@@ -129,7 +129,7 @@ function add_instagram_shortcode() {
 
 
 function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = [] ) {
-	if ( ! is_array( $args ) ) {  // for backword compatibility
+	if ( ! is_array( $args ) ) {  // for backward compatibility
 		$args = [ 'year_date_function' => $args ];
 	}
 	$args = array_merge( [
@@ -145,17 +145,30 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 			'year-heading' => false,
 			'latest'       => false,
 			'sticky'       => false,
+			'order'        => 'desc',
+			'date-after'   => '',
+			'date-before'  => '',
 		], $atts );
+		$atts['order'] = strtolower( $atts['order'] );
+		if ( ! empty( $atts['date-after'] ) ) {
+			$atts['date-after'] = preg_replace( '/[^0-9]/', '', $atts['date-after'] );
+			$atts['date-after'] = str_pad( $atts['date-after'], 8, '0' );
+		}
+		if ( ! empty( $atts['date-before'] ) ) {
+			$atts['date-before'] = preg_replace( '/[^0-9]/', '', $atts['date-before'] );
+			$atts['date-before'] = str_pad( $atts['date-before'], 8, '9' );
+		}
 
 		$terms = empty( $atts['term'] ) ? false : $atts['term'];
-		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'] );
+		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'], $atts['date-after'], $atts['date-before'] );
 		if ( empty( $items ) ) return '';
 
+		if ( $atts['order'] === 'asc' ) $items = array_reverse( $items );
 		return echo_list( $atts, $items, $post_type, $args['year_format'] );
 	} );
 }
 
-function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $latest_count = false, $sticky = false, $year_date ) {
+function get_item_list( $post_type, $taxonomy, $term_slug, $latest_count, $sticky, $year_date, $after, $before ) {
 	$args = [];
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
@@ -176,10 +189,14 @@ function get_item_list( $post_type, $taxonomy = false, $term_slug = false, $late
 
 	$items = [];
 	foreach ( $ps as $p ) {
-		$title = esc_html( get_the_title( $p->ID ) );
+		$title = esc_html( strip_tags( get_the_title( $p->ID ) ) );
 		$cats  = \st\get_the_term_names( $p->ID, $taxonomy );
 		$url   = esc_attr( get_the_permalink( $p->ID ) );
 		list( $year, $date ) = call_user_func( $year_date, $p->ID );
+
+		if ( $after && $date < $after ) continue;
+		if ( $before && $before < $date ) continue;
+
 		$type  = $post_type;
 		$items[] = compact( 'title', 'cats', 'url', 'year', 'date', 'type', 'p' );
 	}
