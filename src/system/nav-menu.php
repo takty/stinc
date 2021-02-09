@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-01-12
+ * @version 2021-02-09
  *
  */
 
@@ -75,6 +75,14 @@ class NavMenu {
 		$mh = class_exists( '\st\Multihome' ) ? \st\Multihome::get_instance() : null;
 
 		$this->_cur_url = trailingslashit( strtok( \st\get_current_uri( true ), '?' ) );
+		if ( $mh ) {
+			$ss = $mh->get_site_slug();
+			$is_def_home = strpos( $mh->home_url( '/' ), "/$ss/" ) === false;
+			if ( $is_def_home ) {
+				$home = $ml ? $ml->home_url() : home_url();
+				$this->_cur_url = str_replace( $home, $mh->home_url( $ss ), $this->_cur_url );
+			}
+		}
 		if ( self::$_is_current_archive_enabled && ( is_single() || is_archive() ) ) {
 			$this->_cur_post_type = get_post_type();
 			if ( is_tax() ) {
