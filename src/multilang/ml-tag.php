@@ -5,7 +5,7 @@ namespace st;
  * Multi-Language Site with Single Site (Tag)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-08-27
+ * @version 2021-02-17
  *
  */
 
@@ -130,7 +130,7 @@ class Multilang_Tag {
 			if ( is_array( $terms ) && 0 < count( $terms ) ) {
 				$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps) OR tr.term_taxonomy_id = %d)", $this->_get_tag_tt_id() );
 			} else {
-				$where .= $wpdb->prepare( " AND ($wpdb->posts.post_type NOT IN ($ps))" );
+				$where .= " AND ($wpdb->posts.post_type NOT IN ($ps))";
 			}
 		}
 		return $where;
