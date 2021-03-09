@@ -5,7 +5,7 @@ namespace st;
  * Multi-Home Site with Single Site (Core)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-13
+ * @version 2021-03-09
  *
  */
 
@@ -18,11 +18,11 @@ class Multihome_Core {
 
 	private $_ml  = null;
 	private $_tag = null;
-	
+
 	private $_query_var;
 	private $_site_homes = [];
 	private $_default_home  = '';
-	
+
 	private $_home_to_title = [];
 	private $_is_root_default_home = false;
 
@@ -261,7 +261,7 @@ class Multihome_Core {
 		if ( empty( $cur_base ) ) {
 			$res_pn = $base . '/' . $pagename;
 		} else {
-			$res_pn = str_replace( $cur_base, $base, $pagename );
+			$res_pn = preg_replace( '/' . preg_quote( $cur_base ) . '/', $base, $pagename, 1 );
 		}
 		if ( get_page_by_path( $res_pn ) === null ) return null;
 		return $res_pn;
