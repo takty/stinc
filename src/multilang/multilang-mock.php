@@ -6,13 +6,14 @@ namespace st;
  * Mock of Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-05-22
+ * @version 2021-03-10
  *
  */
 
 
 require_once __DIR__ . '/ml-text.php';
 require_once __DIR__ . '/ml-title.php';
+require_once __DIR__ . '/ml-tag.php';
 
 
 class Multilang {
