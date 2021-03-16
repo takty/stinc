@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-12-18
+ * @version 2021-03-16
  *
  */
 
@@ -138,16 +138,17 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 	], $args );
 	add_shortcode( $post_type . '-list', function ( $atts ) use ( $post_type, $taxonomy, $args ) {
 		$atts = shortcode_atts( [
-			'term'         => '',
-			'taxonomy'     => $taxonomy,
-			'style'        => '',
-			'heading'      => false,
-			'year-heading' => false,
-			'latest'       => false,
-			'sticky'       => false,
-			'order'        => 'desc',
-			'date-after'   => '',
-			'date-before'  => '',
+			'term'                  => '',
+			'taxonomy'              => $taxonomy,
+			'style'                 => '',
+			'heading'               => false,
+			'year-heading'          => false,
+			'latest'                => false,
+			'sticky'                => false,
+			'order'                 => 'desc',
+			'date-after'            => '',
+			'date-before'           => '',
+			'echo-content-on-empty' => false,
 		], $atts );
 		$atts['order'] = strtolower( $atts['order'] );
 		if ( ! empty( $atts['date-after'] ) ) {
@@ -161,7 +162,12 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 
 		$terms = empty( $atts['term'] ) ? false : $atts['term'];
 		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'], $atts['date-after'], $atts['date-before'] );
-		if ( empty( $items ) ) return '';
+		if ( empty( $items ) ) {
+			if ( false !== $atts['echo-content-on-empty'] && ! empty( $content ) ) {
+				return $content;
+			}
+			return '';
+		}
 
 		if ( $atts['order'] === 'asc' ) $items = array_reverse( $items );
 		return echo_list( $atts, $items, $post_type, $args['year_format'] );
