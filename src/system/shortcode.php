@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-16
+ * @version 2021-03-17
  *
  */
 
@@ -136,7 +136,7 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 		'year_date_function' => '\st\shortcode\get_item_year_date_news',
 		'year_format'        => false,
 	], $args );
-	add_shortcode( $post_type . '-list', function ( $atts ) use ( $post_type, $taxonomy, $args ) {
+	add_shortcode( $post_type . '-list', function ( $atts, $content ) use ( $post_type, $taxonomy, $args ) {
 		$atts = shortcode_atts( [
 			'term'                  => '',
 			'taxonomy'              => $taxonomy,
