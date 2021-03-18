@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-17
+ * @version 2021-03-18
  *
  */
 
@@ -146,6 +146,7 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 			'latest'                => false,
 			'sticky'                => false,
 			'order'                 => 'desc',
+			'orderby'               => 'date',  // Only 'date' and 'menu_order' is available.
 			'date-after'            => '',
 			'date-before'           => '',
 			'echo-content-on-empty' => false,
@@ -159,9 +160,8 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 			$atts['date-before'] = preg_replace( '/[^0-9]/', '', $atts['date-before'] );
 			$atts['date-before'] = str_pad( $atts['date-before'], 8, '9' );
 		}
-
 		$terms = empty( $atts['term'] ) ? false : $atts['term'];
-		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'], $atts['date-after'], $atts['date-before'] );
+		$items = get_item_list( $post_type, $taxonomy, $terms, $atts['latest'], $atts['sticky'], $args['year_date_function'], $atts['date-after'], $atts['date-before'], $atts['orderby'] );
 		if ( empty( $items ) ) {
 			if ( false !== $atts['echo-content-on-empty'] && ! empty( $content ) ) {
 				return $content;
@@ -174,7 +174,7 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 	} );
 }
 
-function get_item_list( $post_type, $taxonomy, $term_slug, $latest_count, $sticky, $year_date, $after, $before ) {
+function get_item_list( $post_type, $taxonomy, $term_slug, $latest_count, $sticky, $year_date, $after, $before, $orderby ) {
 	$args = [];
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
@@ -192,7 +192,19 @@ function get_item_list( $post_type, $taxonomy, $term_slug, $latest_count, $stick
 		$ps = get_posts( $args );
 	}
 	if ( count( $ps ) === 0 ) return [];
-
+	if ( $orderby === 'menu_order' ) {
+		usort(
+			$ps,
+			function ( $p1, $p2 ) {
+				$a = intval( $p1->menu_order );
+				$b = intval( $p2->menu_order );
+				if ( $a === $b ) {
+					return 0;
+				}
+				return $a < $b ? 1 : -1;
+			}
+		);
+	}
 	$items = [];
 	foreach ( $ps as $p ) {
 		$title = esc_html( strip_tags( get_the_title( $p->ID ) ) );
