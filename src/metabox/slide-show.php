@@ -64,7 +64,7 @@ class SlideShow {
 	const TYPE_IMAGE = 'image';
 	const TYPE_VIDEO = 'video';
 
-	static private $_instance     = [];
+	static private $_instance     = array();
 	static private $_is_ss_active = null;
 
 	static public function get_instance( $key = false ) {
@@ -204,7 +204,7 @@ class SlideShow {
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
-		$_urls    = [];
+		$_urls    = array();
 ?>
 		<section class="<?php echo $dom_cls ?>" id="<?php echo $dom_id ?>">
 			<div class="<?php echo self::CLS_STRIP ?>">
@@ -230,7 +230,7 @@ class SlideShow {
 	private function _echo_slide_item_img( $it, &$_urls ) {
 		$imgs   = $it['images'];
 		$imgs_s = isset( $it['images_sub'] ) ? $it['images_sub'] : false;
-		$data = [];
+		$data = array();
 
 		if ( $this->_is_dual && $imgs_s !== false ) {
 			self::_set_attrs( $data, 'img-sub', $imgs_s );
@@ -574,7 +574,7 @@ class SlideShow {
 
 	private function _get_images( &$it, $aid, $size, $pf = '' ) {
 		if ( is_array( $size ) ) {
-			$imgs = [];
+			$imgs = array();
 			foreach ( $size as $sz ) {
 				$img = wp_get_attachment_image_src( $aid, $sz );
 				if ( $img ) $imgs[] = $img[0];

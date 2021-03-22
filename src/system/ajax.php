@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Ajax
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
- *
+ * @version 2021-03-22
  */
 
+namespace st;
 
 class Ajax {
 
@@ -18,19 +16,19 @@ class Ajax {
 
 	function __construct( $action, $response, $public = false, $nonce = null ) {
 		if ( ! preg_match( '/^[a-zA-Z0-9_\-]+$/', $action ) ) {
-			wp_die( "Invalid string for \$action." );
+			wp_die( 'Invalid string for \$action.' );
 		}
 		$this->action   = $action;
 		$this->response = $response;
-		$this->nonce    = ( $nonce === null ) ? $action : $nonce;
+		$this->nonce    = ( null === $nonce ) ? $action : $nonce;
 
-		add_action( 'wp_ajax_' . $action, [ $this, '_cb_ajax_action' ] );
+		add_action( 'wp_ajax_' . $action, array( $this, '_cb_ajax_action' ) );
 		if ( $public ) {
-			add_action( 'wp_ajax_nopriv_' . $action, [ $this, '_cb_ajax_action' ] );
+			add_action( 'wp_ajax_nopriv_' . $action, array( $this, '_cb_ajax_action' ) );
 		}
 	}
 
-	public function get_url( $query = [] ) {
+	public function get_url( $query = array() ) {
 		$query['action'] = $this->action;
 		$query['nonce']  = wp_create_nonce( $this->nonce );
 

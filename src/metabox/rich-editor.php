@@ -13,7 +13,7 @@ namespace st\rich_editor;
 require_once __DIR__ . '/../system/field.php';
 
 
-function add_rich_editor_meta_box( $key, $label, $screen, $context = 'advanced', $opts = [] ) {
+function add_rich_editor_meta_box( $key, $label, $screen, $context = 'advanced', $opts = array() ) {
 	$priority = isset( $opts['priority'] ) ? $opts['priority'] : 'default';
 	add_meta_box(
 		$key . '_mb', $label,

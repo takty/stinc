@@ -16,7 +16,7 @@ namespace st\editor_style;
 require_once __DIR__ . '/../util/url.php';
 
 
-function initialize( $url_to = false, $row_index = 2, $opts = [] ) {
+function initialize( $url_to = false, $row_index = 2, $opts = array() ) {
 	if ( ! current_user_can( 'edit_posts' ) && ! current_user_can( 'edit_pages' ) ) return;
 
 	if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
@@ -49,7 +49,7 @@ function _add_style_formats( $opts ) {
 			'clear'           => 'フロート解除',
 		], isset( $opts['labels'] ) ? $opts['labels'] : [] );
 
-		$formats = [];
+		$formats = array();
 		if ( isset( $settings['style_formats'] ) ) {
 			$formats = json_decode( $settings['style_formats'] );
 		}

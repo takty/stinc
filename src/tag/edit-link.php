@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Custom Template Tags for Edit Links
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-01-21
- *
+ * @version 2021-03-22
  */
 
+namespace st;
 
 function can_edit_post() {
 	global $post;

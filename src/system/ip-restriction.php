@@ -27,13 +27,13 @@ class IpRestriction {
 	// -------------------------------------------------------------------------
 
 
-	private $_whites = [];
-	private $_is_allowed = false;
-	private $_added_body_classes = [];
-	private $_checked = false;
-	private $_post_types = [];
-	private $_is_restricted = false;
-	private $_bypass = false;
+	private $_whites             = array();
+	private $_is_allowed         = false;
+	private $_added_body_classes = array();
+	private $_checked            = false;
+	private $_post_types         = array();
+	private $_is_restricted      = false;
+	private $_bypass             = false;
 
 	private function __construct() {
 		if ( is_admin() ) {

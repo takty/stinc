@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-21
- *
+ * @version 2021-03-22
  */
 
+namespace st;
 
 function get_current_uri( $raw = false ) {
 	$host = get_server_host();
@@ -19,7 +17,7 @@ function get_current_uri( $raw = false ) {
 }
 
 function get_server_host() {
-	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {  // When reverse proxy exists
+	if ( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ) ) {  // When reverse proxy exists.
 		return $_SERVER['HTTP_X_FORWARDED_HOST'];
 	}
 	return $_SERVER['HTTP_HOST'];
@@ -36,10 +34,10 @@ function get_file_uri( $path ) {
 		$theme_path = wp_normalize_path( defined( 'CHILD_THEME_PATH' ) ? CHILD_THEME_PATH : get_stylesheet_directory() );
 		$theme_uri  = get_stylesheet_directory_uri();
 
-		// When child theme is used, and libraries exist in the parent theme
-		$tlen = strlen( $theme_path );
-		$len  = strlen( $path );
-		if ( $tlen >= $len || 0 !== strncmp( $theme_path . $path[ $tlen ], $path, $tlen + 1 ) ) {
+		// When child theme is used, and libraries exist in the parent theme.
+		$len_t = strlen( $theme_path );
+		$len   = strlen( $path );
+		if ( $len_t >= $len || 0 !== strncmp( $theme_path . $path[ $len_t ], $path, $len_t + 1 ) ) {
 			$theme_path = wp_normalize_path( defined( 'THEME_PATH' ) ? THEME_PATH : get_template_directory() );
 			$theme_uri  = get_template_directory_uri();
 		}
@@ -56,20 +54,26 @@ function get_file_uri( $path ) {
 
 
 function get_first_slug( $url, ?callable $home_url = null ) {
-	$hu = $home_url ? call_user_func( $home_url, '/' ) : home_url( '/' );
+	$hu   = $home_url ? call_user_func( $home_url, '/' ) : home_url( '/' );
 	$temp = str_replace( $hu, '', $url );
-	$ps = explode( '/', $temp );
-	if ( count( $ps ) > 0 ) return $ps[0];
+	$ps   = explode( '/', $temp );
+	if ( count( $ps ) > 0 ) {
+		return $ps[0];
+	}
 	return '';
 }
 
 function get_first_and_second_slug( $url, ?callable $home_url = null ) {
-	$hu = $home_url ? call_user_func( $home_url, '/' ) : home_url( '/' );
+	$hu   = $home_url ? call_user_func( $home_url, '/' ) : home_url( '/' );
 	$temp = str_replace( $hu, '', $url );
-	$ps = explode( '/', $temp );
-	$ss = ['', ''];
-	if ( count( $ps ) > 0 ) $ss[0] = $ps[0];
-	if ( count( $ps ) > 1 ) $ss[1] = $ps[1];
+	$ps   = explode( '/', $temp );
+	$ss   = array( '', '' );
+	if ( count( $ps ) > 0 ) {
+		$ss[0] = $ps[0];
+	}
+	if ( count( $ps ) > 1 ) {
+		$ss[1] = $ps[1];
+	}
 	return $ss;
 }
 
@@ -83,21 +87,28 @@ function get_last_slug( $url ) {
 
 
 function abs_url( $base, $rel ) {
-	if ( parse_url( $rel, PHP_URL_SCHEME ) != '' ) return $rel;
+	if ( '' !== parse_url( $rel, PHP_URL_SCHEME ) ) {
+		return $rel;
+	}
 	$base = trailingslashit( $base );
-	if ( $rel[0] === '#' || $rel[0] === '?' ) return $base . $rel;
-
-	$pu = parse_url( $base );
+	if ( '#' === $rel[0] || '?' === $rel[0] ) {
+		return $base . $rel;
+	}
+	$pu     = parse_url( $base );
 	$scheme = isset( $pu['scheme'] ) ? $pu['scheme'] . '://' : '';
 	$host   = isset( $pu['host'] )   ? $pu['host']           : '';
 	$port   = isset( $pu['port'] )   ? ':' . $pu['port']     : '';
 	$path   = isset( $pu['path'] )   ? $pu['path']           : '';
 
 	$path = preg_replace( '#/[^/]*$#', '', $path );
-	if ( $rel[0] === '/' ) $path = '';
+	if ( $rel[0] === '/' ) {
+		$path = '';
+	}
 	$abs = "$host$port$path/$rel";
-	$re = [ '#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#' ];
-	for ( $n = 1; $n > 0; $abs = preg_replace( $re, '/', $abs, -1, $n ) ) {}
+	$re  = [ '#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#' ];
+	for ( $n = 1; $n > 0; $abs = preg_replace( $re, '/', $abs, -1, $n ) ) {
+		// Do nothing.
+	}
 	return $scheme . $abs;
 }
 

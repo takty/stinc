@@ -29,10 +29,10 @@ class NavMenu {
 
 	static protected $_is_cache_enabled = false;
 	static protected $_is_current_archive_enabled = true;
-	static protected $_custom_post_type_archive = [];
+	static protected $_custom_post_type_archive = array();
 
 	static private function _get_ancestor_terms( $t ) {
-		$ret = [];
+		$ret = array();
 		while ( $t->parent !== 0 ) {
 			$t = get_term( $t->parent, $t->taxonomy );
 			$ret[] = $t;
@@ -57,7 +57,7 @@ class NavMenu {
 	protected $_cur_post_type         = false;
 	protected $_cur_tax               = false;
 	protected $_cur_term_id           = false;
-	protected $_cur_term_archive_urls = [];
+	protected $_cur_term_archive_urls = array();
 	protected $_cur_is_archive        = false;
 
 	protected $_home_url;
@@ -82,7 +82,7 @@ class NavMenu {
 			if ( is_single() ) {
 				$tax_names = get_object_taxonomies( $this->_cur_post_type );
 				$pid = get_the_ID();
-				$terms = [];
+				$terms = array();
 				foreach ( $tax_names as $tax_name ) {
 					$ts = wp_get_post_terms( $pid, $tax_name );
 					foreach ( $ts as $t ) {
@@ -208,7 +208,7 @@ class NavMenu {
 		if ( ! $as ) return false;
 		array_unshift( $as, $post->ID );
 
-		$ids = [];
+		$ids = array();
 		foreach ( $mis as $mi ) $ids[ (int) $mi->object_id ] = $mi->ID;
 
 		foreach ( $as as $a ) {
@@ -322,7 +322,7 @@ class NavMenu {
 		$menu = wp_get_nav_menu_object( $ls[ $menu_name ] );
 		if ( $menu === false ) return [];
 		$this->_menu_id = $menu->term_id;
-		$ret = [];
+		$ret = array();
 		if ( self::$_is_cache_enabled ) {
 			$ret = self::get_nav_menu_items( $menu->term_id );
 		} else {
@@ -333,7 +333,7 @@ class NavMenu {
 	}
 
 	protected function _get_menus( $mis ) {
-		$ret = [];
+		$ret = array();
 		foreach ( $mis as $mi ) {
 			$pid = intval( $mi->menu_item_parent );
 			if ( isset( $ret[ $pid ] ) ) {
@@ -346,7 +346,7 @@ class NavMenu {
 	}
 
 	protected function _get_children_state( $p2m ) {
-		$ret = [];
+		$ret = array();
 		foreach ( $p2m as $pid => $mis ) {
 			$ret[ $pid ] = $this->_has_current_url( $mis );
 		}
@@ -388,8 +388,8 @@ class NavMenu {
 
 
 	protected function _get_menu_ancestors( $mis ) {
-		$id2pid  = [];
-		$curs    = [];
+		$id2pid  = array();
+		$curs    = array();
 		$dummy_n = 0;
 
 		foreach ( $mis as $mi ) {
@@ -411,7 +411,7 @@ class NavMenu {
 			if ( $this->_is_current( $mi ) ) $curs[] = $mi->ID;
 			$id2pid[ $mi->ID ] = (int) $mi->menu_item_parent;
 		}
-		$ret = [];
+		$ret = array();
 		foreach ( $curs as $cur ) {
 			$id = $id2pid[ $cur ];
 			while ( $id !== 0 ) {
@@ -424,10 +424,10 @@ class NavMenu {
 	}
 
 	protected function _get_attributes( $mis, $id2pid ) {
-		$ret = [];
-		$pas = [];
+		$ret = array();
+		$pas = array();
 		foreach ( $mis as $mi ) {
-			$cs = [];
+			$cs = array();
 
 			$url = trailingslashit( $mi->url );
 			if ( $url === $this->_home_url ) $cs[] = self::CLS_HOME;

@@ -5,7 +5,7 @@ namespace st;
  * Custom Option Page
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-05-21
+ * @version 2021-03-22
  *
  */
 
@@ -26,8 +26,8 @@ class CustomOptionPage {
 		$this->option_key   = $option_key;
 		$this->sections     = $sections;
 		$this->as_menu_page = $as_menu_page;
-		add_action( 'admin_menu', [ $this, 'add_plugin_page' ] );
-		add_action( 'admin_init', [ $this, 'page_init' ] );
+		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+		add_action( 'admin_init', array( $this, 'page_init' ) );
 	}
 
 	public function add_plugin_page() {
@@ -37,7 +37,7 @@ class CustomOptionPage {
 				$this->menu_title,
 				'edit_pages',
 				$this->menu_slug,
-				[ $this, 'create_admin_page' ]
+				array( $this, 'create_admin_page' )
 			);
 		} else {
 			add_options_page(
@@ -45,7 +45,7 @@ class CustomOptionPage {
 				$this->menu_title,
 				'manage_options',
 				$this->menu_slug,
-				[ $this, 'create_admin_page' ]
+				array( $this, 'create_admin_page' )
 			);
 		}
 	}
@@ -70,7 +70,7 @@ class CustomOptionPage {
 		register_setting(
 			$this->option_key,
 			$this->option_key,
-			[ $this, 'sanitize' ]
+			array( $this, 'sanitize' )
 		);
 		foreach ( $this->sections as $sid => $cont ) {
 			add_settings_section(
@@ -97,7 +97,7 @@ class CustomOptionPage {
 	}
 
 	public function sanitize( $input ) {
-		$new_input = [];
+		$new_input = array();
 
 		foreach ( $this->sections as $sid => $cont ) {
 			foreach ( $cont['fields'] as $key => $opts ) {

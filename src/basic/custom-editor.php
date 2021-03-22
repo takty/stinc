@@ -135,7 +135,7 @@ function _check_post_type_support() {
 	if ( ! post_type_supports( $post_type, 'page-attributes' ) ) return;
 
 	add_filter( "manage_edit-{$post_type}_columns", function ( $cols ) {
-		$new_cols = [];
+		$new_cols = array();
 		foreach ( $cols as $name => $display_name ) {
 			if ( $name === 'date' ) $new_cols['order'] = __( 'Order' );
 			$new_cols[ $name ] = $display_name;

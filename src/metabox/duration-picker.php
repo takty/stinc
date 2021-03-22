@@ -21,7 +21,7 @@ class DurationPicker {
 
 	const CLS_TABLE = self::NS . '-table';
 
-	static private $_instance       = [];
+	static private $_instance       = array();
 	static private $_locale         = 'en';
 	static private $_label_year     = '';
 	static private $_is_echo_script = false;
@@ -199,7 +199,7 @@ function set_year_label( $label ) { return \st\DurationPicker::set_year_label( $
 function get_item( $key, $post_id = false ) { return \st\DurationPicker::get_instance( $key )->get_item( $post_id ); }
 function set_duration_labels( $key, $bgn, $end ) { return \st\DurationPicker::get_instance( $key )->set_duration_labels( $bgn, $end ); }
 
-function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
+function add_meta_box( $key, $label, $screen, $context = 'side', $opts = array() ) {
 	if ( isset( $opts['calendar_locale'] ) ) set_calendar_locale( $opts['calendar_locale'] );
 	if ( isset( $opts['year_label'] ) ) set_year_label( $opts['year_label'] );
 	if ( isset( $opts['date_bgn_label'] ) ) set_duration_labels( $key, $opts['date_bgn_label'], false );

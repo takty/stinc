@@ -26,10 +26,10 @@ class OrderedTerm {
 	// -------------------------------------------------------------------------
 
 	private $_key_order       = self::DEFAULT_META_KEY;
-	private $_taxonomies      = [];
+	private $_taxonomies      = array();
 	private $_is_filter_added = false;
 
-	private $_post_types_meta_key_added = [];
+	private $_post_types_meta_key_added = array();
 	private $_is_post_type_hook_added   = false;
 
 	private function __construct() {
@@ -245,7 +245,7 @@ class OrderedTerm {
 
 	// Actually Sort Terms -----------------------------------------------------
 
-	public function _cb_terms_clauses( $clauses, $taxes = [], $args = [] ) {
+	public function _cb_terms_clauses( $clauses, $taxes = array(), $args = array() ) {
 		if ( count( $taxes ) > 1 || ! in_array( $taxes[0], $this->_taxonomies, true ) ) return $clauses;
 		global $wpdb;
 
@@ -267,7 +267,7 @@ class OrderedTerm {
 
 	public function sort_terms( $terms_or_term_ids, $taxonomy ) {
 		if ( ! in_array( $taxonomy, $this->_taxonomies, true ) ) return $terms_or_term_ids;
-		$ts = [];
+		$ts = array();
 		foreach ( $terms_or_term_ids as $t ) {
 			$term_id = is_int( $t ) ? $t : $t->term_id;
 			$idx = intval( get_term_meta( $term_id, $this->_key_order, true ) );

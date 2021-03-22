@@ -31,7 +31,7 @@ class SingleMediaPicker {
 	const CLS_TITLE        = self::NS . '-title';
 	const CLS_FILENAME     = self::NS . '-filename';
 
-	static private $_instance = [];
+	static private $_instance = array();
 
 	static public function get_instance( $key = false ) {
 		if ( $key === false ) return reset( self::$_instance );
@@ -178,7 +178,7 @@ function enqueue_script( $url_to = false ) { \st\SingleMediaPicker::enqueue_scri
 function get_item( $key, $post_id = false ) { return \st\SingleMediaPicker::get_instance( $key )->get_item( $post_id ); }
 function set_title_editable( $key, $flag ) { return \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag ); }
 
-function add_meta_box( $key, $label, $screen, $context = 'side', $opts = [] ) {
+function add_meta_box( $key, $label, $screen, $context = 'side', $opts = array() ) {
 	if ( isset( $opts['title_editable'] ) ) set_title_editable( $key, $opts['title_editable'] );
 	\st\SingleMediaPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
 }

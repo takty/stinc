@@ -12,7 +12,7 @@ namespace st\sticky;
 
 const PMK_STICKY = '_sticky';
 
-$_stinc_sticky_post_types = [];
+$_stinc_sticky_post_types = array();
 
 
 function make_custom_post_type_sticky( $post_type_s ) {

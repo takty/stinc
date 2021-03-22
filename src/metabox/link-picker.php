@@ -44,7 +44,7 @@ class LinkPicker {
 	const CLS_DEL        = self::NS . '-delete';
 	const CLS_POST_ID    = self::NS . '-post-id';
 
-	static private $_instance = [];
+	static private $_instance = array();
 
 	static public function get_instance( $key = false ) {
 		if ( $key === false ) return reset( self::$_instance );
@@ -122,7 +122,7 @@ class LinkPicker {
 
 	public function get_posts( $post_id = false, $skip_other_than_post = true ) {
 		$its = $this->get_items( $post_id );
-		$ps = [];
+		$ps = array();
 		foreach ( $its as $it ) {
 			$p = null;
 			if ( isset( $it['post_id'] ) && is_numeric( $it['post_id'] ) ) {
@@ -278,7 +278,7 @@ function set_max_count( $key, $count ) { return \st\LinkPicker::get_instance( $k
 function set_link_target_allowed( $key, $enabled ) { return \st\LinkPicker::get_instance( $key )->set_link_target_allowed( $enabled ); }
 function set_post_type( $key, $post_type ) { return \st\LinkPicker::get_instance( $key )->set_post_type( $post_type ); }
 
-function add_meta_box( $key, $label_s, $screen, $context = 'advanced', $opts = [] ) {
+function add_meta_box( $key, $label_s, $screen, $context = 'advanced', $opts = array() ) {
 	if ( isset( $opts['is_internal_only'] ) ) set_internal_only( $key, $opts['is_internal_only'] );
 	if ( isset( $opts['max_count'] ) ) set_max_count( $key, $opts['max_count'] );
 	if ( isset( $opts['is_link_target_allowed'] ) ) set_link_target_allowed( $key, $opts['is_link_target_allowed'] );

@@ -21,7 +21,7 @@ const PMK_DATE_BGN = '_date_bgn';
 const PMK_DATE_END = '_date_end';
 
 
-function register_post_type( $post_type = 'event', $slug = false, $opts = [], $labels = [], $args = [], ?callable $home_url = null ) {
+function register_post_type( $post_type = 'event', $slug = false, $opts = array(), $labels = array(), $args = array(), ?callable $home_url = null ) {
 	$opts = array_merge( [
 		'is_autofill_enabled'   => false,
 		'order_by_date'         => 'begin',
@@ -98,7 +98,7 @@ function set_admin_columns( $post_type, $add_cat, $add_tag, $tax ) {
 // -----------------------------------------------------------------------------
 
 
-function insert_date_columns( $post_type, $pos = false, $cs = [] ) {
+function insert_date_columns( $post_type, $pos = false, $cs = array() ) {
 	$pto = get_post_type_object( $post_type );
 	$label_bgn = isset( $pto->labels->period_begin_label ) ? $pto->labels->period_begin_label : __( 'Begin' );
 	$label_end = isset( $pto->labels->period_end_label   ) ? $pto->labels->period_end_label   : __( 'End' );
@@ -116,7 +116,7 @@ function _echo_date_val( $val ) {
 	echo esc_attr( date( get_option( 'date_format' ), strtotime( $val ) ) );
 }
 
-function insert_date_sortable_columns( $pos = false, $scs = [] ) {
+function insert_date_sortable_columns( $pos = false, $scs = array() ) {
 	$ns = [ PMK_DATE_BGN, PMK_DATE_END ];
 	if ( $pos === false ) return array_merge( $scs, $ns );
 	array_splice( $scs, $pos, 0, $ns );

@@ -128,7 +128,7 @@ function add_instagram_shortcode() {
 // -----------------------------------------------------------------------------
 
 
-function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = [] ) {
+function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = array() ) {
 	if ( ! is_array( $args ) ) {  // for backward compatibility
 		$args = [ 'year_date_function' => $args ];
 	}
@@ -204,7 +204,7 @@ function get_item_list( $post_type, $taxonomy, $term_slug, $latest_count, $stick
 			}
 		);
 	}
-	$items = [];
+	$items = array();
 	foreach ( $ps as $p ) {
 		$title = esc_html( strip_tags( get_the_title( $p->ID ) ) );
 		$cats  = \st\get_the_term_names( $p->ID, $taxonomy );
@@ -230,11 +230,11 @@ function echo_list( $atts, $items, $pt, $year_format = false ) {
 		}
 	}
 	if ( $atts['year-heading'] ) {
-		$ac = [];
+		$ac = array();
 		foreach ( $items as $it ) {
 			$year = $it['year'];
 			if ( $year === false ) $year = '-';
-			if ( ! isset( $ac[ $year ] ) ) $ac[ $year ] = [];
+			if ( ! isset( $ac[ $year ] ) ) $ac[ $year ] = array();
 			$ac[ $year ][] = $it;
 		}
 

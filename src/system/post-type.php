@@ -195,7 +195,7 @@ function make_custom_date_sortable( $post_type, $slug, $meta_key ) {
 			$mq_key = "meta_$meta_key";
 
 			$mq = $query->get( 'meta_query' );
-			if ( ! is_array( $mq ) ) $mq = [];
+			if ( ! is_array( $mq ) ) $mq = array();
 			$mq[ $mq_key ] = [ 'key' => $meta_key, 'type' => 'date' ];
 			$query->set( 'meta_query', $mq );
 

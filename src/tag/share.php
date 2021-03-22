@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Share
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-21
- *
+ * @version 2021-03-22
  */
 
+namespace st;
 
 require_once __DIR__ . '/image.php';
 require_once __DIR__ . '/../util/text.php';
@@ -21,51 +19,57 @@ require_once __DIR__ . '/../admin/ss-support.php';
 
 function google_analytics_code( $id = '' ) {
 	if ( empty( $id ) ) {
-		if ( is_user_logged_in() ) _echo_no_analytics_warning();
+		if ( is_user_logged_in() ) {
+			_echo_no_analytics_warning();
+		}
 	} else {
 		_echo_analytics_code( $id );
 	}
 }
 
 function _echo_no_analytics_warning() {
-?>
-<script>
-document.addEventListener("DOMContentLoaded",function(){var e=document.createElement("div");
-e.innerText="Google Analytics ID is not assigned!",e.style.position="fixed",
-e.style.right="0",e.style.bottom="0",e.style.background="red",e.style.color="white",e.style.padding="4px",
-e.style.zIndex=9999,document.body.appendChild(e),console.log("Google Analytics ID is not assigned!")});
-</script>
-<?php
+	?>
+	<script>
+	document.addEventListener("DOMContentLoaded",function(){var e=document.createElement("div");
+	e.innerText="Google Analytics ID is not assigned!",e.style.position="fixed",
+	e.style.right="0",e.style.bottom="0",e.style.background="red",e.style.color="white",e.style.padding="4px",
+	e.style.zIndex=9999,document.body.appendChild(e),console.log("Google Analytics ID is not assigned!")});
+	</script>
+	<?php
 }
 
 function _echo_analytics_code( $id ) {
-?>
-<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo $id ?>"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', '<?php echo $id ?>');
-</script>
-<?php
+	?>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $id ); ?>"></script>
+	<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
+	gtag('config', '<?php echo esc_attr( $id ); ?>');
+	</script>
+	<?php
 }
 
 
 // Structured Data -------------------------------------------------------------
 
 
-function the_structured_data( $args = [], $same_as = [] ) {
-	$args = array_merge( [
-		'@context' => 'http://schema.org',
-		'@type'    => 'Organization',
-		'name'     => _get_structured_data_name(),
-		'url'      => home_url(),
-		'logo'     => '',
-		'sameAs'   => $same_as
-	], $args );
-?>
-<script type="application/ld+json"><?php echo json_encode( $args, JSON_UNESCAPED_UNICODE ); ?></script>
-<?php
+function the_structured_data( $args = array(), $same_as = array() ) {
+	$args = array_merge(
+		array(
+			'@context' => 'http://schema.org',
+			'@type'    => 'Organization',
+			'name'     => _get_structured_data_name(),
+			'url'      => home_url(),
+			'logo'     => '',
+			'sameAs'   => $same_as,
+		),
+		$args
+	);
+	$json = wp_json_encode( $args, JSON_UNESCAPED_UNICODE );
+	?>
+	<script type="application/ld+json"><?php echo $json; ?></script>
+	<?php
 }
 
 function _get_structured_data_name() {
@@ -105,12 +109,21 @@ function the_ogp_site_name() {
 
 function the_ogp_image( $logo_src, $image_meta_key, $alt_image_src ) {
 	$src = get_the_ogp_image( $logo_src, $image_meta_key, $alt_image_src );
-	if ( empty( $src ) ) return;
+	if ( empty( $src ) ) {
+		return;
+	}
 	$_src = esc_attr( $src );
 	echo "<meta property=\"og:image\" content=\"$_src\">\n";
 
 	if ( get_option( 'is_simply_static_active', false ) ) {
-		add_action( 'wp_footer', function () use ( $_src ) { echo "<style>#og:image{background-image:url(\"$_src\");}</style>"; }, 1, 1 );
+		add_action(
+			'wp_footer',
+			function () use ( $_src ) {
+				echo "<style>#og:image{background-image:url(\"$_src\");}</style>";
+			},
+			1,
+			1
+		);
 	}
 }
 
@@ -130,7 +143,7 @@ function get_the_ogp_title( $append_site_name = false ) {
 		if ( $append_site_name ) {
 			$title .= ' - ' . $site_name;
 		}
-	} else if ( is_archive() ) {
+	} elseif ( is_archive() ) {
 		$title = post_type_archive_title( '', false );
 		if ( $append_site_name ) {
 			$title .= ' - ' . $site_name;
@@ -142,16 +155,20 @@ function get_the_ogp_title( $append_site_name = false ) {
 }
 
 function get_the_ogp_description( $alt_description ) {
-	if ( $alt_description !== false ) return $alt_description;
+	if ( $alt_description !== false ) {
+		return $alt_description;
+	}
 	$desc = '';
 	if ( _ogp_is_singular() ) {
 		if ( has_excerpt() ) {
-			$desc = strip_tags( get_the_excerpt() );
+			$desc = wp_strip_all_tags( get_the_excerpt() );
 		} else {
 			global $post;
-			$cont = strip_tags( strip_shortcodes( $post->post_content ) );
+			$cont = wp_strip_all_tags( strip_shortcodes( $post->post_content ) );
 			$desc = str_replace( "\r\n", ' ', mb_substr( $cont, 0, 100 ) );
-			if ( ! empty( trim( $desc ) ) && mb_strlen( $cont ) > 100 ) $desc .= '...';
+			if ( ! empty( trim( $desc ) ) && mb_strlen( $cont ) > 100 ) {
+				$desc .= '...';
+			}
 		}
 	}
 	if ( empty( trim( $desc ) ) ) {
@@ -175,13 +192,20 @@ function get_the_ogp_site_name() {
 }
 
 function get_the_ogp_image( $logo_src = '', $meta_key = false, $alt_image_src = false ) {
-	if ( $alt_image_src !== false ) return $alt_image_src;
-	if ( ! is_singular() ) return $logo_src;
+	if ( $alt_image_src !== false ) {
+		return $alt_image_src;
+	}
+	if ( ! is_singular() ) {
+		return $logo_src;
+	}
 	global $post;
 	$src = \st\get_thumbnail_src( 'large', $post->ID, $meta_key );
-	if ( ! empty( $src ) ) return $src;
-
+	if ( ! empty( $src ) ) {
+		return $src;
+	}
 	$ais = \st\get_first_image_src( 'large' );
-	if ( ! empty( $ais ) ) return $ais;
+	if ( ! empty( $ais ) ) {
+		return $ais;
+	}
 	return $logo_src;
 }

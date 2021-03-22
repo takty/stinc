@@ -82,7 +82,7 @@ function get_page_break_url( $i, $post ) {
 		$url = trailingslashit( $url ) . user_trailingslashit( $i, 'single_paged' );
 	}
 	if ( is_preview() ) {
-		$query_args = [];
+		$query_args = array();
 		if ( ( 'draft' !== $post->post_status ) && isset( $_GET['preview_id'], $_GET['preview_nonce'] ) ) {
 			$query_args['preview_id'] = wp_unslash( $_GET['preview_id'] );
 			$query_args['preview_nonce'] = wp_unslash( $_GET['preview_nonce'] );

@@ -10,15 +10,15 @@ namespace st\list_table_column;
  */
 
 
-function insert_default_columns( $pos = false, $cs = [] ) {
+function insert_default_columns( $pos = false, $cs = array() ) {
 	$ns = [ 'cb', 'title', 'date' ];
 	if ( $pos === false ) return array_merge( $cs, $ns );
 	array_splice( $cs, $pos, 0, $ns );
 	return $cs;
 }
 
-function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = false, $cs = [] ) {
-	$ns = [];
+function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = false, $cs = array() ) {
+	$ns = array();
 	if ( $add_cat ) {
 		$n = [ 'name' => "{$post_type}_category", 'width' => '10%' ];
 		if ( is_string( $add_cat ) ) $n['label'] = $add_cat;
@@ -38,7 +38,7 @@ function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = 
 // -----------------------------------------------------------------------------
 
 
-function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
+function set_admin_columns( $post_type, $all_columns, $sortable_columns = array() ) {
 	$DEFAULT_COLUMNS = [
 		'cb'     => '<input type="checkbox" />',
 		'title'  => _x( 'Title', 'column name', 'default' ),
@@ -46,9 +46,9 @@ function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 		'date'   => __( 'Date', 'default' ),
 		'order'  => __( 'Order', 'default' ),
 	];
-	$columns = [];
-	$styles  = [];
-	$val_fns = [];
+	$columns = array();
+	$styles  = array();
+	$val_fns = array();
 
 	foreach ( $all_columns as $c ) {
 		if ( is_array( $c ) ) {
@@ -96,8 +96,8 @@ function set_admin_columns( $post_type, $all_columns, $sortable_columns = [] ) {
 }
 
 function set_admin_columns_sortable( $post_type, $sortable_columns ) {
-	$names = [];
-	$types = [];
+	$names = array();
+	$types = array();
 	foreach ( $sortable_columns as $c ) {
 		if ( is_array( $c ) ) {
 			$names[] = $c['name'];

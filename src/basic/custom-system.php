@@ -31,9 +31,9 @@ function disable_emoji() {
 
 function enable_used_tags() {
 	global $allowedtags;
-	$allowedtags['sub']  = [];
-	$allowedtags['sup']  = [];
-	$allowedtags['span'] = [];
+	$allowedtags['sub']  = array();
+	$allowedtags['sup']  = array();
+	$allowedtags['span'] = array();
 }
 
 function enable_default_image_sizes( $add_medium_small = true ) {
@@ -43,7 +43,7 @@ function enable_default_image_sizes( $add_medium_small = true ) {
 
 	add_filter( 'image_size_names_choose', function ( $sizes ) use ( $add_medium_small ) {
 		$is_ja = preg_match( '/^ja/', get_locale() );
-		$ns = [];
+		$ns = array();
 		foreach ( $sizes as $idx => $s ) {
 			$ns[ $idx ] = $s;
 			if ( $idx === 'thumbnail' ) {

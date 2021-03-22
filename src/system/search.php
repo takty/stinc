@@ -27,9 +27,9 @@ class Search {
 
 	private $_home_url = 'home_url';
 
-	private $_meta_keys   = [];
-	private $_post_types  = [];
-	private $_slug_to_pts = [];
+	private $_meta_keys   = array();
+	private $_post_types  = array();
+	private $_slug_to_pts = array();
 	private $_stop_words;
 
 	private $_search_rewrite_rules_func = null;
@@ -279,7 +279,7 @@ class Search {
 		if ( ! $query->is_search() || ! $query->is_main_query() ) return $join;
 		$sql_mks = '';
 		if ( ! empty( $this->_meta_keys ) ) {
-			$_mks = [];
+			$_mks = array();
 			foreach ( $this->_meta_keys as $mk ) $_mks[] = "'" . esc_sql( $mk ) . "'";
 			$sql_mks = implode( ', ', $_mks );
 		}
@@ -332,7 +332,7 @@ class Search {
 	}
 
 	private function extend_search_terms( $terms, $exclusion_prefix ) {
-		$ret = [];
+		$ret = array();
 		foreach ( $terms as $term ) {
 			$exclude = $exclusion_prefix && ( $exclusion_prefix === substr( $term, 0, 1 ) );
 			if ( $exclude ) {
@@ -355,7 +355,7 @@ class Search {
 
 	public function split_term( $term ) {
 		global $wpdb;
-		$bis = [];
+		$bis = array();
 		$chs = preg_split( "//u", $term, -1, PREG_SPLIT_NO_EMPTY );
 		$sws = array_map( function ( $ch ) { return mb_strwidth( $ch ); }, $chs );
 

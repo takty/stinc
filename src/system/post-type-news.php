@@ -14,7 +14,7 @@ require_once __DIR__ . '/post-type.php';
 require_once __DIR__ . '/../admin/list-table-column.php';
 
 
-function register_post_type( $post_type = 'news', $slug = false, $labels = [], $args = [], ?callable $home_url = null ) {
+function register_post_type( $post_type = 'news', $slug = false, $labels = array(), $args = array(), ?callable $home_url = null ) {
 	$labels = array_merge( [
 		'name' => 'News'
 	], $labels );

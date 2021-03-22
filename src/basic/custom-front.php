@@ -99,7 +99,7 @@ function add_current_to_archive_link() {
 
 
 function enable_hidden_anchors_of_archives_link_option() {
-	static $urls = [];
+	static $urls = array();
 	add_filter( 'get_archives_link', function ( $link_html, $url, $text, $format, $before, $after ) use ( &$urls ) {
 		if ( $format === 'option' ) {
 			if ( empty( $urls ) ) {

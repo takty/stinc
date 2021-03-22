@@ -314,18 +314,18 @@ function get_term_root( $term, $root_id ) {
 }
 
 function count_term_from_posts( $posts, $taxonomy, $term_slug ) {
-	$post_sets = [];
+	$post_sets = array();
 	foreach ( $posts as $p ) {
 		$terms = wp_get_object_terms( $p->ID, $taxonomy, [ 'fields' => 'slugs' ] );
 		foreach ( $terms as $t ) {
-			if ( ! isset( $post_sets[ $t ] ) ) $post_sets[ $t ] = [];
+			if ( ! isset( $post_sets[ $t ] ) ) $post_sets[ $t ] = array();
 			$post_sets[ $t ][ $p->ID ] = 1;
 		}
 	}
 	$root = get_term_by( 'slug', $term_slug, $taxonomy );
 	_count_term( $taxonomy, $root, $post_sets );
 
-	$counts = [];
+	$counts = array();
 	foreach ( array_keys( $post_sets ) as $slug ) {
 		$count = count( $post_sets[ $slug ] );
 		if ( $count > 0 ) $counts[ $slug ] = $count;
@@ -334,7 +334,7 @@ function count_term_from_posts( $posts, $taxonomy, $term_slug ) {
 }
 
 function _count_term( $taxonomy, $term, &$post_sets ) {
-	$set = [];
+	$set = array();
 	$child = get_terms( $taxonomy, [ 'hide_empty' => false, 'parent' => $term->term_id ] );
 	foreach ( $child as $c ) {
 		_count_term( $taxonomy, $c, $post_sets );
@@ -342,6 +342,6 @@ function _count_term( $taxonomy, $term, &$post_sets ) {
 			$set = array_merge( $set, $post_sets[ $c->slug ] );
 		}
 	}
-	if ( ! isset( $post_sets[ $term->slug ] ) ) $post_sets[ $term->slug ] = [];
+	if ( ! isset( $post_sets[ $term->slug ] ) ) $post_sets[ $term->slug ] = array();
 	$post_sets[ $term->slug ] = array_merge( $post_sets[ $term->slug ], $set );
 }
