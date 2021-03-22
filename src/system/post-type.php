@@ -143,12 +143,8 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date',
 		$front = substr( $wp_rewrite->front, 1 );
 		$url = str_replace( $front, '', $url );
 
-		$blog_url = $home_url ? \call_user_func( $home_url ) : home_url();
-		$blog_url = untrailingslashit( $blog_url );
-
-		$blog_url = preg_replace( '/https?:\/\//', '', $blog_url );
-		$ret_link = str_replace( $blog_url, $blog_url . '/%link_dir%', $url );
-		$ret_link = str_replace( '%link_dir%/date', '%link_dir%', $ret_link );
+		$ret_link = str_replace( "/$slug/", "/%link_dir%/$slug/", $url );
+		$ret_link = str_replace( "%link_dir%/$slug", '%link_dir%', $ret_link );
 
 		$link_dir = $struct . '/' . $slug;
 		$url = str_replace( '%link_dir%', $link_dir, $ret_link );
