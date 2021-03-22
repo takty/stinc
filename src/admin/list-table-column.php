@@ -5,7 +5,7 @@ namespace st\list_table_column;
  * List Table Columns
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-18
+ * @version 2021-03-22
  *
  */
 
@@ -29,30 +29,6 @@ function insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, $pos = 
 		if ( is_string( $add_cat ) ) $n['label'] = $add_tag;
 		$ns[] = $n;
 	}
-	if ( $pos === false ) return array_merge( $cs, $ns );
-	array_splice( $cs, $pos, 0, $ns );
-	return $cs;
-}
-
-function insert_ml_tag_columns( $post_type, $pos = false, $cs ) {
-	if ( ! class_exists( '\st\Multilang' ) ) return $cs;
-
-	$ml = \st\Multilang::get_instance();
-	if ( ! $ml->has_tag( $post_type ) ) return $cs;
-
-	$ns = [ [ 'name' => $ml->get_taxonomy(), 'width' => '10%' ] ];
-	if ( $pos === false ) return array_merge( $cs, $ns );
-	array_splice( $cs, $pos, 0, $ns );
-	return $cs;
-}
-
-function insert_mh_tag_columns( $post_type, $pos = false, $cs ) {
-	if ( ! class_exists( '\st\Multihome' ) ) return $cs;
-
-	$mh = \st\Multihome::get_instance();
-	if ( ! $mh->has_tag( $post_type ) ) return $cs;
-
-	$ns = [ [ 'name' => $mh->get_taxonomy(), 'width' => '10%' ] ];
 	if ( $pos === false ) return array_merge( $cs, $ns );
 	array_splice( $cs, $pos, 0, $ns );
 	return $cs;

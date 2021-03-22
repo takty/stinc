@@ -5,7 +5,7 @@ namespace st;
  * Nav Menu (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-02-09
+ * @version 2021-03-22
  *
  */
 
@@ -70,19 +70,8 @@ class NavMenu {
 	protected $_pid_to_children_state;
 	protected $_id_to_attr;
 
-	public function __construct( $menu_name, $expanded_page_ids = false, $object_type_s = false ) {
-		$ml = class_exists( '\st\Multilang' ) ? \st\Multilang::get_instance() : null;
-		$mh = class_exists( '\st\Multihome' ) ? \st\Multihome::get_instance() : null;
-
+	public function __construct( $menu_name, $expanded_page_ids = false, $object_type_s = false, callable $home_url = null ) {
 		$this->_cur_url = trailingslashit( strtok( \st\get_current_uri( true ), '?' ) );
-		if ( $mh ) {
-			$ss = $mh->get_site_slug();
-			$is_def_home = strpos( $mh->home_url( '/' ), "/$ss/" ) === false;
-			if ( $is_def_home ) {
-				$home = $ml ? $ml->home_url() : home_url();
-				$this->_cur_url = str_replace( $home, $mh->home_url( $ss ), $this->_cur_url );
-			}
-		}
 		if ( self::$_is_current_archive_enabled && ( is_single() || is_archive() ) ) {
 			$this->_cur_post_type = get_post_type();
 			if ( is_tax() ) {
@@ -109,7 +98,7 @@ class NavMenu {
 			if ( is_archive() ) $this->_cur_is_archive = true;
 		}
 
-		$url = $mh ? $mh->home_url() : ( $ml ? $ml->home_url() : home_url() );
+		$url = call_user_func( $home_url );
 		$this->_home_url = trailingslashit( $url );
 
 		$this->_is_page = is_page();

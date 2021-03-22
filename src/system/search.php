@@ -5,7 +5,7 @@ namespace st;
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-24
+ * @version 2021-03-21
  *
  */
 
@@ -25,6 +25,8 @@ class Search {
 	private $_is_slash_in_query_enabled  = false;
 	private $_is_extended_search_enabled = false;
 
+	private $_home_url = 'home_url';
+
 	private $_meta_keys   = [];
 	private $_post_types  = [];
 	private $_slug_to_pts = [];
@@ -38,6 +40,10 @@ class Search {
 	private $_posts_search_filter_added = false;
 
 	private function __construct() {}
+
+	public function set_home_url( callable $home_url ) {
+		$this->_home_url = $home_url;
+	}
 
 	public function set_slash_in_query_enabled( $enabled ) {
 		$this->_is_slash_in_query_enabled = $enabled;
@@ -200,13 +206,7 @@ class Search {
 	}
 
 	private function home_url( $slug ) {
-		if ( class_exists( '\st\Multihome' ) ) {
-			return \st\Multihome::get_instance()->home_url( $slug );
-		}
-		if ( class_exists( '\st\Multilang' ) ) {
-			return \st\Multilang::get_instance()->home_url( $slug );
-		}
-		return home_url( $slug );
+		return call_user_func( $this->_home_url, $slug );
 	}
 
 	public function _cb_request( $query_vars ) {

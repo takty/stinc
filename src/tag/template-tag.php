@@ -5,7 +5,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-24
+ * @version 2021-03-21
  *
  */
 
@@ -46,19 +46,11 @@ function get_post_title( $short = 8, $long = 32, $mode = 'segment_small', $filte
 }
 
 function get_post_type_name( $post_type, $singular_name = false ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		return $ml->get_post_type_name( $post_type, $singular_name );
-	}
 	$obj = get_post_type_object( $post_type );
 	return $singular_name ? $obj->labels->singular_name : $obj->labels->name;
 }
 
 function get_site_title( $raw = false ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		return $ml->get_site_title( $raw );
-	}
 	$ret = [];
 	$bn = htmlspecialchars_decode( get_option( 'blogname' ) );
 	$bd = htmlspecialchars_decode( get_option( 'blogdescription' ) );
@@ -180,22 +172,14 @@ function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = 
 
 
 function get_term_name( $term, $singular = false, $lang = false ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		return $ml->get_term_name( $term, $singular, $lang );
-	}
 	if ( $singular ) {
-		$name_s = get_term_meta( $term->term_id, TMK_NAME_S, true );
+		$name_s = $term->singular_name;
 		if ( ! empty( $name_s ) ) return $name_s;
 	}
 	return $term->name;
 }
 
 function term_description( $term_id = 0, $taxonomy, $lang = false ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		return $ml->term_description( $term_id, $taxonomy, $lang );
-	}
 	if ( ! $term_id && ( is_tax() || is_tag() || is_category() ) ) {
 		$t = get_queried_object();
 		$term_id  = $t->term_id;

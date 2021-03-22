@@ -5,7 +5,7 @@ namespace st;
  * Share
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-04-10
+ * @version 2021-03-21
  *
  */
 
@@ -59,7 +59,7 @@ function the_structured_data( $args = [], $same_as = [] ) {
 		'@context' => 'http://schema.org',
 		'@type'    => 'Organization',
 		'name'     => _get_structured_data_name(),
-		'url'      => _get_structured_data_url(),
+		'url'      => home_url(),
 		'logo'     => '',
 		'sameAs'   => $same_as
 	], $args );
@@ -69,34 +69,9 @@ function the_structured_data( $args = [], $same_as = [] ) {
 }
 
 function _get_structured_data_name() {
-	if ( class_exists( '\st\Multilang' ) ) {
-		$site_name = \st\Multilang::get_instance()->get_bloginfo( 'name' );
-	} else {
-		$site_name = get_bloginfo( 'name' );
-	}
+	$site_name = get_bloginfo( 'name' );
 	$site_name = implode( ' ', \st\separate_line( $site_name ) );
 	return $site_name;
-}
-
-function _get_structured_data_url() {
-	$ml = null;
-	if ( class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-	}
-	$mh = null;
-	if ( class_exists( '\st\Multihome' ) ) {
-		$mh = \st\Multihome::get_instance();
-	}
-	if ( ! isset( $ml ) && ! isset( $mh ) ) {
-		return home_url();
-	}
-	if ( ! isset( $ml ) && isset( $mh ) ) {
-		return home_url( $mh->get_site_slug() );
-	}
-	if ( isset( $ml ) && ! isset( $mh ) ) {
-		return $ml->home_url();
-	}
-	return $ml->home_url( $mh->get_site_slug() );
 }
 
 
@@ -180,13 +155,7 @@ function get_the_ogp_description( $alt_description ) {
 		}
 	}
 	if ( empty( trim( $desc ) ) ) {
-		if ( class_exists( '\st\Multihome' ) ) {
-			$desc = \st\Multihome::get_instance()->get_bloginfo( 'description' );
-		} else if ( class_exists( '\st\Multilang' ) ) {
-			$desc = \st\Multilang::get_instance()->get_bloginfo( 'description' );
-		} else {
-			$desc = get_bloginfo( 'description' );
-		}
+		$desc = get_bloginfo( 'description' );
 	}
 	if ( empty( trim( $desc ) ) ) {
 		$desc = get_the_ogp_site_name();
@@ -195,26 +164,12 @@ function get_the_ogp_description( $alt_description ) {
 }
 
 function _ogp_is_singular() {
-	$is_singular = false;
-
-	if ( class_exists( '\st\Multihome' ) ) {
-		$is_singular = is_singular() && ! \st\Multihome::get_instance()->is_front_page();
-	} else if ( class_exists( '\st\Multilang' ) ) {
-		$is_singular = is_singular() && ! \st\Multilang::get_instance()->is_front_page();
-	} else {
-		$is_singular = is_singular() && ! is_front_page();
-	}
+	$is_singular = is_singular() && ! is_front_page();
 	return $is_singular;
 }
 
 function get_the_ogp_site_name() {
-	if ( class_exists( '\st\Multihome' ) ) {
-		$site_name = \st\Multihome::get_instance()->get_bloginfo( 'name' );
-	} else if ( class_exists( '\st\Multilang' ) ) {
-		$site_name = \st\Multilang::get_instance()->get_bloginfo( 'name' );
-	} else {
-		$site_name = get_bloginfo( 'name' );
-	}
+	$site_name = get_bloginfo( 'name' );
 	$site_name = implode( ' ', \st\separate_line( $site_name ) );
 	return $site_name;
 }

@@ -5,7 +5,7 @@ namespace st\event;
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-10-22
+ * @version 2021-03-22
  *
  */
 
@@ -21,7 +21,7 @@ const PMK_DATE_BGN = '_date_bgn';
 const PMK_DATE_END = '_date_end';
 
 
-function register_post_type( $post_type = 'event', $slug = false, $opts = [], $labels = [], $args = [] ) {
+function register_post_type( $post_type = 'event', $slug = false, $opts = [], $labels = [], $args = [], ?callable $home_url = null ) {
 	$opts = array_merge( [
 		'is_autofill_enabled'   => false,
 		'order_by_date'         => 'begin',
@@ -47,7 +47,7 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = [], $l
 
 	if ( $slug === false ) $slug = $post_type;
 	\register_post_type( $post_type, $args );
-	\st\post_type\add_rewrite_rules( $post_type, $slug, 'date' );
+	\st\post_type\add_rewrite_rules( $post_type, $slug, 'date', false, $home_url );
 
 	$pmk_o = $opts['order_by_date'] === 'begin' ? PMK_DATE_BGN : ( $opts['order_by_date'] === 'end' ? PMK_DATE_END : false );
 	if ( $pmk_o ) {
@@ -83,13 +83,12 @@ function _set_duration_picker( $post_type, $opts, $labels ) {
 	} );
 }
 
-function set_admin_columns( $post_type, $add_cat, $add_tag ) {
-	add_action( 'wp_loaded', function () use ( $post_type, $add_cat, $add_tag )  {
+function set_admin_columns( $post_type, $add_cat, $add_tag, $tax ) {
+	add_action( 'wp_loaded', function () use ( $post_type, $add_cat, $add_tag, $tax )  {
 		$cs = \st\list_table_column\insert_default_columns();
 		$cs = \st\list_table_column\insert_common_taxonomy_columns( $post_type, $add_cat, $add_tag, -1, $cs );
 		$cs = insert_date_columns( $post_type, -1, $cs );
-		$cs = \st\list_table_column\insert_mh_tag_columns( $post_type, -1, $cs );
-		$cs = \st\list_table_column\insert_ml_tag_columns( $post_type, -1, $cs );
+		array_splice( $cs, -1, 0, [ [ 'name' => $tax, 'width' => '10%' ] ] );
 		$scs = insert_date_sortable_columns();
 		\st\list_table_column\set_admin_columns( $post_type, $cs, $scs );
 	} );
@@ -192,11 +191,8 @@ function get_duration( $post_id ) {
 function _make_date_tags( $date_str, $format, $base_format = false ) {
 	if ( $base_format === false ) {
 		$base_format = "Y\tM\tj";
-		if ( class_exists( '\st\Multilang' ) ) {
-			$ml = \st\Multilang::get_instance();
-			$f = $ml->get_date_format();
-			if ( strpos( $f, 'm' ) !== false || strpos( $f, 'n' ) !== false ) $base_format = "Y\tn\tj";
-		}
+		$f = get_option( 'date_format' );
+		if ( strpos( $f, 'm' ) !== false || strpos( $f, 'n' ) !== false ) $base_format = "Y\tn\tj";
 	}
 	if ( ! empty( $date_str ) ) {
 		$date = \st\create_date_from_date_string( $date_str );

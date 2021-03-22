@@ -5,7 +5,7 @@ namespace st\shortcode;
  * Shortcode
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-18
+ * @version 2021-03-22
  *
  */
 
@@ -175,19 +175,18 @@ function add_post_type_list_shortcode( $post_type, $taxonomy = false, $args = []
 }
 
 function get_item_list( $post_type, $taxonomy, $term_slug, $latest_count, $sticky, $year_date, $after, $before, $orderby ) {
-	$args = [];
+	$args = [ 'suppress_filters' => false ];
 
 	if ( $latest_count !== false && is_numeric( $latest_count ) ) {
 		$latest_count = intval( $latest_count );
 		if ( $term_slug ) $args = \st\append_tax_query( $taxonomy, $term_slug, $args );
 		if ( $sticky ) {
-			$ps = \st\get_custom_sticky_and_latest_posts( $post_type, $latest_count, true, $args );
+			$ps = \st\get_custom_sticky_and_latest_posts( $post_type, $latest_count, $args );
 		} else {
-			$ps = \st\get_latest_posts( $post_type, $latest_count, true, $args );
+			$ps = \st\get_latest_posts( $post_type, $latest_count, $args );
 		}
 	} else {
 		$args = \st\append_post_type_query( $post_type, -1 );
-		$args = \st\append_ml_tag_query( $args );
 		if ( $term_slug ) $args = \st\append_tax_query( $taxonomy, $term_slug, $args );
 		$ps = get_posts( $args );
 	}
@@ -242,11 +241,7 @@ function echo_list( $atts, $items, $pt, $year_format = false ) {
 		$subtag = get_item_list_heading( $atts['year-heading'] );
 
 		if ( $year_format === false ) {
-			if ( class_exists( '\st\Multilang' ) ) {
-				$year_format = \st\Multilang::get_instance()->get_date_format( 'year' );
-			} else {
-				$year_format = _x( 'Y', 'yearly archives date format' );
-			}
+			$year_format = _x( 'Y', 'yearly archives date format' );
 		}
 
 		foreach ( $ac as $year => $items ) {

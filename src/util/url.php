@@ -5,20 +5,9 @@ namespace st;
  * URL Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-02-22
+ * @version 2021-03-21
  *
  */
-
-
-function _home_url( $path = '' ) {
-	if ( class_exists( '\st\Multilang' ) ) {
-		return \st\Multilang::get_instance()->home_url( $path );
-	}
-	return home_url( $path );
-}
-
-
-// -----------------------------------------------------------------------------
 
 
 function get_current_uri( $raw = false ) {
@@ -66,16 +55,16 @@ function get_file_uri( $path ) {
 // -----------------------------------------------------------------------------
 
 
-function get_first_slug( $url ) {
-	$hu = _home_url( '/' );
+function get_first_slug( $url, ?callable $home_url = null ) {
+	$hu = $home_url ? call_user_func( $home_url, '/' ) : home_url( '/' );
 	$temp = str_replace( $hu, '', $url );
 	$ps = explode( '/', $temp );
 	if ( count( $ps ) > 0 ) return $ps[0];
 	return '';
 }
 
-function get_first_and_second_slug( $url ) {
-	$hu = _home_url( '/' );
+function get_first_and_second_slug( $url, ?callable $home_url = null ) {
+	$hu = $home_url ? call_user_func( $home_url, '/' ) : home_url( '/' );
 	$temp = str_replace( $hu, '', $url );
 	$ps = explode( '/', $temp );
 	$ss = ['', ''];

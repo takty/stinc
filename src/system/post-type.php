@@ -27,13 +27,13 @@ function post_type_title( $prefix = '', $display = true ) {
 // -----------------------------------------------------------------------------
 
 
-function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date', $by_post_name = false ) {
+function add_rewrite_rules( $post_type, $struct = '', $date_slug = 'date', $by_post_name = false, ?callable $home_url = null ) {
 	add_post_type_rewrite_rules( $post_type, $struct, $by_post_name );
 	add_post_type_link_filter( $post_type, $by_post_name );
 	add_archive_rewrite_rules( $post_type, $struct );
 	add_archive_link_filter( $post_type, $struct );
 	add_date_archive_rewrite_rules( $post_type, $struct, $date_slug );
-	add_date_archive_link_filter( $post_type, $struct, $date_slug );
+	add_date_archive_link_filter( $post_type, $struct, $date_slug, $home_url );
 }
 
 function add_post_type_rewrite_rules( $post_type, $struct = '', $by_post_name = false ) {
@@ -126,10 +126,10 @@ function add_date_archive_rewrite_rules( $post_type, $struct = '', $slug = 'date
 	} );
 }
 
-function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' ) {
+function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date', ?callable $home_url = null ) {
 	if ( empty( $struct ) ) $struct = $post_type;
 
-	add_filter( 'get_archives_link', function ( $link_html, $url, $text, $format, $before, $after ) use ( $post_type, $struct, $slug ) {
+	add_filter( 'get_archives_link', function ( $link_html, $url, $text, $format, $before, $after ) use ( $post_type, $struct, $slug, $home_url ) {
 		$url_post_type = '';
 		$qps = explode( '&', parse_url( $url, PHP_URL_QUERY ) );
 		foreach ( $qps as $qp ) {
@@ -143,12 +143,9 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' 
 		$front = substr( $wp_rewrite->front, 1 );
 		$url = str_replace( $front, '', $url );
 
-		if ( class_exists( '\st\Multilang' ) ) {
-			$ml = \st\Multilang::get_instance();
-			$blog_url = untrailingslashit( $ml->home_url() );
-		} else {
-			$blog_url = untrailingslashit( home_url() );
-		}
+		$blog_url = $home_url ? \call_user_func( $home_url ) : home_url();
+		$blog_url = untrailingslashit( $blog_url );
+
 		$blog_url = preg_replace( '/https?:\/\//', '', $blog_url );
 		$ret_link = str_replace( $blog_url, $blog_url . '/%link_dir%', $url );
 		$ret_link = str_replace( '%link_dir%/date', '%link_dir%', $ret_link );

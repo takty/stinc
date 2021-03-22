@@ -5,7 +5,7 @@ namespace st;
  * Query
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-09
+ * @version 2021-03-22
  *
  */
 
@@ -50,34 +50,6 @@ function append_custom_sticky_query( $args = [] ) {
 		'key'   => \st\sticky\PMK_STICKY,
 		'value' => '1'
 	];
-	return $args;
-}
-
-function append_ml_tag_query( $args = [] ) {
-	if ( ! class_exists( '\st\Multilang' ) ) return $args;
-
-	$ml = \st\Multilang::get_instance();
-	if ( isset( $args['post_type'] ) && ! is_array( $args['post_type'] ) ) {
-		if ( ! $ml->has_tag( $args['post_type'] ) ) return $args;
-	}
-	if ( ! $ml->has_tag() ) return $args;
-
-	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
-	$args['tax_query'][] = $ml->get_tax_query();
-	return $args;
-}
-
-function append_mh_tag_query( $args = [] ) {
-	if ( ! class_exists( '\st\Multihome' ) ) return $args;
-
-	$mh = \st\Multihome::get_instance();
-	if ( isset( $args['post_type'] ) && ! is_array( $args['post_type'] ) ) {
-		if ( ! $mh->has_tag( $args['post_type'] ) ) return $args;
-	}
-	if ( ! $mh->has_tag() ) return $args;
-
-	if ( ! isset( $args['tax_query'] ) ) $args['tax_query'] = [];
-	$args['tax_query'][] = $mh->get_tax_query();
 	return $args;
 }
 
@@ -140,22 +112,20 @@ function append_sibling_page_query( $sibling_id = false, $args = [] ) {
 // -----------------------------------------------------------------------------
 
 
-function get_latest_posts( $post_type, $post_per_page = 6, $ml_tag = false, $args = [] ) {
+function get_latest_posts( $post_type, $post_per_page = 6, $args = [] ) {
 	$args = append_post_type_query( $post_type, $post_per_page, $args );
-	if ( $ml_tag ) $args = append_ml_tag_query( $args );
 	return get_posts( $args );
 }
 
-function get_custom_sticky_posts( $post_type, $ml_tag = false, $args = [] ) {
+function get_custom_sticky_posts( $post_type, $args = [] ) {
 	$args = append_post_type_query( $post_type, -1, $args );
 	$args = append_custom_sticky_query( $args );
-	if ( $ml_tag ) $args = append_ml_tag_query( $args );
 	return get_posts( $args );
 }
 
-function get_custom_sticky_and_latest_posts( $post_type, $post_per_page = 6, $ml_tag = false, $args = [] ) {
-	$sticky = get_custom_sticky_posts( $post_type, $ml_tag, $args );
-	$latest = get_latest_posts( $post_type, $post_per_page, $ml_tag, $args );
+function get_custom_sticky_and_latest_posts( $post_type, $post_per_page = 6, $args = [] ) {
+	$sticky = get_custom_sticky_posts( $post_type, $args );
+	$latest = get_latest_posts( $post_type, $post_per_page, $args );
 
 	return merge_sticky_and_latest( $sticky, $latest, $post_per_page );
 }

@@ -34,28 +34,30 @@ function the_yearly_archive_select( $post_type = 'post', $default_title = 'Year'
 <?php
 }
 
-function the_taxonomy_archive_select( $taxonomy, $default_title = 'Category', $check_lang_visible = false, $hide_empty = false ) {
+function the_taxonomy_archive_select( $taxonomy, $default_title = 'Category', $args = array() ) {
 ?>
 	<select onchange="document.location.href = this.value;">
 		<option value="#"><?php echo $default_title ?></option>
-		<?php the_taxonomy_archive_option( $taxonomy, $check_lang_visible, $hide_empty ); ?>
+		<?php the_taxonomy_archive_option( $taxonomy, $args ); ?>
 	</select>
 <?php
 }
 
-function the_taxonomy_archive_option( $taxonomy, $check_lang_visible = false, $hide_empty = false ) {
-	$key_visible = '_visible';
-	if ( class_exists( '\st\Multilang' ) ) {
-		$ml = \st\Multilang::get_instance();
-		$key_visible .= '_' . $ml->get_site_lang();
-	}
-	$terms = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => 0 ] );
+function the_taxonomy_archive_option( $taxonomy, $args = array() ) {
+	$args = array_merge(
+		array(
+			'hide_empty' => false,
+			'parent'     => 0
+		),
+		$args
+	);
+	$terms = get_terms( $taxonomy, $args );
 
 	foreach ( $terms as $t ) {
-		if ( $check_lang_visible && empty( get_term_meta( $t->term_id, $key_visible, true ) ) ) continue;
 		echo '<option value="' . esc_attr( get_term_link( $t ) ) . '">' . esc_html( \st\get_term_name( $t ) ) . '</option>';
+		$args['parent'] = $t->term_id;
 
-		$cts = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => $t->term_id ] );
+		$cts = get_terms( $taxonomy, $args );
 		foreach ( $cts as $ct ) {
 			echo '<option value="' . esc_attr( get_term_link( $ct ) ) . '">' . '— ' . esc_html( \st\get_term_name( $ct ) ) . '</option>';
 		}

@@ -5,7 +5,7 @@ namespace st\field;
  * Custom Field Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-18
+ * @version 2021-03-22
  *
  */
 
@@ -28,11 +28,7 @@ add_action( 'admin_enqueue_scripts', function () {
 
 function get_post_meta_date( $post_id, $key, $format = false ) {
 	if ( $format === false ) {
-		if ( class_exists( '\st\Multilang' ) ) {
-			$format = \st\Multilang::get_instance()->get_date_format();
-		} else {
-			$format = get_option( 'date_format' );
-		}
+		$format = get_option( 'date_format' );
 	}
 	$val = \st\mb_trim( get_post_meta( $post_id, $key, true ) );
 	$val = mysql2date( $format, $val );
