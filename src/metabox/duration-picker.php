@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Duration Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-17
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 require_once __DIR__ . '/../admin/misc.php';
 require_once __DIR__ . '/../system/field.php';
@@ -21,38 +19,44 @@ class DurationPicker {
 
 	const CLS_TABLE = self::NS . '-table';
 
-	static private $_instance       = array();
-	static private $_locale         = 'en';
-	static private $_label_year     = '';
-	static private $_is_echo_script = false;
+	private static $_instance       = array();
+	private static $_locale         = 'en';
+	private static $_label_year     = '';
+	private static $_is_echo_script = false;
 
-	static public function get_instance( $key = false ) {
+	public static function get_instance( $key = false ) {
 		self::$_locale = \st\get_user_lang();
 
-		if ( $key === false ) return reset( self::$_instance );
-		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
+		if ( false === $key ) {
+			return reset( self::$_instance );
+		}
+		if ( isset( self::$_instance[ $key ] ) ) {
+			return self::$_instance[ $key ];
+		}
 		return new DurationPicker( $key );
 	}
 
-	static public function enqueue_script( $url_to = false ) {
+	public static function enqueue_script( $url_to = false ) {
 		if ( is_admin() ) {
-			if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
+			if ( false === $url_to ) {
+				$url_to = \st\get_file_uri( __DIR__ );
+			}
 			$url_to = untrailingslashit( $url_to );
 
-			wp_enqueue_script( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.js', ['flatpickr.l10n.ja'] );
+			wp_enqueue_script( 'flatpickr', $url_to . '/asset/lib/flatpickr.min.js', array( 'flatpickr.l10n.ja' ) );
 			wp_enqueue_script( 'flatpickr.l10n.ja', $url_to . '/asset/lib/flatpickr.l10n.ja.min.js' );
-			wp_enqueue_style ( 'flatpickr',         $url_to . '/asset/lib/flatpickr.min.css' );
+			wp_enqueue_style ( 'flatpickr', $url_to . '/asset/lib/flatpickr.min.css' );
 
-			wp_enqueue_script( self::NS, $url_to . '/asset/duration-picker.min.js', ['flatpickr'] );
+			wp_enqueue_script( self::NS, $url_to . '/asset/duration-picker.min.js', array( 'flatpickr' ) );
 			wp_enqueue_style(  self::NS, $url_to . '/asset/duration-picker.min.css' );
 		}
 	}
 
-	static public function set_calendar_locale( $locale ) {
+	public static function set_calendar_locale( $locale ) {
 		self::$_locale = $locale;
 	}
 
-	static public function set_year_label( $label ) {
+	public static function set_year_label( $label ) {
 		self::$_label_year = $label;
 	}
 
@@ -70,8 +74,12 @@ class DurationPicker {
 	}
 
 	public function set_duration_labels( $bgn, $end ) {
-		if ( $bgn ) $this->_label_bgn = $bgn;
-		if ( $end ) $this->_label_end = $end;
+		if ( $bgn ) {
+			$this->_label_bgn = $bgn;
+		}
+		if ( $end ) {
+			$this->_label_end = $end;
+		}
 		return $this;
 	}
 
@@ -81,8 +89,9 @@ class DurationPicker {
 	}
 
 	public function get_item( $post_id = false ) {
-		if ( $post_id === false ) $post_id = get_the_ID();
-
+		if ( false === $post_id ) {
+			$post_id = get_the_ID();
+		}
 		$date_bgn = get_post_meta( $post_id, "{$this->_key}_date_bgn", true );
 		$date_end = get_post_meta( $post_id, "{$this->_key}_date_end", true );
 
@@ -94,12 +103,16 @@ class DurationPicker {
 
 
 	public function add_meta_box( $label, $screen, $context = 'side' ) {
-		\add_meta_box( "{$this->_key}_mb", __( $label ), [ $this, '_cb_output_html' ], $screen, $context );
+		\add_meta_box( "{$this->_key}_mb", __( $label ), array( $this, '_cb_output_html' ), $screen, $context );
 	}
 
 	public function save_meta_box( $post_id ) {
-		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
-		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
+		if ( ! isset( $_POST[ "{$this->_key}_nonce" ] ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( $_POST[ "{$this->_key}_nonce" ], $this->_key ) ) {
+			return;
+		}
 		$this->_save_item( $post_id );
 	}
 
@@ -116,14 +129,14 @@ class DurationPicker {
 		$_label_bgn  = esc_html( $this->_label_bgn );
 		$_label_end  = esc_html( $this->_label_end );
 
-		$id_bgn = "{$this->_key}_date_bgn";
-		$id_end = "{$this->_key}_date_end";
+		$id_bgn     = "{$this->_key}_date_bgn";
+		$id_end     = "{$this->_key}_date_end";
 		$id_row_bgn = "{$this->_key}_row_date_bgn";
 		$id_row_end = "{$this->_key}_row_date_end";
 
 		$_bgn = isset( $it['date_bgn'] ) ? esc_attr( $it['date_bgn'] ) : '';
 		$_end = isset( $it['date_end'] ) ? esc_attr( $it['date_end'] ) : '';
-	?>
+		?>
 		<div>
 			<table class="<?php echo self::CLS_TABLE ?>">
 				<tr>
@@ -144,12 +157,17 @@ class DurationPicker {
 			<script>
 				flatpickr('#<?php echo $id_row_bgn ?>', { locale: '<?php echo $_locale ?>', wrap: true });
 				flatpickr('#<?php echo $id_row_end ?>', { locale: '<?php echo $_locale ?>', wrap: true });
-	<?php if ( ! empty( $_label_year ) && ! self::$_is_echo_script ) : self::$_is_echo_script = true; ?>
+		<?php
+		if ( ! empty( $_label_year ) && ! self::$_is_echo_script ) :
+			self::$_is_echo_script = true;
+			?>
 				st_duration_picker_initialize_admin('<?php echo $_label_year; ?>');
-	<?php endif; ?>
+			<?php
+		endif;
+		?>
 			</script>
 		</div>
-	<?php
+		<?php
 	}
 
 
@@ -166,21 +184,28 @@ class DurationPicker {
 		if ( $date_bgn && $date_end ) {
 			$date_bgn_val = (int) str_replace( '-', '', $date_bgn );
 			$date_end_val = (int) str_replace( '-', '', $date_end );
-			if ( $date_end_val < $date_bgn_val ) list( $date_bgn, $date_end ) = [ $date_end, $date_bgn ];
+			if ( $date_end_val < $date_bgn_val ) {
+				list( $date_bgn, $date_end ) = array( $date_end, $date_bgn );
+			}
 		}
 		if ( $this->_is_autofill_enabled ) {
 			if ( $date_bgn && ! $date_end ) {
 				$date_end = $date_bgn;
-			} else if ( ! $date_bgn && $date_end ) {
+			} elseif ( ! $date_bgn && $date_end ) {
 				$date_bgn = $date_end;
 			}
 		}
 
-		if ( $date_bgn ) update_post_meta( $post_id, $key_bgn, $date_bgn );
-		else delete_post_meta( $post_id, $key_bgn );
-
-		if ( $date_end ) update_post_meta( $post_id, $key_end, $date_end );
-		else delete_post_meta( $post_id, $key_end, $date_end );
+		if ( $date_bgn ) {
+			update_post_meta( $post_id, $key_bgn, $date_bgn );
+		} else {
+			delete_post_meta( $post_id, $key_bgn );
+		}
+		if ( $date_end ) {
+			update_post_meta( $post_id, $key_end, $date_end );
+		} else {
+			delete_post_meta( $post_id, $key_end, $date_end );
+		}
 	}
 
 }
@@ -191,19 +216,41 @@ class DurationPicker {
 
 namespace st\duration_picker;
 
-function initialize( $key ) { return new \st\DurationPicker( $key ); }
-function enqueue_script( $url_to = false ) { \st\DurationPicker::enqueue_script( $url_to ); }
-function set_calendar_locale( $locale ) { return \st\DurationPicker::set_calendar_locale( $locale ); }
-function set_year_label( $label ) { return \st\DurationPicker::set_year_label( $label ); }
+function initialize( $key ) {
+	return new \st\DurationPicker( $key );
+}
+function enqueue_script( $url_to = false ) {
+	\st\DurationPicker::enqueue_script( $url_to );
+}
+function set_calendar_locale( $locale ) {
+	return \st\DurationPicker::set_calendar_locale( $locale );
+}
+function set_year_label( $label ) {
+	return \st\DurationPicker::set_year_label( $label );
+}
 
-function get_item( $key, $post_id = false ) { return \st\DurationPicker::get_instance( $key )->get_item( $post_id ); }
-function set_duration_labels( $key, $bgn, $end ) { return \st\DurationPicker::get_instance( $key )->set_duration_labels( $bgn, $end ); }
+function get_item( $key, $post_id = false ) {
+	return \st\DurationPicker::get_instance( $key )->get_item( $post_id );
+}
+function set_duration_labels( $key, $bgn, $end ) {
+	return \st\DurationPicker::get_instance( $key )->set_duration_labels( $bgn, $end );
+}
 
 function add_meta_box( $key, $label, $screen, $context = 'side', $opts = array() ) {
-	if ( isset( $opts['calendar_locale'] ) ) set_calendar_locale( $opts['calendar_locale'] );
-	if ( isset( $opts['year_label'] ) ) set_year_label( $opts['year_label'] );
-	if ( isset( $opts['date_bgn_label'] ) ) set_duration_labels( $key, $opts['date_bgn_label'], false );
-	if ( isset( $opts['date_end_label'] ) ) set_duration_labels( $key, false, $opts['date_end_label'] );
+	if ( isset( $opts['calendar_locale'] ) ) {
+		set_calendar_locale( $opts['calendar_locale'] );
+	}
+	if ( isset( $opts['year_label'] ) ) {
+		set_year_label( $opts['year_label'] );
+	}
+	if ( isset( $opts['date_bgn_label'] ) ) {
+		set_duration_labels( $key, $opts['date_bgn_label'], false );
+	}
+	if ( isset( $opts['date_end_label'] ) ) {
+		set_duration_labels( $key, false, $opts['date_end_label'] );
+	}
 	\st\DurationPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
 }
-function save_meta_box( $post_id, $key ) { \st\DurationPicker::get_instance( $key )->save_meta_box( $post_id ); }
+function save_meta_box( $post_id, $key ) {
+	\st\DurationPicker::get_instance( $key )->save_meta_box( $post_id );
+}

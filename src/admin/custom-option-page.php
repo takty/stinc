@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Custom Option Page
  *
  * @author Takuto Yanagida @ Space-Time Inc.
  * @version 2021-03-22
- *
  */
 
+namespace st;
 
 class CustomOptionPage {
 
@@ -52,18 +50,18 @@ class CustomOptionPage {
 
 	public function create_admin_page() {
 		$this->options = get_option( $this->option_key );
-?>
+		?>
 		<div class="wrap">
-			<h2><?php echo $this->page_title ?></h2>
+			<h2><?php echo esc_html( $this->page_title ); ?></h2>
 			<form method="post" action="options.php">
-<?php
+		<?php
 				settings_fields( $this->option_key );
 				do_settings_sections( $this->menu_slug );
 				submit_button();
-?>
+		?>
 			</form>
 		</div>
-<?php
+		<?php
 	}
 
 	public function page_init() {
@@ -81,16 +79,24 @@ class CustomOptionPage {
 			);
 			foreach ( $cont['fields'] as $key => $opts ) {
 				add_settings_field(
-					$key, $opts['label'],
+					$key,
+					$opts['label'],
 					function () use ( $key, $opts ) {
 						$desc = isset( $opts['description'] ) ? $opts['description'] : '';
 						switch ( $opts['type'] ) {
-							case 'checkbox': $this->callback_checkbox( $key, $desc );             break;
-							case 'textarea': $this->callback_textarea( $key, $desc );             break;
-							default:         $this->callback_input( $key, $opts['type'], $desc ); break;
+							case 'checkbox':
+								$this->callback_checkbox( $key, $desc );
+								break;
+							case 'textarea':
+								$this->callback_textarea( $key, $desc );
+								break;
+							default:
+								$this->callback_input( $key, $opts['type'], $desc );
+								break;
 						}
 					},
-					$this->menu_slug, $sid
+					$this->menu_slug,
+					$sid
 				);
 			}
 		}
@@ -101,7 +107,9 @@ class CustomOptionPage {
 
 		foreach ( $this->sections as $sid => $cont ) {
 			foreach ( $cont['fields'] as $key => $opts ) {
-				if ( ! isset( $input[ $key ] ) ) continue;
+				if ( ! isset( $input[ $key ] ) ) {
+					continue;
+				}
 				$filter = $opts['filter'];
 				if ( $filter ) {
 					$new_input[ $key ] = $filter( $input[ $key ] );
@@ -119,18 +127,22 @@ class CustomOptionPage {
 			'<input type="' . $type . '" id="' . $key . '" name="' . $name . '" value="%s" class="regular-text" aria-describedby="' . $key . '-description">',
 			isset( $this->options[ $key ] ) ? esc_attr( $this->options[ $key ] ) : ''
 		);
-		if ( ! empty( $desc ) ) echo '<p class="description" id="' . $key . '-description">' . esc_html( $desc ) . '</p>';
+		if ( ! empty( $desc ) ) {
+			echo '<p class="description" id="' . $key . '-description">' . esc_html( $desc ) . '</p>';
+		}
 	}
 
 	public function callback_checkbox( $key, $desc = '' ) {
 		printf(
 			'<label for="' . $key . '"><input type="checkbox" id="' . $key . '" name="' . $this->option_key . '[' . $key . ']" value="1" %s> ' . esc_html( $desc ) . '</label>',
-			( isset( $this->options[ $key ] ) && $this->options[ $key ] === '1' ) ? 'checked' : ''
+			( isset( $this->options[ $key ] ) && '1' === $this->options[ $key ] ) ? 'checked' : ''
 		);
 	}
 
 	public function callback_textarea( $key, $desc = '' ) {
-		if ( ! empty( $desc ) ) echo '<label for="' . $key . '">' . esc_html( $desc ) . '</label>';
+		if ( ! empty( $desc ) ) {
+			echo '<label for="' . $key . '">' . esc_html( $desc ) . '</label>';
+		}
 		$name = $this->option_key . '[' . $key . ']';
 		printf(
 			'<p><textarea id="' . $key . '" name="' . $name . '" rows="10" class="large-text" aria-describedby="' . $key . '-description">%s</textarea></p>',

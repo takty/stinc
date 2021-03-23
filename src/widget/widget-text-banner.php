@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Text Banner Widget
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-04
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 class Widget_Text_Banner extends \WP_Widget {
 
@@ -31,17 +29,23 @@ class Widget_Text_Banner extends \WP_Widget {
 	protected $registered = false;
 
 	public function __construct() {
-		parent::__construct( 'widget_text_banner', __( 'Text Banner' ), [
-			'classname'   => 'widget_text_banner',
-			'description' => __( 'Text Banner' )
-		] );
+		parent::__construct(
+			'widget_text_banner',
+			__( 'Text Banner' ),
+			array(
+				'classname'   => 'widget_text_banner',
+				'description' => __( 'Text Banner' ),
+			)
+		);
 	}
 
 	public function _register_one( $number = -1 ) {
 		parent::_register_one( $number );
-		if ( $this->registered ) return;
+		if ( $this->registered ) {
+			return;
+		}
 		$this->registered = true;
-		add_action( 'admin_print_scripts-widgets.php', [ $this, 'enqueue_admin_scripts' ] );
+		add_action( 'admin_print_scripts-widgets.php', array( $this, 'enqueue_admin_scripts' ) );
 	}
 
 	public function widget( $args, $instance ) {
@@ -58,12 +62,16 @@ class Widget_Text_Banner extends \WP_Widget {
 		$_color    = esc_attr( $color );
 		$_color_bg = esc_attr( $color_bg );
 
-		$output = str_replace( [ '%title%', '%link_url%', '%color%', '%color_bg%' ], [
-			$args['before_title'] . $_title . $args['after_title'],
-			$_link_url,
-			$_color,
-			$_color_bg
-		], self::$_template );
+		$output = str_replace(
+			array( '%title%', '%link_url%', '%color%', '%color_bg%' ),
+			array(
+				$args['before_title'] . $_title . $args['after_title'],
+				$_link_url,
+				$_color,
+				$_color_bg,
+			),
+			self::$_template
+		);
 
 		echo $args['before_widget'];
 		echo $output;
@@ -71,13 +79,23 @@ class Widget_Text_Banner extends \WP_Widget {
 	}
 
 	static private function is_color_code( $color ) {
-		if ( preg_match( "/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/", $color ) ) return true;
+		if ( preg_match( "/^#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})$/", $color ) ) {
+			return true;
+		}
 		return false;
 	}
 
 	public function update( $new_instance, $old_instance ) {
-		$new_instance = wp_parse_args( $new_instance, [ 'title' => '', 'link_url' => '', 'color' => '', 'color_bg' => '' ] );
-		$instance = $old_instance;
+		$new_instance = wp_parse_args(
+			$new_instance,
+			array(
+				'title'    => '',
+				'link_url' => '',
+				'color'    => '',
+				'color_bg' => '',
+			)
+		);
+		$instance     = $old_instance;
 
 		$instance['title']    = sanitize_text_field( $new_instance['title'] );
 		$instance['link_url'] = sanitize_text_field( $new_instance['link_url'] );
@@ -93,7 +111,15 @@ class Widget_Text_Banner extends \WP_Widget {
 	}
 
 	public function form( $instance ) {
-		$instance = wp_parse_args( (array) $instance, [ 'title' => '', 'link_url' => '', 'color' => '', 'color_bg' => '' ] );
+		$instance = wp_parse_args(
+			(array) $instance,
+			array(
+				'title'    => '',
+				'link_url' => '',
+				'color'    => '',
+				'color_bg' => '',
+			)
+		);
 
 		$id_title      = $this->get_field_id( 'title' );
 		$id_link_url   = $this->get_field_id( 'link_url' );
@@ -109,32 +135,32 @@ class Widget_Text_Banner extends \WP_Widget {
 		$_color    = esc_attr( empty( $instance['color'] ) ? '#ffffff' : $instance['color'] );
 		$_color_bg = esc_attr( empty( $instance['color_bg'] ) ? '#ffffff' : $instance['color_bg'] );
 
-?>
+		?>
 		<p>
-			<label for="<?php echo $id_title ?>"><?php _e('Title') ?>:</label>
-			<input id="<?php echo $id_title ?>" name="<?php echo $name_title ?>" class="widefat title sync-input" type="text" value="<?php echo $_title ?>">
+			<label for="<?php echo $id_title; ?>"><?php _e( 'Title' ); ?>:</label>
+			<input id="<?php echo $id_title; ?>" name="<?php echo $name_title; ?>" class="widefat title sync-input" type="text" value="<?php echo $_title; ?>">
 		</p>
 		<p>
-			<label for="<?php echo $id_link_url ?>"><?php _e('Link To') ?>:</label>
-			<input id="<?php echo $id_link_url ?>" name="<?php echo $name_link_url ?>" class="widefat link sync-input" type="text" value="<?php echo $_link_url ?>" placeholder="http://" pattern="((\w+:)?\/\/\w.*|\w+:(?!\/\/$)|\/|\?|#).*">
-		</p>
-<?php
-		if ( self::$_use_color ) :
-?>
-		<p>
-			<label for="<?php echo $id_color ?>"><?php echo _e('Color') ?>:</label>
-			<input id="<?php echo $id_color ?>" name="<?php echo $name_color ?>" class="widefat color-picker" type="text" value="<?php echo $_color ?>">
-		</p>
-<?php
-		endif;
-		if ( self::$_use_bg_color ) :
-?>
-		<p>
-			<label for="<?php echo $id_color_bg ?>"><?php echo _e('Background Color') ?>:</label>
-			<input id="<?php echo $id_color_bg ?>" name="<?php echo $name_color_bg ?>" class="widefat color-picker" type="text" value="<?php echo $_color_bg ?>">
+			<label for="<?php echo $id_link_url; ?>"><?php _e( 'Link To' ); ?>:</label>
+			<input id="<?php echo $id_link_url; ?>" name="<?php echo $name_link_url; ?>" class="widefat link sync-input" type="text" value="<?php echo $_link_url; ?>" placeholder="http://" pattern="((\w+:)?\/\/\w.*|\w+:(?!\/\/$)|\/|\?|#).*">
 		</p>
 		<?php
-		endif;
+		if ( self::$_use_color ) {
+			?>
+			<p>
+				<label for="<?php echo $id_color; ?>"><?php echo _e( 'Color' ); ?>:</label>
+				<input id="<?php echo $id_color; ?>" name="<?php echo $name_color; ?>" class="widefat color-picker" type="text" value="<?php echo $_color; ?>">
+			</p>
+			<?php
+		}
+		if ( self::$_use_bg_color ) {
+			?>
+			<p>
+				<label for="<?php echo $id_color_bg; ?>"><?php echo _e( 'Background Color' ); ?>:</label>
+				<input id="<?php echo $id_color_bg; ?>" name="<?php echo $name_color_bg; ?>" class="widefat color-picker" type="text" value="<?php echo $_color_bg; ?>">
+			</p>
+			<?php
+		}
 
 		$code = "(function ($) {
 			$(function () {

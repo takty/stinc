@@ -1,52 +1,64 @@
 <?php
-namespace st\basic;
 /**
- *
  * Custom Admin Bar
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-11-18
- *
+ * @version 2021-03-23
  */
 
+namespace st\basic;
 
 function remove_wp_logo() {
-	add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
-		$wp_admin_bar->remove_menu( 'wp-logo' );
-	}, 300 );
+	add_action(
+		'admin_bar_menu',
+		function ( $wp_admin_bar ) {
+			$wp_admin_bar->remove_menu( 'wp-logo' );
+		},
+		300
+	);
 }
 
 function remove_customize_menu() {
-	add_action( 'admin_bar_menu', function ( $wp_admin_bar ) {
-		$wp_admin_bar->remove_menu( 'customize' );
-	}, 300 );
-
-	add_action( 'admin_menu', function () {
-		global $submenu;
-		if ( isset( $submenu['themes.php'] ) ) {
-			$customize_menu_index = -1;
-			foreach ( $submenu['themes.php'] as $index => $menu_item ) {
-				foreach ( $menu_item as $data ) {
-					if ( strpos( $data, 'customize' ) === 0 ) {
-						$customize_menu_index = $index;
+	add_action(
+		'admin_bar_menu',
+		function ( $wp_admin_bar ) {
+			$wp_admin_bar->remove_menu( 'customize' );
+		},
+		300
+	);
+	add_action(
+		'admin_menu',
+		function () {
+			global $submenu;
+			if ( isset( $submenu['themes.php'] ) ) {
+				$customize_menu_index = -1;
+				foreach ( $submenu['themes.php'] as $index => $menu_item ) {
+					foreach ( $menu_item as $data ) {
+						if ( strpos( $data, 'customize' ) === 0 ) {
+							$customize_menu_index = $index;
+							break;
+						}
+					}
+					if ( $customize_menu_index !== -1 ) {
 						break;
 					}
 				}
-				if ( $customize_menu_index !== -1 ) break;
+				unset( $submenu['themes.php'][ $customize_menu_index ] );
 			}
-			unset( $submenu['themes.php'][ $customize_menu_index ] );
 		}
-	} );
+	);
 }
 
 function remove_post_menu_when_empty() {
 	$counts = wp_count_posts();
-	$sum = 0;
+	$sum    = 0;
 	foreach ( $counts as $key => $val ) {
-		if ( $key === 'auto-draft' ) continue;
+		if ( 'auto-draft' === $key ) {
+			continue;
+		}
 		$sum += $val;
 	}
-	if ( $sum === 0 ) {
+	if ( 0 === $sum ) {
 		_hide_post_type_post();
 		_hide_taxonomy( 'category' );
 		_hide_taxonomy( 'post_tag' );
@@ -68,7 +80,9 @@ function _hide_post_type_post() {
 
 function _hide_taxonomy( $tax ) {
 	$tax = get_taxonomy( $tax );
-	if ( ! empty( $tax->object_type ) ) return;
+	if ( ! empty( $tax->object_type ) ) {
+		return;
+	}
 	$tax->public             = false;
 	$tax->publicly_queryable = false;
 	$tax->show_admin_column  = false;

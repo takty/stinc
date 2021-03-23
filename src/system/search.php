@@ -1,20 +1,20 @@
 <?php
-namespace st;
 /**
- *
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-21
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 class Search {
 
-	static private $_instance = null;
-	static public function get_instance() {
-		if ( self::$_instance === null ) self::$_instance = new Search();
+	private static $_instance = null;
+	public static function get_instance() {
+		if ( null === self::$_instance ) {
+			self::$_instance = new Search();
+		}
 		return self::$_instance;
 	}
 
@@ -65,7 +65,9 @@ class Search {
 	}
 
 	public function set_custom_search_page_enabled( $enabled ) {
-		if ( is_admin() ) return;
+		if ( is_admin() ) {
+			return;
+		}
 		if ( $enabled ) {
 			$this->ensure_request_filter_added();
 			$this->ensure_template_redirect_filter_added();
@@ -76,10 +78,14 @@ class Search {
 	}
 
 	public function add_post_type( $str_or_array ) {
-		if ( is_admin() ) return;
+		if ( is_admin() ) {
+			return;
+		}
 		$this->ensure_pre_get_posts_filter();
 
-		if ( ! is_array( $str_or_array ) ) $str_or_array = [ $str_or_array ];
+		if ( ! is_array( $str_or_array ) ) {
+			$str_or_array = array( $str_or_array );
+		}
 		$this->_post_types = array_merge( $this->_post_types, $str_or_array );
 	}
 
@@ -87,7 +93,9 @@ class Search {
 		$this->ensure_search_rewrite_rules_filter_added();
 		$this->ensure_template_redirect_filter_added();
 
-		if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
+		if ( ! is_array( $post_type_s ) ) {
+			$post_type_s = array( $post_type_s );
+		}
 		$this->_slug_to_pts[ trim( $slug, '/' ) ] = $post_type_s;
 	}
 
@@ -98,7 +106,9 @@ class Search {
 	public function add_meta_key( $str_or_array ) {
 		$this->ensure_posts_search_filter();
 
-		if ( ! is_array( $str_or_array ) ) $str_or_array = [ $str_or_array ];
+		if ( ! is_array( $str_or_array ) ) {
+			$str_or_array = array( $str_or_array );
+		}
 		$this->_meta_keys = array_merge( $this->_meta_keys, $str_or_array );
 	}
 
@@ -107,54 +117,70 @@ class Search {
 
 
 	private function ensure_search_rewrite_rules_filter_added() {
-		if ( $this->_search_rewrite_rules_func ) return;
-		$this->_search_rewrite_rules_func = [ $this, '_cb_add_rewrite_rules' ];
+		if ( $this->_search_rewrite_rules_func ) {
+			return;
+		}
+		$this->_search_rewrite_rules_func = array( $this, '_cb_add_rewrite_rules' );
 		add_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
 	}
 
 	private function ensure_search_rewrite_rules_filter_removed() {
-		if ( ! $this->_search_rewrite_rules_func ) return;
+		if ( ! $this->_search_rewrite_rules_func ) {
+			return;
+		}
 		remove_filter( 'search_rewrite_rules', $this->_search_rewrite_rules_func );
 		$this->_search_rewrite_rules_func = null;
 	}
 
 	private function ensure_request_filter_added() {
-		if ( $this->_request_func ) return;
-		$this->_request_func = [ $this, '_cb_request' ];
+		if ( $this->_request_func ) {
+			return;
+		}
+		$this->_request_func = array( $this, '_cb_request' );
 		add_filter( 'request', $this->_request_func, 20, 1 );
 	}
 
 	private function ensure_request_filter_removed() {
-		if ( ! $this->_request_func ) return;
+		if ( ! $this->_request_func ) {
+			return;
+		}
 		remove_filter( 'request', $this->_request_func, 20 );
 		$this->_request_func = null;
 	}
 
 	private function ensure_template_redirect_filter_added() {
-		if ( $this->_template_redirect_func ) return;
-		$this->_template_redirect_func = [ $this, '_cb_template_redirect' ];
+		if ( $this->_template_redirect_func ) {
+			return;
+		}
+		$this->_template_redirect_func = array( $this, '_cb_template_redirect' );
 		add_filter( 'template_redirect', $this->_template_redirect_func );
 	}
 
 	private function ensure_template_redirect_filter_removed() {
-		if ( ! $this->_template_redirect_func ) return;
+		if ( ! $this->_template_redirect_func ) {
+			return;
+		}
 		remove_filter( 'template_redirect', $this->_template_redirect_func );
 		$this->_template_redirect_func = null;
 	}
 
 	private function ensure_pre_get_posts_filter() {
-		if ( $this->_pre_get_posts_func ) return;
-		$this->_pre_get_posts_func = [ $this, '_cb_pre_get_posts' ];
+		if ( $this->_pre_get_posts_func ) {
+			return;
+		}
+		$this->_pre_get_posts_func = array( $this, '_cb_pre_get_posts' );
 		add_action( 'pre_get_posts', $this->_pre_get_posts_func );
 	}
 
 	private function ensure_posts_search_filter() {
-		if ( $this->_posts_search_filter_added ) return;
-		add_filter( 'posts_search', [ $this, '_cb_posts_search' ], 10, 2 );
-		add_filter( 'posts_join', [ $this, '_cb_posts_join' ], 10, 2 );
-		add_filter( 'posts_groupby', [ $this, '_cb_posts_groupby' ], 10, 2 );
-		add_filter( 'posts_search_orderby', [ $this, '_cb_posts_search_orderby' ], 10, 2 );
-		add_filter( 'posts_request', [ $this, '_cb_posts_request' ], 10, 2 );
+		if ( $this->_posts_search_filter_added ) {
+			return;
+		}
+		add_filter( 'posts_search', array( $this, '_cb_posts_search' ), 10, 2 );
+		add_filter( 'posts_join', array( $this, '_cb_posts_join' ), 10, 2 );
+		add_filter( 'posts_groupby', array( $this, '_cb_posts_groupby' ), 10, 2 );
+		add_filter( 'posts_search_orderby', array( $this, '_cb_posts_search_orderby' ), 10, 2 );
+		add_filter( 'posts_request', array( $this, '_cb_posts_request' ), 10, 2 );
 		$this->_posts_search_filter_added = true;
 	}
 
@@ -164,13 +190,16 @@ class Search {
 
 	public function _cb_add_rewrite_rules( $rewrite_rules ) {
 		global $wp_rewrite;
-		if ( ! $wp_rewrite->using_permalinks() ) return;
-
+		if ( ! $wp_rewrite->using_permalinks() ) {
+			return;
+		}
 		$search_base = $wp_rewrite->search_base;
+
 		$rewrite_rules[ "$search_base/?$" ] = 'index.php?s=';
 
 		foreach ( $this->_slug_to_pts as $slug => $pts ) {
 			$pts_str = implode( ',', $pts );
+
 			$rewrite_rules[ "$slug/$search_base/(.+)/?$" ] = 'index.php?post_type=' . $pts_str . '&s=$matches[1]';
 			$rewrite_rules[ "$slug/$search_base/?$" ]      = 'index.php?post_type=' . $pts_str . '&s=';
 		}
@@ -179,18 +208,21 @@ class Search {
 
 	public function _cb_template_redirect() {
 		global $wp_rewrite;
-		if ( ! $wp_rewrite->using_permalinks() ) return;
-
+		if ( ! $wp_rewrite->using_permalinks() ) {
+			return;
+		}
 		$search_base = $wp_rewrite->search_base;
 		if ( is_search() && ! is_admin() && isset( $_GET['s'] ) ) {
 			$home_url = $this->home_url( "/$search_base/" );
 			if ( ! empty( $_GET['post_type'] ) ) {
-				$pts = explode( ',', $_GET['post_type'] );
+				$pts  = explode( ',', $_GET['post_type'] );
 				$slug = $this->get_matched_slug( $pts );
-				if ( $slug !== false ) $home_url = $this->home_url( "/$slug/$search_base/" );
+				if ( $slug !== false ) {
+					$home_url = $this->home_url( "/$slug/$search_base/" );
+				}
 			}
-			wp_redirect( $home_url . $this->urlencode( get_query_var( 's' ) ) );
-			exit();
+			wp_safe_redirect( $home_url . $this->urlencode( get_query_var( 's' ) ) );
+			exit;
 		}
 	}
 
@@ -229,14 +261,16 @@ class Search {
 	}
 
 	public function _cb_posts_search( $search, $query ) {
-		if ( ! $query->is_search() || ! $query->is_main_query() || empty( $search ) ) return $search;
-
+		if ( ! $query->is_search() || ! $query->is_main_query() || empty( $search ) ) {
+			return $search;
+		}
 		$q = $query->query_vars;
 		global $wpdb;
 		$search = '';
 
 		$n = ! empty( $q['exact'] ) ? '' : '%';
-		$searchand = '';
+
+		$searchand        = '';
 		$exclusion_prefix = apply_filters( 'wp_query_search_exclusion_prefix', '-' );
 
 		if ( $this->_is_extended_search_enabled ) {
@@ -246,11 +280,11 @@ class Search {
 		}
 		foreach ( $search_terms as $term ) {
 			if ( $this->_is_extended_search_enabled && is_array( $term ) ) {
-				$search .= "$searchand(" . $this->create_extended_query( $term ) . ')';
+				$search   .= "$searchand(" . $this->create_extended_query( $term ) . ')';
 				$searchand = ' AND ';
 				continue;
 			}
-			$exclude = $exclusion_prefix && ( $exclusion_prefix === substr( $term, 0, 1 ) );
+			$exclude = $exclusion_prefix && ( substr( $term, 0, 1 ) === $exclusion_prefix );
 			if ( $exclude ) {
 				$like_op  = 'NOT LIKE';
 				$andor_op = 'AND';
@@ -264,23 +298,29 @@ class Search {
 				$q['search_orderby_title'][] = $wpdb->prepare( "{$wpdb->posts}.post_title LIKE %s", $like );
 			}
 			$like = $n . $wpdb->esc_like( $term ) . $n;
-			// Add post_meta
-			$search .= $wpdb->prepare( "{$searchand}(($wpdb->posts.post_title $like_op %s) $andor_op ({$wpdb->posts}.post_excerpt $like_op %s) $andor_op ($wpdb->posts.post_content $like_op %s) $andor_op (stinc_search.meta_value $like_op %s))", $like, $like, $like, $like );
+			// Add post_meta.
+			$search   .= $wpdb->prepare( "{$searchand}(($wpdb->posts.post_title $like_op %s) $andor_op ({$wpdb->posts}.post_excerpt $like_op %s) $andor_op ($wpdb->posts.post_content $like_op %s) $andor_op (stinc_search.meta_value $like_op %s))", $like, $like, $like, $like );
 			$searchand = ' AND ';
 		}
 		if ( ! empty( $search ) ) {
 			$search = " AND ({$search}) ";
-			if ( ! is_user_logged_in() ) $search .= " AND ($wpdb->posts.post_password = '') ";
+			if ( ! is_user_logged_in() ) {
+				$search .= " AND ($wpdb->posts.post_password = '') ";
+			}
 		}
 		return $search;
 	}
 
 	public function _cb_posts_join( $join, $query ) {
-		if ( ! $query->is_search() || ! $query->is_main_query() ) return $join;
+		if ( ! $query->is_search() || ! $query->is_main_query() ) {
+			return $join;
+		}
 		$sql_mks = '';
 		if ( ! empty( $this->_meta_keys ) ) {
 			$_mks = array();
-			foreach ( $this->_meta_keys as $mk ) $_mks[] = "'" . esc_sql( $mk ) . "'";
+			foreach ( $this->_meta_keys as $mk ) {
+				$_mks[] = "'" . esc_sql( $mk ) . "'";
+			}
 			$sql_mks = implode( ', ', $_mks );
 		}
 		global $wpdb;
@@ -323,10 +363,10 @@ class Search {
 	private function create_extended_query( $likes ) {
 		global $wpdb;
 		$search = '';
-		$sh = '';
+		$sh     = '';
 		foreach ( $likes as $like ) {
 			$search .= $wpdb->prepare( "{$sh}(($wpdb->posts.post_title LIKE %s) OR ({$wpdb->posts}.post_excerpt LIKE %s) OR ($wpdb->posts.post_content LIKE %s) OR (stinc_search.meta_value LIKE %s))", $like, $like, $like, $like );
-			$sh = ' OR ';
+			$sh      = ' OR ';
 		}
 		return $search;
 	}
@@ -334,14 +374,16 @@ class Search {
 	private function extend_search_terms( $terms, $exclusion_prefix ) {
 		$ret = array();
 		foreach ( $terms as $term ) {
-			$exclude = $exclusion_prefix && ( $exclusion_prefix === substr( $term, 0, 1 ) );
+			$exclude = $exclusion_prefix && ( substr( $term, 0, 1 ) === $exclusion_prefix );
 			if ( $exclude ) {
 				$ret[] = $term;
 				continue;
 			}
 			$sts = array_map( '\st\mb_trim', mb_split( "[「『（［｛〈《【〔〖〘〚＜」』）］｝〉》】〕〗〙〛＞、，。．？！：・]+", $term ) );
 			foreach ( $sts as $t ) {
-				if ( empty( $t ) ) continue;
+				if ( empty( $t ) ) {
+					continue;
+				}
 				$len = mb_strlen( $t );
 				if ( 4 <= $len && $len <= 10 ) {
 					$ret[] = $this->split_term( $t );
@@ -357,14 +399,19 @@ class Search {
 		global $wpdb;
 		$bis = array();
 		$chs = preg_split( "//u", $term, -1, PREG_SPLIT_NO_EMPTY );
-		$sws = array_map( function ( $ch ) { return mb_strwidth( $ch ); }, $chs );
+		$sws = array_map(
+			function ( $ch ) {
+				return mb_strwidth( $ch );
+			},
+			$chs
+		);
 
 		$temp = '';
 		foreach ( $chs as $i => $ch ) {
 			if ( $sws[ $i ] === 2 ) {
 				if ( $temp !== '' ) {
 					$bis[] = $temp;
-					$temp = '';
+					$temp  = '';
 				}
 				if ( isset( $chs[ $i + 1 ] ) && $sws[ $i + 1 ] === 2 ) {
 					$bis[] = $ch . $chs[ $i + 1 ];
@@ -373,24 +420,27 @@ class Search {
 				$temp .= $ch;
 			}
 		}
-		if ( $temp !== '' ) $bis[] = $temp;
-
-		$ret = [ '%' . $wpdb->esc_like( $term ) . '%' ];
-		$I = count( $bis );
-		for ( $j = 0; $j < $I; $j += 1 ) {
+		if ( $temp !== '' ) {
+			$bis[] = $temp;
+		}
+		$ret  = array( '%' . $wpdb->esc_like( $term ) . '%' );
+		$size = count( $bis );
+		for ( $j = 0; $j < $size; ++$j ) {
 			$str = '%';
-			for ( $i = 0; $i < $I; $i += 1 ) {
-				if ( $j !== $i || 2 < mb_strlen( $bis[ $i ] ) ) $str .= $wpdb->esc_like( $bis[ $i ] ) . '%';
+			for ( $i = 0; $i < $size; ++$i ) {
+				if ( $j !== $i || 2 < mb_strlen( $bis[ $i ] ) ) {
+					$str .= $wpdb->esc_like( $bis[ $i ] ) . '%';
+				}
 			}
 			$ret[] = $str;
 		}
 		return $ret;
-    }
+	}
 
 	private function urlencode( $str ) {
 		if ( $this->_is_slash_in_query_enabled ) {
 			$ret = rawurlencode( $str );
-			return str_replace( [ '%2f', '%2F' ], [ '%1f', '%1F' ], $ret );
+			return str_replace( array( '%2f', '%2F' ), array( '%1f', '%1F' ), $ret );
 		} else {
 			return rawurlencode( $str );
 		}
@@ -398,7 +448,7 @@ class Search {
 
 	private function urldecode( $str ) {
 		if ( $this->_is_slash_in_query_enabled ) {
-			$ret = str_replace( [ '%1f', '%1F' ], [ '%2f', '%2F' ], $str );
+			$ret = str_replace( array( '%1f', '%1F' ), array( '%2f', '%2F' ), $str );
 			return rawurldecode( $ret );
 		} else {
 			return rawurldecode( $str );

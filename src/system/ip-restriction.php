@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * IP Restriction (IPv4)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-09-17
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 require_once __DIR__ . '/field.php';
 
@@ -37,11 +35,11 @@ class IpRestriction {
 
 	private function __construct() {
 		if ( is_admin() ) {
-			add_action( 'post_submitbox_misc_actions', [ $this, '_cb_post_submitbox_misc_actions' ] );
-			add_action( 'save_post',                   [ $this, '_cb_save_post' ], 10, 2 );
+			add_action( 'post_submitbox_misc_actions', array( $this, '_cb_post_submitbox_misc_actions' ) );
+			add_action( 'save_post', array( $this, '_cb_save_post' ), 10, 2 );
 		} else {
-			add_filter( 'body_class',    [ $this, '_cb_body_class' ] );
-			add_action( 'pre_get_posts', [ $this, '_cb_pre_get_posts' ] );
+			add_filter( 'body_class', array( $this, '_cb_body_class' ) );
+			add_action( 'pre_get_posts', array( $this, '_cb_pre_get_posts' ) );
 		}
 	}
 
@@ -50,7 +48,9 @@ class IpRestriction {
 	}
 
 	public function add_post_type( $post_type_s ) {
-		if ( ! is_array( $post_type_s ) ) $post_type_s = [ $post_type_s ];
+		if ( ! is_array( $post_type_s ) ) {
+			$post_type_s = array( $post_type_s );
+		}
 		foreach ( $post_type_s as $ps ) {
 			if ( ! in_array( $ps, $this->_post_types, true ) ) {
 				$this->_post_types[] = $ps;
@@ -68,12 +68,15 @@ class IpRestriction {
 	}
 
 	private function _check_allowed() {
-		if ( $this->_checked ) return;
-
+		if ( $this->_checked ) {
+			return;
+		}
 		$ip = $_SERVER['REMOTE_ADDR'];
 		foreach ( $this->_whites as $w ) {
 			$cls = $w['cls'];
-			if ( $cls === false ) continue;
+			if ( false === $cls ) {
+				continue;
+			}
 			$cidr = $w['cidr'];
 			if ( $this->_in_cidr( $ip, $cidr ) ) {
 				$this->_is_allowed = true;
@@ -85,39 +88,53 @@ class IpRestriction {
 
 	private function _in_cidr( $ip, $cidr ) {
 		list( $network, $mask_bit_len ) = explode( '/', $cidr );
-		$host = 32 - $mask_bit_len;
+
+		$host   = 32 - $mask_bit_len;
 		$net    = ip2long( $network ) >> $host << $host;
-		$ip_net = ip2long( $ip )      >> $host << $host;
+		$ip_net = ip2long( $ip ) >> $host << $host;
 		return $net === $ip_net;
 	}
 
 	public function _cb_pre_get_posts( $query ) {
-		if ( $this->_bypass ) return;
-		if ( is_user_logged_in() || $this->is_allowed() ) return;
-
+		if ( $this->_bypass ) {
+			return;
+		}
+		if ( is_user_logged_in() || $this->is_allowed() ) {
+			return;
+		}
 		$pts = $query->get( 'post_type', false );
-		if ( $pts !== false ) {
+		if ( false !== $pts ) {
 			$filter = false;
-			if ( ! is_array( $pts ) ) $pts = [ $pts ];
+			if ( ! is_array( $pts ) ) {
+				$pts = array( $pts );
+			}
 			foreach ( $pts as $pt ) {
 				if ( in_array( $pt, $this->_post_types, true ) ) {
 					$filter = true;
 					break;
 				}
 			}
-			if ( ! $filter ) return;
+			if ( ! $filter ) {
+				return;
+			}
 		}
 		$this->_bypass = true;
-		$ex_posts = get_posts( [
-			'post_type'      => $pts ? $pts : $this->_post_types,
-			'fields'         => 'ids',
-			'posts_per_page' => -1,
-			'meta_query'     => [ [
-				'key'     => self::PMK_IP_RESTRICTION,
-				'compare' => '=',
-				'value'   => 'on'
-			] ]
-		] );
+
+		$ex_posts = get_posts(
+			array(
+				'post_type'      => $pts ? $pts : $this->_post_types,
+				'fields'         => 'ids',
+				'posts_per_page' => -1,
+				'meta_query'     => array(
+					array(
+						'key'     => self::PMK_IP_RESTRICTION,
+						'compare' => '=',
+						'value'   => 'on',
+					),
+				),
+			)
+		);
+
 		$this->_bypass = false;
 		if ( ! empty( $ex_posts ) ) {
 			$query->set( 'post__not_in', $ex_posts );
@@ -135,27 +152,35 @@ class IpRestriction {
 	}
 
 	public function _cb_post_submitbox_misc_actions( $post ) {
-		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) return;
-
+		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) {
+			return;
+		}
 		wp_nonce_field( self::PMK_IP_RESTRICTION, self::PMK_IP_RESTRICTION . '_nonce' );
 		$is_restricted = get_post_meta( $post->ID, self::PMK_IP_RESTRICTION, true );
-		$_name = esc_attr( self::PMK_IP_RESTRICTION );
+
+		$name = self::PMK_IP_RESTRICTION;
 ?>
 		<div class="misc-pub-section">
 			<span style="margin-left: 26px;">
-				<label><input type="checkbox" name="<?php echo $_name ?>"<?php checked( $is_restricted, 'on' ) ?>/><?php esc_html_e( 'IP Restriction' ) ?></label>
+				<label><input type="checkbox" name="<?php echo esc_attr( $name ); ?>"<?php checked( $is_restricted, 'on' ); ?>/><?php esc_html_e( 'IP Restriction' ); ?></label>
 			</span>
 		</div>
 <?php
 	}
 
 	public function _cb_save_post( $post_id, $post ) {
-		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) return;
-
-		if ( ! isset( $_POST[ self::PMK_IP_RESTRICTION . '_nonce' ] ) ) return;
-		if ( ! wp_verify_nonce( $_POST[ self::PMK_IP_RESTRICTION . '_nonce' ], self::PMK_IP_RESTRICTION ) ) return;
-		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
-
+		if ( ! in_array( $post->post_type, $this->_post_types, true ) ) {
+			return;
+		}
+		if ( ! isset( $_POST[ self::PMK_IP_RESTRICTION . '_nonce' ] ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( $_POST[ self::PMK_IP_RESTRICTION . '_nonce' ], self::PMK_IP_RESTRICTION ) ) {
+			return;
+		}
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+			return;
+		}
 		\st\field\save_post_meta( $post_id, self::PMK_IP_RESTRICTION );
 	}
 

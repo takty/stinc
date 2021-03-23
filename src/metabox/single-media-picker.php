@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Single Media Picker (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-15
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../util/url.php';
@@ -31,21 +29,27 @@ class SingleMediaPicker {
 	const CLS_TITLE        = self::NS . '-title';
 	const CLS_FILENAME     = self::NS . '-filename';
 
-	static private $_instance = array();
+	private static $_instance = array();
 
-	static public function get_instance( $key = false ) {
-		if ( $key === false ) return reset( self::$_instance );
-		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
+	public static function get_instance( $key = false ) {
+		if ( false === $key ) {
+			return reset( self::$_instance );
+		}
+		if ( isset( self::$_instance[ $key ] ) ) {
+			return self::$_instance[ $key ];
+		}
 		return new SingleMediaPicker( $key );
 	}
 
-	static public function enqueue_script( $url_to = false ) {
+	public static function enqueue_script( $url_to = false ) {
 		if ( is_admin() ) {
-			if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
+			if ( false === $url_to ) {
+				$url_to = \st\get_file_uri( __DIR__ );
+			}
 			$url_to = untrailingslashit( $url_to );
-			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', [], 1.0, true );
-			wp_enqueue_script( self::NS, $url_to . '/asset/single-media-picker.min.js', [ 'picker-media' ] );
-			wp_enqueue_style(  self::NS, $url_to . '/asset/single-media-picker.min.css' );
+			wp_enqueue_script( 'picker-media', $url_to . '/asset/lib/picker-media.min.js', array(), 1.0, true );
+			wp_enqueue_script( self::NS, $url_to . '/asset/single-media-picker.min.js', array( 'picker-media' ) );
+			wp_enqueue_style( self::NS, $url_to . '/asset/single-media-picker.min.css' );
 		}
 	}
 
@@ -66,8 +70,9 @@ class SingleMediaPicker {
 	}
 
 	public function get_item( $post_id = false ) {
-		if ( $post_id === false ) $post_id = get_the_ID();
-
+		if ( false === $post_id ) {
+			$post_id = get_the_ID();
+		}
 		$media    = get_post_meta( $post_id, "{$this->_key}_media",    true );
 		$url      = get_post_meta( $post_id, "{$this->_key}_url",      true );
 		$title    = get_post_meta( $post_id, "{$this->_key}_title",    true );
@@ -76,7 +81,9 @@ class SingleMediaPicker {
 		// For Backward Compatibility
 		if ( empty( $media ) ) {
 			$media = get_post_meta( $post_id, "{$this->_key}_id", true );
-			if ( ! empty( $media ) ) update_post_meta( $post_id, "{$this->_key}_media", $media );
+			if ( ! empty( $media ) ) {
+				update_post_meta( $post_id, "{$this->_key}_media", $media );
+			}
 		}
 		$id = $media;
 
@@ -88,12 +95,19 @@ class SingleMediaPicker {
 
 
 	public function add_meta_box( $label, $screen, $context = 'side' ) {
-		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
+		\add_meta_box( "{$this->_key}_mb", $label, array( $this, '_cb_output_html' ), $screen, $context );
 	}
 
 	public function save_meta_box( $post_id ) {
-		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
-		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
+		if ( ! isset( $_POST[ "{$this->_key}_nonce" ] ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( $_POST[ "{$this->_key}_nonce" ], $this->_key ) ) {
+			return;
+		}
+		if ( empty( $_POST[ $this->_key ] ) ) {  // Do not save before JS is executed.
+			return;
+		}
 		$this->_save_item( $post_id );
 	}
 
@@ -108,8 +122,8 @@ class SingleMediaPicker {
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$it = $this->get_item( $post->ID );
 
-		$_url       = isset( $it['url'] )      ? esc_attr( $it['url'] )      : '';
-		$_title     = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_url       = isset( $it['url'] ) ? esc_attr( $it['url'] ) : '';
+		$_title     = isset( $it['title'] ) ? esc_attr( $it['title'] ) : '';
 		$h_filename = isset( $it['filename'] ) ? esc_html( $it['filename'] ) : '';
 
 		$id_title = "{$this->_key}_title";
@@ -136,7 +150,7 @@ class SingleMediaPicker {
 				</div>
 			</div>
 			<div class="<?php echo self::CLS_ADD_ROW ?>"><a href="javascript:void(0);" class="<?php echo self::CLS_ADD ?> button"><?php _e( 'Add Media', 'default' ); ?></a></div>
-			<?php $this->_output_hidden_fields( $it, [ 'media', 'url', 'filename' ] ) ?>
+			<?php $this->_output_hidden_fields( $it, array( 'media', 'url', 'filename' ) ) ?>
 			<script>window.addEventListener('load', function () {
 				st_single_media_picker_initialize_admin('<?php echo $this->_id ?>');
 			});</script>
@@ -158,10 +172,10 @@ class SingleMediaPicker {
 
 
 	private function _save_item( $post_id ) {
-		update_post_meta( $post_id, "{$this->_key}_media",    $_POST["{$this->_key}_media"] );
-		update_post_meta( $post_id, "{$this->_key}_url",      $_POST["{$this->_key}_url"] );
-		update_post_meta( $post_id, "{$this->_key}_title",    $_POST["{$this->_key}_title"] );
-		update_post_meta( $post_id, "{$this->_key}_filename", $_POST["{$this->_key}_filename"] );
+		update_post_meta( $post_id, "{$this->_key}_media", $_POST[ "{$this->_key}_media" ] );
+		update_post_meta( $post_id, "{$this->_key}_url", $_POST[ "{$this->_key}_url" ] );
+		update_post_meta( $post_id, "{$this->_key}_title", $_POST[ "{$this->_key}_title" ] );
+		update_post_meta( $post_id, "{$this->_key}_filename", $_POST[ "{$this->_key}_filename" ] );
 	}
 
 }
@@ -172,14 +186,26 @@ class SingleMediaPicker {
 
 namespace st\single_media_picker;
 
-function initialize( $key ) { return new \st\SingleMediaPicker( $key ); }
-function enqueue_script( $url_to = false ) { \st\SingleMediaPicker::enqueue_script( $url_to ); }
+function initialize( $key ) {
+	return new \st\SingleMediaPicker( $key );
+}
+function enqueue_script( $url_to = false ) {
+	\st\SingleMediaPicker::enqueue_script( $url_to );
+}
 
-function get_item( $key, $post_id = false ) { return \st\SingleMediaPicker::get_instance( $key )->get_item( $post_id ); }
-function set_title_editable( $key, $flag ) { return \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag ); }
+function get_item( $key, $post_id = false ) {
+	return \st\SingleMediaPicker::get_instance( $key )->get_item( $post_id );
+}
+function set_title_editable( $key, $flag ) {
+	return \st\SingleMediaPicker::get_instance( $key )->set_title_editable( $flag );
+}
 
 function add_meta_box( $key, $label, $screen, $context = 'side', $opts = array() ) {
-	if ( isset( $opts['title_editable'] ) ) set_title_editable( $key, $opts['title_editable'] );
+	if ( isset( $opts['title_editable'] ) ) {
+		set_title_editable( $key, $opts['title_editable'] );
+	}
 	\st\SingleMediaPicker::get_instance( $key )->add_meta_box( $label, $screen, $context );
 }
-function save_meta_box( $post_id, $key ) { \st\SingleMediaPicker::get_instance( $key )->save_meta_box( $post_id ); }
+function save_meta_box( $post_id, $key ) {
+	\st\SingleMediaPicker::get_instance( $key )->save_meta_box( $post_id );
+}

@@ -1,30 +1,28 @@
 <?php
-namespace st\basic;
 /**
- *
  * Custom PDF Thumbnail
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-16
- *
+ * @version 2021-03-23
  */
 
+namespace st\basic;
 
 function enable_pdf_thumbnail() {
 	add_filter( 'ajax_query_attachments_args', '\st\basic\cb_ajax_query_attachments_args', 11 );
-	add_action( 'admin_footer-post-new.php',   '\st\basic\cb_override_attachment_filter' );
-	add_action( 'admin_footer-post.php',       '\st\basic\cb_override_attachment_filter' );
+	add_action( 'admin_footer-post-new.php', '\st\basic\cb_override_attachment_filter' );
+	add_action( 'admin_footer-post.php', '\st\basic\cb_override_attachment_filter' );
 }
 
 function cb_ajax_query_attachments_args( $query ) {
-	if ( isset( $query['post_mime_type'] ) && $query['post_mime_type'] === 'image_and_pdf' ) {
-		$query['post_mime_type'] = [ 'image', 'application/pdf' ];
+	if ( isset( $query['post_mime_type'] ) && 'image_and_pdf' === $query['post_mime_type'] ) {
+		$query['post_mime_type'] = array( 'image', 'application/pdf' );
 	}
 	return $query;
 }
 
 function cb_override_attachment_filter() {
-?>
+	?>
 	<script type="text/javascript">
 		wp.media.view.AttachmentFilters.Uploaded.prototype.createFilters = function () {
 			var type = this.model.get('type'),
@@ -87,7 +85,7 @@ function cb_override_attachment_filter() {
 		};
 		wp.media.view.Modal.prototype.on('open', function () {
 			jQuery('.media-modal').find('a.media-menu-item').click(function () {
-				if (jQuery(this).html() === "<?php _e( 'Featured Image' ); ?>") {
+				if (jQuery(this).html() === "<?php esc_html_e( 'Featured Image' ); ?>") {
 					jQuery('select.attachment-filters option[value="all"]').attr('selected', true).parent().trigger('change');
 				}
 			} );
@@ -96,5 +94,5 @@ function cb_override_attachment_filter() {
 			jQuery('select.attachment-filters option[value="all"]').attr('selected', true).parent().trigger( 'change' ); // Change the default view to "Uploaded to this post".
 		});
 	</script>
-<?php
+	<?php
 }

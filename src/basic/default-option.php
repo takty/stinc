@@ -1,20 +1,20 @@
 <?php
-namespace st\basic;
 /**
- *
  * Default Options
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
- *
+ * @version 2021-03-23
  */
 
+namespace st\basic;
 
 function update_reading_options() {
 	update_option( 'show_on_front', 'page' );
 	if ( empty( get_option( 'page_on_front' ) ) ) {
-		$pages = get_pages( ['sort_column'  => 'post_id'] );
-		if ( ! empty( $pages ) ) update_option( 'page_on_front', $pages[0]->ID );
+		$pages = get_pages( array( 'sort_column' => 'post_id' ) );
+		if ( ! empty( $pages ) ) {
+			update_option( 'page_on_front', $pages[0]->ID );
+		}
 	}
 	update_option( 'page_for_posts', '' );
 }

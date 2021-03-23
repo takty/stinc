@@ -1,14 +1,12 @@
 <?php
-namespace st\template_admin;
 /**
- *
  * Template Admin
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-23
- *
+ * @version 2021-03-23
  */
 
+namespace st\template_admin;
 
 require_once __DIR__ . '/misc.php';
 
@@ -16,21 +14,30 @@ require_once __DIR__ . '/misc.php';
 function initialize() {
 	$POST_FIX = '_admin.php';
 
-	add_action( 'admin_menu', function () use ( $POST_FIX ) {
-		$post_id = \st\get_post_id();
+	add_action(
+		'admin_menu',
+		function () use ( $POST_FIX ) {
+			$post_id = \st\get_post_id();
 
-		$pt = get_post_meta( $post_id, '_wp_page_template', TRUE );
-		if ( ! empty( $pt ) && $pt !== 'default' ) {
-			if ( _load_page_template_admin( $post_id, $pt, $POST_FIX ) ) return;
+			$pt = get_post_meta( $post_id, '_wp_page_template', TRUE );
+			if ( ! empty( $pt ) && $pt !== 'default' ) {
+				if ( _load_page_template_admin( $post_id, $pt, $POST_FIX ) ) {
+					return;
+				}
+			}
+			if ( \st\is_page_on_front( $post_id ) ) {
+				if ( _load_page_template_admin( $post_id, 'front-page.php', $POST_FIX ) ) {
+					return;
+				}
+			}
+			$post_type = \st\get_post_type_in_admin( $post_id );
+			if ( ! empty( $post_type ) ) {
+				if ( _load_page_template_admin( $post_id, $post_type . '.php', $POST_FIX ) ) {
+					return;
+				}
+			}
 		}
-		if ( \st\is_page_on_front( $post_id ) ) {
-			if ( _load_page_template_admin( $post_id, 'front-page.php', $POST_FIX ) ) return;
-		}
-		$post_type = \st\get_post_type_in_admin( $post_id );
-		if ( ! empty( $post_type ) ) {
-			if ( _load_page_template_admin( $post_id, $post_type . '.php', $POST_FIX ) ) return;
-		}
-	} );
+	);
 }
 
 function _load_page_template_admin( $post_id, $path, $post_fix ) {

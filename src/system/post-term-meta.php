@@ -1,15 +1,12 @@
 <?php
-namespace st;
-
 /**
- *
  * Post Term Meta
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2018-05-18
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 class PostTermMeta {
 
@@ -17,8 +14,10 @@ class PostTermMeta {
 
 	static private $_instance = null;
 
-	static public function get_instance() {
-		if ( self::$_instance === null ) self::$_instance = new PostTermMeta();
+	public static function get_instance() {
+		if ( null === self::$_instance ) {
+			self::$_instance = new PostTermMeta();
+		}
 		return self::$_instance;
 	}
 
@@ -34,7 +33,9 @@ class PostTermMeta {
 	}
 
 	public function get_key( $term_id, $meta_key ) {
-		if ( $meta_key[0] === '_' ) $meta_key = substr( $meta_key, 1 );
+		if ( '_' === $meta_key[0] ) {
+			$meta_key = substr( $meta_key, 1 );
+		}
 		return "{$this->_pmk_base}_{$term_id}_{$meta_key}";
 	}
 
@@ -55,8 +56,8 @@ class PostTermMeta {
 	}
 
 	public function _cb_wp_insert_post_data( $data, $postarr ) {
-		$post_id = $postarr['ID'];
-		$pt_keys = $this->_get_related_keys( $post_id );
+		$post_id  = $postarr['ID'];
+		$pt_keys  = $this->_get_related_keys( $post_id );
 		$term_ids = $this->_get_term_ids( $postarr );
 
 		foreach ( $pt_keys as $key ) {
@@ -67,14 +68,18 @@ class PostTermMeta {
 					break;
 				}
 			}
-			if ( $to_be_deleted ) delete_post_meta( $post_id, $key );
+			if ( $to_be_deleted ) {
+				delete_post_meta( $post_id, $key );
+			}
 		}
 		return $data;
 	}
 
 	private function _get_related_keys( $post_id ) {
 		$pms = get_post_meta( $post_id );
-		if ( empty( $pms ) ) return [];
+		if ( empty( $pms ) ) {
+			return array();
+		}
 		$ret = array();
 		foreach ( $pms as $key => $val ) {
 			if ( strpos( $key, "{$this->_pmk_base}_" ) === 0 ) {
@@ -85,12 +90,18 @@ class PostTermMeta {
 	}
 
 	private function _get_term_ids( $postarr ) {
-		if ( ! isset( $postarr['tax_input'] ) ) return [];
+		if ( ! isset( $postarr['tax_input'] ) ) {
+			return array();
+		}
 		$ret = array();
 		foreach ( $postarr['tax_input'] as $tax => $ids ) {
-			if ( count( $ids ) <= 1 ) continue;
+			if ( count( $ids ) <= 1 ) {
+				continue;
+			}
 			$ids = array_slice( $ids, 1 );
-			foreach ( $ids as $id ) $ret[] = $id;
+			foreach ( $ids as $id ) {
+				$ret[] = $id;
+			}
 		}
 		return $ret;
 	}

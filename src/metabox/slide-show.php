@@ -1,14 +1,12 @@
 <?php
-namespace st;
 /**
- *
  * Slide Show (PHP)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-06-24
- *
+ * @version 2021-03-23
  */
 
+namespace st;
 
 require_once __DIR__ . '/../system/field.php';
 require_once __DIR__ . '/../util/text.php';
@@ -64,28 +62,34 @@ class SlideShow {
 	const TYPE_IMAGE = 'image';
 	const TYPE_VIDEO = 'video';
 
-	static private $_instance     = array();
-	static private $_is_ss_active = null;
+	private static $_instance     = array();
+	private static $_is_ss_active = null;
 
-	static public function get_instance( $key = false ) {
-		if ( $key === false ) return reset( self::$_instance );
-		if ( isset( self::$_instance[ $key ] ) ) return self::$_instance[ $key ];
+	public static function get_instance( $key = false ) {
+		if ( false === $key ) {
+			return reset( self::$_instance );
+		}
+		if ( isset( self::$_instance[ $key ] ) ) {
+			return self::$_instance[ $key ];
+		}
 		return new SlideShow( $key );
 	}
 
-	static public function enqueue_script( $url_to = false ) {
-		if ( $url_to === false ) $url_to = \st\get_file_uri( __DIR__ );
+	public static function enqueue_script( $url_to = false ) {
+		if ( false === $url_to ) {
+			$url_to = \st\get_file_uri( __DIR__ );
+		}
 		if ( is_admin() ) {
-			wp_enqueue_script( 'picker-link',  \st\abs_url( $url_to, './asset/lib/picker-link.min.js' ), [ 'wplink', 'jquery-ui-autocomplete' ] );
-			wp_enqueue_script( 'picker-media', \st\abs_url( $url_to, './asset/lib/picker-media.min.js' ), [], 1.0, true );
-			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './asset/slide-show.min.js' ), [ 'picker-media', 'jquery-ui-sortable' ] );
-			wp_enqueue_style(  self::NS, \st\abs_url( $url_to, './asset/slide-show.min.css' ) );
+			wp_enqueue_script( 'picker-link', \st\abs_url( $url_to, './asset/lib/picker-link.min.js' ), array( 'wplink', 'jquery-ui-autocomplete' ) );
+			wp_enqueue_script( 'picker-media', \st\abs_url( $url_to, './asset/lib/picker-media.min.js' ), array(), 1.0, true );
+			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './asset/slide-show.min.js' ), array( 'picker-media', 'jquery-ui-sortable' ) );
+			wp_enqueue_style( self::NS, \st\abs_url( $url_to, './asset/slide-show.min.css' ) );
 		} else {
 			wp_enqueue_script( self::NS, \st\abs_url( $url_to, './../../stomp/slide-show/slide-show.min.js' ), '', 1.0 );
 		}
 	}
 
-	static private function is_simply_static_active() {
+	private static function is_simply_static_active() {
 		if ( self::$_is_ss_active === null ) {
 			self::$_is_ss_active = get_option( 'is_simply_static_active', false );
 		}
@@ -113,6 +117,7 @@ class SlideShow {
 	public function __construct( $key ) {
 		$this->_key = $key;
 		$this->_id  = $key;
+
 		self::$_instance[ $key ] = $this;
 	}
 
@@ -182,7 +187,7 @@ class SlideShow {
 	}
 
 	private function _create_option_str() {
-		$opts = [
+		$opts = array(
 			'effect_type'           => $this->_effect_type,
 			'duration_time'         => $this->_duration_time,
 			'transition_time'       => $this->_transition_time,
@@ -192,15 +197,18 @@ class SlideShow {
 			'is_background_visible' => $this->_is_background_visible,
 			'is_side_slide_visible' => $this->_is_side_slide_visible,
 			'zoom_rate'             => $this->_zoom_rate,
-		];
+		);
 		return json_encode( $opts );
 	}
 
 	public function echo_slide_show( $post_id = false, $size = 'large', $cls = '' ) {
-		if ( $post_id === false ) $post_id = get_the_ID();
+		if ( false === $post_id ) {
+			$post_id = get_the_ID();
+		}
 		$its = $this->_get_items( $post_id, $size );
-		if ( empty( $its ) ) return false;
-
+		if ( empty( $its ) ) {
+			return false;
+		}
 		$dom_id   = "{$this->_id}-$post_id";
 		$dom_cls  = self::NS . ( empty( $cls ) ? '' : ( ' ' . $cls ) );
 		$opts_str = $this->_create_option_str();
@@ -230,7 +238,7 @@ class SlideShow {
 	private function _echo_slide_item_img( $it, &$_urls ) {
 		$imgs   = $it['images'];
 		$imgs_s = isset( $it['images_sub'] ) ? $it['images_sub'] : false;
-		$data = array();
+		$data   = array();
 
 		if ( $this->_is_dual && $imgs_s !== false ) {
 			self::_set_attrs( $data, 'img-sub', $imgs_s );
@@ -263,15 +271,17 @@ class SlideShow {
 
 	private function _create_dummy_style( $_urls ) {
 		$style = '<style>stinc{';
-		foreach ( $_urls as $_url ) $style .= "p:url('$_url');";
+		foreach ( $_urls as $_url ) {
+			$style .= "p:url('$_url');";
+		}
 		$style .= '}</style>';
 		return $style;
 	}
 
-	static private function _set_attrs( &$data, $key, $imgs ) {
+	private static function _set_attrs( &$data, $key, $imgs ) {
 		if ( 2 <= count( $imgs ) ) {
-			$data["$key-phone"] = esc_url( $imgs[0] );
-			$data[ $key ]       = esc_url( $imgs[1] );
+			$data[ "$key-phone" ] = esc_url( $imgs[0] );
+			$data[ $key ]         = esc_url( $imgs[1] );
 		} else {
 			$data[ $key ] = esc_url( $imgs[0] );
 		}
@@ -284,15 +294,19 @@ class SlideShow {
 			$str = '<div><span>' . implode( '</span></div><div><span>', $ss ) . '</span></div>';
 			$div = '<div class="' . self::CLS_CAP . " {$this->_caption_type}\">$str</div>";
 		}
-		if ( empty( $url ) ) return $div;
+		if ( empty( $url ) ) {
+			return $div;
+		}
 		$_url = esc_url( $url );
 		return "<a href=\"$_url\">$div</a>";
 	}
 
 	public function echo_slide_items( $post_id = false, $size = 'medium' ) {
-		if ( $post_id === false ) $post_id = get_the_ID();
+		if ( false === $post_id ) {
+			$post_id = get_the_ID();
+		}
 		$dom_id = "{$this->_id}-$post_id";
-		$its = $this->_get_items( $post_id, $size );
+		$its    = $this->_get_items( $post_id, $size );
 
 		foreach ( $its as $idx => $it ) {
 			$event = "st_slide_show_page('$dom_id', $idx);";
@@ -317,12 +331,19 @@ class SlideShow {
 
 
 	public function add_meta_box( $label, $screen, $context = 'advanced' ) {
-		\add_meta_box( "{$this->_key}_mb", $label, [ $this, '_cb_output_html' ], $screen, $context );
+		\add_meta_box( "{$this->_key}_mb", $label, array( $this, '_cb_output_html' ), $screen, $context );
 	}
 
 	public function save_meta_box( $post_id ) {
-		if ( ! isset( $_POST["{$this->_key}_nonce"] ) ) return;
-		if ( ! wp_verify_nonce( $_POST["{$this->_key}_nonce"], $this->_key ) ) return;
+		if ( ! isset( $_POST[ "{$this->_key}_nonce" ] ) ) {
+			return;
+		}
+		if ( ! wp_verify_nonce( $_POST[ "{$this->_key}_nonce" ], $this->_key ) ) {
+			return;
+		}
+		if ( empty( $_POST[ $this->_key ] ) ) {  // Do not save before JS is executed.
+			return;
+		}
 		$this->_save_items( $post_id );
 	}
 
@@ -333,26 +354,29 @@ class SlideShow {
 	public function _cb_output_html( $post ) {  // Private
 		wp_nonce_field( $this->_key, "{$this->_key}_nonce" );
 		$its = $this->_get_items( $post->ID );
-?>
+		?>
 		<input type="hidden" <?php \st\field\name_id( $this->_id ) ?> value="">
 		<div class="<?php echo self::CLS_BODY ?>">
 			<div class="<?php echo self::CLS_TABLE ?>">
-<?php
-		$this->_output_row_image( [], self::CLS_ITEM_TEMP_IMG );
-		$this->_output_row_video( [], self::CLS_ITEM_TEMP_VIDEO );
+		<?php
+		$this->_output_row_image( array(), self::CLS_ITEM_TEMP_IMG );
+		$this->_output_row_video( array(), self::CLS_ITEM_TEMP_VIDEO );
 		foreach ( $its as $it ) {
-			if ( $it['type'] === self::TYPE_IMAGE ) $this->_output_row_image( $it, self::CLS_ITEM );
-			else if ( $it['type'] === self::TYPE_VIDEO ) $this->_output_row_video( $it, self::CLS_ITEM );
+			if ( $it['type'] === self::TYPE_IMAGE ) {
+				$this->_output_row_image( $it, self::CLS_ITEM );
+			} elseif ( $it['type'] === self::TYPE_VIDEO ) {
+				$this->_output_row_video( $it, self::CLS_ITEM );
+			}
 		}
-?>
+		?>
 				<div class="<?php echo self::CLS_ADD_ROW ?>">
-<?php
+		<?php
 		if ( $this->_is_video_enabled ) {
-?>
+			?>
 					<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_VIDEO ?> button"><?php _e( 'Add Video', 'default' ) ?></a>
-<?php
+			<?php
 		}
-?>
+		?>
 					<a href="javascript:void(0);" class="<?php echo self::CLS_ADD_IMG ?> button"><?php _e( 'Add Media', 'default' ) ?></a>
 				</div>
 			</div>
@@ -360,7 +384,7 @@ class SlideShow {
 				st_slide_show_initialize_admin('<?php echo $this->_id ?>', <?php echo $this->_is_dual ? 'true' : 'false' ?>);
 			});</script>
 		</div>
-<?php
+		<?php
 	}
 
 	private function _output_row_image( $it, $cls ) {
@@ -373,15 +397,17 @@ class SlideShow {
 
 	private function _output_row_single( $it, $cls ) {
 		$_cap   = isset( $it['caption'] ) ? esc_attr( $it['caption'] ) : '';
-		$_url   = isset( $it['url'] )     ? esc_attr( $it['url'] )     : '';
-		$_img   = isset( $it['image'] )   ? esc_url( $it['image'] )    : '';
-		$_media = isset( $it['media'] )   ? esc_attr( $it['media'] )   : '';
+		$_url   = isset( $it['url'] ) ? esc_attr( $it['url'] ) : '';
+		$_img   = isset( $it['image'] ) ? esc_url( $it['image'] ) : '';
+		$_media = isset( $it['media'] ) ? esc_attr( $it['media'] ) : '';
 		$_style = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
 
-		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_title = isset( $it['title'] ) ? esc_attr( $it['title'] ) : '';
 		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
 
-		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) {
+			$_title = '';
+		}
 ?>
 		<div class="<?php echo $cls ?>">
 			<div>
@@ -415,23 +441,27 @@ class SlideShow {
 	}
 
 	private function _output_row_dual( $it, $cls ) {
-		$_cap     = isset( $it['caption'] )   ? esc_attr( $it['caption'] )   : '';
-		$_url     = isset( $it['url'] )       ? esc_attr( $it['url'] )       : '';
-		$_img     = isset( $it['image'] )     ? esc_url( $it['image'] )      : '';
-		$_img_s   = isset( $it['image_sub'] ) ? esc_url( $it['image_sub'] )  : '';
-		$_media   = isset( $it['media'] )     ? esc_attr( $it['media'] )     : '';
+		$_cap     = isset( $it['caption'] ) ? esc_attr( $it['caption'] ) : '';
+		$_url     = isset( $it['url'] ) ? esc_attr( $it['url'] ) : '';
+		$_img     = isset( $it['image'] ) ? esc_url( $it['image'] ) : '';
+		$_img_s   = isset( $it['image_sub'] ) ? esc_url( $it['image_sub'] ) : '';
+		$_media   = isset( $it['media'] ) ? esc_attr( $it['media'] ) : '';
 		$_media_s = isset( $it['media_sub'] ) ? esc_attr( $it['media_sub'] ) : '';
-		$_style   = empty( $_img )    ? '' : " style=\"background-image:url($_img)\"";
-		$_style_s = empty( $_img_s )  ? '' : " style=\"background-image:url($_img_s)\"";
+		$_style   = empty( $_img ) ? '' : " style=\"background-image:url($_img)\"";
+		$_style_s = empty( $_img_s ) ? '' : " style=\"background-image:url($_img_s)\"";
 
-		$_title   = isset( $it['title'] )        ? esc_attr( $it['title'] )        : '';
-		$_title_s = isset( $it['title_sub'] )    ? esc_attr( $it['title_sub'] )    : '';
-		$_fn      = isset( $it['filename'] )     ? esc_attr( $it['filename'] )     : '';
+		$_title   = isset( $it['title'] ) ? esc_attr( $it['title'] ) : '';
+		$_title_s = isset( $it['title_sub'] ) ? esc_attr( $it['title_sub'] ) : '';
+		$_fn      = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
 		$_fn_s    = isset( $it['filename_sub'] ) ? esc_attr( $it['filename_sub'] ) : '';
 
-		if ( ! empty( $_title )   && strlen( $_title )   < strlen( $_fn )   && strpos( $_fn, $_title )     === 0 ) $_title = '';
-		if ( ! empty( $_title_s ) && strlen( $_title_s ) < strlen( $_fn_s ) && strpos( $_fn_s, $_title_s ) === 0 ) $_title_s = '';
-?>
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) {
+			$_title = '';
+		}
+		if ( ! empty( $_title_s ) && strlen( $_title_s ) < strlen( $_fn_s ) && strpos( $_fn_s, $_title_s ) === 0 ) {
+			$_title_s = '';
+		}
+		?>
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
@@ -470,20 +500,22 @@ class SlideShow {
 			<input type="hidden" class="<?php echo self::CLS_MEDIA_SUB ?>" value="<?php echo $_media_s ?>">
 			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="image">
 		</div>
-	<?php
+		<?php
 	}
 
 	private function _output_row_video( $it, $cls ) {
 		$_cap   = isset( $it['caption'] ) ? esc_attr( $it['caption'] ) : '';
-		$_url   = isset( $it['url'] )     ? esc_attr( $it['url'] )     : '';
-		$_media = isset( $it['media'] )   ? esc_attr( $it['media'] )   : '';
-		$_video = isset( $it['video'] )   ? esc_url( $it['video'] )    : '';
+		$_url   = isset( $it['url'] ) ? esc_attr( $it['url'] ) : '';
+		$_media = isset( $it['media'] ) ? esc_attr( $it['media'] ) : '';
+		$_video = isset( $it['video'] ) ? esc_url( $it['video'] ) : '';
 
-		$_title = isset( $it['title'] )    ? esc_attr( $it['title'] )    : '';
+		$_title = isset( $it['title'] ) ? esc_attr( $it['title'] ) : '';
 		$_fn    = isset( $it['filename'] ) ? esc_attr( $it['filename'] ) : '';
 
-		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) $_title = '';
-?>
+		if ( ! empty( $_title ) && strlen( $_title ) < strlen( $_fn ) && strpos( $_fn, $_title ) === 0 ) {
+			$_title = '';
+		}
+		?>
 		<div class="<?php echo $cls ?>">
 			<div>
 				<div class="<?php echo self::CLS_HANDLE ?>">=</div>
@@ -512,7 +544,7 @@ class SlideShow {
 			<input type="hidden" class="<?php echo self::CLS_MEDIA ?>" value="<?php echo $_media ?>">
 			<input type="hidden" class="<?php echo self::CLS_TYPE ?>" value="video">
 		</div>
-<?php
+		<?php
 	}
 
 
@@ -520,26 +552,37 @@ class SlideShow {
 
 
 	private function _save_items( $post_id ) {
-		$skeys = [ 'media', 'caption', 'url', 'type', 'delete' ];
-		if ( $this->_is_dual ) $skeys[] = 'media_sub';
-
+		$skeys = array( 'media', 'caption', 'url', 'type', 'delete' );
+		if ( $this->_is_dual ) {
+			$skeys[] = 'media_sub';
+		}
 		$its = \st\field\get_multiple_post_meta_from_post( $this->_key, $skeys );
-		$its = array_filter( $its, function ( $it ) { return ! $it['delete']; } );
+		$its = array_filter(
+			$its,
+			function ( $it ) {
+				return ! $it['delete'];
+			}
+		);
 		$its = array_values( $its );
 
 		foreach ( $its as &$it ) {
 			$pid = url_to_postid( $it['url'] );
-			if ( $pid !== 0 ) $it['url'] = $pid;
+			if ( $pid !== 0 ) {
+				$it['url'] = $pid;
+			}
 		}
-		$skeys = [ 'media', 'caption', 'url', 'type' ];
-		if ( $this->_is_dual ) $skeys[] = 'media_sub';
+		$skeys = array( 'media', 'caption', 'url', 'type' );
+		if ( $this->_is_dual ) {
+			$skeys[] = 'media_sub';
+		}
 		\st\field\update_multiple_post_meta( $post_id, $this->_key, $its, $skeys );
 	}
 
 	private function _get_items( $post_id, $size = 'medium' ) {
-		$skeys = [ 'media', 'caption', 'url', 'type' ];
-		if ( $this->_is_dual ) $skeys[] = 'media_sub';
-
+		$skeys = array( 'media', 'caption', 'url', 'type' );
+		if ( $this->_is_dual ) {
+			$skeys[] = 'media_sub';
+		}
 		$its = \st\field\get_multiple_post_meta( $post_id, $this->_key, $skeys );
 
 		foreach ( $its as &$it ) {
@@ -565,10 +608,14 @@ class SlideShow {
 			} else if ( $it['type'] === self::TYPE_VIDEO ) {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
 				$am = $this->_get_image_meta( $it['media'] );
-				if ( $am ) $it = array_merge( $it, $am );
+				if ( $am ) {
+					$it = array_merge( $it, $am );
+				}
 			}
 		}
-		if ( ! is_admin() && $this->_is_shuffled ) shuffle( $its );
+		if ( ! is_admin() && $this->_is_shuffled ) {
+			shuffle( $its );
+		}
 		return $its;
 	}
 
@@ -577,7 +624,9 @@ class SlideShow {
 			$imgs = array();
 			foreach ( $size as $sz ) {
 				$img = wp_get_attachment_image_src( $aid, $sz );
-				if ( $img ) $imgs[] = $img[0];
+				if ( $img ) {
+					$imgs[] = $img[0];
+				}
 			}
 			if ( ! empty( $imgs ) ) {
 				$it["images$pf"] = $imgs;
@@ -586,20 +635,24 @@ class SlideShow {
 		} else {
 			$img = wp_get_attachment_image_src( $aid, $size );
 			if ( $img ) {
-				$it["images$pf"] = [ $img[0] ];
+				$it["images$pf"] = array( $img[0] );
 				$it["image$pf" ] = $img[0];
 			}
 		}
 		$am = $this->_get_image_meta( $aid, $pf );
-		if ( $am ) $it = array_merge( $it, $am );
+		if ( $am ) {
+			$it = array_merge( $it, $am );
+		}
 	}
 
 	private function _get_image_meta( $aid, $pf = '' ) {
 		$p = get_post( $aid );
-		if ( $p === null ) return null;
+		if ( $p === null ) {
+			return null;
+		}
 		$t  = $p->post_title;
 		$fn = basename( $p->guid );
-		return [ "title$pf" => $t, "filename$pf" => $fn ];
+		return array( "title$pf" => $t, "filename$pf" => $fn );
 	}
 
 }
@@ -610,25 +663,63 @@ class SlideShow {
 
 namespace st\slide_show;
 
-function initialize( $key ) { return new \st\SlideShow( $key ); }
-function enqueue_script( $url_to = false ) { \st\SlideShow::enqueue_script( $url_to ); }
+function initialize( $key ) {
+	return new \st\SlideShow( $key );
+}
+function enqueue_script( $url_to = false ) {
+	\st\SlideShow::enqueue_script( $url_to );
+}
 
-function set_effect_type( $key, $type )               { return \st\SlideShow::get_instance( $key )->set_effect_type( $type ); }
-function set_duration_time( $key, $sec )              { return \st\SlideShow::get_instance( $key )->set_duration_time( $sec ); }
-function set_transition_time( $key, $sec )            { return \st\SlideShow::get_instance( $key )->set_transition_time( $sec ); }
-function set_background_opacity( $key, $opacity )     { return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity ); }
-function set_picture_scroll_enabled( $key, $enabled ) { return \st\SlideShow::get_instance( $key )->set_picture_scroll_enabled( $enabled ); }
-function set_random_timing_enabled( $key, $enabled )  { return \st\SlideShow::get_instance( $key )->set_random_timing_enabled( $enabled ); }
-function set_background_visible( $key, $visible )     { return \st\SlideShow::get_instance( $key )->set_background_visible( $visible ); }
-function set_side_slide_visible( $key, $visible )     { return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible ); }
-function set_zoom_rate( $key, $rate )                 { return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate ); }
-function set_caption_type( $key, $type )              { return \st\SlideShow::get_instance( $key )->set_caption_type( $type ); }
-function set_dual_enabled( $key, $enabled )           { return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled ); }
-function set_video_enabled( $key, $enabled )          { return \st\SlideShow::get_instance( $key )->set_video_enabled( $enabled ); }
-function set_shuffled( $key, $enabled )               { return \st\SlideShow::get_instance( $key )->set_shuffled( $enabled ); }
+function set_effect_type( $key, $type ) {
+	return \st\SlideShow::get_instance( $key )->set_effect_type( $type );
+}
+function set_duration_time( $key, $sec ) {
+	return \st\SlideShow::get_instance( $key )->set_duration_time( $sec );
+}
+function set_transition_time( $key, $sec ) {
+	return \st\SlideShow::get_instance( $key )->set_transition_time( $sec );
+}
+function set_background_opacity( $key, $opacity ) {
+	return \st\SlideShow::get_instance( $key )->set_background_opacity( $opacity );
+}
+function set_picture_scroll_enabled( $key, $enabled ) {
+	return \st\SlideShow::get_instance( $key )->set_picture_scroll_enabled( $enabled );
+}
+function set_random_timing_enabled( $key, $enabled ) {
+	return \st\SlideShow::get_instance( $key )->set_random_timing_enabled( $enabled );
+}
+function set_background_visible( $key, $visible ) {
+	return \st\SlideShow::get_instance( $key )->set_background_visible( $visible );
+}
+function set_side_slide_visible( $key, $visible ) {
+	return \st\SlideShow::get_instance( $key )->set_side_slide_visible( $visible );
+}
+function set_zoom_rate( $key, $rate ) {
+	return \st\SlideShow::get_instance( $key )->set_zoom_rate( $rate );
+}
+function set_caption_type( $key, $type ) {
+	return \st\SlideShow::get_instance( $key )->set_caption_type( $type );
+}
+function set_dual_enabled( $key, $enabled ) {
+	return \st\SlideShow::get_instance( $key )->set_dual_enabled( $enabled );
+}
+function set_video_enabled( $key, $enabled ) {
+	return \st\SlideShow::get_instance( $key )->set_video_enabled( $enabled );
+}
+function set_shuffled( $key, $enabled ) {
+	return \st\SlideShow::get_instance( $key )->set_shuffled( $enabled );
+}
 
-function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) { return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $cls ); }
-function echo_slide_items( $key, $post_id = false, $size = 'medium' ) { return \st\SlideShow::get_instance( $key )->echo_slide_items( $post_id, $size ); }
+function echo_slide_show( $key, $post_id = false, $size = 'large', $cls = '' ) {
+	return \st\SlideShow::get_instance( $key )->echo_slide_show( $post_id, $size, $cls );
+}
+function echo_slide_items( $key, $post_id = false, $size = 'medium' ) {
+	return \st\SlideShow::get_instance( $key )->echo_slide_items( $post_id, $size );
+}
 
-function add_meta_box( $key, $label, $screen, $context = 'side' ) { \st\SlideShow::get_instance( $key )->add_meta_box( $label, $screen, $context ); }
-function save_meta_box( $post_id, $key ) { \st\SlideShow::get_instance( $key )->save_meta_box( $post_id ); }
+function add_meta_box( $key, $label, $screen, $context = 'side' ) {
+	\st\SlideShow::get_instance( $key )->add_meta_box( $label, $screen, $context );
+}
+function save_meta_box( $post_id, $key ) {
+	\st\SlideShow::get_instance( $key )->save_meta_box( $post_id );
+}
