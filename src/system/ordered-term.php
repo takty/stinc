@@ -72,7 +72,7 @@ namespace st {
 			} else {
 				$term_id = $term_or_term_id->term_id;
 			}
-			return intval( get_term_meta( $term_id, $this->_key_order, true ) );
+			return (int) get_term_meta( $term_id, $this->_key_order, true );
 		}
 
 		public function add_order_post_meta_to_post( $post_type_s ) {
@@ -196,7 +196,7 @@ namespace st {
 
 		public function _cb_edited_taxonomy( $term_id, $taxonomy ) {
 			if ( isset( $_POST[ $this->_key_order ] ) ) {
-				update_term_meta( $term_id, $this->_key_order, intval( $_POST[ $this->_key_order ] ) );
+				update_term_meta( $term_id, $this->_key_order, (int) $_POST[ $this->_key_order ] );
 
 				if ( $this->_is_post_type_hook_added ) {
 					$this->_update_post_meta( $term_id, $taxonomy );
@@ -291,7 +291,7 @@ namespace st {
 			$ts = array();
 			foreach ( $terms_or_term_ids as $t ) {
 				$term_id = is_int( $t ) ? $t : $t->term_id;
-				$idx     = intval( get_term_meta( $term_id, $this->_key_order, true ) );
+				$idx     = (int) get_term_meta( $term_id, $this->_key_order, true );
 				$ts[]    = array( $idx, $t );
 			}
 			usort(

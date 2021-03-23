@@ -125,8 +125,8 @@ function _extract_aspect_size( $aspect ) {
 	if ( ! empty( $aspect ) ) {
 		$as = explode( ':', $aspect );
 		if ( count( $as ) === 2 ) {
-			$w = floatval( $as[0] );
-			$h = floatval( $as[1] );
+			$w = (float) $as[0];
+			$h = (float) $as[1];
 			if ( 0 !== $w && 0 !== $h ) {
 				$aw = $w;
 				$ah = $h;

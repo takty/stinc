@@ -200,7 +200,7 @@ function _check_post_type_support() {
 		function ( $name, $post_id ) {
 			if ( 'order' === $name ) {
 				$post = get_post( (int) $post_id );
-				echo intval( $post->menu_order );
+				echo (int) $post->menu_order;
 			}
 		},
 		10,

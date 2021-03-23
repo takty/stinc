@@ -170,11 +170,11 @@ function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = 
 		return;
 	}
 	foreach ( $ps as $p ) {
-		$y = intval( get_the_date( 'Y', $p->ID ) );
+		$y = (int) get_the_date( 'Y', $p->ID );
 		if ( $is_fiscal_year ) {
-			$m = intval( get_the_date( 'm', $p->ID ) );
+			$m = (int) get_the_date( 'm', $p->ID );
 			if ( $m <= 3 ) {
-				$y -= 1;
+				--$y;
 			}
 		}
 		if ( $y !== $year ) {
@@ -366,7 +366,7 @@ function _get_section_post_ids( $key ) {
 	$sps = \st\link_picker\get_items( $key, $post->ID );
 	return array_map(
 		function ( $e ) {
-			return isset( $e['post_id'] ) ? intval( $e['post_id'] ) : 0;
+			return isset( $e['post_id'] ) ? ( (int) $e['post_id'] ) : 0;
 		},
 		$sps
 	);

@@ -278,7 +278,7 @@ class LinkPicker {
 			}
 		} else {
 			if ( $pid === 0 ) {
-				$url = get_permalink( intval( $it['post_id'] ) );
+				$url = get_permalink( (int) $it['post_id'] );
 				if ( false === $url ) {
 					$p = get_page_by_title( $it['title'] );
 					if ( null !== $p ) {

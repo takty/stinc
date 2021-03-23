@@ -325,7 +325,7 @@ class NavMenu {
 		$li_cls  = empty( $cls ) ? '' : " class=\"$cls\"";
 		$li_id   = " id=\"menu-item-{$mi->ID}\"";
 		$li_attr = $li_id . $li_cls;
-		$obj_id  = intval( $mi->object_id );
+		$obj_id  = (int) $mi->object_id;
 		$title   = $filter( $mi->title, $mi );
 		$cont    = esc_html( trim( $mi->post_content ) );
 		$after   = '</li>';
@@ -400,11 +400,11 @@ class NavMenu {
 	protected function _get_menus( $mis ) {
 		$ret = array();
 		foreach ( $mis as $mi ) {
-			$pid = intval( $mi->menu_item_parent );
+			$pid = (int) $mi->menu_item_parent;
 			if ( isset( $ret[ $pid ] ) ) {
 				$ret[ $pid ][] = $mi;
 			} else {
-				$ret[ $pid ] = [ $mi ];
+				$ret[ $pid ] = array( $mi );
 			}
 		}
 		return $ret;

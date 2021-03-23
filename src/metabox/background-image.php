@@ -397,7 +397,7 @@ class BackgroundImage {
 			if ( empty( $it['media'] ) ) {
 				continue;
 			}
-			$aid = intval( $it['media'] );
+			$aid = (int) $it['media'];
 
 			if ( self::TYPE_IMAGE === $it['type'] ) {
 				$this->_get_images( $it, $aid, $size );

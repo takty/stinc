@@ -280,7 +280,7 @@ function paginate_links( $args = array() ) {
 	$pagenum_link = html_entity_decode( get_pagenum_link() );
 	$url_parts    = explode( '?', $pagenum_link );
 	$total        = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
-	$current      = get_query_var( 'paged' ) ? intval( get_query_var( 'paged' ) ) : 1;
+	$current      = get_query_var( 'paged' ) ? ( (int) get_query_var( 'paged' ) ) : 1;
 	$pagenum_link = trailingslashit( $url_parts[0] ) . '%_%';
 	$format       = $wp_rewrite->using_index_permalinks() && ! strpos( $pagenum_link, 'index.php' ) ? 'index.php/' : '';
 	$format      .= $wp_rewrite->using_permalinks() ? user_trailingslashit( $wp_rewrite->pagination_base . '/%#%', 'paged' ) : '?paged=%#%';

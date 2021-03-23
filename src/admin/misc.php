@@ -22,12 +22,12 @@ function get_post_id() {
 	if ( isset( $_GET['post'] ) || isset( $_POST['post_ID'] ) ) {
 		$post_id = isset( $_GET['post'] ) ? $_GET['post'] : $_POST['post_ID'];
 	}
-	return intval( $post_id );
+	return (int) $post_id;
 }
 
 function get_post_type_in_admin( $post_id ) {
 	$p = get_post( $post_id );
-	if ( $p === null ) {
+	if ( null === $p ) {
 		if ( isset( $_GET['post_type'] ) ) {
 			return $_GET['post_type'];
 		}

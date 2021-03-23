@@ -593,21 +593,23 @@ class SlideShow {
 					$it['url'] = $permalink;
 				}
 			}
-			if ( empty( $it['type'] ) ) $it['type'] = self::TYPE_IMAGE;
+			if ( empty( $it['type'] ) ) {
+				$it['type'] = self::TYPE_IMAGE;
+			}
 			$it['image'] = '';
-			if ( $it['type'] === self::TYPE_IMAGE ) {
+			if ( self::TYPE_IMAGE === $it['type'] ) {
 				if ( ! empty( $it['media'] ) ) {
-					$this->_get_images( $it, intval( $it['media'] ), $size );
+					$this->_get_images( $it, (int) $it['media'], $size );
 				}
 				if ( $this->_is_dual ) {
 					$it['image_sub'] = '';
 					if ( ! empty( $it['media_sub'] ) ) {
-						$this->_get_images( $it, intval( $it['media_sub'] ), $size, '_sub' );
+						$this->_get_images( $it, (int) $it['media_sub'], $size, '_sub' );
 					}
 				}
-			} else if ( $it['type'] === self::TYPE_VIDEO ) {
+			} else if ( self::TYPE_VIDEO === $it['type'] ) {
 				$it['video'] = wp_get_attachment_url( $it['media'] );
-				$am = $this->_get_image_meta( $it['media'] );
+				$am          = $this->_get_image_meta( $it['media'] );
 				if ( $am ) {
 					$it = array_merge( $it, $am );
 				}

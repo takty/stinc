@@ -56,7 +56,7 @@ function get_attachment_id( $url ) {
 	preg_match( '/([^\/]+?)(-e\d+)?(-\d+x\d+)?(\.\w+)?$/', $url, $matches );
 	$guid = str_replace( $matches[0], $matches[1] . $matches[4], $url );
 	$v    = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE guid = %s", $guid ) );
-	return null === $v ? false : intval( $v );
+	return null === $v ? false : ( (int) $v );
 }
 
 function get_first_image_id() {
