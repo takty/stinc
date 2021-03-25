@@ -61,7 +61,7 @@ function initialize_multi_lang( array $args ) {
 	/*
 	 * For enabling pseudo front pages.
 	 */
-	\wpinc\plex\pseudo_front\initialize();
+	\wpinc\plex\pseudo_front\initialize( array( 'is_default_front_bloginfo_enabled' => false ) );
 	\wpinc\plex\pseudo_front\add_admin_labels( $args['admin_labels'] );
 
 	/*
