@@ -3,7 +3,7 @@
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-22
+ * @version 2021-03-25
  */
 
 namespace st;
@@ -44,6 +44,32 @@ function get_post_title( $short = 8, $long = 32, $mode = 'segment_small', $filte
 	}
 	$title = \st\separate_line( $title, $mode, $filter );
 	return compact( 'title', 'option' );
+}
+
+function the_title( $before = '', $after = '', $args = array() ) {
+	$args += array(
+		'short'  => 8,
+		'long'   => 32,
+		'mode'   => 'segment_small',
+		'filter' => 'esc_html',
+	);
+	global $post;
+	if ( $post ) {
+		$title = get_the_title( $post->ID );
+		$title = \st\separate_line( $title, $args['mode'], $args['filter'] );
+	} else {
+		$title = is_404() ? __( 'Page not found' ) : __( 'Nothing found' );
+	}
+	$len    = mb_strlen( $title );
+	$option = '';
+	if ( $args['long'] <= $len ) {
+		$option = ' long';
+	}
+	if ( $len <= $args['short'] ) {
+		$option = ' short';
+	}
+	$before = str_replace( '%class', $option, $before );
+	echo wp_kses_post( "$before$title$after" );
 }
 
 function get_post_type_name( $post_type, $singular_name = false ) {
@@ -248,6 +274,10 @@ function get_the_term_list( $post_id, $taxonomy, $before = '', $sep = '', $after
 	}
 	$filter = isset( $args['filter'] ) ? $args['filter'] : 'esc_html';
 	return create_term_list( $ts, $taxonomy, $before, $sep, $after, $add_link, false, $singular, $filter );
+}
+
+function the_terms( $post_id, $taxonomy, $before = '', $sep = '', $after = '', $add_link = true, $args = array() ) {
+	echo wp_kses_post( get_the_term_list( $post_id, $taxonomy, $before, $sep, $after, $add_link, $args ) );
 }
 
 function _insert_root( $terms ) {
