@@ -3,7 +3,7 @@
  * Search Function for Custom Fields
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-23
+ * @version 2021-03-24
  */
 
 namespace st;
@@ -41,7 +41,7 @@ class Search {
 
 	private function __construct() {}
 
-	public function set_home_url( callable $home_url ) {
+	public function set_home_url( $home_url ) {
 		$this->_home_url = $home_url;
 	}
 
