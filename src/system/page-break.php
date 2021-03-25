@@ -10,7 +10,6 @@
 namespace st\page_break {
 
 	function initialize() {
-		remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head' );
 		add_action( 'wp_head', '\st\page_break\adjacent_posts_rel_link_wp_head' );
 		add_filter(
 			'content_pagination',
@@ -111,11 +110,16 @@ namespace st\page_break {
 
 namespace st {
 
-	function the_page_break_navigation() {
-		echo get_the_page_break_navigation();
+	function the_page_break_navigation( array $args = array() ) {
+		echo get_the_page_break_navigation( $args );
 	}
 
-	function get_the_page_break_navigation() {
+	function get_the_page_break_navigation( array $args = array() ) {
+		$args += array(
+			'before' => '',
+			'after'  => '',
+		);
+
 		global $page, $numpages, $multipage, $post;
 		if ( ! $multipage ) {
 			return;
