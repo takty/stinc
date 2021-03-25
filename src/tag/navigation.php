@@ -258,10 +258,14 @@ function get_the_posts_pagination( $args = array() ) {
 	$args = wp_parse_args(
 		$args,
 		array(
+			'before'             => '',
+			'after'              => '',
 			'mid_size'           => 1,
 			'prev_text'          => _x( 'Previous', 'previous set of posts' ),
 			'next_text'          => _x( 'Next', 'next set of posts' ),
 			'screen_reader_text' => __( 'Posts navigation' ),
+			'aria_label'         => __( 'Posts' ),
+			'class'              => 'pagination',
 		)
 	);
 	if ( isset( $args['type'] ) && 'array' === $args['type'] ) {
@@ -269,7 +273,7 @@ function get_the_posts_pagination( $args = array() ) {
 	}
 	$links = paginate_links( $args );
 	if ( $links ) {
-		return _navigation_markup( $links, 'pagination', $args['screen_reader_text'] );
+		return $args['before'] . _navigation_markup( $links, $args['class'], 'pagination', $args['screen_reader_text'], $args['aria_label'] ) . $args['after'];
 	}
 	return '';
 }

@@ -3,7 +3,7 @@
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-23
+ * @version 2021-03-25
  */
 
 namespace st\event;
@@ -81,6 +81,18 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = array(
 	if ( is_admin() ) {
 		_set_duration_picker( $post_type, $opts, $labels );
 	}
+
+	add_filter( 'body_class', function ( array $classes ) use ( $post_type ) {
+		if ( is_singular( $post_type ) ) {
+			global $wp_query;
+			$post = $wp_query->get_queried_object();
+
+			$dur = \st\event\get_duration( $post->ID );
+
+			$classes[] = $dur['state'];
+		}
+		return $classes;
+	} );
 }
 
 function _set_duration_picker( $post_type, $opts, $labels ) {
