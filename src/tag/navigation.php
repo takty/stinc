@@ -3,7 +3,7 @@
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-22
+ * @version 2021-03-26
  */
 
 namespace st;
@@ -186,6 +186,8 @@ function the_post_navigation( $args = array() ) {
 function get_the_post_navigation( $args = array() ) {
 	$args = array_merge(
 		array(
+			'before'             => '',
+			'after'              => '',
 			'prev_text'          => '%title',
 			'next_text'          => '%title',
 			'list_text'          => 'List',
@@ -240,7 +242,7 @@ function get_the_post_navigation( $args = array() ) {
 			$temp = $prev . $next . $list;
 			break;
 	}
-	return _navigation_markup( $temp, 'post-navigation', $args['screen_reader_text'] );
+	return $args['before'] . _navigation_markup( $temp, 'post-navigation', $args['screen_reader_text'] ) . $args['after'];
 }
 
 
