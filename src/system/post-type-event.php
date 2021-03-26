@@ -3,7 +3,7 @@
  * Event Post Type
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-25
+ * @version 2021-03-26
  */
 
 namespace st\event;
@@ -85,11 +85,8 @@ function register_post_type( $post_type = 'event', $slug = false, $opts = array(
 	add_filter( 'body_class', function ( array $classes ) use ( $post_type ) {
 		if ( is_singular( $post_type ) ) {
 			global $wp_query;
-			$post = $wp_query->get_queried_object();
-
-			$dur = \st\event\get_duration( $post->ID );
-
-			$classes[] = $dur['state'];
+			$post      = $wp_query->get_queried_object();
+			$classes[] = \st\event\_get_duration_state( $post->ID );
 		}
 		return $classes;
 	} );
@@ -186,102 +183,69 @@ function insert_date_sortable_columns( $pos = false, $scs = array() ) {
 // -----------------------------------------------------------------------------
 
 
-function get_duration_tag( $post_id, $base_format, $main_date, $fmt_ymd, $fmt_md, $fmt_d ) {
-	$dur = get_duration( $post_id );
-	extract( $dur );
+function format_duration( $post_id, array $formats, string $date_format, bool $is_translated ) {
+	$dd   = _get_duration_dates( $post_id );
+	$df   = implode( "\t", str_split( $date_format, 1 ) );
+	$type = 'one';
 
-	$bgn = false;
-	$end = false;
-	if ( $bgn_nums && $end_nums ) {
-		if ( 'begin' === $main_date ) {
-			$bgn = _make_date_tags( $bgn_raw, $fmt_ymd, $base_format );
-			if ( $bgn_nums[0] !== $end_nums[0] ) {
-				$end = _make_date_tags( $end_raw, $fmt_ymd, $base_format );
-			} elseif ( $bgn_nums[1] !== $end_nums[1] ) {
-				$end = _make_date_tags( $end_raw, $fmt_md, $base_format );
-			} elseif ( $bgn_nums[2] !== $end_nums[2] ) {
-				$end = _make_date_tags( $end_raw, $fmt_d, $base_format );
-			}
-		} elseif ( 'end' === $main_date ) {
-			$end = _make_date_tags( $end_raw, $fmt_ymd, $base_format );
-			if ( $bgn_nums[0] !== $end_nums[0] ) {
-				$bgn = _make_date_tags( $bgn_raw, $fmt_ymd, $base_format );
-			} elseif ( $bgn_nums[1] !== $end_nums[1] ) {
-				$bgn = _make_date_tags( $bgn_raw, $fmt_md, $base_format );
-			} elseif ( $bgn_nums[2] !== $end_nums[2] ) {
-				$bgn = _make_date_tags( $bgn_raw, $fmt_d, $base_format );
-			}
+	if ( $dd['bgn_ns'] && $dd['end_ns'] ) {
+		if ( $dd['bgn_ns'][0] !== $dd['end_ns'][0] ) {
+			$type = 'ymd';
+		} elseif ( $dd['bgn_ns'][1] !== $dd['end_ns'][1] ) {
+			$type = 'md';
+		} elseif ( $dd['bgn_ns'][2] !== $dd['end_ns'][2] ) {
+			$type = 'd';
 		}
-	} elseif ( $bgn_nums ) {
-		$bgn = _make_date_tags( $bgn_raw, $fmt_ymd, $base_format );
-	} elseif ( $end_nums ) {
-		$end = _make_date_tags( $end_raw, $fmt_ymd, $base_format );
+		$bgn_fd = $dd['bgn_raw'] ? explode( "\t", mysql2date( $df, $dd['bgn_raw'], $is_translated ) ) : array();
+		$bgn_fd = array_pad( $bgn_fd, 4, '' );
+		$end_fd = $dd['end_raw'] ? explode( "\t", mysql2date( $df, $dd['end_raw'], $is_translated ) ) : array();
+		$end_fd = array_pad( $end_fd, 4, '' );
+
+		return sprintf( $formats[ $type ], ...$bgn_fd, ...$end_fd );
+	} elseif ( $dd['bgn_ns'] || $dd['end_ns'] ) {
+		$d  = $dd['bgn_raw'] ? $dd['bgn_raw'] : $dd['end_raw'];
+		$fd = $d ? explode( "\t", mysql2date( $df, $d, $is_translated ) ) : array();
+		$fd = array_pad( $fd, 4, '' );
+		return sprintf( $formats[ $type ], ...$fd );
 	}
-	return array(
-		'state' => $state,
-		'bgn'   => $bgn,
-		'end'   => $end,
-	);
+	return '';
 }
 
-function get_duration( $post_id ) {
-	$bgn_raw  = get_post_meta( $post_id, PMK_DATE_BGN, true );
-	$end_raw  = get_post_meta( $post_id, PMK_DATE_END, true );
-	$bgn_nums = empty( $bgn_raw ) ? false : explode( '-', $bgn_raw );
-	$end_nums = empty( $end_raw ) ? false : explode( '-', $end_raw );
-	$state    = '';
+function _get_duration_dates( $post_id ) {
+	$bgn_raw = get_post_meta( $post_id, PMK_DATE_BGN, true );
+	$end_raw = get_post_meta( $post_id, PMK_DATE_END, true );
+	$bgn_ns  = empty( $bgn_raw ) ? null : explode( '-', $bgn_raw );
+	$end_ns  = empty( $end_raw ) ? null : explode( '-', $end_raw );
+	return compact( 'bgn_raw', 'end_raw', 'bgn_ns', 'end_ns' );
+}
 
-	if ( false !== $bgn_nums ) {
-		$today     = \st\create_date_array_of_today();
-		$today_bgn = \st\compare_date_arrays( $today, $bgn_nums );
+function _get_duration_state( $post_id ) {
+	$bgn_raw = get_post_meta( $post_id, PMK_DATE_BGN, true );
+	$end_raw = get_post_meta( $post_id, PMK_DATE_END, true );
+	$bgn_ns  = empty( $bgn_raw ) ? null : explode( '-', $bgn_raw );
+	$end_ns  = empty( $end_raw ) ? null : explode( '-', $end_raw );
+	$state   = '';
 
-		if ( false !== $end_nums ) {
-			$today_end = \st\compare_date_arrays( $today, $end_nums );
-			if ( '<' === $today_bgn ) {
+	if ( $bgn_ns ) {
+		$t     = \st\create_date_array_of_today();
+		$t_bgn = \st\compare_date_arrays( $t, $bgn_ns );
+
+		if ( $end_ns ) {
+			$t_end = \st\compare_date_arrays( $t, $end_ns );
+			$state = 'ongoing';
+			if ( '<' === $t_bgn ) {
 				$state = 'upcoming';
-			} elseif ( '>' === $today_end ) {
+			} elseif ( '>' === $t_end ) {
 				$state = 'finished';
-			} else {
-				$state = 'ongoing';
 			}
 		} else {
-			switch ( $today_bgn ) {
-				case '=':
-					$state = 'ongoing';
-					break;
-				case '>':
-					$state = 'finished';
-					break;
-				case '<':
-					$state = 'upcoming';
-					break;
+			$state = 'ongoing';
+			if ( '<' === $t_bgn ) {
+				$state = 'upcoming';
+			} elseif ( '>' === $t_bgn ) {
+				$state = 'finished';
 			}
 		}
 	}
-	return compact( 'state', 'bgn_raw', 'end_raw', 'bgn_nums', 'end_nums' );
-}
-
-function _make_date_tags( $date_str, $format, $base_format = false ) {
-	if ( false === $base_format ) {
-		$base_format = "Y\tM\tj";
-
-		$f = get_option( 'date_format' );
-		if ( strpos( $f, 'm' ) !== false || strpos( $f, 'n' ) !== false ) {
-			$base_format = "Y\tn\tj";
-		}
-	}
-	if ( ! empty( $date_str ) ) {
-		$date = \st\create_date_from_date_string( $date_str );
-		if ( strpos( $base_format, 'x' ) !== false ) {
-			$yi          = date_format( $date, 'w' );
-			$yobis       = array( '日', '月', '火', '水', '木', '金', '土' );
-			$yobi        = $yobis[ $yi ];
-			$base_format = str_replace( 'x', $yobi, $base_format );
-		}
-		$ds = explode( "\t", date_format( $date, $base_format ) );
-	} else {
-		$ds = [ '?', '?', '?', '?' ];
-	}
-	$temp = str_replace( array( '%0', '%1', '%2', '%3' ), $ds, $format );
-	return str_replace( array( '%year%', '%month%', '%day%', '%week%' ), $ds, $temp );
+	return $state;
 }
