@@ -5,7 +5,7 @@ namespace st\taxonomy;
  * Custom Taxonomy
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-02-12
+ * @version 2021-04-05
  *
  */
 
@@ -229,7 +229,7 @@ function get_term_content( $term, $key ) {
 	$c = wpautop( $c );
 	$c = shortcode_unautop( $c );
 	$c = prepend_attachment( $c );
-	$c = wp_make_content_images_responsive( $c );
+	$c = wp_filter_content_tags( $c );
 	$c = capital_P_dangit( $c );
 	$c = do_shortcode( $c );
 	$c = convert_smilies( $c );
