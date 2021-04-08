@@ -5,7 +5,7 @@ namespace st\basic;
  * Anti-Functions - Disabling Unnecessary Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2021-04-08
  *
  */
 
@@ -73,7 +73,7 @@ function disable_author_page() {
 	} );
 	// Remove authors from feeds
 	add_filter( 'the_author', function ( $author ) {
-		return is_feed() ? get_bloginfo( 'name' ) : $author;
+		return is_feed() ? get_bloginfo_rss( 'name' ) : $author;
 	} );
 	add_filter( 'the_author_url', function ( $author_meta ) {
 		return is_feed() ? home_url() : $author_meta;

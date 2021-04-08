@@ -5,7 +5,7 @@ namespace st\basic;
  * Basic Customization
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-03-16
+ * @version 2021-04-08
  *
  */
 
@@ -23,14 +23,14 @@ require_once __DIR__ . '/basic/custom-system.php';
 require_once __DIR__ . '/basic/default-option.php';
 
 
-function apply_anti() {
+function apply_anti( $is_feed_used = false ) {
 	if ( is_admin() ) {
 		disable_file_edit();
 		disable_comment_menu();
 	}
 	disable_generator_output();
 	disable_version_output();
-	disable_unnecessary_header_tag_output();
+	disable_unnecessary_header_tag_output( $is_feed_used );
 	disable_login_link_output();
 	disable_robots_txt_output();
 

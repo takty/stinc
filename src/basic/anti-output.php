@@ -5,7 +5,7 @@ namespace st\basic;
  * Anti-Outputs - Disabling Unnecessary Outputs
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-09
+ * @version 2021-04-08
  *
  */
 
@@ -37,8 +37,10 @@ function _cb_loader_src_ver( $src ) {
 	return $src;
 }
 
-function disable_unnecessary_header_tag_output() {
-	remove_action( 'wp_head', 'feed_links_extra', 3 );
+function disable_unnecessary_header_tag_output( $is_feed_used = false ) {
+	if ( ! $is_feed_used ) {
+		remove_action( 'wp_head', 'feed_links_extra', 3 );
+	}
 	remove_action( 'wp_head', 'rsd_link' );
 	remove_action( 'wp_head', 'wlwmanifest_link' );
 	remove_action( 'wp_head', 'wp_generator' );
