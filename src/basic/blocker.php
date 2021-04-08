@@ -5,7 +5,7 @@ namespace st\basic;
  * Blocker - Disable Unused Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-08
+ * @version 2021-04-09
  *
  * Usage:
  *  require_once get_parent_theme_file_path( '/lib/stinc/basic/blocker.php' );
@@ -19,6 +19,7 @@ function disable_unused_functions( $args = [] ) {
 		'disable_rest_api'       => true,
 		'disable_rest_api_force' => false,
 		'permitted_rest_route'   => [ 'oembed', 'contact-form-7' ],
+		'disable_feed'           => true,
 	], $args );
 	disable_author_page();
 	disable_generator_output();
@@ -30,7 +31,7 @@ function disable_unused_functions( $args = [] ) {
 	disable_embed();
 
 	disable_version_output();
-	disable_tag_output();
+	disable_tag_output( $args['disable_feed'] );
 	disable_login_link_output();
 	disable_robotstxt();
 }
@@ -49,7 +50,7 @@ function disable_author_page() {
 
 	// Remove authors from feeds
 	add_filter( 'the_author', function ( $author ) {
-		return is_feed() ? get_bloginfo( 'name' ) : $author;
+		return is_feed() ? get_bloginfo_rss( 'name' ) : $author;
 	} );
 	add_filter( 'the_author_url', function ( $author_meta ) {
 		return is_feed() ? home_url() : $author_meta;
@@ -140,8 +141,10 @@ function disable_version_output() {
 	add_filter( 'script_loader_src', '\st\basic\remove_wp_ver_str' );
 }
 
-function disable_tag_output() {
-	remove_action( 'wp_head', 'feed_links_extra', 3 );
+function disable_tag_output( $disable_feed = true ) {
+	if ( $disable_feed ) {
+		remove_action( 'wp_head', 'feed_links_extra', 3 );
+	}
 	remove_action( 'wp_head', 'rsd_link' );
 	remove_action( 'wp_head', 'wlwmanifest_link' );
 	remove_action( 'wp_head', 'wp_generator' );
