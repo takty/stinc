@@ -3,7 +3,7 @@
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-25
+ * @version 2021-04-14
  */
 
 namespace st;
@@ -143,80 +143,80 @@ function the_mb_excerpt( $count = 160 ) {
 // -----------------------------------------------------------------------------
 
 
-function the_post_list_item( $post, $link_class = '', $item_class = '', $current = false ) {
-	$link  = esc_url( get_permalink( $post->ID ) );
-	$title = esc_html( get_the_title( $post->ID ) );
+// function the_post_list_item( $post, $link_class = '', $item_class = '', $current = false ) {
+// 	$link  = esc_url( get_permalink( $post->ID ) );
+// 	$title = esc_html( get_the_title( $post->ID ) );
 
-	$item_class = empty( $item_class ) ? $current : ( $item_class . ' ' . $current );
-	$li_class   = ( $item_class ) ? ' class="' . $item_class . '"' : '';
-	if ( empty( $link_class ) ) {
-		echo "<li$li_class><a href=\"$link\">$title</a></li>";
-	} else {
-		echo "<li$li_class><a class=\"$link_class\" href=\"$link\">$title</a></li>";
-	}
-}
+// 	$item_class = empty( $item_class ) ? $current : ( $item_class . ' ' . $current );
+// 	$li_class   = ( $item_class ) ? ' class="' . $item_class . '"' : '';
+// 	if ( empty( $link_class ) ) {
+// 		echo "<li$li_class><a href=\"$link\">$title</a></li>";
+// 	} else {
+// 		echo "<li$li_class><a class=\"$link_class\" href=\"$link\">$title</a></li>";
+// 	}
+// }
 
-function the_child_page_list( $before = '<ul>', $after = '</ul>', $link_class = '' ) {
-	$ps = get_child_pages();
-	if ( count( $ps ) === 0 ) {
-		return;
-	}
-	echo $before;
-	foreach ( $ps as $p ) {
-		the_post_list_item( $p, $link_class );
-	}
-	echo $after;
-}
+// function the_child_page_list( $before = '<ul>', $after = '</ul>', $link_class = '' ) {
+// 	$ps = get_child_pages();
+// 	if ( count( $ps ) === 0 ) {
+// 		return;
+// 	}
+// 	echo $before;
+// 	foreach ( $ps as $p ) {
+// 		the_post_list_item( $p, $link_class );
+// 	}
+// 	echo $after;
+// }
 
-function the_sibling_page_list( $before = '<ul>', $after = '</ul>', $link_class = '' ) {
-	$ps = get_sibling_pages();
-	if ( count( $ps ) === 0 ) {
-		return;
-	}
-	global $post;
+// function the_sibling_page_list( $before = '<ul>', $after = '</ul>', $link_class = '' ) {
+// 	$ps = get_sibling_pages();
+// 	if ( count( $ps ) === 0 ) {
+// 		return;
+// 	}
+// 	global $post;
 
-	echo $before;
-	foreach ( $ps as $p ) {
-		the_post_list_item( $p, $link_class, '', $post->ID === $p->ID ? 'current' : false );
-	}
-	echo $after;
-}
+// 	echo $before;
+// 	foreach ( $ps as $p ) {
+// 		the_post_list_item( $p, $link_class, '', $post->ID === $p->ID ? 'current' : false );
+// 	}
+// 	echo $after;
+// }
 
-function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = '</h3>', $list_before = '<ul>', $list_after = '</ul>', $is_fiscal_year = false ) {
-	$ps = get_posts(
-		array(
-			'posts_per_page' => -1,
-			'post_type'      => $post_type,
-			'orderby'        => 'date',
-			'order'          => 'desc',
-		)
-	);
-	$year = -1;
-	if ( count( $ps ) === 0 ) {
-		return;
-	}
-	foreach ( $ps as $p ) {
-		$y = (int) get_the_date( 'Y', $p->ID );
-		if ( $is_fiscal_year ) {
-			$m = (int) get_the_date( 'm', $p->ID );
-			if ( $m <= 3 ) {
-				--$y;
-			}
-		}
-		if ( $y !== $year ) {
-			if ( $year !== -1 ) {
-				echo $list_after;
-			}
-			$year = $y;
-			echo $year_before . $year . $year_after;
-			echo $list_before;
-		}
-		the_post_list_item( $p );
-	}
-	if ( $year !== -1 ) {
-		echo $list_after;
-	}
-}
+// function the_yearly_post_list( $post_type, $year_before = '<h3>', $year_after = '</h3>', $list_before = '<ul>', $list_after = '</ul>', $is_fiscal_year = false ) {
+// 	$ps = get_posts(
+// 		array(
+// 			'posts_per_page' => -1,
+// 			'post_type'      => $post_type,
+// 			'orderby'        => 'date',
+// 			'order'          => 'desc',
+// 		)
+// 	);
+// 	$year = -1;
+// 	if ( count( $ps ) === 0 ) {
+// 		return;
+// 	}
+// 	foreach ( $ps as $p ) {
+// 		$y = (int) get_the_date( 'Y', $p->ID );
+// 		if ( $is_fiscal_year ) {
+// 			$m = (int) get_the_date( 'm', $p->ID );
+// 			if ( $m <= 3 ) {
+// 				--$y;
+// 			}
+// 		}
+// 		if ( $y !== $year ) {
+// 			if ( $year !== -1 ) {
+// 				echo $list_after;
+// 			}
+// 			$year = $y;
+// 			echo $year_before . $year . $year_after;
+// 			echo $list_before;
+// 		}
+// 		the_post_list_item( $p );
+// 	}
+// 	if ( $year !== -1 ) {
+// 		echo $list_after;
+// 	}
+// }
 
 
 // -----------------------------------------------------------------------------
