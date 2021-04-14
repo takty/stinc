@@ -262,6 +262,9 @@ namespace st {
 		// Actually Sort Terms -----------------------------------------------------
 
 		public function _cb_terms_clauses( $clauses, $taxes = array(), $args = array() ) {
+			if ( count( $taxes ) === 0 ) {
+				return $clauses;
+			}
 			if ( count( $taxes ) > 1 || ! in_array( $taxes[0], $this->_taxonomies, true ) ) {
 				return $clauses;
 			}
