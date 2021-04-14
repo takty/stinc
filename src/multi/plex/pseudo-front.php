@@ -4,7 +4,7 @@
  *
  * @package Wpinc Plex
  * @author Takuto Yanagida
- * @version 2021-03-25
+ * @version 2021-04-13
  */
 
 namespace wpinc\plex\pseudo_front;
@@ -16,7 +16,7 @@ const ADMIN_QUERY_VAR = 'pseudo_front';
 const EDIT_PAGE_URL   = 'edit.php?post_type=page';
 
 /**
- * Add an array of slug to label.
+ * Adds an array of slug to label.
  *
  * @param array  $slug_to_label An array of slug to label.
  * @param string $format        A format to assign.
@@ -31,12 +31,12 @@ function add_admin_labels( array $slug_to_label, ?string $format = null ) {
 }
 
 /**
- * Initialize the pseudo-front.
+ * Initializes the pseudo-front.
  *
  * @param array $args {
- *     Configuration arguments.
+ *     (Optional) Configuration arguments.
  *
- *     @type bool $is_default_front_bloginfo_enabled (Optional) Whether the default front bloginfo is enabled.
+ *     @type bool 'has_default_front_bloginfo' Whether the site has the default front bloginfo. Default true.
  * }
  */
 function initialize( array $args = array() ) {
@@ -47,11 +47,11 @@ function initialize( array $args = array() ) {
 	$inst = _get_instance();
 
 	$args += array(
-		'is_default_front_bloginfo_enabled' => true,
+		'has_default_front_bloginfo' => true,
 	);
 
-	$inst->is_default_front_bloginfo_enabled = $args['is_default_front_bloginfo_enabled'];
-	if ( ! $inst->is_default_front_bloginfo_enabled ) {
+	$inst->has_default_front_bloginfo = $args['has_default_front_bloginfo'];
+	if ( ! $inst->has_default_front_bloginfo ) {
 		$key = \wpinc\plex\get_default_key();
 		delete_option( "blogname_$key" );
 		delete_option( "blogdescription_$key" );
@@ -85,7 +85,7 @@ function initialize( array $args = array() ) {
  * Retrieves the URL for the current site where the front end is accessible.
  *
  * @param string      $path   (Optional) Path relative to the home URL.
- *                            Default is ''.
+ *                            Default ''.
  * @param string|null $scheme (Optional) Scheme to give the home URL context.
  *                            Accepts 'http', 'https', 'relative', 'rest', or null.
  * @param array       $vars   (Optional) An array of variable name to slug.
@@ -228,7 +228,7 @@ function _cb_body_class( array $classes ): array {
  */
 function _cb_admin_init() {
 	$inst    = _get_instance();
-	$def_key = $inst->is_default_front_bloginfo_enabled ? '' : \wpinc\plex\get_default_key();
+	$def_key = $inst->has_default_front_bloginfo ? '' : \wpinc\plex\get_default_key();
 
 	add_settings_section( 'pseudo-front-section', _x( 'Pseudo Front Pages', 'pseudo front', 'plex' ), function () {}, 'general' );
 
@@ -416,13 +416,11 @@ function _cb_display_post_states( array $post_states, \WP_Post $post ): array {
  * @access private
  */
 function _cb_admin_head() {
-	// phpcs:disable
 	echo '<style>';
 	foreach ( _get_front_page_ids() as $id ) {
-		echo "body.post-type-page select#parent_id option[value='$id'] { font-weight: bold; }\n";
+		echo "body.post-type-page select#parent_id option[value='" . esc_attr( $id ) . "']{font-weight:bold;}\n";
 	}
 	echo '</style>';
-	// phpcs:enable
 	?>
 <style>
 	.wpinc-plex-pseudo-front-blogname th { padding-bottom: 10px; }
@@ -468,7 +466,7 @@ function _cb_admin_bar_menu( \WP_Admin_Bar $wp_admin_bar ) {
 
 
 /**
- * Get instance.
+ * Gets instance.
  *
  * @access private
  *
@@ -495,11 +493,11 @@ function _get_instance(): object {
 		public $label_format = '';
 
 		/**
-		 * Whether the default front bloginfo is enabled.
+		 * Whether the site has the default front bloginfo.
 		 *
 		 * @var bool
 		 */
-		public $is_default_front_bloginfo_enabled = true;
+		public $has_default_front_bloginfo = true;
 
 		/**
 		 * Whether redirect is suppressed.

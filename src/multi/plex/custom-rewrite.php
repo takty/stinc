@@ -4,22 +4,22 @@
  *
  * @package Wpinc Plex
  * @author Takuto Yanagida
- * @version 2021-03-22
+ * @version 2021-04-13
  */
 
 namespace wpinc\plex\custom_rewrite;
 
 /**
- * Add a rewrite structure.
+ * Adds a rewrite structure.
  *
  * @param array $args {
  *     Rewrite structure arguments.
  *
- *     @type string   $var          Name of the variable.
- *     @type string[] $slugs        An array of slugs.
- *     @type string   $default_slug The default slug. Default empty.
- *     @type bool     $is_omittable Whether the variable is omittable. Default false.
- *     @type bool     $is_global    Whether the global variable is assigned. Default false.
+ *     @type string   'var'          Name of the variable.
+ *     @type string[] 'slugs'        An array of slugs.
+ *     @type string   'default_slug' The default slug. Default empty.
+ *     @type bool     'omittable'    Whether the variable is omittable. Default false.
+ *     @type bool     'global'       Whether the global variable is assigned. Default false.
  * }
  */
 function add_structure( array $args ) {
@@ -27,8 +27,8 @@ function add_structure( array $args ) {
 		'var'          => '',
 		'slugs'        => array(),
 		'default_slug' => '',
-		'is_omittable' => false,
-		'is_global'    => false,
+		'omittable'    => false,
+		'global'       => false,
 	);
 	if ( empty( $args['var'] ) || empty( $args['slugs'] ) ) {
 		wp_die( '$args[\'var\'] and $args[\'slugs\'] must be assigned' );
@@ -36,14 +36,14 @@ function add_structure( array $args ) {
 	if ( ! in_array( $args['default_slug'], $args['slugs'], true ) ) {
 		wp_die( '$args[\'default_slug\'] must be an element of $args[\'slugs\']' );
 	}
-	if ( $args['is_omittable'] && empty( $args['default_slug'] ) ) {
+	if ( $args['omittable'] && empty( $args['default_slug'] ) ) {
 		$args['default_slug'] = $args['slugs'][0];
 	}
 	_get_instance()->structures[] = $args;
 }
 
 /**
- * Add a post link filter.
+ * Adds a post link filter.
  *
  * @param callable $callback Callable for post link filter.
  */
@@ -52,7 +52,7 @@ function add_post_link_filter( callable $callback ) {
 }
 
 /**
- * Initialize the custom rewrite.
+ * Initializes the custom rewrite.
  */
 function initialize() {
 	static $initialized = 0;
@@ -100,7 +100,7 @@ function get_query_var( string $var, string $default = '' ): string {
 }
 
 /**
- * Retrieve rewrite structures.
+ * Retrieves rewrite structures.
  *
  * @param ?string $field (Optional) Field of rewrite structure args.
  * @param ?array  $vars  (Optional) Variable names for filtering.
@@ -124,7 +124,7 @@ function get_structures( ?string $field = null, ?array $vars = null ) {
 }
 
 /**
- * Retrieve invalid pagename.
+ * Retrieves invalid pagename.
  *
  * @return ?array Invalid pagename.
  */
@@ -133,7 +133,7 @@ function get_invalid_pagename(): ?array {
 }
 
 /**
- * Build a full path.
+ * Builds a full path.
  *
  * @param string[] $vars (Optional) An array of variable name to slug.
  * @return string The full path.
@@ -151,7 +151,7 @@ function build_full_path( array $vars = array() ): string {
 }
 
 /**
- * Build a normalized path.
+ * Builds a normalized path.
  *
  * @param string[] $vars (Optional) An array of variable name to slug.
  * @return string The normalized path.
@@ -163,7 +163,7 @@ function build_norm_path( array $vars = array() ): string {
 	$vars += $inst->vars;
 	foreach ( $inst->structures as $st ) {
 		$v = empty( $vars[ $st['var'] ] ) ? $st['default_slug'] : $vars[ $st['var'] ];
-		if ( ! $st['is_omittable'] || $v !== $st['default_slug'] ) {
+		if ( ! $st['omittable'] || $v !== $st['default_slug'] ) {
 			$ps[] = $v;
 		}
 	}
@@ -175,7 +175,7 @@ function build_norm_path( array $vars = array() ): string {
 
 
 /**
- * Replace path.
+ * Replaces path.
  *
  * @access private
  *
@@ -212,7 +212,7 @@ function _replace_path( string $url, string $before, string $after ): string {
 }
 
 /**
- * Extract variable slugs from URL.
+ * Extracts variable slugs from URL.
  *
  * @access private
  *
@@ -234,14 +234,14 @@ function _extract_vars( string $url ): array {
 
 			$p = array_shift( $ps );
 		} else {
-			$vars[ $st['var'] ] = $st['is_omittable'] ? $st['default_slug'] : null;
+			$vars[ $st['var'] ] = $st['omittable'] ? $st['default_slug'] : null;
 		}
 	}
 	return array( $vars, implode( '/', $sps ) );
 }
 
 /**
- * Extract query path from URL.
+ * Extracts query path from URL.
  *
  * @access private
  *
@@ -312,6 +312,11 @@ function _cb_after_setup_theme() {
 				}
 			}
 		}
+	} elseif ( _has_feed_query() ) {
+		if ( $cur !== $norm ) {
+			_redirect( $req, $ideal );
+		}
+		_replace_request( $req, $added );
 	} else {
 		if ( $cur !== $norm ) {
 			_redirect( $req, $ideal );
@@ -321,7 +326,7 @@ function _cb_after_setup_theme() {
 }
 
 /**
- * Parse request to find query.
+ * Parses request to find query.
  *
  * @access private
  * @see WP::parse_request()
@@ -366,21 +371,21 @@ function _parse_request(): array {
 }
 
 /**
- * Set up the global variables.
+ * Sets up the global variables.
  *
  * @access private
  */
 function _register_globals() {
 	$inst = _get_instance();
 	foreach ( $inst->structures as $st ) {
-		if ( $st['is_global'] ) {
+		if ( $st['global'] ) {
 			$GLOBALS[ $st['var'] ] = $inst->vars[ $st['var'] ];
 		}
 	}
 }
 
 /**
- * Replace one occurrence of the search string with the replacement string.
+ * Replaces one occurrence of the search string with the replacement string.
  *
  * @access private
  *
@@ -395,7 +400,7 @@ function _str_replace_one( string $search, string $replace, string $subject ): s
 }
 
 /**
- * Whether the request is for page.
+ * Determines whether the request is for page.
  *
  * @access private
  * @global WP_Rewrite $wp_rewrite WordPress rewrite component.
@@ -429,7 +434,29 @@ function _is_page_request( string $req_path, string $req_file ): array {
 }
 
 /**
- * Redirect.
+ * Determines whether the request has feed query.
+ *
+ * @access private
+ *
+ * @return bool True if the request has feed query.
+ */
+function _has_feed_query(): bool {
+	$query = $_SERVER['QUERY_STRING'] ?? '';  // phpcs:ignore
+	$parts = explode( '&', $query );
+	foreach ( $parts as $part ) {
+		if ( 'feed' === $part ) {
+			return true;
+		}
+		$kv = explode( '=', $part );
+		if ( ! empty( $kv[0] ) && 'feed' === $kv[0] ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+/**
+ * Redirects.
  *
  * @access private
  *
@@ -445,7 +472,7 @@ function _redirect( string $req_path, string $after ) {
 }
 
 /**
- * Replace request.
+ * Replaces request.
  *
  * @access private
  *
@@ -554,7 +581,7 @@ function _cb_link( string $link, ?\WP_Post $post = null ): string {
 
 
 /**
- * Get instance.
+ * Gets instance.
  *
  * @access private
  *

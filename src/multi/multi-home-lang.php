@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-25
+ * @version 2021-04-14
  */
 
 namespace st;
@@ -30,7 +30,7 @@ const TAXONOMY_POST_LANG  = 'post_lang';
  *     @type string $default_lang
  *     @type array  $site_homes
  *     @type string $default_home
- *     @type bool   $is_default_home_omittable
+ *     @type bool   $default_home_omittable
  *     @type array  $admin_labels
  *     @type array  $translated_taxonomies
  *     @type array  $filter_term_labels
@@ -39,15 +39,15 @@ const TAXONOMY_POST_LANG  = 'post_lang';
  */
 function initialize_multi_home_lang( array $args ) {
 	$args += array(
-		'site_langs'                => array(),
-		'default_lang'              => '',
-		'site_homes'                => array(),
-		'default_home'              => '',
-		'is_default_home_omittable' => false,
-		'admin_labels'              => array(),
-		'translated_taxonomies'     => array(),
-		'filter_term_labels'        => array(),
-		'filtered_post_types'       => array(),
+		'site_langs'             => array(),
+		'default_lang'           => '',
+		'site_homes'             => array(),
+		'default_home'           => '',
+		'default_home_omittable' => false,
+		'admin_labels'           => array(),
+		'translated_taxonomies'  => array(),
+		'filter_term_labels'     => array(),
+		'filtered_post_types'    => array(),
 	);
 	$inst  = &_get_multi_home_lang_instance();
 	$inst += $args;
@@ -60,8 +60,8 @@ function initialize_multi_home_lang( array $args ) {
 			'var'          => QUERY_VAR_SITE_LANG,
 			'slugs'        => $args['site_langs'],
 			'default_slug' => $args['default_lang'],
-			'is_omittable' => true,
-			'is_global'    => true,
+			'omittable'    => true,
+			'global'       => true,
 		)
 	);
 	\wpinc\plex\custom_rewrite\add_structure(
@@ -69,8 +69,8 @@ function initialize_multi_home_lang( array $args ) {
 			'var'          => QUERY_VAR_SITE_HOME,
 			'slugs'        => $args['site_homes'],
 			'default_slug' => $args['default_home'],
-			'is_omittable' => $args['is_default_home_omittable'],
-			'is_global'    => true,
+			'omittable'    => $args['default_home_omittable'],
+			'global'       => true,
 		)
 	);
 	\wpinc\plex\custom_rewrite\initialize();
@@ -78,7 +78,7 @@ function initialize_multi_home_lang( array $args ) {
 	/*
 	 * For enabling pseudo front pages.
 	 */
-	\wpinc\plex\pseudo_front\initialize( array( 'is_default_front_bloginfo_enabled' => false ) );
+	\wpinc\plex\pseudo_front\initialize( array( 'has_default_front_bloginfo' => false ) );
 	\wpinc\plex\pseudo_front\add_admin_labels( $args['admin_labels'] );
 
 	/*

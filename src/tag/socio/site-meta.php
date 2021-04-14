@@ -2,22 +2,22 @@
 /**
  * Site Information
  *
- * @package Wpinc Social
+ * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2021-03-29
+ * @version 2021-04-13
  */
 
-namespace wpinc\social\site_meta;
+namespace wpinc\socio\site_meta;
 
 /**
- * Output the site description.
+ * Outputs the site description.
  */
 function the_site_description() {
 	echo '<meta name="description" content="' . esc_attr( get_site_description() ) . '">' . "\n";
 }
 
 /**
- * Output the site icon images.
+ * Outputs the site icon images.
  *
  * @param string $dir_url The url to image directory.
  */
@@ -33,32 +33,33 @@ function the_site_icon( string $dir_url ) {
 
 
 /**
- * Retrieve the title of the current page.
+ * Retrieves the title of the current page.
  *
- * @param bool   $is_site_name_appended Whether the site name is appended.
- * @param string $separator             Separator between the page title and the site name.
+ * @param bool   $do_append_site_name Whether the site name is appended.
+ * @param string $separator           Separator between the page title and the site name.
  * @return string The title.
  */
-function get_the_title( bool $is_site_name_appended, string $separator ): string {
+function get_the_title( bool $do_append_site_name, string $separator ): string {
 	$site_name = get_site_name();
 	if ( ! is_front_page() && is_singular() ) {
 		$title = _strip_custom_tags( \get_the_title() );
-		if ( $is_site_name_appended ) {
+		if ( $do_append_site_name ) {
 			$title .= $separator . $site_name;
 		}
 		return $title;
 	} elseif ( is_archive() ) {
 		$title = post_type_archive_title( '', false );
-		if ( $is_site_name_appended ) {
+		if ( $do_append_site_name ) {
 			$title .= $separator . $site_name;
 		}
 		return $title;
 	}
 	return $site_name;
 }
+
 /**
  *
- * Retrieve the website name.
+ * Retrieves the website name.
  *
  * @return string The name of the website.
  */
@@ -70,7 +71,7 @@ function get_site_name(): string {
 
 /**
  *
- * Retrieve the website description.
+ * Retrieves the website description.
  *
  * @return string The description of the website.
  */
@@ -81,7 +82,7 @@ function get_site_description(): string {
 }
 
 /**
- * Retrieve the current URL.
+ * Retrieves the current URL.
  *
  * @return string The current URL.
  */
@@ -108,7 +109,7 @@ function get_current_url(): string {
 
 
 /**
- * Strip all tags and custom 'br'.
+ * Strips all tags and custom 'br'.
  *
  * @access private
  *

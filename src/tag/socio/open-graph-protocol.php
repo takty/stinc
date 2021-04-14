@@ -2,53 +2,53 @@
 /**
  * Open Graph Protocol
  *
- * @package Wpinc Social
+ * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2021-03-29
+ * @version 2021-04-13
  */
 
-namespace wpinc\social\ogp;
+namespace wpinc\socio\ogp;
 
 require_once __DIR__ . '/site-meta.php';
 
 const OGP_NS = 'prefix="og:http://ogp.me/ns#"';
 
 /**
- * Output the open graph protocol meta tags.
+ * Outputs the open graph protocol meta tags.
  *
  * @param array $args {
- *     Options.
+ *     (Optional) Options.
  *
- *     @type string $default_image_url     Default image URL.
- *     @type bool   $is_site_name_appended (Optional) Whether the site name is appended.
- *     @type string $separator             (Optional) Separator between the page title and the site name.
- *     @type int    $excerpt_length        (Optional) The length of excerpt.
- *     @type string $alt_description       (Optional) Alternative description.
- *     @type string $image_size            (Optional) The image size.
- *     @type string $image_meta_key        (Optional) Meta key of image.
- *     @type string $alt_image_url         (Optional) Alternative image URL.
+ *     @type string 'default_image_url'   Default image URL.
+ *     @type bool   'do_append_site_name' Whether the site name is appended.
+ *     @type string 'separator'           Separator between the page title and the site name.
+ *     @type int    'excerpt_length'      The length of excerpt.
+ *     @type string 'alt_description'     Alternative description.
+ *     @type string 'image_size'          The image size.
+ *     @type string 'image_meta_key'      Meta key of image.
+ *     @type string 'alt_image_url'       Alternative image URL.
  * }
  */
 function the_ogp( array $args = array() ) {
 	$args += array(
-		'is_site_name_appended' => true,
-		'separator'             => ' - ',
-		'excerpt_length'        => 100,
-		'alt_description'       => '',
-		'default_image_url'     => '',
-		'image_size'            => 'large',
-		'image_meta_key'        => '',
-		'alt_image_url'         => '',
+		'do_append_site_name' => true,
+		'separator'           => ' - ',
+		'excerpt_length'      => 100,
+		'alt_description'     => '',
+		'default_image_url'   => '',
+		'image_size'          => 'large',
+		'image_meta_key'      => '',
+		'alt_image_url'       => '',
 	);
 
 	$img_url = _get_the_image( $args['default_image_url'], $args['image_size'], $args['image_meta_key'], $args['alt_image_url'] );
 	$tw_card = empty( $img_url ) ? 'summary' : 'summary_large_image';
 
 	echo '<meta property="og:type" content="' . esc_attr( is_single() ? 'article' : 'website' ) . '">' . "\n";
-	echo '<meta property="og:url" content="' . esc_attr( \wpinc\social\site_meta\get_current_url() ) . '">' . "\n";
-	echo '<meta property="og:title" content="' . esc_attr( \wpinc\social\site_meta\get_the_title( $args['is_site_name_appended'], $args['separator'] ) ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_attr( \wpinc\socio\site_meta\get_current_url() ) . '">' . "\n";
+	echo '<meta property="og:title" content="' . esc_attr( \wpinc\socio\site_meta\get_the_title( $args['do_append_site_name'], $args['separator'] ) ) . '">' . "\n";
 	echo '<meta property="og:description" content="' . esc_attr( _get_the_description( $args['excerpt_length'], $args['alt_description'] ) ) . '">' . "\n";
-	echo '<meta property="og:site_name" content="' . esc_attr( \wpinc\social\site_meta\get_site_name() ) . '">' . "\n";
+	echo '<meta property="og:site_name" content="' . esc_attr( \wpinc\socio\site_meta\get_site_name() ) . '">' . "\n";
 
 	if ( ! empty( $img_url ) ) {
 		echo '<meta property="og:image" content="' . esc_attr( $img_url ) . '">' . "\n";
@@ -60,7 +60,7 @@ function the_ogp( array $args = array() ) {
 }
 
 /**
- * Retrieve the description of the current page.
+ * Retrieves the description of the current page.
  *
  * @access private
  *
@@ -88,16 +88,16 @@ function _get_the_description( int $excerpt_length, string $alt_description ): s
 		}
 	}
 	if ( empty( $desc ) ) {
-		$desc = \wpinc\social\site_meta\get_site_description();
+		$desc = \wpinc\socio\site_meta\get_site_description();
 	}
 	if ( empty( $desc ) ) {
-		$desc = \wpinc\social\site_meta\get_site_name();
+		$desc = \wpinc\socio\site_meta\get_site_name();
 	}
 	return $desc;
 }
 
 /**
- * Retrieve the image of the current page.
+ * Retrieves the image of the current page.
  *
  * @access private
  *
@@ -126,8 +126,7 @@ function _get_the_image( string $default_image_url, string $size, string $meta_k
 
 
 /**
- *
- * Retrieve the thumbnail image source.
+ * Retrieves the thumbnail image source.
  *
  * @access private
  *

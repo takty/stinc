@@ -4,7 +4,7 @@
  *
  * @package Wpinc Plex
  * @author Takuto Yanagida
- * @version 2021-03-24
+ * @version 2021-04-13
  */
 
 namespace wpinc\plex\term_field;
@@ -13,15 +13,15 @@ require_once __DIR__ . '/custom-rewrite.php';
 require_once __DIR__ . '/slug-key.php';
 
 /**
- * Add taxonomy
+ * Adds taxonomy
  *
  * @param string|string[] $taxonomy_s Taxonomy slugs.
  * @param array           $args {
- *     Configuration arguments.
+ *     (Optional) Configuration arguments.
  *
- *     @type bool $has_singular_name         Whether the terms has singular names.
- *     @type bool $has_default_singular_name Whether the default name of the terms has singular form.
- *     @type bool $has_description           Whether the terms has custom descriptions.
+ *     @type bool 'has_singular_name'         Whether the terms has singular names.
+ *     @type bool 'has_default_singular_name' Whether the default name of the terms has singular form.
+ *     @type bool 'has_description'           Whether the terms has custom descriptions.
  * }
  */
 function add_taxonomy( $taxonomy_s, array $args = array() ) {
@@ -47,7 +47,7 @@ function add_taxonomy( $taxonomy_s, array $args = array() ) {
 }
 
 /**
- * Add an array of slug to label.
+ * Adds an array of slug to label.
  *
  * @param array  $slug_to_label An array of slug to label.
  * @param string $format        A format to assign.
@@ -62,17 +62,18 @@ function add_admin_labels( array $slug_to_label, ?string $format = null ) {
 }
 
 /**
- * Initialize the term name.
+ * Initializes the term name.
  *
  * @global string $pagenow
  *
  * @param array $args {
- *     Configuration arguments.
+ *     (Optional) Configuration arguments.
  *
- *     @type array  $vars                     Query variable names.
- *     @type string $name_key_prefix          (Optional) Key prefix of term metadata for custom names.
- *     @type string $singular_name_key_prefix (Optional) Key prefix of term metadata for custom singular names.
- *     @type string $description_key_prefix   (Optional) Key prefix of term metadata for custom description.
+ *     @type array  'vars'                      Query variable names.
+ *     @type string 'name_key_prefix'           Key prefix of term metadata for custom names. Default '_name_'.
+ *     @type string 'singular_name_key_prefix'  Key prefix of term metadata for custom singular names. Default '_singular_name_'.
+ *     @type string 'description_key_prefix'    Key prefix of term metadata for custom descriptions. Default '_description_'.
+ *     @type string 'default_singular_name_key' Key of term metadata for default singular names. Default '_singular_name'.
  * }
  */
 function initialize( array $args = array() ) {
@@ -257,7 +258,7 @@ function _cb_get_taxonomy( \WP_Term $t ): \WP_Term {
 }
 
 /**
- * Replace the name field of terms.
+ * Replaces the name field of terms.
  *
  * @access private
  *
@@ -285,7 +286,7 @@ function _replace_name( \WP_Term $t, string $taxonomy, object $inst, string $key
 }
 
 /**
- * Add singular name of default key.
+ * Adds singular name of default key.
  *
  * @access private
  *
@@ -333,7 +334,7 @@ function _cb_taxonomy_description( $value, int $term_id, string $context ) {
 }
 
 /**
- * Get Term field.
+ * Gets Term field.
  *
  * @access private
  *
@@ -509,7 +510,7 @@ function _modify_term_meta( int $term_id, string $key, $val ) {
 
 
 /**
- * Get instance.
+ * Gets instance.
  *
  * @access private
  *

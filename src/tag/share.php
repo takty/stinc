@@ -4,99 +4,99 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-29
+ * @version 2021-04-14
  */
 
 namespace st;
 
-require_once __DIR__ . '/social/analytics.php';
-require_once __DIR__ . '/social/open-graph-protocol.php';
-require_once __DIR__ . '/social/share-link.php';
-require_once __DIR__ . '/social/site-meta.php';
-require_once __DIR__ . '/social/structured-data.php';
+require_once __DIR__ . '/socio/analytics.php';
+require_once __DIR__ . '/socio/open-graph-protocol.php';
+require_once __DIR__ . '/socio/share-link.php';
+require_once __DIR__ . '/socio/site-meta.php';
+require_once __DIR__ . '/socio/structured-data.php';
 
 /**
- * Output google analytics code.
+ * Outputs google analytics code.
  *
  * @param string $tracking     The tracking ID of analytics code.
  * @param string $verification The verification code.
  */
 function the_google_analytics_code( string $tracking = '', string $verification = '' ) {
-	\wpinc\social\analytics\the_google_analytics_code( $tracking, $verification );
+	\wpinc\socio\analytics\the_google_analytics_code( $tracking, $verification );
 }
 
 /**
- * Output the open graph protocol meta tags.
+ * Outputs the open graph protocol meta tags.
  *
  * @param array $args {
- *     Options.
+ *     (Optional) Options.
  *
- *     @type string $default_image_url     Default image URL.
- *     @type bool   $is_site_name_appended (Optional) Whether the site name is appended.
- *     @type string $separator             (Optional) Separator between the page title and the site name.
- *     @type int    $excerpt_length        (Optional) The length of excerpt.
- *     @type string $alt_description       (Optional) Alternative description.
- *     @type string $image_size            (Optional) The image size.
- *     @type string $image_meta_key        (Optional) Meta key of image.
- *     @type string $alt_image_url         (Optional) Alternative image URL.
+ *     @type string 'default_image_url'   Default image URL.
+ *     @type bool   'do_append_site_name' Whether the site name is appended.
+ *     @type string 'separator'           Separator between the page title and the site name.
+ *     @type int    'excerpt_length'      The length of excerpt.
+ *     @type string 'alt_description'     Alternative description.
+ *     @type string 'image_size'          The image size.
+ *     @type string 'image_meta_key'      Meta key of image.
+ *     @type string 'alt_image_url'       Alternative image URL.
  * }
  */
 function the_ogp( array $args = array() ) {
-	\wpinc\social\ogp\the_ogp( $args );
+	\wpinc\socio\ogp\the_ogp( $args );
 }
 
 /**
- * Output share links.
+ * Outputs share links.
  *
  * @param array $args {
- *     Default post navigation arguments.
+ *     (Optional) Post navigation arguments.
  *
- *     @type string   $before                (Optional) Markup to prepend to the all links.
- *     @type string   $after                 (Optional) Markup to append to the all links.
- *     @type string   $before_link           (Optional) Markup to prepend to each link.
- *     @type string   $after_link            (Optional) Markup to append to each link.
- *     @type bool     $is_site_name_appended (Optional) Whether the site name is appended.
- *     @type string   $separator             (Optional) Separator between the page title and the site name.
- *     @type string[] $media                 (Optional) Social media names.
+ *     @type string   'before'              Markup to prepend to the all links.
+ *     @type string   'after'               Markup to append to the all links.
+ *     @type string   'before_link'         Markup to prepend to each link.
+ *     @type string   'after_link'          Markup to append to each link.
+ *     @type bool     'do_append_site_name' Whether the site name is appended.
+ *     @type string   'separator'           Separator between the page title and the site name.
+ *     @type string[] 'media'               Social media names.
  * }
  */
 function the_share_links( array $args = array() ) {
-	\wpinc\social\share_link\the_share_links( $args );
+	\wpinc\socio\share_link\the_share_links( $args );
 }
 
 /**
- * Output the site description.
+ * Outputs the site description.
  */
 function the_site_description() {
-	\wpinc\social\site_meta\the_site_description();
+	\wpinc\socio\site_meta\the_site_description();
 }
 
 /**
- * Output the site icon images.
+ * Outputs the site icon images.
  *
  * @param string $dir_url The url to image directory.
  */
 function the_site_icon( string $dir_url ) {
-	\wpinc\social\site_meta\the_site_icon( $dir_url );
+	\wpinc\socio\site_meta\the_site_icon( $dir_url );
 }
 
 /**
- * Output the structured data.
+ * Outputs the structured data.
  *
  * @param array $args {
- *     The data of the website.
+ *     (Optional) The data of the website.
  *
- *     @type string   $url         (Optional) The URL.
- *     @type string   $name        (Optional) The name.
- *     @type string   $inLanguage  (Optional) The locale.
- *     @type string   $description (Optional) The description.
- *     @type string[] $sameAs      (Optional) An array of URLs.
- *     @type string   $logo        The URL of the logo image.
- *     @type string[] $publisher {
- *         @type string $name (Optional) The name of the publisher.
+ *     @type string   'url'         The URL.
+ *     @type string   'name'        The name.
+ *     @type string   'in_language' The locale.
+ *     @type string   'description' The description.
+ *     @type string[] 'same_as'     An array of URLs.
+ *     @type string   'logo'        The URL of the logo image.
+ *     @type string[] 'publisher' {
+ *         @type string $name The name of the publisher.
  *     }
  * }
  */
 function the_structured_data( array $args = array() ) {
-	\wpinc\social\structured_data\the_structured_data( $args );
+	\wpinc\socio\structured_data\the_structured_data( $args );
 }

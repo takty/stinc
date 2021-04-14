@@ -4,7 +4,7 @@
  *
  * @package Wpinc Plex
  * @author Takuto Yanagida
- * @version 2021-03-19
+ * @version 2021-04-13
  */
 
 namespace wpinc\plex\post_field;
@@ -12,7 +12,7 @@ namespace wpinc\plex\post_field;
 require_once __DIR__ . '/custom-rewrite.php';
 
 /**
- * Add post type
+ * Adds post type
  *
  * @param string|string[] $post_type_s Post types.
  */
@@ -24,7 +24,7 @@ function add_post_type( $post_type_s ) {
 }
 
 /**
- * Add an array of slug to label.
+ * Adds an array of slug to label.
  *
  * @param array  $slug_to_label An array of slug to label.
  * @param string $format        A format to assign.
@@ -39,14 +39,14 @@ function add_admin_labels( array $slug_to_label, ?string $format = null ) {
 }
 
 /**
- * Initialize the post content.
+ * Initializes the post content.
  *
  * @param array $args {
- *     Configuration arguments.
+ *     (Optional) Configuration arguments.
  *
- *     @type array  $vars               Query variable names.
- *     @type string $title_key_prefix   (Optional) Key prefix of post metadata for custom title.
- *     @type string $content_key_prefix (Optional) Key prefix of post metadata for custom content.
+ *     @type array  'vars'               Query variable names.
+ *     @type string 'title_key_prefix'   Key prefix of post metadata for custom title. Default '_post_title_'.
+ *     @type string 'content_key_prefix' Key prefix of post metadata for custom content. Default '_post_field_'.
  * }
  */
 function initialize( array $args = array() ) {
@@ -110,7 +110,7 @@ function _cb_the_title( string $title, int $id ): string {
 }
 
 /**
- * Get post title.
+ * Gets post title.
  *
  * @access private
  *
@@ -307,7 +307,7 @@ function _echo_title_content_field( $key ) {
 
 
 /**
- * Get instance.
+ * Gets instance.
  *
  * @access private
  *

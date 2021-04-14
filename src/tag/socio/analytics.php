@@ -2,15 +2,15 @@
 /**
  * Analytics
  *
- * @package Wpinc Social
+ * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2021-03-28
+ * @version 2021-04-13
  */
 
-namespace wpinc\social\analytics;
+namespace wpinc\socio\analytics;
 
 /**
- * Output google analytics code.
+ * Outputs google analytics code.
  *
  * @param string $tracking     The tracking ID of analytics code.
  * @param string $verification The verification code.
@@ -26,7 +26,7 @@ function the_google_analytics_code( string $tracking = '', string $verification 
 }
 
 /**
- * Output warning.
+ * Outputs warning.
  *
  * @access private
  */
@@ -44,7 +44,7 @@ function _echo_warning() {
 }
 
 /**
- * Output google analytics code.
+ * Outputs google analytics code.
  *
  * @access private
  *
