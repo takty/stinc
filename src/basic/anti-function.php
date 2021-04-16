@@ -3,7 +3,7 @@
  * Anti-Functions - Disabling Unnecessary Functions
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-23
+ * @version 2021-04-08
  */
 
 namespace st\basic;
@@ -96,7 +96,7 @@ function disable_author_page() {
 	add_filter(
 		'the_author',
 		function ( $author ) {
-			return is_feed() ? get_bloginfo( 'name' ) : $author;
+			return is_feed() ? get_bloginfo_rss( 'name' ) : $author;
 		}
 	);
 	add_filter(

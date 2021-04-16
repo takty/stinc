@@ -3,7 +3,7 @@
  * Ordered Term (Adding Order Field (Term Meta) to Taxonomies)
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-23
+ * @version 2020-04-02
  */
 
 namespace st {
@@ -262,10 +262,10 @@ namespace st {
 		// Actually Sort Terms -----------------------------------------------------
 
 		public function _cb_terms_clauses( $clauses, $taxes = array(), $args = array() ) {
-			if ( count( $taxes ) === 0 ) {
+			if ( count( $taxes ) === 0 || count( $taxes ) > 1 ) {
 				return $clauses;
 			}
-			if ( count( $taxes ) > 1 || ! in_array( $taxes[0], $this->_taxonomies, true ) ) {
+			if ( count( $taxes ) === 1 || ! in_array( $taxes[0], $this->_taxonomies, true ) ) {
 				return $clauses;
 			}
 			global $wpdb;
