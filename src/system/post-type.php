@@ -129,7 +129,7 @@ function add_date_archive_rewrite_rules( $post_type, $struct = '', $slug = 'date
 function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' ) {
 	if ( empty( $struct ) ) $struct = $post_type;
 
-	add_filter( 'get_archives_link', function ( $link_html, $url, $text, $format, $before, $after ) use ( $post_type, $struct, $slug ) {
+	add_filter( 'get_archives_link', function ( $link_html, $url, $text, $format, $before, $after, $selected ) use ( $post_type, $struct, $slug ) {
 		$url_post_type = '';
 		$qps = explode( '&', parse_url( $url, PHP_URL_QUERY ) );
 		foreach ( $qps as $qp ) {
@@ -160,14 +160,16 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date' 
 		if ('link' === $format) {
 			$link_html = "\t<link rel='archives' title='" . esc_attr( $text ) . "' href='$url' />\n";
 		} elseif ('option' === $format) {
-			$link_html = "\t<option value='$url'>$before $text $after</option>\n";
+			$selected_attr = $selected ? " selected='selected'" : '';
+			$link_html     = "\t<option value='$url'$selected_attr>$before $text $after</option>\n";
 		} elseif ('html' === $format) {
-			$link_html = "\t<li>$before<a href='$url'>$text</a>$after</li>\n";
+			$selected_cls = $selected ? ' class="current"' : '';
+			$link_html    = "\t<li$selected_cls>$before<a href='$url'>$text</a>$after</li$selected_cls>\n";
 		} else {  // custom
 			$link_html = "\t$before<a href='$url'>$text</a>$after\n";
 		}
 		return $link_html;
-	}, 10, 6 );
+	}, 10, 7 );
 }
 
 

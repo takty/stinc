@@ -5,7 +5,7 @@ namespace st;
  * Navigation Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2020-11-24
+ * @version 2021-04-21
  *
  */
 
@@ -21,7 +21,7 @@ function the_yearly_archive_select( $post_type = 'post', $default_title = 'Year'
 		'format'    => 'option',
 	], $args );
 ?>
-	<select onchange="document.location.href = this.value;">
+	<select onchange="if(this.value!=='#')document.location.href=this.value;">
 		<option value="#"><?php echo $default_title ?></option>
 <?php
 	if ( $meta_key === false ) {
@@ -36,7 +36,7 @@ function the_yearly_archive_select( $post_type = 'post', $default_title = 'Year'
 
 function the_taxonomy_archive_select( $taxonomy, $default_title = 'Category', $check_lang_visible = false, $hide_empty = false ) {
 ?>
-	<select onchange="document.location.href = this.value;">
+	<select onchange="if(this.value!=='#')document.location.href=this.value;">
 		<option value="#"><?php echo $default_title ?></option>
 		<?php the_taxonomy_archive_option( $taxonomy, $check_lang_visible, $hide_empty ); ?>
 	</select>
@@ -49,15 +49,18 @@ function the_taxonomy_archive_option( $taxonomy, $check_lang_visible = false, $h
 		$ml = \st\Multilang::get_instance();
 		$key_visible .= '_' . $ml->get_site_lang();
 	}
-	$terms = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => 0 ] );
+	$terms    = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => 0 ] );
+	$cur_term = is_tax() ? get_query_var( 'term' ) : '';
 
 	foreach ( $terms as $t ) {
 		if ( $check_lang_visible && empty( get_term_meta( $t->term_id, $key_visible, true ) ) ) continue;
-		echo '<option value="' . esc_attr( get_term_link( $t ) ) . '">' . esc_html( \st\get_term_name( $t ) ) . '</option>';
+		$selected_attr = $cur_term === $t->slug ? " selected='selected'" : '';
+		echo '<option value="' . esc_attr( get_term_link( $t ) ) . '"' . $selected_attr . '>' . esc_html( \st\get_term_name( $t ) ) . '</option>';
 
 		$cts = get_terms( $taxonomy, [ 'hide_empty' => $hide_empty, 'parent' => $t->term_id ] );
 		foreach ( $cts as $ct ) {
-			echo '<option value="' . esc_attr( get_term_link( $ct ) ) . '">' . '— ' . esc_html( \st\get_term_name( $ct ) ) . '</option>';
+			$selected_attr = $cur_term === $ct->slug ? " selected='selected'" : '';
+			echo '<option value="' . esc_attr( get_term_link( $ct ) ) . '"' . $selected_attr . '>' . '— ' . esc_html( \st\get_term_name( $ct ) ) . '</option>';
 		}
 	}
 }
