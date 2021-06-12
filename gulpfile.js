@@ -36,29 +36,25 @@ gulp.task('js-min', () => {
 gulp.task('js', gulp.parallel('js-raw', 'js-min'));
 
 gulp.task('sass', () => {
-	return gulp.src(['src/**/*.scss'])
+	return gulp.src(['src/**/*.scss'], { sourcemaps: true })
 		.pipe($.plumber({
 			errorHandler: function (err) {
 				console.log(err.messageFormatted);
 				this.emit('end');
 			}
 		}))
-		.pipe($.sourcemaps.init())
 		.pipe($.dartSass({ outputStyle: SASS_OUTPUT_STYLE }))
 		.pipe($.autoprefixer({ remove: false }))
 		.pipe($.rename({ extname: '.min.css' }))
-		.pipe($.sourcemaps.write('.'))
-		.pipe(gulp.dest('./dist'));
+		.pipe(gulp.dest('./dist', { sourcemaps: '.' }));
 });
 
 gulp.task('css-raw', () => {
-	return gulp.src(['src/**/*.css', '!src/**/*.min.css'], { base: 'src' })
+	return gulp.src(['src/**/*.css', '!src/**/*.min.css'], { base: 'src', sourcemaps: true })
 		.pipe($.plumber())
-		.pipe($.sourcemaps.init())
 		.pipe($.cleanCss())
 		.pipe($.rename({ extname: '.min.css' }))
-		.pipe($.sourcemaps.write('.'))
-		.pipe(gulp.dest('./dist'));
+		.pipe(gulp.dest('./dist', { sourcemaps: '.' }));
 });
 
 gulp.task('css-min', () => {
