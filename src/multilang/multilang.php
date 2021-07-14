@@ -6,7 +6,7 @@ namespace st;
  * Multi-Language Site with Single Site
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-10-10
+ * @version 2021-07-14
  *
  */
 
@@ -176,6 +176,11 @@ class Multilang {
 	public function add_text_translation( $text, $lang, $trans ) {
 		if ( $this->_text === null ) $this->initialize_text();
 		$this->_text->add_text_translation( $text, $lang, $trans );
+	}
+
+	public function add_text_translation_with_context( $text, $context, $lang, $trans ) {
+		if ( $this->_text === null ) $this->initialize_text();
+		$this->_text->add_text_translation_with_context( $text, $context, $lang, $trans );
 	}
 
 	public function add_date_format_translation( $lang_s, $year = 'Y', $month = 'Y-m', $day = 'Y-m-d' ) {
