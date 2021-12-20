@@ -2,7 +2,8 @@
 'use strict';
 
 const gulp = require('gulp');
-const $ = require('gulp-load-plugins')({ pattern: ['gulp-*'] });
+const sass = require('gulp-sass')(require('sass'));
+const $    = require('gulp-load-plugins')({ pattern: ['gulp-*', '!gulp-sass'] });
 
 
 gulp.task('js-raw', () => {
@@ -26,7 +27,7 @@ gulp.task('sass', () => {
 	return gulp.src(['src/**/*.scss'])
 		.pipe($.plumber())
 		.pipe($.sourcemaps.init())
-		.pipe($.sass({ outputStyle: 'compressed' }))
+		.pipe(sass({ outputStyle: 'compressed' }))
 		.pipe($.autoprefixer({ remove: false }))
 		.pipe($.rename({ extname: '.min.css' }))
 		.pipe($.sourcemaps.write('.'))
