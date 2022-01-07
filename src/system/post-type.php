@@ -3,7 +3,7 @@
  * Custom Post Type Utilities
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-23
+ * @version 2021-04-18
  */
 
 namespace st\post_type;
@@ -174,26 +174,17 @@ function add_date_archive_link_filter( $post_type, $struct = '', $slug = 'date',
 				return $link_html;
 			}
 			global $wp_rewrite;
-			$front = substr( $wp_rewrite->front, 1 );
-			$url   = str_replace( $front, '', $url );
+			$front   = substr( $wp_rewrite->front, 1 );
+			$new_url = str_replace( $front, '', $url );
 
-			$ret_link = str_replace( "/$slug/", "/%link_dir%/$slug/", $url );
+			$ret_link = str_replace( "/$slug/", "/%link_dir%/$slug/", $new_url );
 			$ret_link = str_replace( "%link_dir%/$slug", '%link_dir%', $ret_link );
 			$link_dir = $struct . '/' . $slug;
 
-			$url = str_replace( '%link_dir%', $link_dir, $ret_link );
-			$url = remove_query_arg( 'post_type', $url );
+			$new_url = str_replace( '%link_dir%', $link_dir, $ret_link );
+			$new_url = remove_query_arg( 'post_type', $new_url );
 
-			if ( 'link' === $format ) {
-				$link_html = "\t<link rel='archives' title='" . esc_attr( $text ) . "' href='$url' />\n";
-			} elseif ( 'option' === $format ) {
-				$link_html = "\t<option value='$url'>$before $text $after</option>\n";
-			} elseif ( 'html' === $format ) {
-				$link_html = "\t<li>$before<a href='$url'>$text</a>$after</li>\n";
-			} else {  // custom
-				$link_html = "\t$before<a href='$url'>$text</a>$after\n";
-			}
-			return $link_html;
+			return str_replace( $url, $new_url, $link_html );
 		},
 		10,
 		6
