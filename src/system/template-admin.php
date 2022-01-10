@@ -2,6 +2,7 @@
 /**
  * Template Admin
  *
+ * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
  * @version 2022-01-10
  */
@@ -23,7 +24,7 @@ function initialize( string $function_name = 'setup_template_admin' ) {
 		function () use ( $post_fixes, $function_name ) {
 			$post_id = \st\get_post_id();
 
-			$pt = get_post_meta( $post_id, '_wp_page_template', TRUE );
+			$pt = get_post_meta( $post_id, '_wp_page_template', true );
 			if ( ! empty( $pt ) && 'default' !== $pt ) {
 				foreach ( $post_fixes as $post_fix ) {
 					if ( _load_page_template_admin( $post_id, $pt, $post_fix, $function_name ) ) {
