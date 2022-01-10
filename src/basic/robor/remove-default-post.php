@@ -1,55 +1,40 @@
 <?php
 /**
- * Custom Admin Bar
+ * Remove Default 'post' Post Type.
  *
- * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-03-23
+ * @package Wpinc Robor
+ * @author Takuto Yanagida
+ * @version 2022-01-08
  */
 
-namespace st\basic;
+namespace wpinc\robor;
 
-function remove_wp_logo() {
+/**
+ * Remove UIs for default 'post' post type.
+ */
+function remove_default_post_ui() {
 	add_action(
 		'admin_bar_menu',
 		function ( $wp_admin_bar ) {
-			$wp_admin_bar->remove_menu( 'wp-logo' );
-		},
-		300
-	);
-}
-
-function remove_customize_menu() {
-	add_action(
-		'admin_bar_menu',
-		function ( $wp_admin_bar ) {
-			$wp_admin_bar->remove_menu( 'customize' );
-		},
-		300
+			$wp_admin_bar->remove_node( 'new-post' );
+		}
 	);
 	add_action(
-		'admin_menu',
+		'wp_dashboard_setup',
 		function () {
-			global $submenu;
-			if ( isset( $submenu['themes.php'] ) ) {
-				$customize_menu_index = -1;
-				foreach ( $submenu['themes.php'] as $index => $menu_item ) {
-					foreach ( $menu_item as $data ) {
-						if ( strpos( $data, 'customize' ) === 0 ) {
-							$customize_menu_index = $index;
-							break;
-						}
-					}
-					if ( $customize_menu_index !== -1 ) {
-						break;
-					}
-				}
-				unset( $submenu['themes.php'][ $customize_menu_index ] );
-			}
+			remove_meta_box( 'dashboard_quick_press', 'dashboard', 'side' );
 		}
 	);
 }
 
-function remove_post_menu_when_empty() {
+
+// -----------------------------------------------------------------------------
+
+
+/**
+ * Remove default 'post' post type when no posts.
+ */
+function remove_default_post_when_empty() {
 	$counts = wp_count_posts();
 	$sum    = 0;
 	foreach ( $counts as $key => $val ) {
@@ -65,6 +50,11 @@ function remove_post_menu_when_empty() {
 	}
 }
 
+/**
+ * Hide default 'post' post type.
+ *
+ * @access private
+ */
 function _hide_post_type_post() {
 	unregister_taxonomy_for_object_type( 'category', 'post' );
 	unregister_taxonomy_for_object_type( 'post_tag', 'post' );
@@ -78,6 +68,13 @@ function _hide_post_type_post() {
 	$wp_post_types['post']->show_ui            = false;
 }
 
+/**
+ * Hide a taxonomy.
+ *
+ * @access private
+ *
+ * @param string $tax Taxonomy.
+ */
 function _hide_taxonomy( $tax ) {
 	$tax = get_taxonomy( $tax );
 	if ( ! empty( $tax->object_type ) ) {
