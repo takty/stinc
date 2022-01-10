@@ -76,7 +76,7 @@ function disable_comment_feed() {
  * Disable comment menus.
  */
 function disable_comment_menu() {
-	if ( 0 < array_sum( wp_count_comments() ) ) {
+	if ( 0 < array_sum( (array) wp_count_comments() ) ) {
 		return;
 	}
 	add_action(

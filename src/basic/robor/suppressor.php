@@ -77,9 +77,9 @@ function suppress_version_output() {
  *
  * @access private
  *
- * @param WP_Scripts $inst WP_Scripts instance (passed by reference).
+ * @param object $inst WP_Scripts instance (passed by reference).
  */
-function _cb_wp_default__suppress_version_output( WP_Scripts $inst ) {
+function _cb_wp_default__suppress_version_output( object $inst ) {
 	$inst->default_version = '';
 }
 
@@ -88,9 +88,10 @@ function _cb_wp_default__suppress_version_output( WP_Scripts $inst ) {
  *
  * @access private
  *
- * @param string $src The source URL of the enqueued style.
+ * @param ?string $src The source URL of the enqueued style.
+ * @return ?string Source.
  */
-function _cb_loader_src__suppress_version_output( string $src ) {
+function _cb_loader_src__suppress_version_output( ?string $src ): ?string {
 	if ( false !== strpos( $src, 'ver=' ) ) {
 		return remove_query_arg( 'ver', $src );
 	}

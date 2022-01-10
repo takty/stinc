@@ -4,7 +4,7 @@
  *
  * @package Wpinc Robor
  * @author Takuto Yanagida
- * @version 2022-01-08
+ * @version 2022-01-10
  */
 
 namespace wpinc\robor;
@@ -13,8 +13,8 @@ namespace wpinc\robor;
  * Add timestamps to style and script sources.
  */
 function add_timestamp_to_source() {
-	add_filter( 'style_loader_src', '\wpinc\robor\_cb_loader_src_timestamp' );
-	add_filter( 'script_loader_src', '\wpinc\robor\_cb_loader_src_timestamp' );
+	add_filter( 'style_loader_src', '\wpinc\robor\_cb_loader_src__add_timestamp' );
+	add_filter( 'script_loader_src', '\wpinc\robor\_cb_loader_src__add_timestamp' );
 }
 
 /**
