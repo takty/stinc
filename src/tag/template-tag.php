@@ -77,16 +77,6 @@ function get_post_type_name( $post_type, $singular_name = false ) {
 	return $singular_name ? $obj->labels->singular_name : $obj->labels->name;
 }
 
-function get_site_title( $raw = false ) {
-	$ret = array();
-	$bn  = htmlspecialchars_decode( get_option( 'blogname' ) );
-	$bd  = htmlspecialchars_decode( get_option( 'blogdescription' ) );
-
-	$ret['name']        = $raw ? $bn : \st\separate_line( $bn, 'segment' );
-	$ret['description'] = $raw ? $bd : \st\separate_line( $bd, 'segment' );
-	return $ret;
-}
-
 
 // -----------------------------------------------------------------------------
 

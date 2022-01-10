@@ -27,10 +27,10 @@ function the_admin_edit_post( string $cls = '' ) {
 /**
  * Echo edit post link of menus when available.
  *
- * @param NavMenu $nav_menu NavMenu to be edited.
- * @param string  $cls      CSS Class.
+ * @param \wpinc\navi\Nav_Menu $nav_menu Nav_Menu to be edited.
+ * @param string               $cls      CSS Class.
  */
-function the_admin_edit_menu( $nav_menu, string $cls = '' ) {
+function the_admin_edit_menu( \wpinc\navi\Nav_Menu $nav_menu, string $cls = '' ) {
 	if ( \st\can_edit_theme_options() ) {
 		?>
 	<div class="admin-edit<?php echo esc_attr( ' ' . $cls ); ?>">
@@ -78,7 +78,7 @@ function the_edit_link_post() {
 /**
  * Echos edit link for menu.
  *
- * @param NavMenu $nav_menu NavMenu to edit.
+ * @param Nav_Menu $nav_menu Nav_Menu to edit.
  */
 function the_edit_link_menu( $nav_menu ) {
 	echo esc_attr( admin_url( 'nav-menus.php?action=edit&menu=' . $nav_menu->get_menu_id() ) );

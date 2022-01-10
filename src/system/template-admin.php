@@ -9,8 +9,6 @@
 
 namespace st\template_admin;
 
-require_once __DIR__ . '/misc.php';
-
 /**
  * Initializes template admin.
  *
@@ -22,7 +20,7 @@ function initialize( string $function_name = 'setup_template_admin' ) {
 	add_action(
 		'admin_menu',
 		function () use ( $post_fixes, $function_name ) {
-			$post_id = \st\get_post_id();
+			$post_id = get_post_id();
 
 			$pt = get_post_meta( $post_id, '_wp_page_template', true );
 			if ( ! empty( $pt ) && 'default' !== $pt ) {
@@ -32,14 +30,14 @@ function initialize( string $function_name = 'setup_template_admin' ) {
 					}
 				}
 			}
-			if ( \st\is_page_on_front( $post_id ) ) {
+			if ( is_page_on_front( $post_id ) ) {
 				foreach ( $post_fixes as $post_fix ) {
 					if ( _load_page_template_admin( $post_id, 'front-page.php', $post_fix, $function_name ) ) {
 						return;
 					}
 				}
 			}
-			$post_type = \st\get_post_type_in_admin( $post_id );
+			$post_type = get_post_type_in_admin( $post_id );
 			if ( ! empty( $post_type ) ) {
 				foreach ( $post_fixes as $post_fix ) {
 					if ( _load_page_template_admin( $post_id, $post_type . '.php', $post_fix, $function_name ) ) {
@@ -70,6 +68,37 @@ function _load_page_template_admin( $post_id, string $path, string $post_fix, st
 			$function_name( $post_id );
 			return true;
 		}
+	}
+	return false;
+}
+
+
+// -----------------------------------------------------------------------------
+
+
+function get_post_id() {
+	$post_id = '';
+	if ( isset( $_GET['post'] ) || isset( $_POST['post_ID'] ) ) {
+		$post_id = isset( $_GET['post'] ) ? $_GET['post'] : $_POST['post_ID'];
+	}
+	return (int) $post_id;
+}
+
+function get_post_type_in_admin( $post_id ) {
+	$p = get_post( $post_id );
+	if ( null === $p ) {
+		if ( isset( $_GET['post_type'] ) ) {
+			return $_GET['post_type'];
+		}
+		return '';
+	}
+	return $p->post_type;
+}
+
+function is_page_on_front( $post_id ) {
+	$pof = get_option( 'page_on_front' );
+	if ( 'page' === get_option( 'show_on_front' ) && $pof && $post_id === (int) $pof ) {
+		return true;
 	}
 	return false;
 }

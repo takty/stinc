@@ -35,9 +35,9 @@ function enable_to_upload_svg() {
 }
 
 function enable_pdf_thumbnail() {
-	add_filter( 'ajax_query_attachments_args', '\wpinc\robor\cb_ajax_query_attachments_args', 11 );
-	add_action( 'admin_footer-post-new.php', '\wpinc\robor\cb_override_attachment_filter' );
-	add_action( 'admin_footer-post.php', '\wpinc\robor\cb_override_attachment_filter' );
+	add_filter( 'ajax_query_attachments_args', '\st\cb_ajax_query_attachments_args', 11 );
+	add_action( 'admin_footer-post-new.php', '\st\cb_override_attachment_filter' );
+	add_action( 'admin_footer-post.php', '\st\cb_override_attachment_filter' );
 }
 
 function cb_ajax_query_attachments_args( $query ) {
