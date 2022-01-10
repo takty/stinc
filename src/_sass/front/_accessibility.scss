@@ -3,7 +3,7 @@
  * Accessibility Style
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-20
+ * @version 2021-12-24
  *
  */
 
@@ -17,7 +17,7 @@
 	overflow: hidden;
 
 	&:focus {
-		@include font-bold;
+		font-weight     : bold;
 		display         : block;
 		z-index         : 100000;  // Above WP toolbar
 		width           : auto;
@@ -36,7 +36,7 @@
 	}
 }
 
-// Do not show the outline on the skip link tagret.
+// Do not show the outline on the skip link target.
 #content[tabindex='-1']:focus {
 	outline: 0;
 }

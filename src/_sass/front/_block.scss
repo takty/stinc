@@ -3,13 +3,13 @@
  * Styles of WordPress Block Editor
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-06-20
+ * @version 2022-01-10
  *
  */
 
 
-$stinc-block-level-pullquote-text      : $stile-design-level-blockquote-text-large !default;
-$stinc-block-color-pullquote-background: rgba($stile-block-color-rule, 0.25) !default;
+// $stinc-block-level-pullquote-text      : $stile-design-level-blockquote-text-large !default;
+// $stinc-block-color-pullquote-background: rgba($stile-block-color-rule, 0.25) !default;
 $stinc-block-level-cover-text          : 5 !default;
 $stinc-block-color-cover-text          : #fff !default;
 
@@ -23,19 +23,19 @@ $stinc-block-color-cover-text          : #fff !default;
 	}
 
 	.wp-block-image {
-		@include stile-block-figure;
+		// @include stile-block-figure;
 	}
 
 	.wp-block-archives,
 	.wp-block-categories,
 	.wp-block-latest-posts {
-		@include stile-list-ul-inside;
+		// @include stile-list-ul-inside;
 	}
 
 	.wp-block-cover .wp-block-cover-image-text,
 	.wp-block-cover .wp-block-cover-text,
 	.wp-block-cover h2 {
-		@include font-size-level($stinc-block-level-cover-text);
+		// @include font-size-level($stinc-block-level-cover-text);
 		color        : $stinc-block-color-cover-text;
 		margin-bottom: 0;
 		max-width    : 40rem;
@@ -56,15 +56,15 @@ $stinc-block-color-cover-text          : #fff !default;
 		margin-top: base-vr(2);
 	}
 	.wp-block-quote__citation {
-		@include font-size-level(1);
+		// @include font-size-level(1);
 	}
 }
 
 @mixin stinc-block-pullquote {
 	.wp-block-pullquote {
 		&:not(.is-style-solid-color) {
-			border-top   : $stile-block-size-line-width solid $stile-block-color-rule;
-			border-bottom: $stile-block-size-line-width solid $stile-block-color-rule;
+			// border-top   : $stile-block-size-line-width solid $stile-block-color-rule;
+			// border-bottom: $stile-block-size-line-width solid $stile-block-color-rule;
 		}
 		blockquote {
 			border       : none;
@@ -74,20 +74,20 @@ $stinc-block-color-cover-text          : #fff !default;
 			&::before { display: none; }
 		}
 		&.is-style-solid-color {
-			background-color: $stinc-block-color-pullquote-background;
+			// background-color: $stinc-block-color-pullquote-background;
 			blockquote {
 				width    : 60%;
-				min-width: $stile-alignment-size-min-text-width;
+				// min-width: $stile-alignment-size-min-text-width;
 			}
 		}
 		p {
-			@include font-size-level($stinc-block-level-pullquote-text);
+			// @include font-size-level($stinc-block-level-pullquote-text);
 		}
 	}
 	.wp-block-pullquote__citation,
 	.wp-block-pullquote cite,
 	.wp-block-pullquote footer {
-		@include font-size-level(1);
+		// @include font-size-level(1);
 		text-transform: none;
 	}
 }
