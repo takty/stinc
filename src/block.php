@@ -3,7 +3,7 @@
  * Block
  *
  * @package Sample
- * @author Takuto Yanagida
+ * @author Takuto Yanagida @ Space-Time Inc.
  * @version 2022-03-03
  */
 

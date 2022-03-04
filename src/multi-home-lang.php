@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-01-25
+ * @version 2022-02-07
  */
 
 namespace st;
@@ -143,7 +143,7 @@ function _cb_after_setup_theme_multi_home_lang() {
 		switch_to_locale( $locale );
 	}
 	load_theme_textdomain( 'theme', get_template_directory() . '/languages' );
-	load_theme_textdomain( 'plex', __DIR__ . '/plex/languages' );
+	load_theme_textdomain( 'wpinc_plex', __DIR__ . '/plex/languages' );
 }
 
 /**

@@ -3,7 +3,7 @@
  * Social Media
  *
  * @package Stinc
- * @author Takuto Yanagida
+ * @author Takuto Yanagida @ Space-Time Inc.
  * @version 2022-02-08
  */
 

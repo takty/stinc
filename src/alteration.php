@@ -3,8 +3,8 @@
  * Default Customization
  *
  * @package Wpinc
- * @author Takuto Yanagida
- * @version 2022-02-20
+ * @author Takuto Yanagida @ Space-Time Inc.
+ * @version 2022-03-04
  */
 
 namespace st;
