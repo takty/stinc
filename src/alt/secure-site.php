@@ -4,35 +4,48 @@
  *
  * @package Wpinc Alt
  * @author Takuto Yanagida
- * @version 2022-01-16
+ * @version 2022-03-04
  */
 
 namespace wpinc\alt;
 
 /**
- * Disable REST API for specific routes.
+ * Disable REST API except specific routes.
  *
  * @param string[] $permitted_routes Permitted routes. For example, array( 'oembed', 'contact-form-7' ).
  */
-function disable_rest_api( array $permitted_routes = array() ): void {
+function disable_rest_api_without_permission( array $permitted_routes = array() ): void {
 	add_filter(
 		'rest_pre_dispatch',
 		function ( $result, $wp_rest_server, $request ) use ( $permitted_routes ) {
+			if ( is_user_logged_in() ) {
+				return $result;
+			}
 			$path = $request->get_route();
 			foreach ( $permitted_routes as $r ) {
 				if ( 0 === strpos( $path, "/$r/" ) ) {
 					return $result;
 				}
 			}
-			return new \WP_Error(
-				'rest_disabled',
-				array(
-					'status' => rest_authorization_required_code(),
-				)
-			);
+			return new \WP_Error( 'rest_disabled', array( 'status' => rest_authorization_required_code() ) );
 		},
 		10,
 		3
+	);
+}
+
+/**
+ * Disable REST API without authentication.
+ */
+function disable_rest_api_without_authentication(): void {
+	add_filter(
+		'rest_authentication_errors',
+		function ( $result ) {
+			if ( true === $result || is_wp_error( $result ) || is_user_logged_in() ) {
+				return $result;
+			}
+			return new \WP_Error( 'rest_disabled', array( 'status' => rest_authorization_required_code() ) );
+		}
 	);
 }
 
@@ -170,14 +183,17 @@ function disable_author_page(): void {
 			return is_feed() ? home_url() : $author_meta;
 		}
 	);
-	// Remove authors from endpoints.
+	// Remove information of authors from REST response.
 	add_filter(
-		'rest_endpoints',
-		function ( $endpoints ) {
-			unset( $endpoints['/wp/v2/users'] );
-			unset( $endpoints['/wp/v2/users/(?P<id>[d]+)'] );
-			return $endpoints;
-		}
+		'rest_prepare_user',
+		function ( $response, $user, $request ) {
+			if ( is_user_logged_in() ) {
+				return $response;
+			}
+			return rest_ensure_response( array() );
+		},
+		10,
+		3
 	);
 }
 

@@ -9,7 +9,6 @@
 
 namespace st {
 	require_once __DIR__ . '/taxo/adder.php';
-	require_once __DIR__ . '/taxo/admin-ui.php';
 	require_once __DIR__ . '/taxo/customize.php';
 	require_once __DIR__ . '/taxo/post.php';
 	require_once __DIR__ . '/taxo/singular-name.php';
@@ -43,16 +42,6 @@ namespace st {
 
 	// -----------------------------------------------------------------------------
 
-
-	/**
-	 * Simplifies taxonomy metaboxes.
-	 *
-	 * @param array $taxonomies (Optional) Taxonomies.
-	 * @param array $post_types (Optional) Post types.
-	 */
-	function simplify_taxonomy_metabox( array $taxonomies = array(), array $post_types = array() ): void {
-		\wpinc\taxo\simplify_taxonomy_metabox( $taxonomies, $post_types );
-	}
 
 	/**
 	 * Disables sorting in taxonomy metaboxes.
@@ -397,5 +386,18 @@ namespace st\ordered_term {
 	 */
 	function get_post_meta_key_of_post_term_order( string $taxonomy ): string {
 		return \wpinc\taxo\ordered_term\get_post_meta_key_of_post_term_order( $taxonomy );
+	}
+}
+
+namespace st\simple_ui {
+	require_once __DIR__ . '/taxo/simple-ui.php';
+
+	/**
+	 * Activates simple taxonomy UIs.
+	 *
+	 * @param string|string[] $taxonomy_s  (Optional) A taxonomy slug or array of taxonomy slugs.
+	 */
+	function activate( $taxonomy_s = array() ): void {
+		\wpinc\taxo\simple_ui\activate( $taxonomy_s );
 	}
 }

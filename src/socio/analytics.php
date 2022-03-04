@@ -4,7 +4,7 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-01-16
+ * @version 2022-02-14
  */
 
 namespace wpinc\socio;
@@ -52,12 +52,8 @@ function _echo_analytics_warning(): void {
  * @param string $verification The verification code.
  */
 function _echo_google_analytics_code( string $tracking, string $verification ): void {
-	// phpcs:disable
 	?>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $tracking ); ?>"></script>
-	<?php
-	// phpcs:enable
-	?>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $tracking ); ?>"></script><?php // phpcs:ignore ?>
 	<script>
 	window.dataLayer = window.dataLayer || [];
 	function gtag(){dataLayer.push(arguments);}

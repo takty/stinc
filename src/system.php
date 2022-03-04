@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida
- * @version 2022-02-15
+ * @version 2022-02-28
  */
 
 namespace st {
@@ -76,10 +76,10 @@ namespace st {
 	/**
 	 * Echo edit post link of menus when available.
 	 *
-	 * @param int    $menu_id Menu ID to edit.
-	 * @param string $cls     CSS Class.
+	 * @param int|null $menu_id Menu ID to edit.
+	 * @param string   $cls     CSS Class.
 	 */
-	function the_admin_edit_menu( int $menu_id, string $cls = '' ): void {
+	function the_admin_edit_menu( ?int $menu_id, string $cls = '' ): void {
 		\wpinc\sys\the_admin_edit_menu( $menu_id, $cls );
 	}
 
@@ -246,13 +246,6 @@ namespace st\ip_restriction {
 	require_once __DIR__ . '/sys/ip-restriction.php';
 
 	/**
-	 * Activates IP restriction.
-	 */
-	function activate(): void {
-		\wpinc\sys\ip_restriction\activate();
-	}
-
-	/**
 	 * Adds CIDR.
 	 *
 	 * @param string $cidr Allowed CIDR.
@@ -324,12 +317,22 @@ namespace st\sticky {
 	}
 
 	/**
+	 * Initialize custom sticky.
+	 *
+	 * @param array $args Arguments.
+	 */
+	function initialize( array $args = array() ): void {
+		\wpinc\sys\sticky\initialize( $args );
+	}
+
+	/**
 	 * Makes custom post type sticky.
 	 *
 	 * @param string|string[] $post_type_s Post types.
+	 * @param string          $meta_key    post meta key used for sticky.
 	 */
-	function add_post_type( $post_type_s ): void {
-		\wpinc\sys\sticky\add_post_type( $post_type_s );
+	function add_post_type( $post_type_s, string $meta_key = \wpinc\sys\sticky\PMK_STICKY ) {
+		return \wpinc\sys\sticky\add_post_type( $post_type_s );
 	}
 }
 

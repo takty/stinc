@@ -4,7 +4,7 @@
  *
  * @package Wpinc Sys
  * @author Takuto Yanagida
- * @version 2022-02-15
+ * @version 2022-02-20
  */
 
 /*  // phpcs:disable
@@ -15,7 +15,7 @@ TinyMCE Advanced Setting:
 		"toolbar_2":"undo,redo,styleselect,removeformat,forecolor,backcolor,blockquote",
 		"toolbar_3":"",
 		"toolbar_4":"",
-		"toolbar_classic_block":"formatselect,bold,italic,blockquote,bullist,numlist,alignleft,aligncenter,alignright,link,forecolor,backcolor,table,wp_help",
+		"toolbar_classic_block":"formatselect,bold,italic,underline,strikethrough,superscript,subscript,bullist,numlist,alignleft,aligncenter,alignright,link,unlink,styleselect,removeformat,forecolor,backcolor,blockquote",
 		"toolbar_block":"core\/bold,core\/italic,core\/link,tadv\/removeformat",
 		"toolbar_block_side":[],
 		"panels_block":"",
@@ -51,7 +51,7 @@ function add_buttons( ?string $url_to = null, int $row_index = 2 ): void {
 	add_filter(
 		'mce_external_plugins',
 		function ( $plugins ) use ( $url_to ) {
-			$plugins['columns'] = \wpinc\abs_url( $url_to, './assets/js/editor-command.min.js' );
+			$plugins['columns'] = \wpinc\abs_url( $url_to, './assets/js/classic-editor-command.min.js' );
 			return $plugins;
 		}
 	);

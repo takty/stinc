@@ -4,7 +4,7 @@
  *
  * @package Wpinc Post
  * @author Takuto Yanagida
- * @version 2022-02-09
+ * @version 2022-03-04
  */
 
 namespace wpinc\post\event;
@@ -39,15 +39,15 @@ function register_post_type( array $args = array() ): void {
 		'rewrite'       => false,
 		'menu_position' => 5,
 		'menu_icon'     => 'dashicons-calendar-alt',
-		'supports'      => array( 'title', 'editor', 'revisions', 'thumbnail' ),
+		'supports'      => array( 'title', 'editor', 'revisions', 'thumbnail', 'custom-fields' ),
 		'labels'        => array(),
 	);
 
 	$args['labels'] += array(
-		'name'      => 'Events',
-		'date'      => 'Date',
-		'date_from' => 'From',
-		'date_to'   => 'To',
+		'name'      => _x( 'Events', 'post type event', 'wpinc_post' ),
+		'date'      => _x( 'Duration', 'post type event', 'wpinc_post' ),
+		'date_from' => _x( 'From', 'post type event', 'wpinc_post' ),
+		'date_to'   => _x( 'To', 'post type event', 'wpinc_post' ),
 	);
 
 	if ( empty( $args['slug'] ) ) {
@@ -59,9 +59,21 @@ function register_post_type( array $args = array() ): void {
 	_set_custom_date_order( $args['post_type'], $args['order_by'] );
 	_replace_date( $args['post_type'], $args['replace_date_with'] );
 
-	if ( is_admin() ) {
-		_set_duration_picker( $args );
-	} else {
+	foreach ( array( PMK_DATE_FROM, PMK_DATE_TO ) as $key ) {
+		register_post_meta(
+			$args['post_type'],
+			$key,
+			array(
+				'type'          => 'string',
+				'single'        => true,
+				'show_in_rest'  => true,
+				'auth_callback' => function() {
+					return current_user_can( 'edit_posts' );
+				},
+			)
+		);
+	}
+	if ( ! is_admin() ) {
 		add_filter(
 			'body_class',
 			function ( array $classes ) use ( $args ) {
@@ -69,6 +81,33 @@ function register_post_type( array $args = array() ): void {
 			}
 		);
 	}
+
+	if ( is_admin() ) {
+		add_action(
+			'current_screen',  // For using is_block_editor().
+			function () use ( $args ) {
+				global $pagenow;
+				if ( 'post-new.php' === $pagenow || 'post.php' === $pagenow ) {
+					if ( get_current_screen()->is_block_editor() ) {
+						add_action(
+							'enqueue_block_editor_assets',
+							function () use ( $args ) {
+								_cb_enqueue_block_editor_assets( $args );
+							}
+						);
+					} else {
+						_set_duration_picker( $args );
+					}
+				}
+			}
+		);
+	}
+	add_action(
+		'rest_after_insert_' . $args['post_type'],
+		function ( $post ) use ( $args ) {
+			_cb_rest_after_insert( $args, $post );
+		}
+	);
 }
 
 /**
@@ -126,6 +165,90 @@ function _replace_date( string $post_type, string $type ): void {
 }
 
 /**
+ * Callback function for 'body_class' filter.
+ *
+ * @param string[] $classes   Array of classes.
+ * @param string   $post_type Post type.
+ * @return string[] Classes.
+ */
+function _cb_body_class( array $classes, string $post_type ): array {
+	if ( is_singular( $post_type ) ) {
+		global $wp_query;
+		$post      = $wp_query->get_queried_object();
+		$classes[] = _get_duration_state( $post->ID );
+	}
+	return $classes;
+}
+
+
+// ---------------------------------------- Callback Functions for Block Editor.
+
+
+/**
+ * Callback function for 'enqueue_block_editor_assets' action.
+ *
+ * @param array $args Arguments.
+ *
+ * @access private
+ */
+function _cb_enqueue_block_editor_assets( array $args ): void {
+	if ( get_current_screen()->id === $args['post_type'] ) {
+		$url_to = untrailingslashit( \wpinc\get_file_uri( __DIR__ ) );
+		wp_enqueue_script(
+			'wpinc-duration-picker',
+			\wpinc\abs_url( $url_to, './assets/js/duration-picker.min.js' ),
+			array( 'wp-element', 'wp-i18n', 'wp-data', 'wp-components', 'wp-edit-post', 'wp-plugins' ),
+			filemtime( __DIR__ . '/assets/js/duration-picker.min.js' ),
+			true
+		);
+		$params = array(
+			'pmk_from' => PMK_DATE_FROM,
+			'pmk_to'   => PMK_DATE_TO,
+			'labels'   => array(
+				'panel'        => $args['labels']['date'],
+				'date_from'    => $args['labels']['date_from'],
+				'date_to'      => $args['labels']['date_to'],
+				'default_from' => '0000-00-00',
+				'default_to'   => '0000-00-00',
+			),
+		);
+		wp_localize_script( 'wpinc-duration-picker', 'wpinc_duration_picker', $params );
+	}
+}
+
+/**
+ * Callback function for 'rest_after_insert_{$post_type}' action.
+ *
+ * @access private
+ *
+ * @param array    $args Arguments.
+ * @param \WP_Post $post Inserted or updated post object.
+ */
+function _cb_rest_after_insert( array $args, \WP_Post $post ): void {
+	$from = get_post_meta( $post->ID, PMK_DATE_FROM, true );
+	$to   = get_post_meta( $post->ID, PMK_DATE_TO, true );
+	if ( $from && $to ) {
+		$from_val = (int) str_replace( '-', '', $from );
+		$to_val   = (int) str_replace( '-', '', $to );
+		if ( $to_val < $from_val ) {
+			update_post_meta( $post->ID, PMK_DATE_TO, $from );
+			update_post_meta( $post->ID, PMK_DATE_FROM, $to );
+		}
+	}
+	if ( $args['do_autofill'] ) {
+		if ( $from && ! $to ) {
+			update_post_meta( $post->ID, PMK_DATE_TO, $from );
+		} elseif ( ! $from && $to ) {
+			update_post_meta( $post->ID, PMK_DATE_FROM, $to );
+		}
+	}
+}
+
+
+// -------------------------------------- Callback Functions for Classic Editor.
+
+
+/**
  * Sets duration picker.
  *
  * @param array $args Arguments.
@@ -145,7 +268,7 @@ function _set_duration_picker( array $args ): void {
 	}
 	\wpinc\dia\duration_picker\initialize( $args );
 	add_action(
-		'admin_menu',
+		'add_meta_boxes',
 		function () use ( $args, $dp_args ) {
 			\wpinc\dia\duration_picker\add_meta_box( $dp_args, $args['labels']['date'], $args['post_type'], 'side' );
 		}
@@ -179,22 +302,6 @@ function _is_post_type( string $post_type ): bool {
 		$pt = $_GET['post_type'] ?? '';  // phpcs:ignore
 	}
 	return $post_type === $pt;
-}
-
-/**
- * Callback function for 'body_class' filter.
- *
- * @param string[] $classes   Array of classes.
- * @param string   $post_type Post type.
- * @return string[] Classes.
- */
-function _cb_body_class( array $classes, string $post_type ): array {
-	if ( is_singular( $post_type ) ) {
-		global $wp_query;
-		$post      = $wp_query->get_queried_object();
-		$classes[] = _get_duration_state( $post->ID );
-	}
-	return $classes;
 }
 
 
@@ -241,22 +348,22 @@ function set_admin_column( string $post_type, bool $add_cat, bool $add_tag ): vo
  */
 function add_duration_column( string $post_type, array $cs = array() ): array {
 	$pto       = get_post_type_object( $post_type );
-	$label_bgn = $pto->labels->date_from ?? __( 'From' );
-	$label_end = $pto->labels->date_to ?? __( 'To' );
+	$label_bgn = $pto->labels->date_from ?? _x( 'From', 'post type event', 'wpinc_post' );
+	$label_end = $pto->labels->date_to ?? _x( 'To', 'post type event', 'wpinc_post' );
 
 	$cs[] = array(
 		'meta'     => PMK_DATE_FROM,
-		'label'    => $label_bgn,
-		'width'    => '15%',
 		'filter'   => '\wpinc\post\event\_filter_date_val',
 		'sortable' => true,
+		'label'    => $label_bgn,
+		'width'    => '15%',
 	);
 	$cs[] = array(
 		'meta'     => PMK_DATE_TO,
-		'label'    => $label_end,
-		'width'    => '15%',
 		'filter'   => '\wpinc\post\event\_filter_date_val',
 		'sortable' => true,
+		'label'    => $label_end,
+		'width'    => '15%',
 	);
 	return $cs;
 }

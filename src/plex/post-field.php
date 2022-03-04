@@ -4,7 +4,7 @@
  *
  * @package Wpinc Plex
  * @author Takuto Yanagida
- * @version 2022-01-16
+ * @version 2022-03-04
  */
 
 namespace wpinc\plex\post_field;
@@ -68,7 +68,7 @@ function activate( array $args = array() ): void {
 
 	if ( is_admin() ) {
 		add_action( 'admin_head', '\wpinc\plex\post_field\_cb_admin_head' );
-		add_action( 'admin_menu', '\wpinc\plex\post_field\_cb_admin_menu' );
+		add_action( 'add_meta_boxes', '\wpinc\plex\post_field\_cb_add_meta_boxes' );
 		foreach ( $inst->post_types as $pt ) {
 			add_action( "save_post_$pt", '\wpinc\plex\post_field\_cb_save_post', 10, 2 );
 		}
@@ -203,10 +203,10 @@ function _cb_save_post( int $post_id, \WP_Post $post ): void {
 		if ( ! isset( $_POST[ "post_{$key}_nonce" ] ) ) {
 			continue;
 		}
-		// phpcs:disable
-		if ( ! wp_verify_nonce( $_POST[ "post_{$key}_nonce" ], "post_$key" ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( $_POST[ "post_{$key}_nonce" ] ), "post_$key" ) ) {
 			continue;
 		}
+		// phpcs:disable
 		$title   = $_POST[ $inst->key_pre_title . $key ];
 		$content = $_POST[ $inst->key_pre_content . $key ];
 		// phpcs:enable
@@ -240,11 +240,11 @@ function _cb_admin_head(): void {
 }
 
 /**
- * Callback function for 'admin_menu' action.
+ * Callback function for 'add_meta_boxes' action.
  *
  * @access private
  */
-function _cb_admin_menu(): void {
+function _cb_add_meta_boxes(): void {
 	$inst = _get_instance();
 	$skc  = \wpinc\plex\get_slug_key_to_combination( $inst->vars, true );
 
