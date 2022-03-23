@@ -6,7 +6,7 @@ namespace st;
  * Custom Template Tags
  *
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2019-03-11
+ * @version 2022-03-23
  *
  */
 
@@ -19,7 +19,7 @@ function is_content_empty( $str = false ) {
 	if ( $str === false ) {
 		$str = get_the_content();
 	}
-	return trim( str_replace( '&nbsp;', '', strip_tags( $str, '<img><hr><br>' ) ) ) === '';
+	return trim( str_replace( '&nbsp;', '', strip_tags( $str, '<img><hr><br><iframe>' ) ) ) === '';
 }
 
 function get_post_title( $short = 8, $long = 32, $mode = 'segment_small', $filter = 'esc_html' ) {
