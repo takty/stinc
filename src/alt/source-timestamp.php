@@ -4,7 +4,7 @@
  *
  * @package Wpinc Alt
  * @author Takuto Yanagida
- * @version 2022-01-16
+ * @version 2022-03-07
  */
 
 namespace wpinc\alt;
@@ -32,6 +32,7 @@ function _cb_loader_src__add_timestamp( string $src ): string {
 	$path          = wp_normalize_path( ABSPATH );
 	$resource_file = str_replace( trailingslashit( site_url() ), trailingslashit( $path ), $removed_src );
 	$resource_file = realpath( $resource_file );
-	$src           = add_query_arg( 'fver', gmdate( 'Ymdhis', filemtime( $resource_file ) ), $src );
-	return $src;
+	$fts           = gmdate( 'Ymdhis', filemtime( $resource_file ) );
+	$hash          = hash( 'crc32b', $resource_file . $fts );
+	return add_query_arg( 'v', $hash, $src );
 }

@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-02-08
+ * @version 2022-03-07
  */
 
 namespace st;
@@ -90,15 +90,6 @@ function set_site_icon( string $dir_url ): void {
  */
 function the_site_description(): void {
 	\wpinc\socio\the_site_description();
-}
-
-/**
- * Outputs the site icon images.
- *
- * @param string $dir_url The url to image directory.
- */
-function the_site_icon( string $dir_url ): void {
-	\wpinc\socio\the_site_icon( $dir_url );
 }
 
 /**

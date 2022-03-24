@@ -25,12 +25,19 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+/**
+ * Cards block
+ *
+ * @author Takuto Yanagida
+ * @version 2022-03-24
+ */
 
 
 
 
 
-const icon_block = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+
+const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
@@ -97,19 +104,46 @@ function edit(_ref) {
 }
 
 function save(_ref2) {
+  var _window$wpinc_cards_a, _window, _window$wpinc_cards_a2;
+
   let {
     attributes
   } = _ref2;
+  const cls = (_window$wpinc_cards_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_cards_a2 = _window.wpinc_cards_args) === null || _window$wpinc_cards_a2 === void 0 ? void 0 : _window$wpinc_cards_a2.class_card) !== null && _window$wpinc_cards_a !== void 0 ? _window$wpinc_cards_a : 'card-%d';
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
-    className: `card-${attributes.number}`
+    className: cls.replaceAll('%d', attributes.number)
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, null));
 }
 
+const transforms = {
+  from: [{
+    type: 'raw',
+    selector: 'div.column-2, div.column-3, div.column-4',
+    transform: node => {
+      const cards = [];
+      const ds = node.querySelectorAll(':scope > div');
+
+      for (const d of ds) {
+        cards.push((0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/card', {}, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.rawHandler)({
+          HTML: d.innerHTML
+        })));
+      }
+
+      let number = 2;
+      if (node.classList.contains('column-3')) number = 3;
+      if (node.classList.contains('column-4')) number = 4;
+      return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/cards', {
+        number
+      }, cards);
+    }
+  }]
+};
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.registerBlockType)('wpinc/cards', {
   edit,
   save,
-  icon: icon_block
+  icon,
+  transforms
 });
 
 /***/ }),

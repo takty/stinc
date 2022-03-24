@@ -4,7 +4,7 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-02-08
+ * @version 2022-03-07
  */
 
 namespace wpinc\socio;
@@ -15,11 +15,25 @@ namespace wpinc\socio;
  * @param string $dir_url The url to image directory.
  */
 function set_site_icon( string $dir_url ): void {
+	$dir_url = trailingslashit( $dir_url );
+	$icons   = array(
+		32  => 'favicon.ico',   // Default favicon.
+		180 => 'icon-180.png',  // Apple touch icon.
+		270 => '',              // Windows tile image (not used).
+		192 => 'icon-192.png',  // Android icon.
+		512 => 'icon-192.png',  // Tp pass through 'has_site_icon' function.
+	);
 	add_filter(
 		'get_site_icon_url',
-		function () use ( $dir_url ) {
-			return trailingslashit( $dir_url ) . 'favicon.ico';
-		}
+		function ( $url, $size ) use ( $dir_url, $icons ) {
+			$icon = $icons[ $size ] ?? '';
+			if ( $icon ) {
+				return _add_timestamp( $dir_url . $icon );
+			}
+			return '';
+		},
+		10,
+		2
 	);
 }
 
@@ -32,18 +46,6 @@ function set_site_icon( string $dir_url ): void {
  */
 function the_site_description(): void {
 	echo '<meta name="description" content="' . esc_attr( get_site_description() ) . '">' . "\n";
-}
-
-/**
- * Outputs the site icon images.
- *
- * @param string $dir_url The url to image directory.
- */
-function the_site_icon( string $dir_url ): void {
-	$dir_url = trailingslashit( $dir_url );
-	echo '<link rel="icon" href="' . esc_attr( $dir_url . 'favicon.ico' ) . '">' . "\n";
-	echo '<link rel="icon" type="image/png" href="' . esc_attr( $dir_url . 'icon-192.png' ) . '">' . "\n";
-	echo '<link rel="apple-touch-icon" type="image/png" href="' . esc_attr( $dir_url . 'icon-180.png' ) . '">' . "\n";
 }
 
 
@@ -135,4 +137,23 @@ function _strip_custom_tags( string $text ): string {
 	$text = preg_replace( '/　　|<\s*br\s*\/?>/ui', ' ', $text );
 	$text = wp_strip_all_tags( $text, true );
 	return $text;
+}
+
+/**
+ * Adds timestamp for ensuring updating resources.
+ *
+ * @param string $src URL.
+ * @return string URL that timestamp (hash) is appended as a query.
+ */
+function _add_timestamp( string $src ): string {
+	if ( strpos( $src, get_template_directory_uri() ) === false ) {
+		return $src;
+	}
+	$removed_src   = strtok( $src, '?' );
+	$path          = wp_normalize_path( ABSPATH );
+	$resource_file = str_replace( trailingslashit( site_url() ), trailingslashit( $path ), $removed_src );
+	$resource_file = realpath( $resource_file );
+	$fts           = gmdate( 'Ymdhis', filemtime( $resource_file ) );
+	$hash          = hash( 'crc32b', $resource_file . $fts );
+	return add_query_arg( 'v', $hash, $src );
 }
