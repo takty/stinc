@@ -17,9 +17,6 @@
 		"url": "https://github.com/takty/stinc/issues"
 	},
 	"homepage": "https://github.com/takty/stinc#readme",
-	"browserslist": [
-		"ie >= 11"
-	],
 	"dependencies": {
 		"gulp": "^4.0.2",
 		"gulp-changed": "^4.0.3",
