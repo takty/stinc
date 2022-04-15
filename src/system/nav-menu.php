@@ -30,6 +30,7 @@ class NavMenu {
 	static protected $_is_cache_enabled = false;
 	static protected $_is_current_archive_enabled = true;
 	static protected $_custom_post_type_archive = [];
+	static protected $_used_ids = array();
 
 	static private function _get_ancestor_terms( $t ) {
 		$ret = [];
@@ -263,8 +264,6 @@ class NavMenu {
 	}
 
 	protected function _get_item( $mi, $cs, $filter = 'esc_html' ) {
-		static $used_ids = array();
-
 		$cls = empty( $cs ) ? '' : implode( ' ', $cs );
 		if ( ! empty( $mi->classes ) ) {
 			$opt_cls = trim( implode( ' ', $mi->classes ) );
@@ -277,11 +276,11 @@ class NavMenu {
 		if ( ! $is_sep && $mi->url === '#' ) $cls .= ( empty( $cls ) ? '' : ' ' ) . self::CLS_GROUP;
 
 		$li_cls  = empty( $cls ) ? '' : " class=\"$cls\"";
-		if ( in_array( $mi->ID, $used_ids, true ) ) {
+		if ( in_array( $mi->ID, self::$_used_ids, true ) ) {
 			$li_id = ' ';
 		} else {
 			$li_id = " id=\"menu-item-{$mi->ID}\"";
-			$used_ids[] = $mi->ID;
+			self::$_used_ids[] = $mi->ID;
 		}
 		$li_attr = $li_id . $li_cls;
 		$obj_id  = intval( $mi->object_id );
