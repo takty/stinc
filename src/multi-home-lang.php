@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-03-15
+ * @version 2022-05-24
  */
 
 namespace st;
@@ -57,18 +57,18 @@ function initialize_multi_home_lang( array $args ) {
 	 */
 	\wpinc\plex\custom_rewrite\add_structure(
 		array(
-			'var'          => QUERY_VAR_SITE_LANG,
-			'slugs'        => $args['site_langs'],
-			'default_slug' => $args['default_lang'],
-			'omittable'    => true,
+			'var'          => QUERY_VAR_SITE_HOME,
+			'slugs'        => $args['site_homes'],
+			'default_slug' => $args['default_home'],
+			'omittable'    => $args['default_home_omittable'],
 			'global'       => true,
 		)
 	);
 	\wpinc\plex\custom_rewrite\add_structure(
 		array(
-			'var'          => QUERY_VAR_SITE_HOME,
-			'slugs'        => $args['site_homes'],
-			'default_slug' => $args['default_home'],
+			'var'          => QUERY_VAR_SITE_LANG,
+			'slugs'        => $args['site_langs'],
+			'default_slug' => $args['default_lang'],
 			'omittable'    => $args['default_home_omittable'],
 			'global'       => true,
 		)
@@ -154,7 +154,7 @@ function _cb_after_setup_theme_multi_home_lang() {
 function _cb_init_multi_home_lang() {
 	$inst = &_get_multi_home_lang_instance();
 	\wpinc\plex\filter\add_filter_taxonomy(
-		QUERY_VAR_HOME_LANG,
+		QUERY_VAR_SITE_HOME,
 		array(
 			'taxonomy'      => TAXONOMY_POST_HOME,
 			'slug_to_label' => $inst['filter_term_labels'],
