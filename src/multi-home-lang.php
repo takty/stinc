@@ -69,7 +69,7 @@ function initialize_multi_home_lang( array $args ) {
 			'var'          => QUERY_VAR_SITE_LANG,
 			'slugs'        => $args['site_langs'],
 			'default_slug' => $args['default_lang'],
-			'omittable'    => $args['default_home_omittable'],
+			'omittable'    => true,
 			'global'       => true,
 		)
 	);
