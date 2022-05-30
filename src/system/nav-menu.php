@@ -394,7 +394,7 @@ class NavMenu {
 	static public function get_nav_menu_items( $id ) {
 		$key   = 'cache-menu-id-' . $id;
 		$items = get_transient( $key );
-		if ( false !== $items ) {
+		if ( false !== $items && is_array( $items ) ) {
 			return $items;
 		}
 		$items = wp_get_nav_menu_items( $id );
