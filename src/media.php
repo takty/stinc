@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-03-04
+ * @version 2022-05-31
  */
 
 namespace st;
@@ -115,6 +115,13 @@ function add_vimeo_shortcode(): void {
  */
 function add_instagram_shortcode(): void {
 	\wpinc\medi\add_instagram_shortcode();
+}
+
+/**
+ * Adds shortcode for Google Calendars.
+ */
+function add_google_calendar_shortcode() {
+	\wpinc\medi\add_google_calendar_shortcode();
 }
 
 
