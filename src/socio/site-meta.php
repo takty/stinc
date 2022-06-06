@@ -4,7 +4,7 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-03-07
+ * @version 2022-06-06
  */
 
 namespace wpinc\socio;
@@ -12,17 +12,20 @@ namespace wpinc\socio;
 /**
  * Sets site icon (favicon).
  *
- * @param string $dir_url The url to image directory.
+ * @param string     $dir_url The url to image directory.
+ * @param array|null $icons   Array of icon sizes to icon file names.
  */
-function set_site_icon( string $dir_url ): void {
+function set_site_icon( string $dir_url, ?array $icons = null ): void {
 	$dir_url = trailingslashit( $dir_url );
-	$icons   = array(
-		32  => 'favicon.ico',   // Default favicon.
-		180 => 'icon-180.png',  // Apple touch icon.
-		270 => '',              // Windows tile image (not used).
-		192 => 'icon-192.png',  // Android icon.
-		512 => 'icon-192.png',  // Tp pass through 'has_site_icon' function.
-	);
+	if ( null === $icons ) {
+		$icons = array(
+			32  => 'favicon.ico',   // Default favicon.
+			180 => 'icon-180.png',  // Apple touch icon.
+			270 => '',              // Windows tile image (not used).
+			192 => 'icon-192.png',  // Android icon.
+			512 => 'icon-192.png',  // Tp pass through 'has_site_icon' function.
+		);
+	}
 	add_filter(
 		'get_site_icon_url',
 		function ( $url, $size ) use ( $dir_url, $icons ) {

@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-03-07
+ * @version 2022-06-06
  */
 
 namespace st;
@@ -79,10 +79,11 @@ function the_share_links( array $args = array() ) {
 /**
  * Sets site icon (favicon).
  *
- * @param string $dir_url The url to image directory.
+ * @param string     $dir_url The url to image directory.
+ * @param array|null $icons   Array of icon sizes to icon file names.
  */
-function set_site_icon( string $dir_url ): void {
-	\wpinc\socio\set_site_icon( $dir_url );
+function set_site_icon( string $dir_url, ?array $icons = null ): void {
+	\wpinc\socio\set_site_icon( $dir_url, $icons );
 }
 
 /**
