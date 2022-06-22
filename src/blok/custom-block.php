@@ -4,7 +4,7 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-03-22
+ * @version 2022-06-22
  */
 
 namespace wpinc\blok;
@@ -60,7 +60,12 @@ function register_custom_blocks( array $args = array() ): void {
 	);
 	// phpcs:enable
 
-	add_action( 'block_categories_all', fn ( $cats ) => _cb_block_categories_all( $args, $cats ) );
+	add_filter(
+		'block_categories_all',
+		function ( $cats ) use ( $args ) {
+			return _cb_block_categories_all( $args, $cats );
+		}
+	);
 	add_filter( 'plugins_url', '\wpinc\blok\_cb_plugins_url', 10, 3 );
 
 	$blocks = array( 'card', 'cards', 'frame', 'tabs' );
