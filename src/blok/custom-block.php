@@ -4,7 +4,7 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-06-22
+ * @version 2022-06-28
  */
 
 namespace wpinc\blok;
@@ -60,8 +60,9 @@ function register_custom_blocks( array $args = array() ): void {
 	);
 	// phpcs:enable
 
+	$hook = version_compare( $GLOBALS['wp_version'], '5.8', '<' ) ? 'block_categories' : 'block_categories_all';
 	add_filter(
-		'block_categories_all',
+		$hook,
 		function ( $cats ) use ( $args ) {
 			return _cb_block_categories_all( $args, $cats );
 		}
