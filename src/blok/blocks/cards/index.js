@@ -25,6 +25,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 /**
  * Cards block
  *
@@ -37,25 +43,25 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+var icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
   d: "M18.5 22h-7A3.5 3.5 0 0 1 8 18.5v-7A3.5 3.5 0 0 1 11.5 8h7a3.5 3.5 0 0 1 3.5 3.5v7a3.5 3.5 0 0 1-3.5 3.5Zm-7-11a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5ZM18.5 40h-7A3.5 3.5 0 0 1 8 36.5v-7a3.5 3.5 0 0 1 3.5-3.5h7a3.5 3.5 0 0 1 3.5 3.5v7a3.5 3.5 0 0 1-3.5 3.5Zm-7-11a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5ZM36.5 22h-7a3.5 3.5 0 0 1-3.5-3.5v-7A3.5 3.5 0 0 1 29.5 8h7a3.5 3.5 0 0 1 3.5 3.5v7a3.5 3.5 0 0 1-3.5 3.5Zm-7-11a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.5-.5Z"
 }));
-const icon_card_2 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+var icon_card_2 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
   d: "M38.5 6h-29A3.5 3.5 0 0 0 6 9.5v29A3.5 3.5 0 0 0 9.5 42h29a3.5 3.5 0 0 0 3.5-3.5v-29A3.5 3.5 0 0 0 38.5 6Zm-29 33a.5.5 0 0 1-.5-.5v-29a.5.5 0 0 1 .5-.5h13v30Zm29.5-.5a.5.5 0 0 1-.5.5h-13V9h13a.5.5 0 0 1 .5.5Z"
 }));
-const icon_card_3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+var icon_card_3 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
   d: "M38.5 12h-29A3.5 3.5 0 0 0 6 15.5v17A3.5 3.5 0 0 0 9.5 36h29a3.5 3.5 0 0 0 3.5-3.5v-17a3.5 3.5 0 0 0-3.5-3.5Zm-29 21a.5.5 0 0 1-.5-.5v-17a.5.5 0 0 1 .5-.5H17v18ZM20 33V15h8v18Zm19-.5a.5.5 0 0 1-.5.5H31V15h7.5a.5.5 0 0 1 .5.5Z"
 }));
-const icon_card_4 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+var icon_card_4 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
@@ -63,38 +69,42 @@ const icon_card_4 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createEle
 }));
 
 function edit(_ref) {
-  let {
-    attributes,
-    setAttributes
-  } = _ref;
-  const {
-    number
-  } = attributes;
+  var attributes = _ref.attributes,
+      setAttributes = _ref.setAttributes;
+  var number = attributes.number;
 
-  const setNumber = number => setAttributes({
-    number
-  });
+  var setNumber = function setNumber(number) {
+    return setAttributes({
+      number: number
+    });
+  };
 
-  const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(`Cards [${number} Columns]`, 'wpinc');
+  var label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)("Cards [".concat(number, " Columns]"), 'wpinc');
 
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
-    className: `card-${number}`
+  var blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
+    className: "card-".concat(number)
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
     "data-container-label": label
   }, blockProps), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.BlockControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Toolbar, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToolbarButton, {
     isActive: '2' === number,
-    onClick: () => setNumber('2'),
+    onClick: function onClick() {
+      return setNumber('2');
+    },
     icon: icon_card_2,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('2 Columns', 'wpinc')
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToolbarButton, {
     isActive: '3' === number,
-    onClick: () => setNumber('3'),
+    onClick: function onClick() {
+      return setNumber('3');
+    },
     icon: icon_card_3,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('3 Columns', 'wpinc')
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToolbarButton, {
     isActive: '4' === number,
-    onClick: () => setNumber('4'),
+    onClick: function onClick() {
+      return setNumber('4');
+    },
     icon: icon_card_4,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('4 Columns', 'wpinc')
   }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, {
@@ -104,46 +114,54 @@ function edit(_ref) {
 }
 
 function save(_ref2) {
-  var _window$wpinc_cards_a;
+  var _window$wpinc_cards_a, _window, _window$wpinc_cards_a2;
 
-  let {
-    attributes
-  } = _ref2;
-  const cls = (_window$wpinc_cards_a = window?.wpinc_cards_args?.class_card) !== null && _window$wpinc_cards_a !== void 0 ? _window$wpinc_cards_a : 'card-%d';
-  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
+  var attributes = _ref2.attributes;
+  var cls = (_window$wpinc_cards_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_cards_a2 = _window.wpinc_cards_args) === null || _window$wpinc_cards_a2 === void 0 ? void 0 : _window$wpinc_cards_a2.class_card) !== null && _window$wpinc_cards_a !== void 0 ? _window$wpinc_cards_a : 'card-%d';
+  var blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
     className: cls.replaceAll('%d', attributes.number)
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, null));
 }
 
-const transforms = {
+var transforms = {
   from: [{
     type: 'raw',
     selector: 'div.column-2, div.column-3, div.column-4',
-    transform: node => {
-      const cards = [];
-      const ds = node.querySelectorAll(':scope > div');
+    transform: function transform(node) {
+      var cards = [];
+      var ds = node.querySelectorAll(':scope > div');
 
-      for (const d of ds) {
-        cards.push((0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/card', {}, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.rawHandler)({
-          HTML: d.innerHTML
-        })));
+      var _iterator = _createForOfIteratorHelper(ds),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var d = _step.value;
+          cards.push((0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/card', {}, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.rawHandler)({
+            HTML: d.innerHTML
+          })));
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
       }
 
-      let number = 2;
+      var number = 2;
       if (node.classList.contains('column-3')) number = 3;
       if (node.classList.contains('column-4')) number = 4;
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/cards', {
-        number
+        number: number
       }, cards);
     }
   }]
 };
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.registerBlockType)('wpinc/cards', {
-  edit,
-  save,
-  icon,
-  transforms
+  edit: edit,
+  save: save,
+  icon: icon,
+  transforms: transforms
 });
 
 /***/ }),
@@ -362,7 +380,7 @@ function _extends() {
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"index": 0,
-/******/ 			"./style-index": 0
+/******/ 			"style-index": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -412,7 +430,7 @@ function _extends() {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["./style-index"], () => (__webpack_require__("./src/blocks/cards/index.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["style-index"], () => (__webpack_require__("./src/blocks/cards/index.js")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

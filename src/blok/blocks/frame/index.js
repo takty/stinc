@@ -24,7 +24,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor.scss */ "./src/blocks/frame/editor.scss");
 
 
-var _window$wpinc_frame_a;
+var _window$wpinc_frame_a, _window, _window$wpinc_frame_a2;
 
 
 
@@ -41,7 +41,7 @@ var _window$wpinc_frame_a;
 
 
 
-const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+var icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
@@ -49,12 +49,12 @@ const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("
 }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
   d: "M37.5 43h-26v-3h26a2.5 2.5 0 0 0 2.5-2.5v-22h3v22a5.5 5.5 0 0 1-5.5 5.5Z"
 }));
-const cls = (_window$wpinc_frame_a = window?.wpinc_frame_args?.class_frame) !== null && _window$wpinc_frame_a !== void 0 ? _window$wpinc_frame_a : 'frame';
+var cls = (_window$wpinc_frame_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_frame_a2 = _window.wpinc_frame_args) === null || _window$wpinc_frame_a2 === void 0 ? void 0 : _window$wpinc_frame_a2.class_frame) !== null && _window$wpinc_frame_a !== void 0 ? _window$wpinc_frame_a : 'frame';
 
 function edit() {
-  const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Frame', 'wpinc');
+  var label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Frame', 'wpinc');
 
-  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
+  var blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
     className: cls
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
@@ -63,46 +63,44 @@ function edit() {
 }
 
 function save() {
-  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
+  var blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
     className: cls
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, null));
 }
 
-const transforms = {
+var transforms = {
   from: [{
     type: 'block',
     blocks: ['core/group'],
-    transform: (attributes, innerBlocks) => {
+    transform: function transform(attributes, innerBlocks) {
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)('wpinc/frame', {}, innerBlocks);
     }
   }, {
     type: 'block',
     blocks: ['*'],
     isMultiBlock: true,
-    isMatch: (attributes, blocks) => {
+    isMatch: function isMatch(attributes, blocks) {
       if (blocks.length === 1 && blocks[0].name === 'wpinc/frame') {
         return false;
       }
 
       return true;
     },
-
-    __experimentalConvert(blocks) {
-      const groupInnerBlocks = blocks.map(b => {
+    __experimentalConvert: function __experimentalConvert(blocks) {
+      var groupInnerBlocks = blocks.map(function (b) {
         return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)(b.name, b.attributes, b.innerBlocks);
       });
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)('wpinc/frame', {}, groupInnerBlocks);
     }
-
   }, {
     type: 'raw',
     selector: 'div.frame, div.frame-alt',
-    transform: node => {
-      const innerBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.rawHandler)({
+    transform: function transform(node) {
+      var innerBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.rawHandler)({
         HTML: node.innerHTML
       });
-      let cn = null;
+      var cn = null;
 
       if (node.classList.contains('frame-alt')) {
         cn = 'is-style-alt';
@@ -116,20 +114,20 @@ const transforms = {
   to: [{
     type: 'block',
     blocks: ['core/group'],
-    transform: (attributes, innerBlocks) => {
+    transform: function transform(attributes, innerBlocks) {
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)('core/group', {}, innerBlocks);
     },
     priority: 20
   }]
 };
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.registerBlockType)('wpinc/frame', {
-  edit,
-  save,
-  icon,
-  transforms
+  edit: edit,
+  save: save,
+  icon: icon,
+  transforms: transforms
 }); // -----------------------------------------------------------------------------
 
-const removeDefault = (element, blockType, attributes) => {
+var removeDefault = function removeDefault(element, blockType, attributes) {
   if ('wpinc/frame' === blockType.name) {
     if ('is-style-default' === attributes.className) {
       return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.cloneElement)(element, {
@@ -365,7 +363,7 @@ function _extends() {
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"index": 0,
-/******/ 			"./style-index": 0
+/******/ 			"style-index": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -415,7 +413,7 @@ function _extends() {
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["./style-index"], () => (__webpack_require__("./src/blocks/frame/index.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["style-index"], () => (__webpack_require__("./src/blocks/frame/index.js")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

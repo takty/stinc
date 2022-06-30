@@ -29,7 +29,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
+var icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.createElement)("rect", {
@@ -51,9 +51,9 @@ function save() {
 }
 
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_2__.registerBlockType)('wpinc/card', {
-  edit,
-  save,
-  icon
+  edit: edit,
+  save: save,
+  icon: icon
 });
 
 /***/ }),
@@ -223,7 +223,7 @@ module.exports = window["wp"]["element"];
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"index": 0,
-/******/ 			"./style-index": 0
+/******/ 			"style-index": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -273,7 +273,7 @@ module.exports = window["wp"]["element"];
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["./style-index"], () => (__webpack_require__("./src/blocks/card/index.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["style-index"], () => (__webpack_require__("./src/blocks/card/index.js")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
