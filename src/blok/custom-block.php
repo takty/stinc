@@ -125,3 +125,20 @@ function _cb_plugins_url( string $url, string $path, string $plugin ): string {
 	}
 	return $url;
 }
+
+
+// -----------------------------------------------------------------------------
+
+
+/**
+ * Registers custom styles.
+ */
+function register_custom_styles(): void {
+	register_block_style(
+		'core/button',
+		array(
+			'name'  => 'accent',
+			'label' => __( 'Accent', 'wpinc_blok' ),
+		)
+	);
+}
