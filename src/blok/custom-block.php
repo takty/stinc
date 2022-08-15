@@ -4,7 +4,7 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-06-29
+ * @version 2022-08-15
  */
 
 namespace wpinc\blok;
@@ -71,13 +71,18 @@ function register_custom_blocks( array $args = array() ): void {
 
 	$blocks = array( 'card', 'cards', 'frame', 'tabs' );
 
-	foreach ( $blocks as $b ) {
-		register_block_type_from_metadata( __DIR__ . "/blocks/$b" );  // Must use 'register_block_type_from_metadata' instead of 'register_block_type' for WP 5.7.
-		wp_set_script_translations( "wpinc-$b-editor-script", 'wpinc', __DIR__ . '\languages' );
-		if ( isset( $args[ "block_$b" ] ) ) {
-			wp_localize_script( "wpinc-$b-editor-script", "wpinc_{$b}_args", $args[ "block_$b" ] );
+	add_filter(
+		'init',
+		function () use ( $args, $blocks ) {
+			foreach ( $blocks as $b ) {
+				register_block_type_from_metadata( __DIR__ . "/blocks/$b" );  // Must use 'register_block_type_from_metadata' instead of 'register_block_type' for WP 5.7.
+				wp_set_script_translations( "wpinc-$b-editor-script", 'wpinc', __DIR__ . '\languages' );
+				if ( isset( $args[ "block_$b" ] ) ) {
+					wp_localize_script( "wpinc-$b-editor-script", "wpinc_{$b}_args", $args[ "block_$b" ] );
+				}
+			}
 		}
-	}
+	);
 	foreach ( $args['block_frame']['styles'] as $name => $label ) {
 		register_block_style(
 			'wpinc/frame',
