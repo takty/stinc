@@ -4,7 +4,7 @@
  *
  * @package Wpinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-03-04
+ * @version 2022-08-16
  */
 
 namespace st;
@@ -49,10 +49,20 @@ function customize_by_default( array $args = array() ): void {
 	\wpinc\alt\disable_pingback();
 	\wpinc\alt\disable_trackback();
 
+	// remove-default-post.
 	if ( is_admin() ) {
-		// remove-default-post.
-		\wpinc\alt\remove_default_post_ui();
-		\wpinc\alt\remove_default_post_when_empty();
+		if ( did_action( 'init' ) ) {
+			\wpinc\alt\remove_default_post_ui();
+			\wpinc\alt\remove_default_post_when_empty();
+		} else {
+			add_action(
+				'init',
+				function () {
+					\wpinc\alt\remove_default_post_ui();
+					\wpinc\alt\remove_default_post_when_empty();
+				}
+			);
+		}
 	}
 
 	// secure-site.
