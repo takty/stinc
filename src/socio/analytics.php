@@ -9,6 +9,8 @@
 
 namespace wpinc\socio;
 
+require_once __DIR__ . '/assets/asset-url.php';
+
 /**
  * Outputs google analytics code.
  *
