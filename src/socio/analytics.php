@@ -4,7 +4,7 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-02-14
+ * @version 2022-08-24
  */
 
 namespace wpinc\socio;
@@ -12,16 +12,36 @@ namespace wpinc\socio;
 /**
  * Outputs google analytics code.
  *
- * @param string $tracking     The tracking ID of analytics code.
- * @param string $verification The verification code.
+ * @param array|string $args     Arguments or google tag ID.
+ * @param string       $site_ver (Optional) The site verification code.
  */
-function the_google_analytics_code( string $tracking = '', string $verification = '' ): void {
-	if ( empty( $tracking ) ) {
+function the_google_analytics_code( $args = array(), ?string $site_ver = null ): void {
+	if ( is_array( $args ) ) {
+		$args += array(
+			'tag_id'            => null,
+			'site_verification' => null,
+		);
+	} else {
+		$args = array(
+			'tag_id'            => (string) $args,
+			'site_verification' => $site_ver,
+		);
+	}
+	$url_to   = untrailingslashit( $args['url_to'] ?? \wpinc\get_file_uri( __DIR__ ) );
+	$site_ver = $args['site_verification'];
+
+	unset( $args['url_to'] );
+	unset( $args['site_verification'] );
+
+	if ( ! $args['tag_id'] ) {
 		if ( is_user_logged_in() ) {
 			_echo_analytics_warning();
 		}
 	} else {
-		_echo_google_analytics_code( $tracking, $verification );
+		_echo_google_analytics_code( $url_to, $args );
+		if ( $site_ver ) {
+			_echo_google_site_verification( $site_ver );
+		}
 	}
 }
 
@@ -33,9 +53,9 @@ function the_google_analytics_code( string $tracking = '', string $verification 
 function _echo_analytics_warning(): void {
 	?>
 	<script>
-	window.addEventListener('load',()=>{
+	window.addEventListener('load', ()=>{
 		const e=document.body.appendChild(document.createElement('div'));
-		e.innerText='No analytics code is set!';const s=e.style;
+		e.innerText='No google tag ID is set!';const s=e.style;
 		s.position='fixed';s.right='0';s.bottom='0';s.background='red';
 		s.color='white';s.padding='4px';s.zIndex=9999;console.log(e.innerText);
 	});
@@ -48,20 +68,34 @@ function _echo_analytics_warning(): void {
  *
  * @access private
  *
- * @param string $tracking     The tracking ID of analytics code.
- * @param string $verification The verification code.
+ * @param string $url_to URL to this script.
+ * @param array  $args   Arguments or google tag ID.
  */
-function _echo_google_analytics_code( string $tracking, string $verification ): void {
+function _echo_google_analytics_code( string $url_to, array $args ): void {
 	?>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $tracking ); ?>"></script><?php // phpcs:ignore ?>
-	<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', '<?php echo esc_attr( $tracking ); ?>');
-	</script>
-	<?php if ( ! empty( $verification ) ) : ?>
-	<meta name="google-site-verification" content="<?php echo esc_attr( $verification ); ?>">
-	<?php endif; ?>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( $args['tag_id'] ); ?>"></script><?php // phpcs:ignore ?>
+	<?php
+	wp_enqueue_script(
+		'wpinc-socio-analytics',
+		\wpinc\abs_url( $url_to, './assets/js/analytics.min.js' ),
+		array(),
+		filemtime( __DIR__ . '/assets/js/analytics.min.js' ),
+		true
+	);
+	$json = wp_json_encode( $args );
+	$data = "wpinc_socio_analytics_initialize($json);";
+	wp_add_inline_script( 'wpinc-socio-analytics', $data, 'after' );
+}
+
+/**
+ * Outputs site verification.
+ *
+ * @access private
+ *
+ * @param string $site_ver The verification code.
+ */
+function _echo_google_site_verification( string $site_ver ): void {
+	?>
+	<meta name="google-site-verification" content="<?php echo esc_attr( $site_ver ); ?>">
 	<?php
 }
