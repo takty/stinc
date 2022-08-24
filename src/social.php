@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-06-06
+ * @version 2022-08-24
  */
 
 namespace st;
@@ -18,11 +18,22 @@ require_once __DIR__ . '/socio/structured-data.php';
 /**
  * Outputs google analytics code.
  *
- * @param string $tracking     The tracking ID of analytics code.
- * @param string $verification The verification code.
+ * @param array  $args {
+ *     Arguments.
+ *
+ *     @type string 'url_to'            URL to this script.
+ *     @type string 'site_verification' The site verification code.
+ *     @type string 'tag_id'            The google tag ID.
+ *     @type bool   'do_show_dialog'    Whether to show the dialog.
+ *     @type int    'expired_day'       The length of keeping settings.
+ *     @type string 'id_dialog'         Element ID of the dialog. Defaults 'wpinc-socio-analytics-dialog'.
+ *     @type string 'id_accept'         Element ID of the accept button. Defaults 'wpinc-socio-analytics-accept'.
+ *     @type string 'id_reject'         Element ID of the reject button. Defaults 'wpinc-socio-analytics-reject'.
+ * }
+ * @param string $site_ver (Optional) The site verification code.
  */
-function the_google_analytics_code( string $tracking = '', string $verification = '' ) {
-	\wpinc\socio\the_google_analytics_code( $tracking, $verification );
+function the_google_analytics_code( $args = array(), ?string $site_ver = null ): void {
+	\wpinc\socio\the_google_analytics_code( $args, $site_ver );
 }
 
 

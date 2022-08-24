@@ -12,19 +12,32 @@ namespace wpinc\socio;
 /**
  * Outputs google analytics code.
  *
- * @param array|string $args     Arguments or google tag ID.
- * @param string       $site_ver (Optional) The site verification code.
+ * @param array  $args {
+ *     Arguments.
+ *
+ *     @type string 'url_to'            URL to this script.
+ *     @type string 'site_verification' The site verification code.
+ *     @type string 'tag_id'            The google tag ID.
+ *     @type bool   'do_show_dialog'    Whether to show the dialog.
+ *     @type int    'expired_day'       The length of keeping settings.
+ *     @type string 'id_dialog'         Element ID of the dialog. Defaults 'wpinc-socio-analytics-dialog'.
+ *     @type string 'id_accept'         Element ID of the accept button. Defaults 'wpinc-socio-analytics-accept'.
+ *     @type string 'id_reject'         Element ID of the reject button. Defaults 'wpinc-socio-analytics-reject'.
+ * }
+ * @param string $site_ver (Optional) The site verification code.
  */
 function the_google_analytics_code( $args = array(), ?string $site_ver = null ): void {
 	if ( is_array( $args ) ) {
 		$args += array(
-			'tag_id'            => null,
 			'site_verification' => null,
+			'tag_id'            => null,
+			'do_show_dialog'    => false,
 		);
-	} else {
+	} else {  // For backward compatibility.
 		$args = array(
-			'tag_id'            => (string) $args,
 			'site_verification' => $site_ver,
+			'tag_id'            => (string) $args,
+			'do_show_dialog'    => false,
 		);
 	}
 	$url_to   = untrailingslashit( $args['url_to'] ?? \wpinc\get_file_uri( __DIR__ ) );
