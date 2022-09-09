@@ -4,7 +4,7 @@
  *
  * @package Wpinc Alt
  * @author Takuto Yanagida
- * @version 2022-03-04
+ * @version 2022-09-09
  */
 
 namespace wpinc\alt;
@@ -93,18 +93,25 @@ function disable_xml_rpc(): void {
 
 /**
  * Disable embed feature.
+ *
+ * @param string[] $allowed_urls Allowed URLs.
  */
-function disable_embed(): void {
-	add_filter( 'embed_oembed_discover', '__return_false' );
+function disable_embed( array $allowed_urls = array() ): void {
 	add_filter(
 		'embed_oembed_html',
-		function ( $cached_html, $url, $attr, $post_id ) {
+		function ( $cached_html, $url, $attr, $post_id ) use ( $allowed_urls ) {
+			foreach ( $allowed_urls as $au ) {
+				if ( 0 === strpos( $url, $au ) ) {
+					return $cached_html;
+				}
+			}
 			global $wp_embed;
 			return $wp_embed->maybe_make_link( $url );
 		},
 		10,
 		4
 	);
+	add_filter( 'embed_oembed_discover', '__return_false' );
 	remove_action( 'wp_head', 'wp_oembed_add_discovery_links' );
 	remove_action( 'wp_head', 'wp_oembed_add_host_js' );
 	remove_filter( 'pre_oembed_result', 'wp_filter_pre_oembed_result', 10, 3 );

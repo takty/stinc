@@ -4,7 +4,7 @@
  *
  * @package Wpinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-08-16
+ * @version 2022-09-09
  */
 
 namespace st;
@@ -23,14 +23,21 @@ require_once __DIR__ . '/alt/suppressor.php';
  * @param array $args {
  *     Arguments.
  *
- *     @type string[] 'permitted_routes'     Permitted routes.
  *     @type bool     'do_remove_feed_links' Whether feed links are removed.
+ *     @type string[] 'permitted_routes'     Permitted routes.
+ *     @type string[] 'allowed_embed_urls'   Allowed embed URLs.
  * }
  */
 function customize_by_default( array $args = array() ): void {
 	$args += array(
 		'do_remove_feed_links' => true,
 		'permitted_route'      => array( 'oembed', 'contact-form-7' ),
+		'allowed_embed_urls'   => array(
+			'https://www.youtube.com/',
+			'https://youtu.be/',
+			'https://twitter.com/',
+			'https://www.slideshare.net/',
+		),
 	);
 
 	if ( is_admin_bar_showing() ) {
@@ -71,7 +78,7 @@ function customize_by_default( array $args = array() ): void {
 		\wpinc\alt\disallow_file_edit();
 	}
 	\wpinc\alt\disable_xml_rpc();
-	\wpinc\alt\disable_embed();
+	\wpinc\alt\disable_embed( $args['allowed_embed_urls'] );
 	\wpinc\alt\disable_author_page();
 	\wpinc\alt\set_membership_option();
 
