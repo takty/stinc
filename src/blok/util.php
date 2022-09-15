@@ -4,7 +4,7 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-08-16
+ * @version 2022-09-07
  */
 
 namespace wpinc\blok;
@@ -24,7 +24,7 @@ function add_small_button_to_heading( ?string $url_to = null ): void {
 			wp_enqueue_script(
 				'wpinc-blok-small-tag',
 				\wpinc\abs_url( $url_to, './assets/js/small-tag.min.js' ),
-				array( 'wp-compose', 'wp-element', 'wp-data', 'wp-element', 'wp-editor' ),
+				array( 'wp-compose', 'wp-element', 'wp-data', 'wp-element', 'wp-block-editor' ),
 				'1.0',
 				true
 			);

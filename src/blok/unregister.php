@@ -4,7 +4,7 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-03-21
+ * @version 2022-09-07
  */
 
 namespace wpinc\blok;
@@ -142,7 +142,7 @@ function _enqueue_script_for_unregistration( ?string $url_to = null ): void {
 			wp_enqueue_script(
 				'wpinc-blok-unregistration',
 				\wpinc\abs_url( $url_to, './assets/js/block-unregistration.min.js' ),
-				array( 'wp-blocks', 'wp-dom-ready', 'wp-edit-post' ),
+				array( 'wp-blocks', 'wp-dom-ready' ),
 				'1.0',
 				true
 			);

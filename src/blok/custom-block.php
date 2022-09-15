@@ -4,12 +4,12 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-08-15
+ * @version 2022-09-10
  */
 
 namespace wpinc\blok;
 
-require_once __DIR__ . '/assets/asset-url.php';
+require_once __DIR__ . '/assets/theme-plugin-url.php';
 
 /**
  * Registers custom blocks.
@@ -67,7 +67,7 @@ function register_custom_blocks( array $args = array() ): void {
 			return _cb_block_categories_all( $args, $cats );
 		}
 	);
-	add_filter( 'plugins_url', '\wpinc\blok\_cb_plugins_url', 10, 3 );
+	\wpinc\initialize_theme_plugin_url();
 
 	$blocks = array( 'card', 'cards', 'frame', 'tabs' );
 
@@ -111,24 +111,6 @@ function _cb_block_categories_all( array $args, array $categories ): array {
 		),
 	);
 	return array_merge( $cats, $categories );  // Insert at the beginning.
-}
-
-/**
- * Callback function for 'plugins_url' filter.
- *
- * @access private
- *
- * @param string $url    The complete URL to the plugins directory including scheme and path.
- * @param string $path   Path relative to the URL to the plugins directory. Blank string if no path is specified.
- * @param string $plugin The plugin file path to be relative to. Blank string if no plugin is specified.
- * @return string Filtered URL.
- */
-function _cb_plugins_url( string $url, string $path, string $plugin ): string {
-	$theme_dir = wp_normalize_path( defined( 'THEME_PATH' ) ? THEME_PATH : get_stylesheet_directory() );
-	if ( false !== strpos( $plugin, $theme_dir ) ) {
-		return \wpinc\abs_url( \wpinc\get_file_uri( dirname( $plugin ) ), $path );
-	}
-	return $url;
 }
 
 
