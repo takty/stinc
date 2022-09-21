@@ -4,7 +4,7 @@
  *
  * @package Wpinc Meta
  * @author Takuto Yanagida
- * @version 2022-01-26
+ * @version 2022-07-01
  */
 
 namespace wpinc\meta;
@@ -18,7 +18,7 @@ namespace wpinc\meta;
  */
 function get_the_sub_title( string $meta_key, $post = 0 ): string {
 	$post = get_post( $post );
-	if ( null === $post ) {
+	if ( ! $post ) {
 		return '';
 	}
 	$id    = $post->ID ?? 0;
@@ -58,7 +58,7 @@ function the_sub_title( string $meta_key, string $before = '', string $after = '
  */
 function get_the_sub_content( string $meta_key, $post = 0 ): string {
 	$post = get_post( $post );
-	if ( null === $post ) {
+	if ( ! $post ) {
 		return '';
 	}
 	$id      = $post->ID ?? 0;

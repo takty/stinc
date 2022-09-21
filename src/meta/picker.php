@@ -4,7 +4,7 @@
  *
  * @package Wpinc Meta
  * @author Takuto Yanagida
- * @version 2022-01-30
+ * @version 2022-09-21
  */
 
 namespace wpinc\meta;
@@ -18,6 +18,7 @@ namespace wpinc\meta;
  */
 function add_media_picker( int $post_id, string $key, string $label ): void {
 	$val = get_post_meta( $post_id, $key, true );
+	$val = is_numeric( $val ) ? (int) $val : 0;
 	output_media_picker_row( $label, $key, $val );
 }
 
