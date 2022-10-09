@@ -4,7 +4,7 @@
  *
  * @package Wpinc Meta
  * @author Takuto Yanagida
- * @version 2022-01-16
+ * @version 2022-10-05
  */
 
 namespace wpinc\meta;
@@ -142,6 +142,33 @@ function normalize_date( string $str ): string {
 		$str = sprintf( '%04d-%02d', $vals[0], $vals[1] );
 	} elseif ( count( $vals ) === 1 ) {
 		$str = sprintf( '%04d', $vals[0] );
+	}
+	return $str;
+}
+
+/**
+ * Normalizes YouTube video ID.
+ *
+ * @param string $str String of YouTube video ID.
+ * @return string Normalized YouTube video ID.
+ */
+function normalize_youtube_video_id( string $str ): string {
+	$pu = wp_parse_url( trim( $str ) );
+	if ( $pu ) {
+		if ( 'youtu.be' === $pu['host'] ) {
+			return trim( $pu['path'], '/' );
+		}
+		if ( 'www.youtube.com' === $pu['host'] ) {
+			$q  = $pu['query'];
+			$qs = explode( '&', $q );
+
+			foreach ( $qs as $qp ) {
+				list( $key, $val ) = explode( '=', $qp );
+				if ( 'v' === $key ) {
+					return $val;
+				}
+			}
+		}
 	}
 	return $str;
 }
