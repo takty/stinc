@@ -4,11 +4,12 @@
  *
  * @package Wpinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-08-01
+ * @version 2022-10-09
  */
 
 namespace st\block {
 	require_once __DIR__ . '/blok/custom-block.php';
+	require_once __DIR__ . '/blok/field-block.php';
 	require_once __DIR__ . '/blok/unregister.php';
 	require_once __DIR__ . '/blok/util.php';
 
@@ -47,6 +48,33 @@ namespace st\block {
 	 */
 	function register_custom_styles(): void {
 		\wpinc\blok\register_custom_styles();
+	}
+
+
+	// -------------------------------------------------------------------------
+
+
+	/**
+	 * Registers field block.
+	 */
+	function register_field_block(): void {
+		\wpinc\blok\field\register_field_block();
+	}
+
+	/**
+	 * Adds field block.
+	 *
+	 * @param array $args {
+	 *     Arguments.
+	 *
+	 *     @type string 'key'       Key of post meta.
+	 *     @type string 'label'     Label of the post meta.
+	 *     @type string 'post_type' Target post type.
+	 *     @type bool   'do_render' Whether to render before storing contents.
+	 * }
+	 */
+	function add_field_block( array $args = array() ): void {
+		\wpinc\blok\field\add_field_block( $args );
 	}
 
 

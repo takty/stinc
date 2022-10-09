@@ -40,128 +40,130 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-var icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
-  d: "M39 36a.5.5 0 0 1-.5.5h-29A.5.5 0 0 1 9 36V19H6v17a3.5 3.5 0 0 0 3.5 3.5h29A3.5 3.5 0 0 0 42 36V19h-3ZM34.74 13a.5.5 0 0 1-.45-.28l-1.4-2.79A3.48 3.48 0 0 0 29.76 8h-5.02a3.48 3.48 0 0 0-3.13 1.93l-1.11 2.22-1.1-2.22A3.48 3.48 0 0 0 16.25 8h-5.02A3.48 3.48 0 0 0 8.1 9.93l-1.74 3.48A3.52 3.52 0 0 0 6 14.97V16h3v-1.03a.5.5 0 0 1 .05-.22l1.74-3.47a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l2.45 4.9h2.68l2.45-4.9a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l1.4 2.79A3.48 3.48 0 0 0 34.74 16H42v-3Z"
+  d: "m9.32 17.71-2.64-1.42 3.5-6.5A1.5 1.5 0 0 1 11.5 9H19c.55 0 1.05.3 1.32.78L22 12.87l1.68-3.09A1.5 1.5 0 0 1 25 9h7.5c.57 0 1.09.32 1.34.83L35.93 14H42v3h-7c-.57 0-1.09-.32-1.34-.83L31.57 12h-5.68l-2.57 4.72a1.5 1.5 0 0 1-2.64 0L18.11 12H12.4l-3.08 5.71ZM38.5 39.53h-29a3.5 3.5 0 0 1-3.5-3.5V20h3v16.03c0 .28.22.5.5.5h29a.5.5 0 0 0 .5-.5V20h3v16.03a3.5 3.5 0 0 1-3.5 3.5Z"
 }));
-var icon_scroll = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+const icon_scroll = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
-  d: "M36.74 11a.5.5 0 0 1-.45-.28l-1.4-2.79A3.48 3.48 0 0 0 31.76 6h-5.02a3.48 3.48 0 0 0-3.13 1.93l-1.11 2.22-1.1-2.22A3.48 3.48 0 0 0 18.25 6h-5.02a3.48 3.48 0 0 0-3.13 1.93l-1.74 3.48A3.52 3.52 0 0 0 8 12.97V14h3v-1.03a.5.5 0 0 1 .05-.22l1.74-3.47a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l2.45 4.9h2.68l2.45-4.9a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l1.4 2.79A3.48 3.48 0 0 0 36.74 14H40v-3ZM36.29 38.72l-1.4-2.79A3.48 3.48 0 0 0 31.76 34h-5.02a3.48 3.48 0 0 0-3.13 1.93l-1.11 2.22-1.1-2.22A3.48 3.48 0 0 0 18.25 34h-5.02a3.48 3.48 0 0 0-3.13 1.93l-1.74 3.48A3.52 3.52 0 0 0 8 40.97V42h3v-1.03a.5.5 0 0 1 .05-.22l1.74-3.47a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l2.45 4.9h2.68l2.45-4.9a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l1.4 2.79A3.48 3.48 0 0 0 36.74 42H40v-3h-3.26a.5.5 0 0 1-.45-.28ZM36.5 17h-25A3.5 3.5 0 0 0 8 20.5v7a3.5 3.5 0 0 0 3.5 3.5h25a3.5 3.5 0 0 0 3.5-3.5v-7a3.5 3.5 0 0 0-3.5-3.5Zm.5 10.5a.5.5 0 0 1-.5.5h-25a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .5-.5h25a.5.5 0 0 1 .5.5Z"
+  d: "m9.32 19.71-2.64-1.42 3.5-6.5A1.5 1.5 0 0 1 11.5 11H19c.53 0 1.02.28 1.29.73L22.85 16H42v3H22a1.5 1.5 0 0 1-1.29-.73L18.15 14H12.4l-3.07 5.71ZM42 37h-7c-.57 0-1.09-.32-1.34-.83L31.58 32h-5.72l-2.56 4.27a1.5 1.5 0 0 1-1.29.73H8v-3h13.15l2.56-4.27A1.5 1.5 0 0 1 25 29h7.5c.57 0 1.09.32 1.34.83L35.92 34h6.07v3Z"
 }));
-var icon_stack = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
+const icon_stack = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("svg", {
   xmlns: "http://www.w3.org/2000/svg",
   viewBox: "0 0 48 48"
 }, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
-  d: "M35.5 32V14a3.5 3.5 0 0 0-3.5-3.5H20.74a.5.5 0 0 1-.45-.28l-1.4-2.79a3.48 3.48 0 0 0-3.13-1.93h-5.02A3.48 3.48 0 0 0 7.6 7.43l-1.74 3.48a3.52 3.52 0 0 0-.37 1.56V32A3.5 3.5 0 0 0 9 35.5h23a3.5 3.5 0 0 0 3.5-3.5Zm-27 0V12.47a.5.5 0 0 1 .05-.22l1.74-3.47a.5.5 0 0 1 .45-.28h5.02a.5.5 0 0 1 .45.28l1.4 2.79a3.48 3.48 0 0 0 3.13 1.93H32a.5.5 0 0 1 .5.5v18a.5.5 0 0 1-.5.5H9a.5.5 0 0 1-.5-.5Z"
+  d: "m8.82 15.71-2.64-1.42 3.5-6.5A1.5 1.5 0 0 1 11 7h7.5c.53 0 1.02.28 1.29.73L22.35 12H35.5v3h-14a1.5 1.5 0 0 1-1.29-.73L17.65 10H11.9l-3.08 5.71ZM32 33.53H9a3.5 3.5 0 0 1-3.5-3.5V18h3v12.03c0 .28.22.5.5.5h23a.5.5 0 0 0 .5-.5V18h3v12.03a3.5 3.5 0 0 1-3.5 3.5Z"
 }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
-  d: "M40 15.5v22a2.5 2.5 0 0 1-2.5 2.5h-26v3h26a5.5 5.5 0 0 0 5.5-5.5v-22Z"
+  d: "M37.5 41h-26v-3h26a2.5 2.5 0 0 0 2.5-2.5V21h3v14.5c0 3.03-2.47 5.5-5.5 5.5Z"
 }));
 
 function edit(_ref) {
-  var attributes = _ref.attributes,
-      setAttributes = _ref.setAttributes;
-  var type = attributes.type;
+  let {
+    attributes,
+    setAttributes
+  } = _ref;
+  const {
+    type
+  } = attributes;
 
-  var setType = function setType(type) {
-    return setAttributes({
-      type: type
-    });
-  };
+  const setType = type => setAttributes({
+    type
+  });
 
-  var label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('scroll' === type ? 'Tabs [Scroll]' : 'Tabs [Stack]', 'wpinc');
+  const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('scroll' === type ? 'Tabs [Scroll]' : 'Tabs [Stack]', 'wpinc');
 
-  var blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)();
+  const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)();
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", (0,_babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_0__["default"])({
     "data-container-label": label
   }, blockProps), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.BlockControls, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.Toolbar, null, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToolbarButton, {
     isActive: 'scroll' === type,
-    onClick: function onClick() {
-      return setType('scroll');
-    },
+    onClick: () => setType('scroll'),
     icon: icon_scroll,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Scroll', 'wpinc')
   }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__.ToolbarButton, {
     isActive: 'stack' === type,
-    onClick: function onClick() {
-      return setType('stack');
-    },
+    onClick: () => setType('stack'),
     icon: icon_stack,
     label: (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Stack', 'wpinc')
   }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, null));
 }
 
 function save(_ref2) {
-  var _window$wpinc_tabs_ar, _window, _window$wpinc_tabs_ar2, _window$wpinc_tabs_ar3, _window2, _window2$wpinc_tabs_a;
+  var _window$wpinc_tabs_ar, _window$wpinc_tabs_ar2;
 
-  var attributes = _ref2.attributes;
-  var cls_scroll = (_window$wpinc_tabs_ar = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_tabs_ar2 = _window.wpinc_tabs_args) === null || _window$wpinc_tabs_ar2 === void 0 ? void 0 : _window$wpinc_tabs_ar2.class_tab_scroll) !== null && _window$wpinc_tabs_ar !== void 0 ? _window$wpinc_tabs_ar : 'tab-scroll';
-  var cls_stack = (_window$wpinc_tabs_ar3 = (_window2 = window) === null || _window2 === void 0 ? void 0 : (_window2$wpinc_tabs_a = _window2.wpinc_tabs_args) === null || _window2$wpinc_tabs_a === void 0 ? void 0 : _window2$wpinc_tabs_a.class_tab_stack) !== null && _window$wpinc_tabs_ar3 !== void 0 ? _window$wpinc_tabs_ar3 : 'tab-stack';
-  var blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
+  let {
+    attributes
+  } = _ref2;
+  const cls_scroll = (_window$wpinc_tabs_ar = window?.wpinc_tabs_args?.class_tab_scroll) !== null && _window$wpinc_tabs_ar !== void 0 ? _window$wpinc_tabs_ar : 'tab-scroll';
+  const cls_stack = (_window$wpinc_tabs_ar2 = window?.wpinc_tabs_args?.class_tab_stack) !== null && _window$wpinc_tabs_ar2 !== void 0 ? _window$wpinc_tabs_ar2 : 'tab-stack';
+  const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
     className: 'scroll' === attributes.type ? cls_scroll : cls_stack
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, null));
 }
 
-var transforms = {
+const transforms = {
   from: [{
     type: 'block',
     blocks: ['core/group'],
-    transform: function transform(attributes, innerBlocks) {
+    transform: (attributes, innerBlocks) => {
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/tabs', {}, innerBlocks);
     }
   }, {
     type: 'block',
     blocks: ['*'],
     isMultiBlock: true,
-    isMatch: function isMatch(attributes, blocks) {
+    isMatch: (attributes, blocks) => {
       if (blocks.length === 1 && blocks[0].name === 'wpinc/tabs') {
         return false;
       }
 
       return true;
     },
-    __experimentalConvert: function __experimentalConvert(blocks) {
-      var groupInnerBlocks = blocks.map(function (b) {
+
+    __experimentalConvert(blocks) {
+      const groupInnerBlocks = blocks.map(b => {
         return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)(b.name, b.attributes, b.innerBlocks);
       });
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/tabs', {}, groupInnerBlocks);
     }
+
   }, {
     type: 'raw',
     selector: 'div.tab-page, div.pseudo-tab-page, div.tab-scroll, div.tab-stack',
-    transform: function transform(node) {
-      var innerBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.rawHandler)({
+    transform: node => {
+      const innerBlocks = (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.rawHandler)({
         HTML: node.innerHTML
       });
-      var type = 'scroll';
+      let type = 'scroll';
 
       if (node.classList.contains('tab-page') || node.classList.contains('tab-stack')) {
         type = 'stack';
       }
 
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/tabs', {
-        type: type
+        type
       }, innerBlocks);
     }
   }],
   to: [{
     type: 'block',
     blocks: ['core/group'],
-    transform: function transform(attributes, innerBlocks) {
+    transform: (attributes, innerBlocks) => {
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('core/group', {}, innerBlocks);
     },
     priority: 20
   }]
 };
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.registerBlockType)('wpinc/tabs', {
-  edit: edit,
-  save: save,
-  icon: icon,
-  transforms: transforms
+  edit,
+  save,
+  icon,
+  transforms
 });
 
 /***/ }),
