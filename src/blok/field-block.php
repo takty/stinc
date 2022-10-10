@@ -4,12 +4,13 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-10-09
+ * @version 2022-10-10
  */
 
 namespace wpinc\blok\field;
 
 require_once __DIR__ . '/assets/theme-plugin-url.php';
+require_once __DIR__ . '/assets/admin-post-type.php';
 
 /**
  * Registers field block.
@@ -18,8 +19,8 @@ function register_field_block(): void {
 	\wpinc\initialize_theme_plugin_url();
 
 	add_filter( 'init', '\wpinc\blok\field\_cb_init' );
-	add_filter( 'the_content', '\wpinc\blok\field\_cb_the_content', 8, 1 );
 	add_filter( 'save_post', '\wpinc\blok\field\_cb_save_post', 10, 2 );
+	add_filter( 'pre_render_block', '\wpinc\blok\field\_cb_pre_render_block', 10, 2 );
 }
 
 /**
@@ -59,7 +60,7 @@ function add_field_block( array $args = array() ): void {
  * Callback function for 'init' hook.
  */
 function _cb_init() {
-	$post_type = _get_admin_post_type();
+	$post_type = \wpinc\get_admin_post_type();
 	if ( ! $post_type ) {
 		return;
 	}
@@ -71,31 +72,6 @@ function _cb_init() {
 		wp_set_script_translations( 'wpinc-field-editor-script', 'wpinc', __DIR__ . '\languages' );
 		wp_localize_script( 'wpinc-field-editor-script', 'wpinc_field_args', array( 'entries' => $fes ) );
 	}
-}
-
-/**
- * Gets current post type.
- *
- * @access private
- *
- * @return string|null Current post type.
- */
-function _get_admin_post_type(): ?string {
-	$pt = null;
-
-	$id_g = $_GET['post']     ?? null;  // phpcs:ignore
-	$id_p = $_POST['post_ID'] ?? null;  // phpcs:ignore
-
-	if ( $id_g || $id_p ) {
-		$p = get_post( intval( $id_g ? $id_g : $id_p ) );
-		if ( $p ) {
-			$pt = $p->post_type;
-		}
-	}
-	if ( ! $pt ) {
-		$pt = $_GET['post_type'] ?? null;  // phpcs:ignore
-	}
-	return $pt;
 }
 
 /**
@@ -134,32 +110,17 @@ function _cb_save_post( int $post_ID, \WP_Post $post ): void {
 }
 
 /**
- * Callback function for 'the_content' hook.
+ * Callback function for 'pre_render_block' hook.
  *
- * @param string $content Post content.
- * @return string Filtered post content.
+ * @param string|null $pre_render   The pre-rendered content. Default null.
+ * @param array       $parsed_block The block being rendered.
+ * @return string|null Pre-rendered string.
  */
-function _cb_the_content( string $content ): string {
-	$updated = false;
-	$bs      = parse_blocks( $content );
-
-	foreach ( $bs as &$b ) {
-		if ( 'wpinc/field' === $b['blockName'] ) {
-			$b       = null;
-			$updated = true;
-		}
+function _cb_pre_render_block( ?string $pre_render, array $parsed_block ): ?string {
+	if ( 'wpinc/field' === $parsed_block['blockName'] ) {
+		return '';
 	}
-	if ( $updated ) {
-		$new_content = '';
-		foreach ( $bs as &$b ) {
-			if ( ! $b ) {
-				continue;
-			}
-			$new_content .= serialize_block( $b );
-		}
-		return $new_content;
-	}
-	return $content;
+	return $pre_render;
 }
 
 /**
