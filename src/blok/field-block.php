@@ -10,7 +10,7 @@
 namespace wpinc\blok\field;
 
 require_once __DIR__ . '/assets/theme-plugin-url.php';
-require_once __DIR__ . '/assets/admin-post-type.php';
+require_once __DIR__ . '/assets/admin-current-post.php';
 
 /**
  * Registers field block.
