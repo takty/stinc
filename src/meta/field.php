@@ -4,7 +4,7 @@
  *
  * @package Wpinc Meta
  * @author Takuto Yanagida
- * @version 2022-02-09
+ * @version 2022-10-27
  */
 
 namespace wpinc\meta;
@@ -155,7 +155,7 @@ function output_input_row( string $label, string $key, $val, string $type = 'tex
 	wp_enqueue_style( 'wpinc-meta-field' );
 	$val = $val ?? '';
 	?>
-	<div class="wpinc-meta-field-single">
+	<div class="wpinc-meta-field-single <?php echo esc_attr( $type ); ?>">
 		<label>
 			<span><?php echo esc_html( $label ); ?></span>
 			<input <?php name_id( $key ); ?> type="<?php echo esc_attr( $type ); ?>" value="<?php echo esc_attr( $val ); ?>" size="64">
@@ -176,7 +176,7 @@ function output_textarea_row( string $label, string $key, $val, int $rows = 2 ):
 	wp_enqueue_style( 'wpinc-meta-field' );
 	$val = $val ?? '';
 	?>
-	<div class="wpinc-meta-field-single">
+	<div class="wpinc-meta-field-single textarea">
 		<label>
 			<span><?php echo esc_html( $label ); ?></span>
 			<textarea <?php name_id( $key ); ?> cols="64" rows="<?php echo esc_attr( $rows ); ?>"><?php echo esc_attr( $val ); ?></textarea>
@@ -217,10 +217,10 @@ function output_rich_editor_row( string $label, string $key, $val, array $settin
 function output_checkbox_row( string $label, string $key, bool $checked = false ): void {
 	wp_enqueue_style( 'wpinc-meta-field' );
 	?>
-	<div class="wpinc-meta-field-single">
+	<div class="wpinc-meta-field-single checkbox">
 		<label>
-			<span><?php echo esc_html( $label ); ?></span>
 			<span class="checkbox"><input <?php name_id( $key ); ?> type="checkbox" <?php echo esc_attr( $checked ? 'checked' : '' ); ?>></span>
+			<span><?php echo esc_html( $label ); ?></span>
 		</label>
 	</div>
 	<?php
@@ -242,7 +242,7 @@ function output_term_select_row( string $label, string $key, $taxonomy_or_terms,
 		$terms = array();
 	}
 	?>
-	<div class="wpinc-meta-field-single">
+	<div class="wpinc-meta-field-single select">
 		<label>
 			<span><?php echo esc_html( $label ); ?></span>
 			<select name="<?php echo esc_attr( $key ); ?>">
