@@ -4,11 +4,12 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-01-27
+ * @version 2022-10-28
  */
 
 namespace wpinc\socio;
 
+require_once __DIR__ . '/assets/url.php';
 require_once __DIR__ . '/site-meta.php';
 
 const OGP_NS = 'prefix="og:http://ogp.me/ns#"';
@@ -45,7 +46,7 @@ function the_ogp( array $args = array() ): void {
 	$tw_card = empty( $img_url ) ? 'summary' : 'summary_large_image';
 
 	echo '<meta property="og:type" content="' . esc_attr( is_single() ? 'article' : 'website' ) . '">' . "\n";
-	echo '<meta property="og:url" content="' . esc_attr( \wpinc\socio\get_current_url() ) . '">' . "\n";
+	echo '<meta property="og:url" content="' . esc_attr( \wpinc\get_current_url() ) . '">' . "\n";
 	echo '<meta property="og:title" content="' . esc_attr( \wpinc\socio\get_the_title( $args['do_append_site_name'], $args['separator'] ) ) . '">' . "\n";
 	echo '<meta property="og:description" content="' . esc_attr( _get_the_description( $args['excerpt_length'], $args['alt_description'] ) ) . '">' . "\n";
 	echo '<meta property="og:site_name" content="' . esc_attr( \wpinc\socio\get_site_name() ) . '">' . "\n";

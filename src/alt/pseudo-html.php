@@ -4,10 +4,12 @@
  *
  * @package Wpinc Alt
  * @author Takuto Yanagida
- * @version 2022-01-26
+ * @version 2022-10-28
  */
 
 namespace wpinc\alt;
+
+require_once __DIR__ . '/assets/url.php';
 
 /**
  * Enables pseudo HTML.
@@ -35,30 +37,9 @@ function enable_pseudo_html() {
 			if ( substr( $path, - strlen( '.html' ) ) !== '.html' ) {
 				$pu['path'] = "$path.html";
 			}
-			return _serialize_url( $pu );
+			return \wpinc\serialize_url( $pu );
 		},
 		10,
 		4
 	);
-}
-
-/**
- * Serializes URL.
- *
- * @param array $pu Parsed URL.
- * @return string URL.
- */
-function _serialize_url( array $pu ): string {
-	// phpcs:disable
-	$scheme = isset( $pu['scheme'] )   ? $pu['scheme'] . '://' : '';
-	$host   = isset( $pu['host'] )     ? $pu['host']           : '';
-	$port   = isset( $pu['port'] )     ? ':' . $pu['port']     : '';
-	$user   = isset( $pu['user'] )     ? $pu['user']           : '';
-	$pass   = isset( $pu['pass'] )     ? ':' . $pu['pass']     : '';
-	$pass   = ( $user || $pass )       ? "$pass@"              : '';
-	$path   = isset( $pu['path'] )     ? $pu['path']           : '';
-	$query  = isset( $pu['query'] )    ? '?' . $pu['query']    : '';
-	$frag   = isset( $pu['fragment'] ) ? '#' . $pu['fragment'] : '';
-	// phpcs:enable
-	return "$scheme$user$pass$host$port$path$query$frag";
 }

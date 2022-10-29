@@ -4,10 +4,12 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-06-06
+ * @version 2022-10-28
  */
 
 namespace wpinc\socio;
+
+require_once __DIR__ . '/assets/url.php';
 
 /**
  * Sets site icon (favicon).
@@ -102,25 +104,6 @@ function get_site_description(): string {
 	$ret = get_bloginfo( 'description' );
 	$ret = _strip_custom_tags( $ret );
 	return $ret;
-}
-
-/**
- * Retrieves the current URL.
- *
- * @return string The current URL.
- */
-function get_current_url(): string {
-	if ( is_singular() ) {
-		return get_permalink();
-	}
-	if ( ! isset( $_SERVER['HTTP_HOST'] ) || ! isset( $_SERVER['REQUEST_URI'] ) ) {
-		return home_url();
-	}
-	// phpcs:disable
-	$host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'];  // When reverse proxy exists.
-	$req  = $_SERVER['REQUEST_URI'];
-	// phpcs:enable
-	return ( is_ssl() ? 'https://' : 'http://' ) . wp_unslash( $host ) . wp_unslash( $req );
 }
 
 

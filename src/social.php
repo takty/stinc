@@ -4,11 +4,12 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-08-24
+ * @version 2022-10-28
  */
 
 namespace st;
 
+require_once __DIR__ . '/socio/assets/url.php';
 require_once __DIR__ . '/socio/analytics.php';
 require_once __DIR__ . '/socio/open-graph-protocol.php';
 require_once __DIR__ . '/socio/share-link.php';
@@ -142,7 +143,7 @@ if ( ! function_exists( '\st\get_current_url' ) ) {
 	 * @return string The current URL.
 	 */
 	function get_current_url(): string {
-		return \wpinc\socio\get_current_url();
+		return \wpinc\get_current_url();
 	}
 }
 

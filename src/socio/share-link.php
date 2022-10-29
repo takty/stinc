@@ -4,7 +4,7 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-01-29
+ * @version 2022-10-28
  */
 
 namespace wpinc\socio;
@@ -55,7 +55,7 @@ function the_share_links( array $args = array() ): void {
 		'media'               => array( 'facebook', 'twitter', 'pocket', 'line', 'copy', 'feed' ),
 	);
 	$title = \wpinc\socio\get_the_title( $args['do_append_site_name'], $args['separator'] );
-	$url   = \wpinc\socio\get_current_url();
+	$url   = \wpinc\get_current_url();
 
 	$search  = array( '<T>', '<U>' );
 	$replace = array( rawurlencode( $title ), rawurlencode( $url ) );
