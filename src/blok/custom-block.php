@@ -4,7 +4,7 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-09-10
+ * @version 2022-10-12
  */
 
 namespace wpinc\blok;
@@ -71,7 +71,7 @@ function register_custom_blocks( array $args = array() ): void {
 
 	$blocks = array( 'card', 'cards', 'frame', 'tabs' );
 
-	add_filter(
+	add_action(
 		'init',
 		function () use ( $args, $blocks ) {
 			foreach ( $blocks as $b ) {

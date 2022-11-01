@@ -23,10 +23,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/frame/style.scss");
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor.scss */ "./src/blocks/frame/editor.scss");
 
-
 var _window$wpinc_frame_a, _window, _window$wpinc_frame_a2;
-
-
 
 /**
  * Frame block
@@ -34,6 +31,7 @@ var _window$wpinc_frame_a, _window, _window$wpinc_frame_a2;
  * @author Takuto Yanagida
  * @version 2022-03-24
  */
+
 
 
 
@@ -50,10 +48,8 @@ const icon = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("
   d: "M37.5 43h-26v-3h26a2.5 2.5 0 0 0 2.5-2.5v-22h3v22c0 3.03-2.47 5.5-5.5 5.5Z"
 }));
 const cls = (_window$wpinc_frame_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_frame_a2 = _window.wpinc_frame_args) === null || _window$wpinc_frame_a2 === void 0 ? void 0 : _window$wpinc_frame_a2.class_frame) !== null && _window$wpinc_frame_a !== void 0 ? _window$wpinc_frame_a : 'frame';
-
 function edit() {
   const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Frame', 'wpinc');
-
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
     className: cls
   });
@@ -61,14 +57,12 @@ function edit() {
     "data-container-label": label
   }, blockProps), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, null));
 }
-
 function save() {
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
     className: cls
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, null));
 }
-
 const transforms = {
   from: [{
     type: 'block',
@@ -84,17 +78,14 @@ const transforms = {
       if (blocks.length === 1 && blocks[0].name === 'wpinc/frame') {
         return false;
       }
-
       return true;
     },
-
     __experimentalConvert(blocks) {
       const groupInnerBlocks = blocks.map(b => {
         return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)(b.name, b.attributes, b.innerBlocks);
       });
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)('wpinc/frame', {}, groupInnerBlocks);
     }
-
   }, {
     type: 'raw',
     selector: 'div.frame, div.frame-alt',
@@ -103,11 +94,9 @@ const transforms = {
         HTML: node.innerHTML
       });
       let cn = null;
-
       if (node.classList.contains('frame-alt')) {
         cn = 'is-style-alt';
       }
-
       return (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_4__.createBlock)('wpinc/frame', {
         className: cn
       }, innerBlocks);
@@ -127,7 +116,9 @@ const transforms = {
   save,
   icon,
   transforms
-}); // -----------------------------------------------------------------------------
+});
+
+// -----------------------------------------------------------------------------
 
 const removeDefault = (element, blockType, attributes) => {
   if ('wpinc/frame' === blockType.name) {
@@ -137,11 +128,11 @@ const removeDefault = (element, blockType, attributes) => {
       });
     }
   }
-
   return element;
 };
+wp.hooks.addFilter('blocks.getSaveElement', 'wpinc/blok/frame_filter_remove_default', removeDefault);
 
-wp.hooks.addFilter('blocks.getSaveElement', 'wpinc/blok/frame_filter_remove_default', removeDefault); // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 wp.blocks.registerBlockStyle('wpinc/frame', {
   name: 'default',
@@ -239,14 +230,12 @@ function _extends() {
   _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
-
       for (var key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
           target[key] = source[key];
         }
       }
     }
-
     return target;
   };
   return _extends.apply(this, arguments);

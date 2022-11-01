@@ -4,12 +4,13 @@
  *
  * @package Wpinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-10-09
+ * @version 2022-11-01
  */
 
 namespace st\block {
 	require_once __DIR__ . '/blok/custom-block.php';
 	require_once __DIR__ . '/blok/field-block.php';
+	require_once __DIR__ . '/blok/input-block.php';
 	require_once __DIR__ . '/blok/unregister.php';
 	require_once __DIR__ . '/blok/util.php';
 
@@ -55,13 +56,6 @@ namespace st\block {
 
 
 	/**
-	 * Registers field block.
-	 */
-	function register_field_block(): void {
-		\wpinc\blok\field\register_field_block();
-	}
-
-	/**
 	 * Adds field block.
 	 *
 	 * @param array $args {
@@ -74,7 +68,22 @@ namespace st\block {
 	 * }
 	 */
 	function add_field_block( array $args = array() ): void {
-		\wpinc\blok\field\add_field_block( $args );
+		\wpinc\blok\field\add_block( $args );
+	}
+
+	/**
+	 * Adds input block.
+	 *
+	 * @param array $args {
+	 *     Arguments.
+	 *
+	 *     @type string 'key'       Key of post meta.
+	 *     @type string 'label'     Label of the post meta.
+	 *     @type string 'post_type' Target post type.
+	 * }
+	 */
+	function add_input_block( array $args = array() ): void {
+		\wpinc\blok\input\add_block( $args );
 	}
 
 

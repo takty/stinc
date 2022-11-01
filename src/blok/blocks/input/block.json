@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "wpinc/input",
+	"version": "0.1.0",
+	"title": "Input",
+	"category": "wpinc",
+	"description": "Store text in specific custom fields.",
+	"supports": {
+		"html": false,
+		"className": false
+	},
+	"attributes": {
+		"key": {
+			"type": "string"
+		}
+	},
+	"example": {
+		"attributes": {
+			"key": ""
+		}
+	},
+	"textdomain": "wpinc_blok",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

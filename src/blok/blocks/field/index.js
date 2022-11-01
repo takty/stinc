@@ -20,21 +20,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_4__);
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @wordpress/blocks */ "@wordpress/blocks");
 /* harmony import */ var _wordpress_blocks__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__);
-/* harmony import */ var _wordpress_block_library__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @wordpress/block-library */ "@wordpress/block-library");
-/* harmony import */ var _wordpress_block_library__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(_wordpress_block_library__WEBPACK_IMPORTED_MODULE_6__);
-/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/field/style.scss");
-/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./editor.scss */ "./src/blocks/field/editor.scss");
-
+/* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/field/style.scss");
+/* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor.scss */ "./src/blocks/field/editor.scss");
 
 var _window$wpinc_field_a, _window, _window$wpinc_field_a2;
-
-
 
 /**
  * Field block
  *
  * @author Takuto Yanagida
- * @version 2022-10-08
+ * @version 2022-10-12
  */
 
 
@@ -329,31 +324,21 @@ const iconKeySel = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElem
   cy: "24",
   r: "6"
 }));
-
 const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Items', 'wpinc');
-
 const es = (_window$wpinc_field_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_field_a2 = _window.wpinc_field_args) === null || _window$wpinc_field_a2 === void 0 ? void 0 : _window$wpinc_field_a2.entries) !== null && _window$wpinc_field_a !== void 0 ? _window$wpinc_field_a : [];
-
 function edit(_ref) {
   var _es$filter$0$label, _es$filter$;
-
   let {
     attributes,
     setAttributes
   } = _ref;
-  let {
+  const {
     key
   } = attributes;
-
   const setKey = key => setAttributes({
     key
   });
-
-  if (!key && es.length) {
-    key = es[0].key;
-    setKey(key);
-  }
-
+  if (!key && es.length) setKey(es[0].key);
   const keyLabel = (_es$filter$0$label = (_es$filter$ = es.filter(e => e.key === key)[0]) === null || _es$filter$ === void 0 ? void 0 : _es$filter$.label) !== null && _es$filter$0$label !== void 0 ? _es$filter$0$label : label;
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
     className: `field-${key}`
@@ -372,12 +357,10 @@ function edit(_ref) {
     })
   })), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, null));
 }
-
 function save() {
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save();
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, blockProps);
 }
-
 (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.registerBlockType)('wpinc/field', {
   edit,
   save,
@@ -417,16 +400,6 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module) {
 
 module.exports = window["wp"]["blockEditor"];
-
-/***/ }),
-
-/***/ "@wordpress/block-library":
-/*!**************************************!*\
-  !*** external ["wp","blockLibrary"] ***!
-  \**************************************/
-/***/ (function(module) {
-
-module.exports = window["wp"]["blockLibrary"];
 
 /***/ }),
 
@@ -484,14 +457,12 @@ function _extends() {
   _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
-
       for (var key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
           target[key] = source[key];
         }
       }
     }
-
     return target;
   };
   return _extends.apply(this, arguments);

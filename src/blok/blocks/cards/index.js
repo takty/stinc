@@ -24,13 +24,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./editor.scss */ "./src/blocks/cards/editor.scss");
 
 
-
 /**
  * Cards block
  *
  * @author Takuto Yanagida
  * @version 2022-03-24
  */
+
 
 
 
@@ -67,7 +67,6 @@ const icon_card_4 = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createEle
 }), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("path", {
   d: "M14 18h3v12h-3zM22.5 18h3v12h-3zM31 18h3v12h-3z"
 }));
-
 function edit(_ref) {
   let {
     attributes,
@@ -76,13 +75,10 @@ function edit(_ref) {
   const {
     number
   } = attributes;
-
   const setNumber = number => setAttributes({
     number
   });
-
   const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)(`Cards [${number} Columns]`, 'wpinc');
-
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
     className: `card-${number}`
   });
@@ -108,10 +104,8 @@ function edit(_ref) {
     orientation: "horizontal"
   }));
 }
-
 function save(_ref2) {
   var _window$wpinc_cards_a, _window, _window$wpinc_cards_a2;
-
   let {
     attributes
   } = _ref2;
@@ -121,7 +115,6 @@ function save(_ref2) {
   });
   return (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)("div", blockProps, (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks.Content, null));
 }
-
 const transforms = {
   from: [{
     type: 'raw',
@@ -129,13 +122,11 @@ const transforms = {
     transform: node => {
       const cards = [];
       const ds = node.querySelectorAll(':scope > div');
-
       for (const d of ds) {
         cards.push((0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.createBlock)('wpinc/card', {}, (0,_wordpress_blocks__WEBPACK_IMPORTED_MODULE_5__.rawHandler)({
           HTML: d.innerHTML
         })));
       }
-
       let number = 2;
       if (node.classList.contains('column-3')) number = 3;
       if (node.classList.contains('column-4')) number = 4;
@@ -242,14 +233,12 @@ function _extends() {
   _extends = Object.assign ? Object.assign.bind() : function (target) {
     for (var i = 1; i < arguments.length; i++) {
       var source = arguments[i];
-
       for (var key in source) {
         if (Object.prototype.hasOwnProperty.call(source, key)) {
           target[key] = source[key];
         }
       }
     }
-
     return target;
   };
   return _extends.apply(this, arguments);

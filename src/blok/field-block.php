@@ -4,24 +4,13 @@
  *
  * @package Wpinc Blok
  * @author Takuto Yanagida
- * @version 2022-10-10
+ * @version 2022-10-12
  */
 
 namespace wpinc\blok\field;
 
 require_once __DIR__ . '/assets/theme-plugin-url.php';
 require_once __DIR__ . '/assets/admin-current-post.php';
-
-/**
- * Registers field block.
- */
-function register_field_block(): void {
-	\wpinc\initialize_theme_plugin_url();
-
-	add_filter( 'init', '\wpinc\blok\field\_cb_init' );
-	add_filter( 'save_post', '\wpinc\blok\field\_cb_save_post', 10, 2 );
-	add_filter( 'pre_render_block', '\wpinc\blok\field\_cb_pre_render_block', 10, 2 );
-}
 
 /**
  * Adds field block.
@@ -35,7 +24,9 @@ function register_field_block(): void {
  *     @type bool   'do_render' Whether to render before storing contents.
  * }
  */
-function add_field_block( array $args = array() ): void {
+function add_block( array $args = array() ): void {
+	_register_block();
+
 	// phpcs:disable
 	$args += array(
 		'key'       => '',
@@ -54,6 +45,24 @@ function add_field_block( array $args = array() ): void {
 		'label'     => $args['label'],
 		'do_render' => $args['do_render'],
 	);
+}
+
+/**
+ * Registers field block.
+ *
+ * @access private
+ */
+function _register_block(): void {
+	static $do_once = false;
+	if ( $do_once ) {
+		return;
+	}
+	$do_once = true;
+	\wpinc\initialize_theme_plugin_url();
+
+	add_action( 'init', '\wpinc\blok\field\_cb_init' );
+	add_action( 'save_post', '\wpinc\blok\field\_cb_save_post', 10, 2 );
+	add_filter( 'pre_render_block', '\wpinc\blok\field\_cb_pre_render_block', 10, 2 );
 }
 
 /**
