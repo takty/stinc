@@ -69,7 +69,7 @@ function _register_block(): void {
 	\wpinc\initialize_theme_plugin_url();
 
 	if ( did_action( 'widgets_init' ) ) {
-		_cb_widgets_init();
+		add_action( 'init', '\wpinc\blok\input\_cb_widgets_init' );
 	} else {
 		add_action( 'widgets_init', '\wpinc\blok\input\_cb_widgets_init' );
 	}
