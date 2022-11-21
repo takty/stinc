@@ -4,7 +4,7 @@
  *
  * @package Wpinc Meta
  * @author Takuto Yanagida
- * @version 2022-09-21
+ * @version 2022-11-18
  */
 
 namespace wpinc\meta;
@@ -92,7 +92,7 @@ function output_date_picker_row( string $label, string $key, $val ): void {
 	wp_enqueue_style( 'wpinc-meta-field' );
 
 	$val = $val ?? '';
-	$loc = strtolower( str_replace( '_', '-', $args['locale'] ) );
+	$loc = strtolower( str_replace( '_', '-', get_user_locale() ) );
 	?>
 	<div class="wpinc-meta-field-single">
 		<label>
