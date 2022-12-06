@@ -57,7 +57,7 @@ function customize_by_default( array $args = array() ): void {
 	\wpinc\alt\disable_trackback();
 
 	// remove-default-post.
-	if ( is_admin() ) {
+	if ( is_admin_bar_showing() ) {
 		if ( did_action( 'init' ) ) {
 			\wpinc\alt\remove_default_post_ui();
 			\wpinc\alt\remove_default_post_when_empty();
