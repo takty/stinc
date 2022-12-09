@@ -105,11 +105,11 @@ function edit(_ref) {
   }));
 }
 function save(_ref2) {
-  var _window$wpinc_cards_a, _window, _window$wpinc_cards_a2;
+  var _window$wpinc_cards_a;
   let {
     attributes
   } = _ref2;
-  const cls = (_window$wpinc_cards_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_cards_a2 = _window.wpinc_cards_args) === null || _window$wpinc_cards_a2 === void 0 ? void 0 : _window$wpinc_cards_a2.class_card) !== null && _window$wpinc_cards_a !== void 0 ? _window$wpinc_cards_a : 'card-%d';
+  const cls = (_window$wpinc_cards_a = window?.wpinc_cards_args?.class_card) !== null && _window$wpinc_cards_a !== void 0 ? _window$wpinc_cards_a : 'card-%d';
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
     className: cls.replaceAll('%d', attributes.number)
   });

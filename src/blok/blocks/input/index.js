@@ -27,7 +27,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _style_scss__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./style.scss */ "./src/blocks/input/style.scss");
 /* harmony import */ var _editor_scss__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./editor.scss */ "./src/blocks/input/editor.scss");
 
-var _window$wpinc_input_a, _window, _window$wpinc_input_a2;
+var _window$wpinc_input_a;
 
 /**
  * Input block
@@ -303,9 +303,9 @@ const iconKeySel = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElem
   r: "6"
 }));
 const label = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_2__.__)('Items', 'wpinc');
-const es = (_window$wpinc_input_a = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_input_a2 = _window.wpinc_input_args) === null || _window$wpinc_input_a2 === void 0 ? void 0 : _window$wpinc_input_a2.entries) !== null && _window$wpinc_input_a !== void 0 ? _window$wpinc_input_a : [];
+const es = (_window$wpinc_input_a = window?.wpinc_input_args?.entries) !== null && _window$wpinc_input_a !== void 0 ? _window$wpinc_input_a : [];
 function edit(_ref) {
-  var _es$filter$0$label, _es$filter$;
+  var _es$filter$0$label;
   let {
     attributes,
     setAttributes
@@ -324,7 +324,7 @@ function edit(_ref) {
     ...meta,
     [k]: v
   });
-  const keyLabel = (_es$filter$0$label = (_es$filter$ = es.filter(e => e.key === key)[0]) === null || _es$filter$ === void 0 ? void 0 : _es$filter$.label) !== null && _es$filter$0$label !== void 0 ? _es$filter$0$label : label;
+  const keyLabel = (_es$filter$0$label = es.filter(e => e.key === key)[0]?.label) !== null && _es$filter$0$label !== void 0 ? _es$filter$0$label : label;
   const blockProps = (0,_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps)({
     className: `input-${key}`
   });

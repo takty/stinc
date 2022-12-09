@@ -88,12 +88,12 @@ function edit(_ref) {
   }))), (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createElement)(_wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.InnerBlocks, null));
 }
 function save(_ref2) {
-  var _window$wpinc_tabs_ar, _window, _window$wpinc_tabs_ar2, _window$wpinc_tabs_ar3, _window2, _window2$wpinc_tabs_a;
+  var _window$wpinc_tabs_ar, _window$wpinc_tabs_ar2;
   let {
     attributes
   } = _ref2;
-  const cls_scroll = (_window$wpinc_tabs_ar = (_window = window) === null || _window === void 0 ? void 0 : (_window$wpinc_tabs_ar2 = _window.wpinc_tabs_args) === null || _window$wpinc_tabs_ar2 === void 0 ? void 0 : _window$wpinc_tabs_ar2.class_tab_scroll) !== null && _window$wpinc_tabs_ar !== void 0 ? _window$wpinc_tabs_ar : 'tab-scroll';
-  const cls_stack = (_window$wpinc_tabs_ar3 = (_window2 = window) === null || _window2 === void 0 ? void 0 : (_window2$wpinc_tabs_a = _window2.wpinc_tabs_args) === null || _window2$wpinc_tabs_a === void 0 ? void 0 : _window2$wpinc_tabs_a.class_tab_stack) !== null && _window$wpinc_tabs_ar3 !== void 0 ? _window$wpinc_tabs_ar3 : 'tab-stack';
+  const cls_scroll = (_window$wpinc_tabs_ar = window?.wpinc_tabs_args?.class_tab_scroll) !== null && _window$wpinc_tabs_ar !== void 0 ? _window$wpinc_tabs_ar : 'tab-scroll';
+  const cls_stack = (_window$wpinc_tabs_ar2 = window?.wpinc_tabs_args?.class_tab_stack) !== null && _window$wpinc_tabs_ar2 !== void 0 ? _window$wpinc_tabs_ar2 : 'tab-stack';
   const blockProps = _wordpress_block_editor__WEBPACK_IMPORTED_MODULE_3__.useBlockProps.save({
     className: 'scroll' === attributes.type ? cls_scroll : cls_stack
   });

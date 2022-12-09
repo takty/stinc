@@ -20,7 +20,19 @@
 	"dependencies": {
 		"gulp": "^4.0.2",
 		"gulp-changed": "^4.0.3",
-		"gulp-load-plugins": "^2.0.8",
-		"gulp-plumber": "^1.2.1"
+		"gulp-ignore": "^3.0.0",
+		"gulp-plumber": "^1.2.1",
+		"wpinc-alt": "git+https://github.com/takty/wpinc-alt.git",
+		"wpinc-blok": "git+https://github.com/takty/wpinc-blok.git",
+		"wpinc-dia": "git+https://github.com/takty/wpinc-dia.git",
+		"wpinc-medi": "git+https://github.com/takty/wpinc-medi.git",
+		"wpinc-meta": "git+https://github.com/takty/wpinc-meta.git",
+		"wpinc-navi": "git+https://github.com/takty/wpinc-navi.git",
+		"wpinc-plex": "git+https://github.com/takty/wpinc-plex.git",
+		"wpinc-post": "git+https://github.com/takty/wpinc-post.git",
+		"wpinc-ref": "git+https://github.com/takty/wpinc-ref.git",
+		"wpinc-socio": "git+https://github.com/takty/wpinc-socio.git",
+		"wpinc-sys": "git+https://github.com/takty/wpinc-sys.git",
+		"wpinc-taxo": "git+https://github.com/takty/wpinc-taxo.git"
 	}
 }
