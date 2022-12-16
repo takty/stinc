@@ -1,0 +1,30 @@
+{
+    "domain": "messages",
+    "locale_data": {
+        "messages": {
+            "": {
+                "domain": "wpinc",
+                "plural_forms": "nplurals=1; plural=0;",
+                "lang": "ja"
+            },
+            "2 Columns": [
+                "2段組"
+            ],
+			"3 Columns": [
+				"3段組"
+			],
+			"4 Columns": [
+				"4段組"
+			],
+            "Cards [2 Columns]": [
+                "カード [2段組]"
+            ],
+			"Cards [3 Columns]": [
+				"カード [3段組]"
+			],
+			"Cards [4 Columns]": [
+				"カード [4段組]"
+			]
+		}
+    }
+}

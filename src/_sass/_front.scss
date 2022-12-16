@@ -2,8 +2,8 @@
  *
  * WordPress Specific Style
  *
- * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2021-12-24
+ * @author Takuto Yanagida
+ * @version 2022-02-09
  *
  */
 
@@ -13,8 +13,7 @@
 
 
 .page-content,
-.entry-content,
-.comment-content {
+.entry-content {
 	.wp-smiley {
 		border : none;
 		margin : { bottom: 0; top: 0; }

@@ -1,0 +1,38 @@
+/*!****************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[3].use[1]!./node_modules/postcss-loader/dist/cjs.js??ruleSet[1].rules[3].use[2]!./node_modules/sass-loader/dist/cjs.js??ruleSet[1].rules[3].use[3]!./src/blocks/tabs/editor.scss ***!
+  \****************************************************************************************************************************************************************************************************************************************************/
+/**
+ * Tabs block
+ *
+ * @author Takuto Yanagida
+ * @version 2022-03-15
+ *
+ * The following styles get applied inside the editor only.
+ */
+.wp-block-wpinc-tabs {
+  padding: 1.25rem;
+  outline: dotted 1px var(--wp-admin-theme-color);
+  border-radius: 1px;
+  position: relative;
+}
+.wp-block-wpinc-tabs::before {
+  content: attr(data-container-label);
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px solid transparent;
+  color: var(--wp-admin-theme-color);
+  text-shadow: 0 0 2px #fff;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+.wp-block-wpinc-tabs > .block-editor-inner-blocks > .block-editor-block-list__layout > *:first-child {
+  -webkit-margin-before: 0;
+          margin-block-start: 0;
+}
+.wp-block-wpinc-tabs > .block-editor-inner-blocks > .block-editor-block-list__layout > *:last-child {
+  -webkit-margin-after: 0;
+          margin-block-end: 0;
+}
+
+/*# sourceMappingURL=index.css.map*/

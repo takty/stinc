@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "wpinc/frame",
+	"version": "0.1.0",
+	"title": "Frame",
+	"category": "wpinc",
+	"description": "Put the blocks together in a frame.",
+	"supports": {
+		"html": false,
+		"className": false
+	},
+	"attributes": {
+		"type": {
+			"type": "string",
+			"default": "normal"
+		}
+	},
+	"example": {
+		"attributes": {
+			"type": "normal"
+		}
+	},
+	"textdomain": "wpinc_blok",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

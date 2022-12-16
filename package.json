@@ -1,11 +1,11 @@
 {
 	"name": "stinc",
-	"version": "2.21.2",
+	"version": "4.0.0",
 	"description": "Include Files for WordPress Websites",
 	"author": "Takuto Yanagida",
 	"main": "gulpfile.js",
 	"scripts": {
-		"postinstall": "gulp build",
+		"postinstall": "gulp",
 		"start": "gulp"
 	},
 	"repository": {
@@ -17,22 +17,22 @@
 		"url": "https://github.com/takty/stinc/issues"
 	},
 	"homepage": "https://github.com/takty/stinc#readme",
-	"browserslist": [
-		"ie >= 11"
-	],
 	"dependencies": {
-		"@babel/core": "^7.18.9",
-		"@babel/preset-env": "^7.18.9",
 		"gulp": "^4.0.2",
-		"gulp-autoprefixer": "^8.0.0",
-		"gulp-babel": "^8.0.0",
 		"gulp-changed": "^4.0.3",
-		"gulp-clean-css": "^4.3.0",
-		"gulp-dart-sass": "^1.0.2",
 		"gulp-ignore": "^3.0.0",
-		"gulp-load-plugins": "^2.0.7",
 		"gulp-plumber": "^1.2.1",
-		"gulp-rename": "^2.0.0",
-		"gulp-terser": "^2.1.0"
+		"wpinc-alt": "git+https://github.com/takty/wpinc-alt.git",
+		"wpinc-blok": "git+https://github.com/takty/wpinc-blok.git",
+		"wpinc-dia": "git+https://github.com/takty/wpinc-dia.git",
+		"wpinc-medi": "git+https://github.com/takty/wpinc-medi.git",
+		"wpinc-meta": "git+https://github.com/takty/wpinc-meta.git",
+		"wpinc-navi": "git+https://github.com/takty/wpinc-navi.git",
+		"wpinc-plex": "git+https://github.com/takty/wpinc-plex.git",
+		"wpinc-post": "git+https://github.com/takty/wpinc-post.git",
+		"wpinc-ref": "git+https://github.com/takty/wpinc-ref.git",
+		"wpinc-socio": "git+https://github.com/takty/wpinc-socio.git",
+		"wpinc-sys": "git+https://github.com/takty/wpinc-sys.git",
+		"wpinc-taxo": "git+https://github.com/takty/wpinc-taxo.git"
 	}
 }

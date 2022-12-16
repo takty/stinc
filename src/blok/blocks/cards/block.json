@@ -1,0 +1,28 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 2,
+	"name": "wpinc/cards",
+	"version": "0.1.0",
+	"title": "Cards",
+	"category": "wpinc",
+	"description": "Display content in multiple cards, with blocks added to each card.",
+	"supports": {
+		"html": false,
+		"className": false
+	},
+	"attributes": {
+		"number": {
+			"type": "string",
+			"default": "2"
+		}
+	},
+	"example": {
+		"attributes": {
+			"number": "2"
+		}
+	},
+	"textdomain": "wpinc_blok",
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

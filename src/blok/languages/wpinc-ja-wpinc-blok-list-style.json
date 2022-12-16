@@ -1,0 +1,36 @@
+{
+    "domain": "messages",
+    "locale_data": {
+        "messages": {
+            "": {
+                "domain": "wpinc",
+                "plural_forms": "nplurals=1; plural=0;",
+                "lang": "ja"
+            },
+            "Default": [
+                "デフォルト"
+            ],
+            "Circle": [
+                "円"
+            ],
+            "Square": [
+                "四角"
+            ],
+            "Lower Alpha": [
+                "小文字のアルファベット"
+            ],
+            "Lower Greek": [
+                "小文字のギリシャ文字"
+            ],
+            "Lower Roman": [
+                "小文字のローマ数字"
+            ],
+            "Upper Alpha": [
+                "大文字のアルファベット"
+            ],
+            "Upper Roman": [
+                "大文字のローマ数字"
+            ]
+		}
+    }
+}

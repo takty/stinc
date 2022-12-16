@@ -1,0 +1,24 @@
+{
+    "domain": "messages",
+    "locale_data": {
+        "messages": {
+            "": {
+                "domain": "wpinc",
+                "plural_forms": "nplurals=1; plural=0;",
+                "lang": "ja"
+            },
+            "Tabs [Scroll]": [
+                "タブ [スクロール]"
+            ],
+            "Tabs [Stack]": [
+                "タブ [スタック]"
+            ],
+            "Scroll": [
+                "スクロール"
+            ],
+            "Stack": [
+                "スタック"
+            ]
+        }
+    }
+}
