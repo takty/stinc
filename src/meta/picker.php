@@ -4,7 +4,7 @@
  *
  * @package Wpinc Meta
  * @author Takuto Yanagida
- * @version 2022-11-18
+ * @version 2022-12-19
  */
 
 namespace wpinc\meta;
@@ -102,7 +102,7 @@ function output_date_picker_row( string $label, string $key, $val ): void {
 				<a class="button" title="clear" data-clear>X</a>
 			</span>
 		</label>
-		<script>flatpickr('#<?php echo esc_attr( $key ); ?>_row', { locale: '<?php echo esc_html( $loc ); ?>', wrap: true });</script>
+		<script>window.addEventListener('load', function () { flatpickr('#<?php echo esc_attr( $key ); ?>_row', { locale: '<?php echo esc_html( $loc ); ?>', wrap: true }); });</script>
 	</div>
 	<?php
 }
