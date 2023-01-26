@@ -4,7 +4,7 @@
  *
  * @package Wpinc Socio
  * @author Takuto Yanagida
- * @version 2022-08-24
+ * @version 2023-01-21
  */
 
 namespace wpinc\socio;
@@ -70,9 +70,8 @@ function _echo_analytics_warning(): void {
 	<script>
 	window.addEventListener('load', ()=>{
 		const e=document.body.appendChild(document.createElement('div'));
-		e.innerText='No google tag ID is set!';const s=e.style;
-		s.position='fixed';s.right='0';s.bottom='0';s.background='red';
-		s.color='white';s.padding='4px';s.zIndex=9999;console.log(e.innerText);
+		console.log(e.innerText='No google tag ID is set!');
+		e.style='position:fixed;z-index:9999;inset:auto auto 0 0;padding:4px;line-height:1;background:red;color:#fff;';
 	});
 	</script>
 	<?php
