@@ -14,6 +14,7 @@ require_once __DIR__ . '/plex/pseudo-front.php';
 require_once __DIR__ . '/plex/filter.php';
 require_once __DIR__ . '/plex/term-field.php';
 require_once __DIR__ . '/plex/option-field.php';
+require_once __DIR__ . '/plex/post-field.php';
 
 const QUERY_VAR_SITE_HOME = 'site_home';
 const QUERY_VAR_SITE_LANG = 'site_lang';
