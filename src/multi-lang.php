@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-06-28
+ * @version 2023-01-31
  */
 
 namespace st;
@@ -30,6 +30,7 @@ const TAXONOMY_POST_LANG  = 'post_lang';
  *     @type array  'translated_taxonomies'
  *     @type array  'filter_term_labels'
  *     @type array  'filtered_post_types'
+ *     @type array  'multiplexed_post_types'
  *     @type bool   'do_set_page_on_front_option'
  * }
  */
@@ -41,6 +42,7 @@ function initialize_multi_lang( array $args ) {
 		'translated_taxonomies'       => array(),
 		'filter_term_labels'          => array(),
 		'filtered_post_types'         => array(),
+		'multiplexed_post_types'      => array(),
 		'do_set_page_on_front_option' => true,
 	);
 	$inst  = &_get_multi_lang_instance();
@@ -96,6 +98,15 @@ function initialize_multi_lang( array $args ) {
 	 */
 	\wpinc\plex\filter\activate();
 	add_action( 'init', '\st\_cb_init_multi_lang' );  // Do here because locale is used.
+
+	/*
+	 * For adding post types with multiple languages.
+	 */
+	if ( ! empty( $inst['multiplexed_post_types'] ) ) {
+		\wpinc\plex\post_field\add_post_type( $inst['multiplexed_post_types'] );
+		\wpinc\plex\post_field\add_admin_labels( $args['admin_labels'] );
+		\wpinc\plex\post_field\activate();
+	}
 }
 
 /**
