@@ -4,7 +4,7 @@
  *
  * @package Stinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2023-01-31
+ * @version 2023-02-02
  */
 
 namespace st;
@@ -37,6 +37,7 @@ const TAXONOMY_POST_LANG  = 'post_lang';
  *     @type array  'filter_term_labels'
  *     @type array  'filtered_post_types'
  *     @type array  'multiplexed_post_types'
+ *     @type string 'multiplexed_editor_type'
  *     @type bool   'do_set_page_on_front_option'
  * }
  */
@@ -52,6 +53,7 @@ function initialize_multi_home_lang( array $args ) {
 		'filter_term_labels'          => array(),
 		'filtered_post_types'         => array(),
 		'multiplexed_post_types'      => array(),
+		'multiplexed_editor_type'     => 'block',
 		'do_set_page_on_front_option' => true,
 	);
 	$inst  = &_get_multi_home_lang_instance();
@@ -123,7 +125,8 @@ function initialize_multi_home_lang( array $args ) {
 	if ( ! empty( $inst['multiplexed_post_types'] ) ) {
 		\wpinc\plex\post_field\add_post_type( $inst['multiplexed_post_types'] );
 		\wpinc\plex\post_field\add_admin_labels( $args['admin_labels'] );
-		\wpinc\plex\post_field\activate();
+		$a = isset( $inst['multiplexed_editor_type'] ) ? array( 'editor_type' => $inst['multiplexed_editor_type'] ) : array();
+		\wpinc\plex\post_field\activate( $a );
 	}
 }
 
