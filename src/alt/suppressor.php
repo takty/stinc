@@ -4,7 +4,7 @@
  *
  * @package Wpinc Alt
  * @author Takuto Yanagida
- * @version 2022-01-16
+ * @version 2023-02-21
  */
 
 namespace wpinc\alt;
@@ -12,10 +12,10 @@ namespace wpinc\alt;
 /**
  * Suppress output for head meta.
  *
- * @param bool $do_remove_feed_links (Optional) Whether feed links are removed.
+ * @param bool $do_remove_feed_link (Optional) Whether feed links are removed.
  */
-function suppress_head_meta_output( bool $do_remove_feed_links = true ): void {
-	if ( $do_remove_feed_links ) {
+function suppress_head_meta_output( bool $do_remove_feed_link = true ): void {
+	if ( $do_remove_feed_link ) {
 		add_filter( 'feed_links_show_posts_feed', '__return_false' );
 		remove_action( 'wp_head', 'feed_links', 2 );
 		remove_action( 'wp_head', 'feed_links_extra', 3 );

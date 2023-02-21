@@ -4,7 +4,7 @@
  *
  * @package Wpinc
  * @author Takuto Yanagida @ Space-Time Inc.
- * @version 2022-09-09
+ * @version 2023-02-21
  */
 
 namespace st;
@@ -23,22 +23,27 @@ require_once __DIR__ . '/alt/suppressor.php';
  * @param array $args {
  *     Arguments.
  *
- *     @type bool     'do_remove_feed_links' Whether feed links are removed.
- *     @type string[] 'permitted_routes'     Permitted routes.
- *     @type string[] 'allowed_embed_urls'   Allowed embed URLs.
+ *     @type bool     'do_remove_feed_link' Whether feed links are removed.
+ *     @type bool     'do_remove_comment'   Whether comment functions are removed.
+ *     @type string[] 'permitted_routes'    Permitted routes.
+ *     @type string[] 'allowed_embed_urls'  Allowed embed URLs.
  * }
  */
 function customize_by_default( array $args = array() ): void {
 	$args += array(
-		'do_remove_feed_links' => true,
-		'permitted_route'      => array( 'oembed', 'contact-form-7' ),
-		'allowed_embed_urls'   => array(
+		'do_remove_feed_link' => true,
+		'do_remove_comment'   => true,
+		'permitted_route'     => array( 'oembed', 'contact-form-7' ),
+		'allowed_embed_urls'  => array(
 			'https://www.youtube.com/',
 			'https://youtu.be/',
 			'https://twitter.com/',
 			'https://www.slideshare.net/',
 		),
 	);
+	if ( isset( $args['do_remove_feed_links'] ) ) {
+		$args['do_remove_feed_link'] = $args['do_remove_feed_links'];
+	}
 
 	if ( is_admin_bar_showing() ) {
 		// custom-admin.
@@ -48,10 +53,12 @@ function customize_by_default( array $args = array() ): void {
 	}
 
 	// no-discussion.
-	\wpinc\alt\disable_comment_support();
-	\wpinc\alt\disable_comment_feed();
-	if ( is_admin() ) {
-		\wpinc\alt\disable_comment_menu();
+	if ( $args['do_remove_comment'] ) {
+		\wpinc\alt\disable_comment_support();
+		\wpinc\alt\disable_comment_feed();
+		if ( is_admin() ) {
+			\wpinc\alt\disable_comment_menu();
+		}
 	}
 	\wpinc\alt\disable_pingback();
 	\wpinc\alt\disable_trackback();
@@ -86,7 +93,7 @@ function customize_by_default( array $args = array() ): void {
 	\wpinc\alt\add_timestamp_to_source();
 
 	// suppressor.
-	\wpinc\alt\suppress_head_meta_output( $args['do_remove_feed_links'] );
+	\wpinc\alt\suppress_head_meta_output( $args['do_remove_feed_link'] );
 	\wpinc\alt\suppress_feed_generator_output();
 	\wpinc\alt\suppress_emoji_function();
 	\wpinc\alt\suppress_version_output();
