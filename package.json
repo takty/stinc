@@ -21,7 +21,9 @@
 		"gulp": "^4.0.2",
 		"gulp-changed": "^4.0.3",
 		"gulp-ignore": "^3.0.0",
-		"gulp-plumber": "^1.2.1",
+		"gulp-plumber": "^1.2.1"
+	},
+	"devDependencies": {
 		"wpinc-alt": "git+https://github.com/takty/wpinc-alt.git",
 		"wpinc-blok": "git+https://github.com/takty/wpinc-blok.git",
 		"wpinc-dia": "git+https://github.com/takty/wpinc-dia.git",
