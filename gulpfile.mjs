@@ -2,7 +2,7 @@
  * Gulpfile
  *
  * @author Space-Time Inc.
- * @version 2022-12-09
+ * @version 2023-03-06
  */
 
 const SUB_REPS = [
@@ -22,11 +22,11 @@ const SUB_REPS = [
 
 import gulp from 'gulp';
 
-import { pkgDir } from './gulp/common.mjs';
 import { makeCopyTask } from './gulp/task-copy.mjs';
 
-const copy_s = SUB_REPS.map(e => makeCopyTask(`${pkgDir(`wpinc-${e}`)}/dist/**/*`, `./src/${e}/`));
-const copy = makeCopyTask('src/**/*', './dist/');
-
-export const update = gulp.parallel(...copy_s);
-export default gulp.parallel(copy);
+export const update = async done => {
+	const { pkgDir } = await import('./gulp/common.mjs');
+	SUB_REPS.map(e => makeCopyTask(`${pkgDir(`wpinc-${e}`)}/dist/**/*`, `./src/${e}/`)());
+	done();
+};
+export default gulp.parallel(makeCopyTask('src/**/*', './dist/'));
